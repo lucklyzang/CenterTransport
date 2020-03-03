@@ -25,19 +25,17 @@
     </div>
     <div class="check-box" ref="checkBox">
       <div class="check-box-content">
-        <p v-for="(item, index) in checkList" @click="checkClick(item,index)" :class="{activeClass:index == currentIndex}">
+        <p v-for="(item, index) in checkList" :key="index" @click="checkClick(item,index)" :class="{activeClass:index == currentIndex}">
           {{item}}
         </p>
       </div>
     </div>
-    <!-- pc端提示扫码枪扫码弹框 -->
+    <!-- pc端提示扫码枪扫码弹框-->
       <van-dialog
       v-model="barCodeScannerShow"
       title="请用扫码枪扫描对应二维码"
       :close-on-click-overlay="true"
       :close-on-popstate="true"
-      @confirm=""
-      @cancel=""
       >
     </van-dialog>
   </div>

@@ -5,9 +5,8 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <ul class="left-dropDown" v-show="leftDownShow">
-      <li v-for="(item, index) in leftDropdownDataList" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <!-- <FooterBottom></FooterBottom>-->
   </div>
 </template>
 <script>
@@ -34,7 +33,7 @@
     },
     
     mounted() {
-      // 控制设备物理返回按键
+      // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
         this.gotoURL(() => { 
@@ -57,17 +56,17 @@
         return IsPC()
       },
 
-      // 返回上一页
+      // 返回上一页测试
       backTo () {
       },
 
-    // 右边下拉框菜单点击
+    // 右边下拉框菜单点
     leftLiCLick (index) {
       this.liIndex = index;
       this.$router.replace({name:'login'})
     },
 
-    // 跳转到我的页面
+    // 跳转到我的页
     skipMyInfo () {
       this.leftDownShow = !this.leftDownShow;
     },
