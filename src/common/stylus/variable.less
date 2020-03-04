@@ -23,16 +23,16 @@
 @card-theme-margin: 10px;
 
 //重复的样式
-.repeat-sign (@left:0) {
+.repeat-sign (@top:0,@left:0, @width:40, @height:40) {
   transform: scale(.5);
   transform-origin: 0% top;
   background: @color-theme;
   color: #fff;
-  width: 40px;
-  height: 40px;
+  width:@width;
+  height: @height;
   display: inline-block;
   position: absolute;
-  top: 4px;
+  top: @top;
   right: @left;
   border-radius: 50%;
   font-size: 20px;

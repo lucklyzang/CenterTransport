@@ -4,6 +4,9 @@ import {setStore, getStore} from '@/common/js/utils.js'
 import store from '@/store'
 const Home = () => import('../pages/Home')
 const Login = () => import('../pages/Login')
+const DispatchTask = () => import('../pages/taskPage/DispatchTask')
+const CirculationTask = () => import('../pages/taskPage/CirculationTask')
+const AppointTask = () => import('../pages/taskPage/AppointTask')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -16,6 +19,21 @@ let baseRoute  = [
     path: '/home',
     name: 'home',
     component: Home,
+  },
+  {
+    path: '/dispatchTask',
+    name: 'dispatchTask',
+    component: DispatchTask,
+  },
+  {
+    path: '/circulationTask',
+    name: 'circulationTask',
+    component: CirculationTask,
+  },
+  {
+    path: '/appointTask',
+    name: 'appointTask',
+    component: AppointTask,
   }
 ];
 let router = new Router({
