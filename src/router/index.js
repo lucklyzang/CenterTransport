@@ -7,6 +7,7 @@ const Login = () => import('../pages/Login')
 const DispatchTask = () => import('../pages/taskPage/DispatchTask')
 const CirculationTask = () => import('../pages/taskPage/CirculationTask')
 const AppointTask = () => import('../pages/taskPage/AppointTask')
+const AutonomicTask = () => import('../pages/taskPage/AutonomicTask')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -34,6 +35,11 @@ let baseRoute  = [
     path: '/appointTask',
     name: 'appointTask',
     component: AppointTask,
+  },
+  {
+    path: '/autonomicTask',
+    name: 'autonomicTask',
+    component: AutonomicTask
   }
 ];
 let router = new Router({

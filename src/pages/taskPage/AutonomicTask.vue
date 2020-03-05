@@ -5,7 +5,7 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
-    <div>循环任务</div>
+    <div>自主任务</div>
   </div>
 </template>
 

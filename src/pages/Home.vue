@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper">
     <!-- 顶部导航栏 -->
-    <HeaderTop>
+    <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
@@ -16,7 +16,7 @@
         <span class="real-name">张三</span>
       </div>
       <div class="wait-dask-wrapper">
-        <p class="wait-dask-title">代办任务</p>
+        <p class="wait-dask-title">待办任务</p>
         <ul class="wait-dask-list">
           <li @click="dispatchEvent">调度任务 <span>1212</span></li>
           <li @click="circulationEvent">循环任务 <span>212</span></li>
@@ -30,13 +30,8 @@
     </div>
     <div class="content-bottom">
       <div class="task-button">
-        <div>
-          <van-button  type="default" size="large">调度任务</van-button>
-          <van-button  type="default" size="large">自主任务</van-button>
-        </div>
-        <div>
-          <van-button  type="default" size="large">循环任务</van-button>
-          <van-button  type="default" size="large">预约任务</van-button>
+        <div v-for="(item,index) in taskList" :key="index" @click="taskRouterSkip(item, index)">
+          <van-button  type="default" size="large">{{item}}</van-button>
         </div>
       </div>
     </div>
@@ -62,6 +57,7 @@
         leftDownShow: false,
         liIndex: null,
         leftDropdownDataList: ['退出登录'],
+        taskList: ['调度任务', '循环任务', '预约任务', '下班签退']
       }
     },
     
@@ -74,15 +70,18 @@
       }
     },
 
-    // beforeRouteLeave(to, from, next) {
-    // },
+    beforeRouteLeave(to, from, next) {
+      next()
+    },
     
     computed:{
       ...mapGetters([
+        'navTopTitle'
       ])
     },
     methods:{
       ...mapMutations([
+        'changeTitleTxt'
       ]),
 
       juddgeIspc () {
@@ -96,15 +95,20 @@
       // 路由跳转
       dispatchEvent () {
         this.$router.push({path:'/dispatchTask'});
-        console.log(this.$router);
+        this.changeTitleTxt({tit:'调度任务'});
+        setStore('currentTitle','调度任务')
       },
 
       circulationEvent () {
         this.$router.push({path:'/circulationTask'})
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务')
       },
 
       appointEvent () {
-        this.$router.push({path:'/appointTask'})
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')
       },
 
       // 右边下拉框菜单点击
@@ -118,8 +122,23 @@
         this.leftDownShow = !this.leftDownShow;
       },
 
-      //路由跳转
-      routerSkip (name, text) {
+      //下面任务按钮路由跳转
+      taskRouterSkip (name, index) {
+        console.log(name,index);
+        if (name === '调度任务') {
+          this.$router.push({path:'/dispatchTask'});
+          this.changeTitleTxt({tit:'调度任务'});
+          setStore('currentTitle','调度任务')
+        } else if (name === '循环任务') {
+          this.$router.push({path:'/circulationTask'})
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务')
+        } else if (name === '预约任务') {
+          this.$router.push({path:'/appointTask'});
+          this.changeTitleTxt({tit:'预约任务'});
+          setStore('currentTitle','预约任务')
+        } else {
+        }
       }
     }
   }
@@ -176,14 +195,18 @@
       margin-top: 10px;
       width: 100%;
       .task-button  {
-        div {
-          padding: 0 10px;
-          &:last-child {
-            margin-top: 10px;
-          }
-        text-align: center;
-        & /deep/.van-button {
-          width: 48%;
+        padding: 0 10px;
+        > div {
+          width:49%;
+          display:inline-block;
+          &:nth-child(3) {
+            margin-top: 4px
+          };
+          &:nth-child(4) {
+            margin-top: 4px
+          };
+          &:nth-child(odd) {
+            margin-right: 4px
           }
         }
       }
