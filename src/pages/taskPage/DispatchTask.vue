@@ -12,27 +12,51 @@
       </p>
       <p class="task-line-two">
         <span :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">状态筛选</span>
-        <span :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
-        <span :class="{'taskLineTwoStyle':transferTask == true}" @click="transferTaskEvent">转移任务</span>
+        <span v-show="cancelTaskBtnShow" :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
+        <span v-show="transferTaskBtnShow" :class="{'taskLineTwoStyle':transferTask == true}" @click="transferTaskEvent">转移任务</span>
       </p>
     </div>
     <div class="wait-handle" v-show="waitHandleShow">
-      <div class="wait-handle-list">
+      <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
         <p class="wait-handle-message">
-          <span>创建时间：</span><span>状态：</span>
-          <span>起点：</span><span>终点：</span>
-          <span>运送类型：</span><span>转运工具：</span>
+          <span>创建时间：{{item.taskCreateTime}}</span><span>状态：{{item.taskStatus == 0 ? '待处理' : '未开始' }}</span>
+          <span>起点：{{item.taskStartPoint}}</span><span>终点：{{item.taskFinishPoint}}</span>
+          <span>运送类型：{{item.taskTransportype}}</span><span>转运工具：{{item.taskTransportTools}}</span>
         </p>
-        <p class="wait-handle-check">
-          <van-checkbox v-model="waitHandleCheck" @change="waitTaskChecked(waitHandleCheck)"></van-checkbox>
+        <p class="wait-handle-check" v-show="item.taskStatus !== '0'">
+          <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
         </p>
         <p class="get-wait-task">
-          <van-button type="default" size="mini">获取</van-button>
+          <van-button type="default" size="mini" v-show="item.taskStatus == '0'" @click.stop="getTask">获取</van-button>
         </p>
       </div>
     </div>
     <div class="task-query" v-show="taskQueryShow">任务查询</div>
-    <div class="status-handle-screen" v-show="statusHandleScreenShow">状态筛选</div>
+    <div class="status-handle-screen" v-show="statusHandleScreenShow">
+      <van-tabs v-model="activeName" @click="onClickTab">
+        <van-tab name="0">
+          <div slot="title">
+            <span class="title">未开始</span>
+            <span class="right-sign" v-show="currentIndex == 0">12</span>
+          </div>
+          <div class="task-status-list">1</div>
+        </van-tab>
+        <van-tab name="1">
+          <div slot="title">
+            <span class="title">派送中</span>
+            <span class="right-sign" v-show="currentIndex == 1">23</span>
+          </div>
+          <div class="task-status-list">2</div>
+        </van-tab>
+        <van-tab name="2">
+          <div slot="title">
+            <span class="title">已完成</span>
+            <span class="right-sign" v-show="currentIndex == 2">3</span>
+          </div>
+          <div class="task-status-list">3</div>
+        </van-tab>
+      </van-tabs>
+    </div>
   </div>
 </template>
 
@@ -55,7 +79,40 @@
         waitHandleShow: true,
         taskQueryShow: false,
         statusHandleScreenShow: false,
-        waitHandleCheck: true
+        waitHandleCheck: true,
+        cancelTaskBtnShow: false,
+        transferTaskBtnShow: false,
+        waitBaskList: [
+          {
+            taskCheck: false,
+            taskCreateTime: '2020-3-21:12:21:30',
+            taskStatus: '0',
+            taskStartPoint: '科室一',
+            taskFinishPoint: '科室二',
+            taskTransportype: '类型一',
+            taskTransportTools: '小车'
+          },
+          {
+            taskCheck: false,
+            taskCreateTime: '2020-3-22:12:21:30',
+            taskStatus: '1',
+            taskStartPoint: '科室三',
+            taskFinishPoint: '科室四',
+            taskTransportype: '类型二',
+            taskTransportTools: '大车'
+          },
+          {
+            taskCheck: false,
+            taskCreateTime: '2020-3-23:12:21:30',
+            taskStatus: '0',
+            taskStartPoint: '科室五',
+            taskFinishPoint: '科室六',
+            taskTransportype: '类型三',
+            taskTransportTools: '推车'
+          }
+        ],
+        activeName: 0,
+        currentIndex: ''
       };
     },
 
@@ -71,11 +128,28 @@
       ])
     },
 
+    watch : {
+      waitBaskList: {
+        handler(newName, oldName) {
+          if (newName.some(function (item, index) {return item.taskCheck == true})) {
+            this.cancelTaskBtnShow = true;
+            this.transferTaskBtnShow = true;
+          } else {
+            this.cancelTaskBtnShow = false;
+            this.transferTaskBtnShow = false;
+          }
+        },
+        deep: true,
+        immediate: true
+      }
+    },
+
     mounted () {
       // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
         this.gotoURL(() => {
+          this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'首页'});
           setStore('currentTitle','首页') 
         })
@@ -84,15 +158,20 @@
 
     methods: {
       ...mapMutations([
-        'changeTitleTxt'
+        'changeTitleTxt',
+        'changeDispatchTaskMessage'
       ]),
+
       // 跳转到我的页
       skipMyInfo () {
       },
 
+      // 阻止change事件冒泡
+      emptyHandle () {},
+
       // 返回上一页
       backTo () {
-        this.$router.go(-1);
+        this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'首页'});
         setStore('currentTitle','首页')
       },
@@ -143,7 +222,28 @@
 
       // 复选框选择事件 
       waitTaskChecked (waitHandleCheck) {
-        console.log(waitHandleCheck)
+      },
+
+      // 点击具体任务事件
+      taskClickEvent (item) {
+        if (item.taskStatus == '1') {
+          this.$router.push({'path':'/dispatchTaskSweepCode'});
+          this.changeTitleTxt({tit:'扫码'});
+          setStore('currentTitle','扫码');
+          // 改变调度具体某一任务的信息状态
+          this.changeDispatchTaskMessage({DtMsg: item});
+          setStore('currentDispatchTaskMessage',item);
+        }
+      },
+
+      // 获取待处理任务事件
+      getTask () {
+
+      },
+
+      // 状态筛选标签点击切换
+      onClickTab (name, title) {
+        this.currentIndex = name;
       }
     }
 }
@@ -226,6 +326,13 @@
           position: absolute;
           bottom: 10px;
           right: 10px
+        }
+      }
+    };
+    .status-handle-screen {
+      /deep/ .van-tabs {
+        .right-sign {
+          .status-sign 
         }
       }
     }

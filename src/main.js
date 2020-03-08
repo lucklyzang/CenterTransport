@@ -37,6 +37,14 @@ store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
 store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
 // 页面刷新重新存入请求token
 store.commit('changeToken', getStore('questToken'));
+// 页面刷新重新存入调度任务具体信息
+store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
+// 页面刷新重新存入预约任务具体信息
+store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
+// 页面刷新重新存入循环任务具体信息 currentTransportTypeMessage
+store.commit('changeCirculationTaskMessage', {DtMsg: getStore('currentCirculationTaskMessage')})
+// 页面刷新重新存入医护人员生成运送类型信息
+store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
 if (IsPC()) {
   Vue.use(new VueSocketIO({
      debug: true,

@@ -8,6 +8,15 @@ const DispatchTask = () => import('../pages/taskPage/DispatchTask')
 const CirculationTask = () => import('../pages/taskPage/CirculationTask')
 const AppointTask = () => import('../pages/taskPage/AppointTask')
 const AutonomicTask = () => import('../pages/taskPage/AutonomicTask')
+const DispatchTaskSweepCode = () => import('../pages/sweepCodePage/DispatchTaskSweepCode')
+const AppointTaskSweepCode = () => import('../pages/sweepCodePage/AppointTaskSweepCode')
+const CirculationTaskSweepCode = () => import('../pages/sweepCodePage/CirculationTaskSweepCode')
+const CirculationTaskCollectMessage = () => import('../pages/taskMessagePage/CirculationTaskCollectMessage')
+const CirculationTaskCollectMessageSure = () => import('../pages/taskMessagePage/CirculationTaskCollectMessageSure')
+const CirculationTaskMessageConnect = () => import('../pages/taskMessagePage/CirculationTaskMessageConnect')
+const CirculationTaskConnectMessageSure = () => import('../pages/taskMessagePage/CirculationTaskConnectMessageSure')
+const CirculationTaskCondition = () => import('../pages/taskMessagePage/CirculationTaskCondition')
+const TransportTypeMessage = () => import('../pages/medicalTaskPage/TransportTypeMessage')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -25,6 +34,9 @@ let baseRoute  = [
     path: '/dispatchTask',
     name: 'dispatchTask',
     component: DispatchTask,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/circulationTask',
@@ -35,11 +47,59 @@ let baseRoute  = [
     path: '/appointTask',
     name: 'appointTask',
     component: AppointTask,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/autonomicTask',
     name: 'autonomicTask',
     component: AutonomicTask
+  },
+  {
+    path: '/dispatchTaskSweepCode',
+    name: 'dispatchTaskSweepCode',
+    component: DispatchTaskSweepCode
+  },
+  {
+    path: '/appointTaskSweepCode',
+    name: 'appointTaskSweepCode',
+    component: AppointTaskSweepCode
+  },
+  {
+    path: '/circulationTaskSweepCode',
+    name: 'circulationTaskSweepCode',
+    component: CirculationTaskSweepCode
+  },
+  {
+    path: '/circulationTaskCollectMessage',
+    name: 'circulationTaskCollectMessage',
+    component: CirculationTaskCollectMessage
+  },
+  {
+    path: '/circulationTaskCollectMessageSure',
+    name: 'circulationTaskCollectMessageSure',
+    component: CirculationTaskCollectMessageSure
+  },
+  {
+    path: '/circulationTaskMessageConnect',
+    name: 'circulationTaskMessageConnect',
+    component: CirculationTaskMessageConnect
+  },
+  {
+    path: '/circulationTaskConnectMessageSure',
+    name: 'circulationTaskConnectMessageSure',
+    component: CirculationTaskConnectMessageSure
+  },
+  {
+    path: '/circulationTaskCondition',
+    name: 'circulationTaskCondition',
+    component: CirculationTaskCondition
+  },
+  {
+    path: '/transportTypeMessage',
+    name: 'transportTypeMessage',
+    component: TransportTypeMessage
   }
 ];
 let router = new Router({
