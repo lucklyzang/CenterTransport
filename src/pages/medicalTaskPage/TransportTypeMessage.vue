@@ -6,7 +6,7 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="transport-type-title">
-      <h3>运送类型{{transportTypeMessage}}</h3>
+      <h3>{{transportTypeMessage}}</h3>
     </div>
     <div class="transport-type-area">
       <van-field v-model="destinationAddress" label="目的地" placeholder="请输入目的地"/>
@@ -74,30 +74,37 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeDispatchTaskMessage'
+      'changeDispatchTaskMessage',
+      'changeIsRefershHome',
+      'changeIsHomeJumpOtherPage'
     ]),
     // 返回上一页
     backTo () {
       this.$router.push({path: 'home'});
       this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页')
+      setStore('currentTitle','首页');
+      this.changeIsHomeJumpOtherPage({DtMsg: true})
     },
 
     // 跳转我的页面
     skipMyInfo () {},
 
-    // 调度信息确认事件
+    // 运送类型信息确认事件
     dispatchTaskSure () {
       this.$router.push({path:'/home'});
       this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页')
+      setStore('currentTitle','首页');
+      this.changeIsRefershHome({DtMsg: true});
+      this.changeIsHomeJumpOtherPage({DtMsg: true})
     },
 
-    // 调度信息取消事件
+    // 运送类型信息取消事件
     dispatchTaskCancel () {
       this.$router.push({path:'/home'});
       this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页')
+      setStore('currentTitle','首页');
+      this.changeIsRefershHome({DtMsg: false});
+      this.changeIsHomeJumpOtherPage({DtMsg: true})
     }
   }
 }

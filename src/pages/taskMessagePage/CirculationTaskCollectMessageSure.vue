@@ -17,6 +17,9 @@
       />
       <van-field v-model="sampleAmount" type="number" label="数量" placeholder="请输入"/>
     </div>
+    <div class="electronic-signature">
+    <ElectronicSignature></ElectronicSignature>
+    </div>
     <div class="btn-area">
       <van-button type="default" @click="collectMessageSure">确认</van-button>
       <van-button type="default" @click="collectMessageCancel">取消</van-button>
@@ -27,6 +30,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
+import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
 import {getBatchNumber} from '@/api/rubbishCollect.js'
 import NoData from '@/components/NoData'
@@ -48,7 +52,8 @@ export default {
     VanFieldSelectPicker,
     HeaderTop,
     NoData,
-    FooterBottom
+    FooterBottom,
+    ElectronicSignature
   },
 
   mounted () {
@@ -65,7 +70,8 @@ export default {
 
   computed:{
     ...mapGetters([
-      'navTopTitle'
+      'navTopTitle',
+      'currentElectronicSignature'
     ])
   },
 
@@ -88,9 +94,10 @@ export default {
 
      // 采集信息确认事件
     collectMessageSure () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      // this.$router.push({path:'/circulationTask'})
+      // this.changeTitleTxt({tit:'循环任务'});
+      // setStore('currentTitle','循环任务');
+      console.log(this.currentElectronicSignature);
     },
 
     // 采集信息取消事件
@@ -122,6 +129,9 @@ export default {
       margin: 10px 0;
       width: 100%;
     };
+    .electronic-signature {
+      height: 200px;
+    }
     .btn-area {
       height: 50px;
       text-align: center;

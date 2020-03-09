@@ -29,6 +29,9 @@ let baseRoute  = [
     path: '/home',
     name: 'home',
     component: Home,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/dispatchTask',

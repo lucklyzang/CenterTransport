@@ -87,8 +87,8 @@
     data() {
       return {
         leftDownShow: false,
-        workerShow: false,
-        medicalWorkerShow: true,
+        workerShow: true,
+        medicalWorkerShow: false,
         liIndex: null,
         leftDropdownDataList: ['退出登录'],
         taskList: ['调度任务', '循环任务', '预约任务', '下班签退'],
@@ -111,13 +111,23 @@
       }
     },
 
+    activated () {
+      if (this.isHomeJumpOtherPage) {
+        if (!this.isRefershHome) {
+          window.location.reload()
+        }
+      }  
+    },
+
     beforeRouteLeave(to, from, next) {
       next()
     },
     
     computed:{
       ...mapGetters([
-        'navTopTitle'
+        'navTopTitle',
+        'isRefershHome',
+        'isHomeJumpOtherPage',
       ])
     },
     methods:{
