@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-      <div class="foot-item" v-for="item in itemFooter" @click="itemClick(item.itemText, item.name)">
+      <div class="foot-item" v-for="item in itemFooter" :key="item" @click="itemClick(item.itemText, item.name)">
         <img :src="item.imgUrl" alt="">
         <p>{{item.itemText}}</p>
       </div>
@@ -8,10 +8,6 @@
 </template>
 
 <script>
-import indexIcon from '@/common/images/home/index-icon.png'
-import communityIcon from '@/common/images/home/community-icon.png'
-import messageIcon from '@/common/images/home/message-icon.png'
-import myIcon from '@/common/images/home/my-icon.png'
 import { mapGetters, mapMutations } from 'vuex'
 export default {
   data () {

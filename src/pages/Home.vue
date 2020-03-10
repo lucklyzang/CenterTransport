@@ -14,37 +14,63 @@
       <!-- 内容部分 -->
       <div class="content-top">
         <div class="content-top-userName">
-          <span class="user-name">姓名</span>
+          <span class="content-top-userName-img">
+            <img :src="defaultPersonPng" alt="">
+          </span>
           <span class="real-name">张三</span>
         </div>
         <div class="wait-dask-wrapper">
-          <p class="wait-dask-title">待办任务</p>
+          <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
-            <li @click="dispatchEvent">调度任务 <span>1212</span></li>
-            <li @click="circulationEvent">循环任务 <span>212</span></li>
-            <li @click="appointEvent">预约任务 <span>22</span></li>
+            <li @click="dispatchEvent">调度任务 <span>(12)</span></li>
+            <li @click="circulationEvent">循环任务 <span>(23)</span></li>
+            <li @click="appointEvent">预约任务 <span>(23)</span></li>
           </ul>
         </div>
-        <div class="task-message">
-          <span class="task-message-number">今日运送量：</span>
-          <span class="task-message-rank">今日排名：</span>
+      </div>
+      <div class="content-middle-task-message">
+        <div class="task-message-number-wrapper">
+          <div class="task-message-number">
+            <p class="task-message-img">
+              <img :src="homeBannerPng" alt="">
+            </p>
+            <p class="transport-day-number">
+              <span class="current-day-message-tit">今日运送量</span>
+              <span>12</span>
+            </p>
+            <p class="transport-day-rank">
+              <span>今日排名</span>
+              <span>12</span>
+            </p>
+          </div>
         </div>
       </div>
       <div class="content-bottom">
-        <div class="task-button">
-          <div v-for="(item,index) in taskList" :key="index" @click="taskRouterSkip(item, index)">
-            <van-button  type="default" size="large">{{item}}</van-button>
-          </div>
-        </div>
+        <ul class="task-button">
+          <li v-for="(item,index) in taskList" :key="index" @click="taskRouterSkip(item, index)">
+            <p class="task-button-wrapper">
+              <img :src="btnTaskWrapperPng" alt="">
+            </p>
+            <p class="task-btn-img">
+              <img :src="item.imgUrl" alt="">
+            </p>
+            <p  class="task-btn-tit">{{item.tit}}</p>
+          </li>
+        </ul>
       </div>
     </div>
     <!-- 医护人员操作区域 -->
     <div class="medical-worker-show" v-if="medicalWorkerShow">
       <div class="medical-worker-operate">
         <div class="medical-worker-operate-left">
-          <ul class="medical-worker-operate-list">
-            <li v-for="(item,index) in operateList" :key="index" @click="operateListEvent(item,index)">{{item}}</li>
-          </ul>
+          <div class="medical-worker-operate-list">
+            <div class="medical-worker-operate-list-inner" :class="{'operate-list-inner-style': operateListInnerIndex == index}" v-for="(item,index) in operateList" :key="index" @click="operateListEvent(item,index)">
+              <p class="operate-list-img">
+                <img :src="operateListInnerIndex == index ? '' : item.imgUrl" alt="">
+              </p>
+              <p class="operate-list-tit">{{item.tit}}</p>
+            </div>
+          </div>
         </div>
         <div class="medical-worker-operate-right">
           <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
@@ -74,10 +100,19 @@
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
   import {getBatchNumber} from '../api/rubbishCollect.js'
-  import NoData from '../components/NoData'
+  import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
+  import dispatchTaskPng from '@/common/images/home/dispatch-task.png'
+  import circulationTaskPng from '@/common/images/home/circulation-task.png'
+  import offWorkSignOutPng from '@/common/images/home/offWork-signOut.png'
+  import appointTaskPng from '@/common/images/home/appoint-task.png'
+  import medicalMessagePng from '@/common/images/home/medical-message.png'
+  import medicalCallPng from '@/common/images/home/medical-call.png'
+  import taskTailPng from '@/common/images/home/task-tail.png'
+  import historyTaskPng from '@/common/images/home/history-task.png'
+  import medicalCollectPng from '@/common/images/home/medical-collect.png'
   export default {
     components:{
       HeaderTop,
@@ -87,18 +122,33 @@
     data() {
       return {
         leftDownShow: false,
-        workerShow: true,
-        medicalWorkerShow: false,
+        workerShow: false,
+        medicalWorkerShow: true,
         liIndex: null,
+        operateListInnerIndex: '',
         leftDropdownDataList: ['退出登录'],
-        taskList: ['调度任务', '循环任务', '预约任务', '下班签退'],
-        operateList: ['消息','呼叫','任务跟踪','历史任务','收藏'],
+        taskList: [
+          {tit:'调度任务',imgUrl: dispatchTaskPng}, 
+          {tit:'循环任务',imgUrl: circulationTaskPng}, 
+          {tit:'预约任务',imgUrl: appointTaskPng},
+          {tit:'下班签退',imgUrl: offWorkSignOutPng}
+        ],
+        operateList: [
+          {tit:'消息',imgUrl: medicalMessagePng},
+          {tit:'呼叫',imgUrl: medicalCallPng},
+          {tit:'任务跟踪',imgUrl: taskTailPng},
+          {tit:'历史任务',imgUrl: historyTaskPng},
+          {tit:'收藏',imgUrl: medicalCollectPng}
+        ],
         medicalTransportTypeList: ['类型一','类型二','类型三'],
         operateMessage: 1,
         operateCallOut: '',
         operateTaskTrace: '',
         operateHistoryTask: '',
-        operateTaskCollect: ''
+        operateTaskCollect: '',
+        defaultPersonPng: require('@/common/images/home/default-person.png'),
+        homeBannerPng: require('@/common/images/home/home-banner.png'),
+        btnTaskWrapperPng: require('@/common/images/home/btn-background.png')
       }
     },
     
@@ -203,6 +253,7 @@
 
       // 左边列表点击
       operateListEvent (item,index) {
+        this.operateListInnerIndex = index;
         if (index == 0) {
           this.operateMessage = 1;
           this.operateCallOut = '';
@@ -255,44 +306,111 @@
     .worker-show {
       .content-wrapper();
       .content-top {
-        height: 120px;
-        padding: 15px 10px;
+        height: 110px;
+        padding: 15px 0;
         font-size: 14px;
-        border: 1px solid #8ccbe8;
+        color: #fff;
+        background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .content-top-userName {
-          .user-name {
-            margin-right: 15px;
+          padding-left: 10px;
+          height: 60px;
+          .content-top-userName-img {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            vertical-align: middle;
+            margin-right: 8px;
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .real-name {
           }
         };
         .wait-dask-wrapper {
-          margin: 14px 0;
+          padding-left: 10px;
+          .wait-dask-title {
+          }
           .wait-dask-list {
             margin-top : 6px;
             height: 30px;
             line-height: 30px;
-            margin-left: -34px;
+            font-size: 13px;
             li {
               display: inline-block;
               width: 32%;
-              text-align: center;
+              text-align: left;
               position: relative;
-              border-right: 1px solid #9b9999;
-              span {
-                .repeat-sign(1px,-14px,45px,45px);
-              }
-              &:last-child {
-                border-right: none
-              }
             }
           }
         };
-        .task-message {
-          span {
-            display: inline-block;
-            width: 49%;
+      };
+      .content-middle-task-message {
+        height: 100px;
+        background: #f2f2f2;
+        padding: 8px 0;
+        .task-message-number-wrapper {
+          height: 100%;
+          position: relative;
+          box-sizing: border-box;
+          .task-message-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          };
+          .task-message-number {
+            height: 100%;
+            box-sizing: border-box;
+            font-size: 13px;
+            color: #434343;
+            padding: 28px 70px;
+            .transport-day-number {
+              height: 100%;
+              width: 49%;
+              display: inline-block;
+              position: relative;
+              span {
+                position: absolute;
+                left: 0;
+                &:first-child {
+                  top: 0
+                };
+                &:last-child {
+                  bottom: 0;
+                  font-size: 22px;
+                  color: #2499e9
+                }
+              }
+            }
+            .transport-day-rank {
+              height: 100%;
+              width: 49%;
+              display: inline-block;
+              position: relative;
+              span {
+                position: absolute;
+                right: 0;
+                &:first-child {
+                  top: 0
+                };
+                &:last-child {
+                  bottom: 0;
+                  font-size: 22px;
+                  color: #fa8118;
+                  right: 26px;
+                }
+              }
+            }
           }
         }
-      };
+      }
       .content-bottom {
         flex:1;
         overflow: auto;
@@ -301,9 +419,41 @@
         width: 100%;
         .task-button  {
           padding: 0 10px;
-          > div {
+          li {
             width:49%;
+            height: 120px;
+            border-radius: 4px;
             display:inline-block;
+            text-align: center;
+            padding-top: 30px;
+            box-sizing: border-box;
+            position: relative;
+            .task-button-wrapper {
+              width: 100%;
+              height: 120px;
+              position: absolute;
+              top: 0;
+              left: 0;
+              z-index: -1;
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+            .task-btn-img {
+              width: 40px;
+              height: 40px;
+              margin: 0 auto;
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            };
+            .task-btn-tit {
+              color: #1d221e;
+              font-size: 13px;
+              margin-top: 10px;
+            }
             &:nth-child(3) {
               margin-top: 4px
             };
@@ -334,19 +484,38 @@
           display: inline-block
         }
         .medical-worker-operate-left {
-          flex: 20%;
+          flex: 24%;
           .medical-worker-operate-list {
-            li {
-              height: 60px;
-              line-height: 60px;
-              margin: 4px;
+            height: 100%;
+            .medical-worker-operate-list-inner {
+              height: 90px;
+              padding-top: 20px;
+              box-sizing: border-box;
               text-align: center;
-              border: 1px solid #333
-            }
+              border-bottom: 1px solid #fff;
+              background: #3a4862;
+              .operate-list-img {
+                margin: 0 auto;
+                width: 30px;
+                height: 30px;
+                margin-bottom: 10px;
+                img {
+                  width: 100%;
+                  height: 100%
+                }
+              };
+              .operate-list-tit {
+                color: #fff;
+                font-size: 12px;
+              }
+            };
+            .operate-list-inner-style {
+              background: #15c4f9 !important;
+            };
           }
         };
         .medical-worker-operate-right {
-          flex: 80%;
+          flex: 76%;
           .medical-worker-operate-right-callOut {
             .medical-worker-transport-type {
               line-height: 20px;

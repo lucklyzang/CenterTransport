@@ -81,8 +81,8 @@ export default {
     // 返回上一页
     backTo () {
       this.$router.push({path: 'home'});
-      this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页');
+      this.changeTitleTxt({tit:'中央运送'});
+      setStore('currentTitle','中央运送');
       this.changeIsHomeJumpOtherPage({DtMsg: true})
     },
 
@@ -92,8 +92,8 @@ export default {
     // 运送类型信息确认事件
     dispatchTaskSure () {
       this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页');
+      this.changeTitleTxt({tit:'中央运送'});
+      setStore('currentTitle','中央运送');
       this.changeIsRefershHome({DtMsg: true});
       this.changeIsHomeJumpOtherPage({DtMsg: true})
     },
@@ -101,8 +101,8 @@ export default {
     // 运送类型信息取消事件
     dispatchTaskCancel () {
       this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'首页'});
-      setStore('currentTitle','首页');
+      this.changeTitleTxt({tit:'中央运送'});
+      setStore('currentTitle','中央运送');
       this.changeIsRefershHome({DtMsg: false});
       this.changeIsHomeJumpOtherPage({DtMsg: true})
     }

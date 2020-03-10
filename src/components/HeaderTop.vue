@@ -13,7 +13,6 @@ import { mapGetters, mapMutations } from 'vuex'
 import Loading from '../components/Loading'
 import {queryWarning, warningDispose} from '../api/rubbishCollect.js'
 import { formatTime, setStore, IsPC} from '@/common/js/utils'
-import navBanner from '@/common/images/nav-banner.png'
 export default {
   props:{
     title:String
@@ -25,7 +24,7 @@ export default {
   @import "../common/stylus/mixin.less";
   @import "../common/stylus/variable.less";
   .header {
-    background:url('~@/common/images/nav-banner.png') no-repeat;
+    background: #2198e8;
     background-position: center center;
     background-size: 100% 100%;
     width: 100%;

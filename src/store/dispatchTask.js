@@ -2,7 +2,7 @@ import { setStore, getStore, removeStore } from '@/common/js/utils'
 
 export default {
   state:{
-    navTitle: '首页',
+    navTitle: '中央运送',
     dispatchTaskMessage: null
   },
   getters:{

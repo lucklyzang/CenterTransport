@@ -150,8 +150,8 @@
         pushHistory();
         this.gotoURL(() => {
           this.$router.push({path: 'home'});
-          this.changeTitleTxt({tit:'首页'});
-          setStore('currentTitle','首页') 
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
         })
       }
     },
@@ -172,8 +172,8 @@
       // 返回上一页
       backTo () {
         this.$router.push({path: 'home'});
-        this.changeTitleTxt({tit:'首页'});
-        setStore('currentTitle','首页')
+        this.changeTitleTxt({tit:'中央运送'});
+        setStore('currentTitle','中央运送')
       },
 
       // 调度任务第一行按钮点击
