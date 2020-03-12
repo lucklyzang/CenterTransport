@@ -23,10 +23,10 @@
 @card-theme-margin: 10px;
 
 //首页标签数量提示框的样式
-.repeat-sign (@top:0,@left:0, @width:40, @height:40) {
+.repeat-sign (@width:40, @height:40, @backgroundColor:@color-theme,@top:0,@left:0) {
   transform: scale(.5);
   transform-origin: 0% top;
-  background: @color-theme;
+  background: @backgroundColor;
   color: #fff;
   width:@width;
   height: @height;
@@ -36,23 +36,23 @@
   right: @left;
   border-radius: 50%;
   font-size: 20px;
-  line-height: 40px;
+  line-height: @height;
   text-align: center;
   .no-wrap()
 }
 //调度任务页状态查询标签数量提示框
-.status-sign () {
+.status-sign (@width:40, @height:40, @backgroundColor:@color-theme) {
   transform: scale(.5);
   transform-origin: 0% top;
-  background: @color-theme;
+  background: @backgroundColor;
   color: #fff;
-  width: 40px;
-  height: 40px;
+  width: @width;
+  height: @height;
   display: inline-block;
   position: absolute;
   border-radius: 50%;
   font-size: 20px;
-  line-height: 40px;
+  line-height: @height;
   text-align: center;
   .no-wrap()
 }

@@ -6,10 +6,11 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="dispatch-task-title">
-      <h3>预约任务</h3>
-      <p class="task-line-one">
-        <span :class="{'taskLineOneStyle':taskLlineOneIndex == index}" :key="index" v-for="(item,index) in taskOneList" @click="taskLineOneEvent(item, index)">{{item}}</span>
-      </p>
+      <div class="task-line-one-wrapper">
+        <ul class="task-line-one">
+          <li :class="{'taskLineOneStyle':taskLlineOneIndex == index}" :key="index" v-for="(item,index) in taskOneList" @click="taskLineOneEvent(item, index)">{{item}}</li>
+        </ul>
+      </div>
       <p class="task-line-two">
         <span :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">状态筛选</span>
         <span v-show="cancelTaskBtnShow" :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
@@ -18,17 +19,52 @@
     </div>
     <div class="wait-handle" v-show="waitHandleShow">
       <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
-        <p class="wait-handle-message">
-          <span>预约名称：{{item.bedNumber}}</span><span>开始时间：{{item.taskCreateTime}}</span>
-          <span>起点：{{item.taskStartPoint}}</span><span>终点：{{item.taskFinishPoint}}</span>
-          <span>运送类型：{{item.taskTransportype}}</span><span>转运工具：{{item.taskTransportTools}}</span>
-          <span>状态：{{item.taskStatus == 0 ? '待处理' : '未开始' }}</span><span>床号：{{item.bedNumber}}</span>
+        <p class="wait-handle-message-createTime">
+          开始时间：{{item.taskCreateTime}}
         </p>
+        <div class="wait-handle-message">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">预约名称:</span>
+              <span class="message-tit-real">{{item.bedNumber}}</span>
+            </p>
+            <P>
+              <span class="message-tit">起点:</span>
+              <span class="message-tit-real">{{item.taskStartPoint}}</span>
+            </P>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">终点:</span>
+              <span class="message-tit-real">{{item.taskFinishPoint}}</span>
+            </p>
+            <P>
+              <span class="message-tit">运送类型:</span>
+              <span class="message-tit-real">{{item.taskTransportype}}</span>
+            </P>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">转运工具:</span>
+              <span class="message-tit-real">{{item.taskTransportTools}}</span>
+            </p>
+            <P>
+              <span class="message-tit">状态:</span>
+              <span class="message-tit-real">{{item.taskStatus == 0 ? '待处理' : '未开始' }}</span>
+            </P>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">床号:</span>
+              <span class="message-tit-real">{{item.bedNumber}}</span>
+            </p>
+          </div>
+        </div>
         <p class="wait-handle-check" v-show="item.taskStatus !== '0'">
           <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
         </p>
         <p class="get-wait-task">
-          <van-button type="default" size="mini" v-show="item.taskStatus == '0'" @click.stop="getTask">获取</van-button>
+          <van-button type="info" v-show="item.taskStatus == '0'" @click.stop="getTask">获取</van-button>
         </p>
       </div>
     </div>
@@ -196,7 +232,9 @@
         } else if (index == '1') {
           this.taskQueryShow = true;
           this.waitHandleShow = false;
-          this.statusHandleScreenShow = false
+          this.statusHandleScreenShow = false;
+          this.cancelTaskBtnShow = false;
+          this.transferTaskBtnShow = false
         }
       },
 
@@ -205,7 +243,6 @@
         this.statusScreen = true;
         this.transferTask = false;
         this.cancelTask = false;
-        this.taskLlineOneIndex = null;
         this.taskQueryShow = false;
         this.waitHandleShow = false;
         this.statusHandleScreenShow = true
@@ -216,7 +253,6 @@
         this.cancelTask = true;
         this.transferTask = false;
         this.statusScreen = false;
-        this.taskLlineOneIndex = null
       },
 
       // 转移任务按钮点击
@@ -224,7 +260,6 @@
         this.transferTask = true;
         this.cancelTask = false;
         this.statusScreen = false;
-        this.taskLlineOneIndex = null
       },
 
       // 复选框选择事件 
@@ -264,36 +299,47 @@
     .content-wrapper();
     font-size: 14px;
     .dispatch-task-title {
-      height: 60px;
-      padding: 10px;
-      .task-line-one {
-        height: 12px;
-        margin: 10px 0;
-        .taskLineOneStyle {
-          color: red
-        }
-        span {
-          display: inline-block;
-          width: 30%;
-          text-align: left;
-          border-left: 1px solid #333;
-          padding-left: 8px
-        }
-      };
+      .task-line-one-wrapper {
+          height: 36px;
+          background-image: linear-gradient(to bottom, #2895ea, #5173f8);
+        .task-line-one {
+          width: 70%;
+          margin: 0 auto;
+          .taskLineOneStyle {
+            color: #2895ea;
+            background: #ffff;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px
+          }
+          li {
+            display: inline-block;
+            margin-top: 1px;
+            color: #fff;
+            width: 46%;
+            height: 36px;
+            line-height: 36px;
+            text-align: center
+          }
+        };
+      }
       .task-line-two {
-        height: 12px;
-        margin: 10px 0;
+        height: 40px;
         font-size: 0;
+        padding-top: 14px;
+        box-sizing: border-box;
+        color: #7f7d7d;
         .taskLineTwoStyle {
           color: red
         }
         span {
-          font-size: 14px;
+          font-size: 12px;
           display: inline-block;
-          width: 30%;
-          text-align: left;
-          border-left: 1px solid #333;
-          padding-left: 8px
+          width: 33%;
+          text-align: center;
+          border-right: 1px solid #dedada;
+          &:last-child {
+            border-right: none
+          }
         }
       }
     };
@@ -301,44 +347,51 @@
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin-top: 10px;
       width: 100%;
     };
     .wait-handle {
       .wait-handle-list {
-        height: 130px;
-        padding: 10px;
         box-sizing: border-box;
         position: relative;
-        border: 1px solid #e3ece9;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+        .wait-handle-message-createTime {
+          border-top: 1px solid #e3ece9;
+          padding-left: 30px;
+          background: #ececec;
+          height: 24px;
+          line-height: 24px;
+          font-size: 12px;
+          color: #7f7d7d
+        };
         .wait-handle-message {
-         margin-left: 30px;
-          span {
-            display: inline-block;
-            width: 47%;
-            &:nth-child(3) {
-              margin: 8px 0
-            };
-            &:nth-child(4) {
-              margin: 8px 0
-            };
-            &:nth-child(5) {
-              margin-bottom: 8px;
-            };
-            &:nth-child(6) {
-              margin-bottom: 8px;
+          margin-left: 30px;
+          font-size: 12px;
+          padding-top: 15px;
+          padding-bottom: 15px;
+          box-sizing: border-box;
+          .handle-message-line-wrapper {
+            p {
+              margin-bottom: 10px;
+              width: 47%;
+              display: inline-block;
+              .message-tit {
+                color: #7f7d7d
+              };
+              .message-tit-real {
+                color: black
+              }
             }
           }
         };
         .wait-handle-check {
           position: absolute;
-          top: 10px;
-          left: 12px
+          top: 40px;
+          left: 6px
         };
         .get-wait-task {
-          position: absolute;
-          bottom: 10px;
-          right: 10px
+          width: 100%;
+          text-align: center
         }
       }
     };

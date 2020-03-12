@@ -22,9 +22,9 @@
         <div class="wait-dask-wrapper">
           <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
-            <li @click="dispatchEvent">调度任务 <span>(12)</span></li>
-            <li @click="circulationEvent">循环任务 <span>(23)</span></li>
-            <li @click="appointEvent">预约任务 <span>(23)</span></li>
+            <li @click="dispatchEvent">调度任务 <span class="dask-list-sign">12</span></li>
+            <li @click="circulationEvent">循环任务 <span class="dask-list-sign">23</span></li>
+            <li @click="appointEvent">预约任务 <span class="dask-list-sign">23</span></li>
           </ul>
         </div>
       </div>
@@ -35,11 +35,11 @@
               <img :src="homeBannerPng" alt="">
             </p>
             <p class="transport-day-number">
-              <span class="current-day-message-tit">今日运送量</span>
+              <span class="current-day-message-tit">昨日运送量</span>
               <span>12</span>
             </p>
             <p class="transport-day-rank">
-              <span>今日排名</span>
+              <span>昨日排名</span>
               <span>12</span>
             </p>
           </div>
@@ -47,7 +47,7 @@
       </div>
       <div class="content-bottom">
         <ul class="task-button">
-          <li v-for="(item,index) in taskList" :key="index" @click="taskRouterSkip(item, index)">
+          <li v-for="(item,index) in taskList" :key="index" @click="taskRouterSkip(item.tit, index)">
             <p class="task-button-wrapper">
               <img :src="btnTaskWrapperPng" alt="">
             </p>
@@ -66,7 +66,7 @@
           <div class="medical-worker-operate-list">
             <div class="medical-worker-operate-list-inner" :class="{'operate-list-inner-style': operateListInnerIndex == index}" v-for="(item,index) in operateList" :key="index" @click="operateListEvent(item,index)">
               <p class="operate-list-img">
-                <img :src="operateListInnerIndex == index ? '' : item.imgUrl" alt="">
+                <img :src="operateListInnerIndex == index ? item.imgUrlChecked : item.imgUrl" alt="">
               </p>
               <p class="operate-list-tit">{{item.tit}}</p>
             </div>
@@ -113,6 +113,11 @@
   import taskTailPng from '@/common/images/home/task-tail.png'
   import historyTaskPng from '@/common/images/home/history-task.png'
   import medicalCollectPng from '@/common/images/home/medical-collect.png'
+  import medicalMessageCheckedPng from '@/common/images/home/medical-message-checked.png'
+  import medicalCallCheckedPng from '@/common/images/home/medical-call-checked.png'
+  import taskTailCheckedPng from '@/common/images/home/task-tail-checked.png'
+  import historyTaskCheckedPng from '@/common/images/home/history-task-checked.png'
+  import medicalCollectCheckedPng from '@/common/images/home/medical-collect-checked.png'
   export default {
     components:{
       HeaderTop,
@@ -122,8 +127,8 @@
     data() {
       return {
         leftDownShow: false,
-        workerShow: false,
-        medicalWorkerShow: true,
+        workerShow: true,
+        medicalWorkerShow: false,
         liIndex: null,
         operateListInnerIndex: '',
         leftDropdownDataList: ['退出登录'],
@@ -134,11 +139,11 @@
           {tit:'下班签退',imgUrl: offWorkSignOutPng}
         ],
         operateList: [
-          {tit:'消息',imgUrl: medicalMessagePng},
-          {tit:'呼叫',imgUrl: medicalCallPng},
-          {tit:'任务跟踪',imgUrl: taskTailPng},
-          {tit:'历史任务',imgUrl: historyTaskPng},
-          {tit:'收藏',imgUrl: medicalCollectPng}
+          {tit:'消息', imgUrl: medicalMessagePng, imgUrlChecked:medicalMessageCheckedPng},
+          {tit:'呼叫', imgUrl: medicalCallPng, imgUrlChecked:medicalCallCheckedPng},
+          {tit:'任务跟踪', imgUrl: taskTailPng, imgUrlChecked:taskTailCheckedPng},
+          {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
+          {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
         medicalTransportTypeList: ['类型一','类型二','类型三'],
         operateMessage: 1,
@@ -230,7 +235,6 @@
 
       //下面任务按钮路由跳转
       taskRouterSkip (name, index) {
-        console.log(name,index);
         if (name === '调度任务') {
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
@@ -306,7 +310,6 @@
     .worker-show {
       .content-wrapper();
       .content-top {
-        height: 110px;
         padding: 15px 0;
         font-size: 14px;
         color: #fff;
@@ -331,17 +334,21 @@
         .wait-dask-wrapper {
           padding-left: 10px;
           .wait-dask-title {
+             font-size: 16px;
           }
           .wait-dask-list {
             margin-top : 6px;
-            height: 30px;
-            line-height: 30px;
-            font-size: 13px;
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
             li {
               display: inline-block;
               width: 32%;
               text-align: left;
               position: relative;
+              .dask-list-sign {
+                .status-sign(50px,50px,orange)
+              }
             }
           }
         };
@@ -420,7 +427,7 @@
         .task-button  {
           padding: 0 10px;
           li {
-            width:49%;
+            width:49.5%;
             height: 120px;
             border-radius: 4px;
             display:inline-block;
@@ -461,7 +468,7 @@
               margin-top: 4px
             };
             &:nth-child(odd) {
-              margin-right: 4px
+              margin-right: 1%
             }
           }
         }
