@@ -6,7 +6,7 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="circultion-task-title">
-      <h3>循环任务</h3>
+      <h3>任务科室</h3>
     </div>
     <div class="circulation-task-list">
       <ul>
@@ -14,8 +14,8 @@
       </ul>
     </div>
     <div class="circultion-task-btn">
-      <van-button type="default" @click="circulationConditionEvent">循环情况</van-button>
-      <van-button type="default">送达</van-button>
+      <van-button type="info" @click="circulationConditionEvent">循环情况</van-button>
+      <van-button type="info">送达</van-button>
     </div>
   </div>
 </template>
@@ -108,14 +108,12 @@
     .content-wrapper();
     font-size: 14px;
     .circultion-task-title {
+      height: 30px;
+      line-height: 30px;
       margin-top: 10px;
-      height: 40px;
-      line-height: 40px;
-      padding-left: 10px;
       h3 {
-        width: 20%;
-        text-align: center;
-        background: pink
+        font-size: 15px;
+        padding-left: 10px
       }
     };
     .circulation-task-list {
@@ -126,12 +124,15 @@
       width: 100%;
       ul {
         height: 100%;
-        padding-left: 10px;
         li {
-          line-height: 30px
+          padding-left: 10px;
+          height: 40px;
+          line-height: 40px;
+          margin: 0 auto;
         };
         .officeNameStyle {
-          color: blue
+          color:#2895ea;
+          background: #ececec
         }
       }
     };

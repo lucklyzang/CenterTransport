@@ -185,10 +185,11 @@ import { mapGetters, mapMutations } from 'vuex'
     }
   }
 </script>
-<style scoped>
+<style lang='less' scoped>
   .signatureBox {
-    width: 100%;
-    height: calc(100% - 50px);
+    width: 96%;
+    height: 100%;
+    margin:0 auto;
     box-sizing: border-box;
     overflow: hidden;
     background: #fff;
@@ -201,28 +202,28 @@ import { mapGetters, mapMutations } from 'vuex'
     flex: 1;
   }
   canvas {
-    border: 1px solid #7d7d7d;
+    height: 70%;
+    width: 100%;
+    background: #efefef
   }
   .btnBox {
     padding: 10px;
     text-align: center;
   }
-  .btnBox > div {
-    display: inline-block
-  }
-  .btnBox button:first-of-type {
-    background: transparent;
+  .btnBox 
+  > div {
+    display: inline-block;
     border-radius: 4px;
-    height: 40px;
+    height: 30px;
+    line-height: 30px;
     width: 80px;
-    font-size: 14px;
-  }
-  .btnBox button:last-of-type {
-    background: #71b900;
+    font-size: 13px;
     color: #fff;
-    border-radius: 4px;
-    height: 40px;
-    width: 80px;
-    font-size: 14px;
+    &:first-child {
+      background: orange
+    };
+    &:last-child {
+      background: #71b900
+    }
   }
 </style>

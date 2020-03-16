@@ -19,8 +19,8 @@
       <van-field v-model="actualData"  label="实际数据" placeholder="请输入实际数据"/>
     </div>
     <div class="btn-area">
-      <van-button type="default" @click="dispatchTaskSure">确认</van-button>
-      <van-button type="default" @click="dispatchTaskCancel">取消</van-button>
+      <van-button type="info" @click="dispatchTaskSure">确认</van-button>
+      <van-button type="info" @click="dispatchTaskCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -121,6 +121,8 @@ export default {
       height: 30px;
       line-height: 30px;
       padding-left: 10px;
+      background: #e2e2e2;
+      margin-top: 10px;
     };
     .transport-type-area {
       flex:1;

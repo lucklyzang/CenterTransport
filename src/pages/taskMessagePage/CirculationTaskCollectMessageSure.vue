@@ -5,7 +5,9 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
-    <div class="sweep-code-title">运送信息采集确认</div>
+    <div class="sweep-code-title">
+      <h3>运送信息采集确认</h3>
+    </div>
     <div class="sweep-code-area">
       <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
       <van-field v-model="patientName" type="tel" label="姓名" placeholder="请输入"/>
@@ -18,11 +20,11 @@
       <van-field v-model="sampleAmount" type="number" label="数量" placeholder="请输入"/>
     </div>
     <div class="electronic-signature">
-    <ElectronicSignature></ElectronicSignature>
+      <ElectronicSignature></ElectronicSignature>
     </div>
     <div class="btn-area">
-      <van-button type="default" @click="collectMessageSure">确认</van-button>
-      <van-button type="default" @click="collectMessageCancel">取消</van-button>
+      <van-button type="info" @click="collectMessageSure">确认</van-button>
+      <van-button type="info" @click="collectMessageCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -118,9 +120,13 @@ export default {
     .content-wrapper();
     font-size: 14px;
     .sweep-code-title {
+      margin-top: 10px;
       height: 30px;
       line-height: 30px;
       padding-left: 10px;
+      h3 {
+        font-size: 15px;
+      }
     };
     .sweep-code-area {
       flex:1;
@@ -130,7 +136,7 @@ export default {
       width: 100%;
     };
     .electronic-signature {
-      height: 200px;
+      height: 230px;
     }
     .btn-area {
       height: 50px;

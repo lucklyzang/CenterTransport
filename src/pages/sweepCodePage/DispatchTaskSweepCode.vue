@@ -5,11 +5,13 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
-    <div class="sweep-code-title">扫描二维码</div>
+    <div class="sweep-code-title">
+      <h3>扫描二维码</h3>
+    </div>
     <div class="sweep-code-area">{{dispatchTaskMessage}}</div>
     <div class="btn-area">
-      <van-button type="default">扫描二维码</van-button>
-      <van-button type="default" @click="cancelSweepCode">取消</van-button>
+      <van-button type="info">扫描二维码</van-button>
+      <van-button type="info" @click="cancelSweepCode">取消</van-button>
     </div>
   </div>
 </template>
@@ -90,8 +92,12 @@ export default {
     font-size: 14px;
     .sweep-code-title {
       height: 30px;
+      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
+      h3 {
+        font-size: 15px
+      }
     };
     .sweep-code-area {
       flex:1;

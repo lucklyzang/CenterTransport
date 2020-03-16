@@ -1,12 +1,12 @@
 <template>
   <div class="content-wrapper">
-    <!-- 顶部导航栏 -->
-    <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
-    </HeaderTop>
     <!-- 工作人员操作区域 -->
     <div class="worker-show" v-if="workerShow">
+      <!-- 顶部导航栏 -->
+      <HeaderTop :title="navTopTitle">
+        <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      </HeaderTop>
       <!-- 右边下拉框菜单 -->
       <ul class="left-dropDown" v-show="leftDownShow">
         <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
@@ -60,7 +60,12 @@
       </div>
     </div>
     <!-- 医护人员操作区域 -->
-    <div class="medical-worker-show" v-if="medicalWorkerShow">
+    <div class="medical-worker-show" v-else>
+      <!-- 顶部导航栏 -->
+      <HeaderTop :title="navTopTitle">
+        <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      </HeaderTop>
       <div class="medical-worker-operate">
         <div class="medical-worker-operate-left">
           <div class="medical-worker-operate-list">
@@ -74,7 +79,7 @@
         </div>
         <div class="medical-worker-operate-right">
           <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
-            消息
+            <p>消息</p>
           </div>
           <div class="medical-worker-operate-right-callOut" v-show="operateCallOut == 2">
             <p class="medical-worker-transport-type">运送类型</p>
@@ -83,13 +88,13 @@
             </div>
           </div>
           <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
-            任务跟踪
+            <p>任务跟踪</p>
           </div>
           <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
-            历史任务
+            <p>历史任务</p>
           </div>
           <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
-            收藏
+            <p>收藏</p>
           </div>
         </div>
       </div>
@@ -128,7 +133,6 @@
       return {
         leftDownShow: false,
         workerShow: true,
-        medicalWorkerShow: false,
         liIndex: null,
         operateListInnerIndex: '',
         leftDropdownDataList: ['退出登录'],
@@ -307,6 +311,7 @@
   @import "../common/stylus/mixin.less";
   @import "../common/stylus/modifyUi.less";
   .content-wrapper {
+    .content-wrapper();
     .worker-show {
       .content-wrapper();
       .content-top {
@@ -485,13 +490,13 @@
         display: flex;
         overflow: auto;
         margin: 0 auto;
-        margin-top: 10px;
         width: 100%;
         >div {
           display: inline-block
         }
         .medical-worker-operate-left {
           flex: 24%;
+          background: #3a4862;
           .medical-worker-operate-list {
             height: 100%;
             .medical-worker-operate-list-inner {
@@ -523,15 +528,21 @@
         };
         .medical-worker-operate-right {
           flex: 76%;
-          .medical-worker-operate-right-callOut {
-            .medical-worker-transport-type {
-              line-height: 20px;
+          padding: 10px;
+          > div {
+            > p {
+              height: 30px;
+              font-size: 15px;
+              line-height: 30px;
               margin-bottom: 10px;
             }
             .medical-worker-task-list {
                line-height: 30px;
-               background: pink;
-               margin-bottom: 4px
+               background: #15c4f9;
+               margin-bottom: 4px;
+               color: #fff;
+               padding-left: 5px;
+               box-sizing: border-box
             }
           }
         }
