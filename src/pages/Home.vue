@@ -17,14 +17,14 @@
           <span class="content-top-userName-img">
             <img :src="defaultPersonPng" alt="">
           </span>
-          <span class="real-name">张三</span>
+          <span class="real-name">{{userName}}</span>
         </div>
         <div class="wait-dask-wrapper">
           <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
-            <li @click="dispatchEvent">调度任务 <span class="dask-list-sign">12</span></li>
-            <li @click="circulationEvent">循环任务 <span class="dask-list-sign">23</span></li>
-            <li @click="appointEvent">预约任务 <span class="dask-list-sign">23</span></li>
+            <li v-show="dispatchTaskNumber !== 0" @click="dispatchEvent">调度任务 <span class="dask-list-sign">{{dispatchTaskNumber}}</span></li>
+            <li v-show="circulationTaskNumber !== 0" @click="circulationEvent">循环任务 <span class="dask-list-sign">{{circulationTaskNumber}}</span></li>
+            <li v-show="appointTaskNumber !== 0" @click="appointEvent">预约任务 <span class="dask-list-sign">{{appointTaskNumber}}</span></li>
           </ul>
         </div>
       </div>
@@ -66,6 +66,10 @@
         <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
         <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
       </HeaderTop>
+       <!-- 右边下拉框菜单 -->
+      <ul class="left-dropDown" v-show="leftDownShow">
+        <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+      </ul>
       <div class="medical-worker-operate">
         <div class="medical-worker-operate-left">
           <div class="medical-worker-operate-list">
@@ -104,7 +108,7 @@
 <script>
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
-  import {getBatchNumber} from '../api/rubbishCollect.js'
+  import {getAllTaskNumber} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -132,6 +136,9 @@
     data() {
       return {
         leftDownShow: false,
+        dispatchTaskNumber: '',
+        circulationTaskNumber: '',
+        appointTaskNumber: '',
         workerShow: true,
         liIndex: null,
         operateListInnerIndex: '',
@@ -167,7 +174,12 @@
         pushHistory();
         this.gotoURL(() => { 
         })
-      }
+      };
+      // 查询任务数量
+      this.queryAllTaskNumber(this.proId, this.workerId);
+    },
+    
+    watch : {
     },
 
     activated () {
@@ -175,6 +187,10 @@
         if (!this.isRefershHome) {
           window.location.reload()
         }
+      } else {
+         // 查询任务数量
+        this.queryAllTaskNumber(this.proId, this.workerId);
+        this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
       }  
     },
 
@@ -187,7 +203,31 @@
         'navTopTitle',
         'isRefershHome',
         'isHomeJumpOtherPage',
-      ])
+      ]),
+      userName () {
+       return JSON.parse(getStore('userInfo')).extendData.userName
+      },
+      presonIdentity:  {
+        get: function() {
+          return JSON.parse(getStore('userInfo')).extendData.user_type_id
+        },
+        set: function(newVal) {
+          if (newVal == 0) {
+            this.workerShow = true
+          } else {
+            this.workerShow = false
+          }
+        }
+      },
+
+      proId () {
+        return JSON.parse(getStore('userInfo')).extendData.proId
+      },
+
+      workerId () {
+        return JSON.parse(getStore('userInfo')).extendData.userId
+      }
+    
     },
     methods:{
       ...mapMutations([
@@ -206,7 +246,24 @@
       /**
        * 工作人员代码
       */
-      
+
+      // 查询所有任务数量
+      queryAllTaskNumber (proID, workerId) {
+        getAllTaskNumber(proID, workerId)
+        .then(res => {
+          if (res && res.data.code == 200) {
+            if (res.data.data) {
+              this.dispatchTaskNumber = res.data.data.transTask,
+              this.circulationTaskNumber = res.data.data.circleTask,
+              this.appointTaskNumber = res.data.data.resTask
+            }
+          }
+        })
+        .catch((err) => {
+
+        })
+      },
+
       // 路由跳转
       dispatchEvent () {
         this.$router.push({path:'/dispatchTask'});
@@ -229,7 +286,8 @@
       // 右边下拉框菜单点击
       leftLiCLick (index) {
         this.liIndex = index;
-        this.$router.replace({name:'login'})
+        localStorage.clear();
+        this.$router.push({path:'/'})
       },
 
       // 跳转到我的页

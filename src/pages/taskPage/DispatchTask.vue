@@ -84,13 +84,29 @@
         </van-tab>
       </van-tabs>
     </div>
+    <!-- 选择要转移人员列表弹窗 -->
+    <van-dialog
+      v-model="transferWorkerShow"
+      title="当前在线工作人员"
+      show-cancel-button
+      confirmButtonText="确定"
+      cancelButtonText="取消"
+      :close-on-popstate="true"
+      :close-on-click-overlay="true"
+      @confirm="checkOnlineWorkerSure"
+      @cancel="checkOnlineWorkerCancel"
+      >
+        <van-dropdown-menu>
+          <van-dropdown-item get-container="body" v-model="checkPerson" :options="onlinePersonList"/>
+        </van-dropdown-menu>
+    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {getBatchNumber} from '@/api/rubbishCollect.js'
+  import {getDispatchTaskMessage, updateDispatchTask, queryTaskCancelReason, queryTaskDelayReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -98,8 +114,15 @@
   export default {
     data () {
       return {
+        transferWorkerShow: false,
         taskOneList: ['待处理', '任务查询'],
         taskLlineOneIndex: '0',
+        onlinePersonList:  [
+          { text: '全部商品', value: 0 },
+          { text: '新款商品', value: 1 },
+          { text: '活动商品', value: 2 }
+        ],
+        checkPerson: 0,
         statusScreen: false,
         cancelTask: false,
         transferTask: false,
@@ -180,7 +203,10 @@
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
         })
-      }
+      };
+
+      // 查询调度任务(分配给自己的)
+      // this.queryDispatchTask()
     },
 
     methods: {
@@ -188,6 +214,94 @@
         'changeTitleTxt',
         'changeDispatchTaskMessage'
       ]),
+
+      // 查询调度任务(分配给自己的)
+      queryDispatchTask (proID, workerId) {
+        getDispatchTaskMessage (proID, workerId)
+        .then(res => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+      
+
+      // 调度任务的更新
+      renewalDispatchTask (data) {
+        updateDispatchTask(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      // 调度任务的延迟
+      deferDispatchTask (data) {
+        updateDispatchTask(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      // 调度任务的取消
+      cancelDispatchTask (data) {
+        updateDispatchTask(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      // 调度任务的延迟
+      deferDispatchTask (data) {
+        updateDispatchTask(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      // 任务取消原因查询
+      getTaskCancelReason (data) {
+        queryTaskCancelReason(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      // 任务延迟原因查询
+      getTaskDelayReason (data) {
+        queryTaskDelayReason(data)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      //选中转移人员确定
+      checkOnlineWorkerSure () {
+        this.transferWorkerShow = false
+      },
+
+      //选中转移人员取消
+      checkOnlineWorkerCancel () {
+        this.transferWorkerShow = false
+      },
 
       // 跳转到我的页
       skipMyInfo () {
@@ -237,13 +351,15 @@
         this.cancelTask = true;
         this.transferTask = false;
         this.statusScreen = false;
+        this.cancelDispatchTask()
       },
 
       // 转移任务按钮点击
       transferTaskEvent () {
         this.transferTask = true;
         this.cancelTask = false;
-        this.statusScreen = false
+        this.statusScreen = false;
+        this.transferWorkerShow = true
       },
 
       // 复选框选择事件 
@@ -264,7 +380,7 @@
 
       // 获取待处理任务事件
       getTask () {
-
+        this.renewalDispatchTask()
       },
 
       // 状态筛选标签点击切换

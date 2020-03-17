@@ -59,7 +59,6 @@ export default {
       BgIcon: BgIcon,
       LoginBg: LoginBg,
       showAccountLogin: true,
-      isPcCallBack: false,
       showSweepLogin: false,
       showLoadingHint: false,
       sweepMsg: null,
@@ -78,10 +77,10 @@ export default {
 
   computed: {
     loginName () {
-      return getStore('userName')
+      return getStore('userName') ? getStore('userName') : ''
     },
     loginPassword () {
-      return getStore('password')
+      return getStore('password') ? getStore('password') : ''
     },
     ...mapGetters([
       'loginSweepCode'
@@ -138,7 +137,6 @@ export default {
     checkClick (item, index) {
       this.currentIndex = index;
       if (index == 0) {
-        this.isPcCallBack = false
       }
     },
 
@@ -152,10 +150,6 @@ export default {
     // 扫描二维码方法
     sweepPersonCode () {
       if (IsPC()) {
-        this.isPcCallBack = true;
-        if (this.isPcCallBack) {
-          this.barCodeScannerShow = true;
-        }
       } else {
         window.android.scanQRcode()
       }
@@ -170,10 +164,7 @@ export default {
     //扫码枪扫码回调方法
     barcodeScanner (code) {
       var code = JSON.parse(code);
-      this.barCodeScannerShow = false;
-      if (this.isPcCallBack) {
-        this.processMethods (code)
-      }
+      this.barCodeScannerShow = false
     },
 
     // 扫码流程公共方法
@@ -214,82 +205,51 @@ export default {
 
     // 账号密码登录方法
     login () {
-      this.$router.push({path:'/home'});
       let loginMessage;
       this.showLoadingHint = true;
       if (this.showAccountLogin) {
         loginMessage = {
           username: this.username,
-          password: this.password
-        }
+          password: this.password,
+          rememberMe: 1
+        };
       } else {
         loginMessage = {
           username: this.sweepMsg,
           flag: 1,
         }
       };
-      // logIn(loginMessage).then((res)=>{
-      //   if (res) {
-      //     if (res.data.code == 200) {
-      //       if (res.data.data.batchNumber) {
-      //         setStore('currentBatchNumber',res.data.data.batchNumber)
-      //       } else {
-      //         setStore('currentBatchNumber','')
-      //       };
-      //       if (this.showAccountLogin) {
-      //         setStore('loginSweepCode',false);
-      //         if (getStore('loginSweepCode') == 'false') {
-      //           setStore('userName', this.username);
-      //           setStore('userPassword', this.password);
-      //         }
-      //       } else {
-      //         setStore('loginSweepCode',true);
-      //         if (getStore('loginSweepCode') == 'true') {
-      //           setStore('userName', this.sweepMsg)
-      //         }
-      //       };
-      //       // 请求科室字典数据
-      //       getDictionaryData(res.data.data['proId']).then((res) => {
-      //         if (res && res.data.code == 200) {
-      //           // 存入医院数据
-      //           setStore('hospitalData', res.data.data['hospital']);
-      //           // 存入医护数据
-      //           setStore('careData', res.data.data['cares']);
-      //           // 存入科室数据
-      //           setStore('departmentData', res.data.data['departments'])
-      //           // 存入暂存点数据
-      //           setStore('pointData', res.data.data['points'])
-      //           // 存入医废类型数据
-      //           setStore('wasteTypeData', res.data.data['wasteType']);
-      //           location.reload()
-      //         }
-      //       });
-      //       // 登录用户名密码及用户信息存入Locastorage
-      //       setStore('userInfo', res.data.data);
-      //       setStore('isLogin', true);
-      //       this.changeRouterFlag(true);
-      //       this.storeUserInfo(JSON.parse(getStore('userInfo')));
-      //       this.$router.push({path:'/home'});
-      //       this.changeTitleTxt({tit:'医废监测'});
-      //       this.isPcCallBack = false
-      //     } else {
-      //        this.$dialog.alert({
-      //         message: `${res.data.msg}`,
-      //         closeOnPopstate: true
-      //       }).then(() => {
-      //       });
-      //     }
-      //   };
-      //   this.showLoadingHint = false
-      // })
-      // .catch((err) => {
-      //   this.showLoadingHint = false;
-      //   this.$dialog.alert({
-      //     message: `${err.message}`,
-      //     closeOnPopstate: true
-      //   }).then(() => {
-      //   })
-      // })
+      logIn(loginMessage).then((res)=>{
+        if (res) {
+          if (res.data.code == 200) {
+            if (this.showAccountLogin) {
+              setStore('userName', this.username);
+              setStore('userPassword', this.password);
+            };
+            // 登录用户名密码及用户信息存入Locastorage
+            setStore('userInfo', res.data.data);
+            setStore('isLogin', true);
+            this.storeUserInfo(JSON.parse(getStore('userInfo')));
+            this.$router.push({path:'/home'});
+            this.changeTitleTxt({tit:'中央运送'});
+          } else {
+             this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          }
+        };
+        this.showLoadingHint = false
+      })
+      .catch((err) => {
+        this.showLoadingHint = false;
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        })
+      })
     }
   } 
 }

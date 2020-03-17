@@ -11,7 +11,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import Loading from '../components/Loading'
-import {queryWarning, warningDispose} from '../api/rubbishCollect.js'
+// import {getAlltTaskNumber} from '@/api/workerPort.js'
 import { formatTime, setStore, IsPC} from '@/common/js/utils'
 export default {
   props:{

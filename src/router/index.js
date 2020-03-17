@@ -108,34 +108,21 @@ let baseRoute  = [
 let router = new Router({
   routes: baseRoute
 });
-// router.beforeEach((to, from, next) => {
-//   if (getStore('isLogin')) {
-//     if (to.name === 'login') {
-//       // 判断登录方式(用户名密码登录或扫码登录)
-//       if (getStore('loginSweepCode') == 'false') {
-//         if (getStore('userName') && getStore('userPassword')) {
-//           next({path: '/home'})
-//         } else {
-//           next()
-//         }
-//       } else {
-//         if (getStore('userName')) {
-//           next({path: '/home'})
-//         } else {
-//           next()
-//         }
-//       }
-//     } else {
-//       next()
-//     }
-//   } else {
-//     if (!store.getters.routerFlag) { // 禁用路由返回，保存到vuex内的
-//       next(false)
-//       return
-//     } else {
-//       next()
-//     }
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  if (getStore('isLogin')) {
+    if (to.name === 'login') {
+      // 判断登录方式(用户名密码登录或扫码登录)
+      if (getStore('userName') && getStore('userPassword')) {
+        next({path: '/home'})
+      } else {
+        next()
+      }
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+});
 export default router
 
