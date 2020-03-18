@@ -11,7 +11,7 @@
     <div class="sweep-code-area">{{appointTaskMessage}}</div>
     <div class="btn-area">
       <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
-      <van-button type="info" @click="cancelSweepCode">取消</van-button>
+      <van-button type="default" @click="cancelSweepCode">取消</van-button>
     </div>
   </div>
 </template>

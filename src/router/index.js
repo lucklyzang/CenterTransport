@@ -17,6 +17,7 @@ const CirculationTaskMessageConnect = () => import('../pages/taskMessagePage/Cir
 const CirculationTaskConnectMessageSure = () => import('../pages/taskMessagePage/CirculationTaskConnectMessageSure')
 const CirculationTaskCondition = () => import('../pages/taskMessagePage/CirculationTaskCondition')
 const TransportTypeMessage = () => import('../pages/medicalTaskPage/TransportTypeMessage')
+const DispatchTaskForm = () => import('../pages/taskFormPage/DispatchTaskForm')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -103,6 +104,11 @@ let baseRoute  = [
     path: '/transportTypeMessage',
     name: 'transportTypeMessage',
     component: TransportTypeMessage
+  },
+  {
+    path: '/dispatchTaskForm',
+    name: 'dispatchTaskForm',
+    component: DispatchTaskForm
   }
 ];
 let router = new Router({

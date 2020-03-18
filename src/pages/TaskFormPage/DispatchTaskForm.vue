@@ -6,12 +6,14 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="sweep-code-title">
-      <h3>扫描二维码</h3>
+      <h3>在线的工作人员</h3>
+      <van-dropdown-menu>
+        <van-dropdown-item v-model="currentPerson" :options="onlinePersonLlist" />
+      </van-dropdown-menu>
     </div>
-    <div class="sweep-code-area">{{dispatchTaskMessage}}</div>
     <div class="btn-area">
-      <van-button type="info">扫描二维码</van-button>
-      <van-button type="default" @click="cancelSweepCode">取消</van-button>
+      <van-button type="info" @click="transferPersonSure">确定</van-button>
+      <van-button type="info" @click="transferPersonCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -19,7 +21,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {dispatchTaskSweepCodeSure} from '@/api/workerPort.js'
+import {transferDispatchTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -27,6 +29,12 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+      currentPerson: 0,
+      onlinePersonLlist: [
+        { text: '全部商品', value: 0 },
+        { text: '新款商品', value: 1 },
+        { text: '活动商品', value: 2 }
+      ]
     };
   },
 
@@ -46,16 +54,21 @@ export default {
         setStore('currentTitle','调度任务')
       })
     };
-    console.log(this.dispatchTaskMessage);
   },
 
   computed:{
     ...mapGetters([
-      'navTopTitle',
-      'dispatchTaskMessage'
+      'dispatchTaskTransferIdList',
+      'navTopTitle'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+    workerId () {
+      return JSON.parse(getStore('userInfo')).extendData.userId
+    },
+    workerName () {
+      return JSON.parse(getStore('userInfo')).extendData.userName
     },
   },
 
@@ -76,8 +89,38 @@ export default {
       setStore('currentTitle','调度任务')
     },
 
-    // 取消扫码事件
-    cancelSweepCode () {
+    // 转移任务
+    sureTransferDispatchTask (data) {
+      transferDispatchTask(data)
+      .then((res) => {
+        if (res && res.data.code == 200) {
+          this.$router.push({path:'/dispatchTask'});
+          this.changeTitleTxt({tit:'调度任务'});
+          setStore('currentTitle','调度任务')
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
+    // 转移人员确认事件
+    transferPersonSure () {
+      this.sureTransferDispatchTask ({
+        taskId: this.dispatchTaskTransferIdList,  //任务ID
+        afterId: 101,   //任务接受者ID
+        afterName: "过年好", //任务接受者姓名
+        modifyId: this.workerId,      //转移者ID
+        modifyName: this.workerName    //转移者姓名
+      })
+    },
+
+    // 转移人员取消事件
+    transferPersonCancel () {
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -94,25 +137,23 @@ export default {
     .content-wrapper();
     font-size: 14px;
     .sweep-code-title {
-      height: 30px;
-      margin-top: 10px;
-      line-height: 30px;
-      padding-left: 10px;
-      h3 {
-        font-size: 15px
-      }
-    };
-    .sweep-code-area {
       flex:1;
       overflow: auto;
       margin: 0 auto;
       margin: 10px 0;
       width: 100%;
+      h3 {
+        height: 30px;
+        margin-top: 10px;
+        line-height: 30px;
+        padding-left: 10px;
+        font-size: 15px
+      }
     };
     .btn-area {
       height: 50px;
       text-align: center;
-      line-height: 50px
+      line-height: 50px;
     }
   }
 </style>

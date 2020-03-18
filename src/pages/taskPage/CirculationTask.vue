@@ -6,16 +6,53 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="circultion-task-title">
-      <h3>任务科室</h3>
+      <h3>循环任务列表</h3>
     </div>
     <div class="circulation-task-list">
-      <ul>
-        <li :class="{'officeNameStyle':currentOfficeName == index}" v-for="(item, index) in circulationTaskList" :key="`${item.key}-${index}`" @click="officeTaskEvent(item,index)">{{item.officeName}}</li>
-      </ul>
+       <div class="wait-handle-list" v-for="(item,index) in circulationTaskList" :key="index">
+        <p class="wait-handle-message-createTime">
+          创建时间：{{item.createTime}}
+        </p>
+        <p class="wait-handle-message-createTime">
+          开始时间：{{item.startTime}}
+        </p>
+        <div class="wait-handle-message">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">医院:</span>
+              <span class="message-tit-real">{{item.proName}}</span>
+            </p>
+            <P>
+              <span class="message-tit">科室:</span>
+              <span class="message-tit-real">{{item.officeName}}</span>
+            </P>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">任务名称:</span>
+              <span class="message-tit-real">{{item.taskTypeName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">工作人员:</span>
+              <span class="message-tit-real">{{item.workerName}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">状态:</span>
+              <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+            </p>
+            <p>
+              <span class="message-tit">优先级:</span>
+              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="circultion-task-btn">
       <van-button type="info" @click="circulationConditionEvent">循环情况</van-button>
-      <van-button type="info">送达</van-button>
+      <van-button type="default">送达</van-button>
     </div>
   </div>
 </template>
@@ -23,7 +60,7 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  // import {getAlltTaskNumber} from '@/api/workerPort.js'
+  import {queryCirculationTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -31,11 +68,7 @@
   export default {
     data () {
       return {
-        circulationTaskList: [
-          {key: 1, officeName: '产科'},
-          {key: 2, officeName: '儿科'},
-          {key: 3, officeName: '内科'},
-        ],
+        circulationTaskList: [],
         currentOfficeName: ''
       };
     },
@@ -49,7 +82,13 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-      ])
+      ]),
+      proId () {
+        return JSON.parse(getStore('userInfo')).extendData.proId
+      },
+      workerId () {
+        return JSON.parse(getStore('userInfo')).extendData.userId
+      }
     },
 
     mounted () {
@@ -60,7 +99,15 @@
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
         })
-      }
+      };
+      // 查询循环任务
+      this.getCirculationTask({
+        proId: this.proId,  //医院ID，必输
+        workerID: this.workerId,   //运送员ID
+        states: [], //查询状态
+        startDate: '',  //起始日期  YYYY-MM-dd
+        endDate: ''  //终止日期  格式 YYYY-MM-dd
+      })
     },
 
     methods: {
@@ -70,6 +117,91 @@
       ]),
       // 跳转到我的页
       skipMyInfo () {
+      },
+
+       // 任务优先级转换
+      priorityTransfer (index) {
+        switch(index) {
+          case 1 :
+            return '正常'
+            break;
+          case 2 :
+            return '重要'
+            break;
+          case 3 :
+            return '紧急'
+            break;
+          case 4 :
+            return '紧急重要'
+            break;
+          default:
+            return '无'
+        }
+      },
+
+      // 任务状态转换
+      stateTransfer (index) {
+        switch(index) {
+          case 0 :
+            return '未分配'
+            break;
+          case 1 :
+            return '未查阅'
+            break;
+          case 2 :
+            return '未开始'
+            break;
+          case 3 :
+            return '进行中'
+            break;
+          case 4 :
+            return '未结束'
+            break;
+          case 5 :
+            return '已延迟'
+            break;
+          case 6 :
+            return '已取消'
+            break;
+          case 7 :
+            return '已完成'
+            break;
+        }
+      },
+
+      // 查询循环任务
+      getCirculationTask (data) {
+        queryCirculationTask(data).then((res) => {
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data)
+                this.circulationTaskList.push({
+                  createTime: item.createTime,
+                  startTime: item.startTime,
+                  proName: item.proName,
+                  officeName: item.proName,
+                  taskTypeName: item.taskTypeName,
+                  workerName: item.workerName,
+                  state: item.state,
+                  priority: item.priority,
+                  taskNumber: item.taskNumber
+                })
+            } else {
+              this.$dialog.alert({
+                message: '当前没有要循环的任务',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
       },
 
       // 返回上一页
@@ -122,17 +254,48 @@
       margin: 0 auto;
       margin-top: 10px;
       width: 100%;
-      ul {
-        height: 100%;
-        li {
-          padding-left: 10px;
-          height: 40px;
-          line-height: 40px;
-          margin: 0 auto;
+      .wait-handle-list {
+        box-sizing: border-box;
+        position: relative;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+        .wait-handle-message-createTime {
+          border-top: 1px solid #e3ece9;
+          padding-left: 30px;
+          background: #ececec;
+          height: 24px;
+          line-height: 24px;
+          font-size: 12px;
+          color: #7f7d7d
         };
-        .officeNameStyle {
-          color:#2895ea;
-          background: #ececec
+        .wait-handle-message {
+          margin-left: 30px;
+          font-size: 12px;
+          padding-top: 15px;
+          padding-bottom: 15px;
+          box-sizing: border-box;
+          .handle-message-line-wrapper {
+            p {
+              margin-bottom: 10px;
+              width: 47%;
+              display: inline-block;
+              .message-tit {
+                color: #7f7d7d
+              };
+              .message-tit-real {
+                color: black
+              }
+            }
+          }
+        };
+        .wait-handle-check {
+          position: absolute;
+          top: 40px;
+          left: 6px
+        };
+        .get-wait-task {
+          width: 100%;
+          text-align: center
         }
       }
     };

@@ -40,7 +40,7 @@
             </p>
             <p class="transport-day-rank">
               <span>昨日排名</span>
-              <span>12</span>
+              <span>2</span>
             </p>
           </div>
         </div>
@@ -176,7 +176,9 @@
         })
       };
       // 查询任务数量
-      this.queryAllTaskNumber(this.proId, this.workerId);
+      if (this.presonIdentity == 0) {
+        this.queryAllTaskNumber(this.proId, this.workerId);
+      }
     },
     
     watch : {
@@ -188,9 +190,11 @@
           window.location.reload()
         }
       } else {
-         // 查询任务数量
-        this.queryAllTaskNumber(this.proId, this.workerId);
-        this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
+        if (this.presonIdentity == 0) {
+          // 查询任务数量
+          this.queryAllTaskNumber(this.proId, this.workerId);
+          this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
+        }
       }  
     },
 
