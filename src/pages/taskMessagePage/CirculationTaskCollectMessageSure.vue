@@ -46,7 +46,7 @@ export default {
       patientName: '',
       sampleType: '',
       sampleAmount: '',
-      sampleTypeList: ['1','2','3','4']
+      sampleTypeList: ['血液','尿液']
     };
   },
 
@@ -136,7 +136,7 @@ export default {
       width: 100%;
     };
     .electronic-signature {
-      height: 230px;
+      height: 250px;
     }
     .btn-area {
       height: 50px;

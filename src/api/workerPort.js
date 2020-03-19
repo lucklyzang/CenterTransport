@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// 查询总量和排序
+export function queryAllTaskMessage(proID,workerId) {
+  return request({
+    url: 'worker/countRank',
+    method: 'get'
+  })
+};
+
 // 获取所有任务数量
 export function getAllTaskNumber(proID,workerId) {
   return request({

@@ -1,51 +1,30 @@
 <template>
   <div id="LoginBox">
-    <loading :isShow="showLoadingHint" textContent="登录中,请稍候····" textColor="rgb(29, 102, 113)"></loading>
-    <div class="bg-box">
-      <img :src="LoginBg" alt="">
-    </div>
     <div class="bg-icon-wrapper" ref="bgIconWrapper">
       <div class="bg-icon">
-        <img :src="BgIcon" alt="">
+        <img :src="logoTopPng" alt="">
       </div>
     </div>
-    <div class="input-box" v-show="showAccountLogin" ref="inputBox">
+    <div class="input-box"  ref="inputBox">
       <van-cell-group>
-        <van-field label="用户名" placeholder="请输入用户名" type="text" v-model="username"></van-field>
-        <van-field label="密码" placeholder="请输入密码" type="password" v-model="password"></van-field>
-      </van-cell-group>
-      <van-cell-group>
-        <van-button  @click.native="login">登录</van-button>
+        <van-field label="用户名"  left-icon="contact" placeholder="请输入用户名" type="text" v-model="username"></van-field>
+        <van-field label="密码" left-icon="bag-o" placeholder="请输入密码" type="password" v-model="password"></van-field>
       </van-cell-group>
     </div>
-    <div class="sweep-code" v-show="showSweepLogin">
-      <van-cell-group>
-        <van-button @click="sweepPersonCode">扫描个人二维码</van-button>
-      </van-cell-group>
+    <div class="btn-box" @click="login">
+      <img :src="loginBtnPng" alt="">
     </div>
-    <div class="check-box" ref="checkBox">
-      <div class="check-box-content">
-        <p v-for="(item, index) in checkList" :key="index" @click="checkClick(item,index)" :class="{activeClass:index == currentIndex}">
-          {{item}}
-        </p>
-      </div>
+    <div class="loading-btn">
+      <loading :isShow="showLoadingHint" textContent="登录中,请稍候····" textColor="rgb(29, 102, 113)"></loading>
     </div>
-    <!-- pc端提示扫码枪扫码弹框-->
-      <van-dialog
-      v-model="barCodeScannerShow"
-      title="请用扫码枪扫描对应二维码"
-      :close-on-click-overlay="true"
-      :close-on-popstate="true"
-      >
-    </van-dialog>
   </div>
 </template>
 
 <script>
 import {logIn, getDictionaryData} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
-import BgIcon from '@/components/images/bg-icon.png'
-import LoginBg from '@/components/images/login-bg.png'
+import passwordPng from '@/components/images/password.png'
+import userPng from '@/components/images/user.png'
 import Loading from '../components/Loading'
 import { setStore, getStore, IsPC, scanCode } from '@/common/js/utils'
 export default {
@@ -56,15 +35,14 @@ export default {
     return {
       username: this.loginName,
       password: this.loginPassword,
-      BgIcon: BgIcon,
-      LoginBg: LoginBg,
       showAccountLogin: true,
       showSweepLogin: false,
       showLoadingHint: false,
       sweepMsg: null,
       currentIndex: 0,
       barCodeScannerShow: false,
-      checkList: ['账号密码登录','扫码登录']
+      logoTopPng: require('@/components/images/logo-top.png'),
+      loginBtnPng: require('@/components/images/login-btn.png'),
     };
   },
 
@@ -255,62 +233,38 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+@import "../common/stylus/variable.less";
+@import "../common/stylus/mixin.less";
+@import "../common/stylus/modifyUi.less";
   #LoginBox {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    .activeClass {
-      color: #fff !important
-    }
-    .bg-box {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      img {
-        width: 100%;
-        height: 100%
-      }
-    }
+    .content-wrapper();
     .input-box {
       width: 100%;
-      position: absolute;
-      top: 35%
+      height: 190px;
+      padding-top: 50px;
+      box-sizing: border-box;
     }
-    .sweep-code {
+    .loading-btn {
       width: 100%;
-      position: absolute;
-      top: 40%
+      height: 50px;
     }
-    .check-box {
-      width: 100%;
-      position: absolute;
-      .check-box-content {
-        margin: 0 auto;
-        height: 20px;
-        p {
-          color: #434646;
-          letter-spacing: 1px;
-          font-size: 12px;
-          &:first-child {
-            float: left
-          }
-          &:last-child {
-            float: right
-          }
-        }
-        
+   .btn-box {
+      width: 80%;
+      height: 140px;
+      margin: 0 auto;
+      img {
+        width: 100%;
+        height: 60px
       }
-    }
-    .bg-icon-wrapper {
+   }
+  .bg-icon-wrapper {
+      flex:1;
+      overflow: auto;
+      margin: 0 auto;
       width: 100%;
-      position: absolute;
-      text-align: center;
-      top: 10%;
-      left: 0;
       .bg-icon {
-        width: 100px;
+        width: 100%;
+        height: 100%;
         display: inline-block;
         img {
           width: 100%;
@@ -322,73 +276,17 @@ export default {
       display: none
     }
     .van-cell-group {
-      width: 90%;
+      width: 80%;
       margin: 0 auto;
-      margin-top: 30px;
       font-size: 14px;
-      background: none;
-      /deep/ .van-field {
-        margin-top: 10px;
-        color: #fff;
-        &:not(:last-child):after {
-          display: none
-        }
-        .van-cell_title {
-          font-size: 12px;
-        }
-        input {
-          font-size: 12px;
-          color: #fff
-        }
-      }
-      /deep/ .van-field:last-child {
-        margin-top: 30px
-      }
-      /deep/ .van-cell {
-        box-shadow: 0 1px 8px 1px #27b092;
-        background: #33dfb9;
-        border-radius: 6px;
-        ::-webkit-input-placeholder {
-          color: #fff;
-        }
-        :-moz-placeholder {/* Firefox 18- */
-          color: #fff;
-        }
-        ::-moz-placeholder{/* Firefox 19+ */
-        color: #fff;
-        }
-        :-ms-input-placeholder {
-          color: #fff;
-        }
-        .van-field__label {
-          font-size: 12px;
-          color: #fff;
-          padding-left: 6px;
-          font-weight: bold;
-        }
-        /deep/ .van-field__left-icon {
-          i {
-            font-size: 20px;
-            color: #fff
+      .van-cell {
+        border-bottom: 1px solid #e8e8e8;
+        padding-left: 0;
+        .van-cell__title {
+          .van-field__label {
+            color: #6a6a6a
           }
         }
-      }
-    }
-    .van-cell-group {
-      margin: 0 auto;
-      /deep/ .van-button {
-        width: 100%;
-        box-shadow: 0 1px 8px 1px #27b092;
-        margin-top: 35px;
-        background: #fff;
-        color: black;
-        border-radius: 0;
-        font-size: 12px;
-        border-radius: 30px;
-        height: 46px;
-        border: none;
-        line-height: 35px;
-        font-weight: bold
       }
     }
     .bottom-title {

@@ -8,7 +8,7 @@
     <div class="sweep-code-title">
       <h3>扫描二维码</h3>
     </div>
-    <div class="sweep-code-area">{{dispatchTaskMessage}}</div>
+    <div class="sweep-code-area"></div>
     <div class="btn-area">
       <van-button type="info">扫描二维码</van-button>
       <van-button type="default" @click="cancelSweepCode">取消</van-button>

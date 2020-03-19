@@ -1,8 +1,8 @@
 <template>
   <section class="signature">
     <div class="signatureBox">
-      <div class="canvasBox" ref="canvasHW" :currentSinnatureData="signNatureData">
-        <canvas ref="canvasF" 
+      <div class="canvasBox" ref="boardBox" :currentSinnatureData="signNatureData">
+        <canvas ref="board" 
           @touchstart='touchStart' 
           @touchmove='touchMove' 
           @touchend='touchEnd' 
@@ -25,6 +25,12 @@ import { mapGetters, mapMutations } from 'vuex'
   export default {
     data() {
       return {
+        ctx: null,
+        point: {
+          x: 0,
+          y: 0
+        },
+        moving: false,// 是否正在绘制中且移动
         stageInfo:'',
         signNatureData:'',
         imgUrl:'',
@@ -39,78 +45,65 @@ import { mapGetters, mapMutations } from 'vuex'
         endX: 0,
         w: null,
         h: null,
-        isDown: false,
-        // isViewAutograph: this.$route.query.isViews > 0,
-        // contractSuccess: this.$route.query.contractSuccess
+        isDown: false
       }
     },
     mounted() {
-      let canvas = this.$refs.canvasF
-      canvas.height = this.$refs.canvasHW.offsetHeight - 500
-      canvas.width = this.$refs.canvasHW.offsetWidth - 50
-      this.canvasTxt = canvas.getContext('2d')
-      this.stageInfo = canvas.getBoundingClientRect()
+      let board = this.$refs.board;  // 获取DOM
+      board.width = this.$refs.boardBox.offsetWidth; // 设置画布宽
+      board.height = this.$refs.boardBox.offsetHeight;  // 设置画布高
+      this.ctx = board.getContext('2d');  // 二维绘图
+      this.ctx.strokeStyle = '#000';  // 颜色
+      this.ctx.lineWidth = 2; // 线条宽度
     },
     methods: {
       ...mapMutations([
         'changeCurrentElectronicSignature'
       ]),
-      //mobile
-      touchStart(ev) {
-        ev = ev || event
-        ev.preventDefault()
-        if (ev.touches.length == 1) {
-          let obj = {
-            x: ev.targetTouches[0].clientX,
-            y: ev.targetTouches[0].clientY,
-          }
-          this.startX = obj.x
-          this.startY = obj.y
-          this.canvasTxt.beginPath()
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
-          this.points.push(obj)
+
+    //mobile
+
+    // 触摸(开始)
+      touchStart (e) {
+        let x = e.touches[0].clientX - e.target.offsetLeft,
+          y = e.touches[0].clientY - e.target.offsetTop;  // 获取触摸点在画板（canvas）的坐标
+        this.point.x = x;
+        this.point.y = y;
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.point.x, this.point.y);
+        this.ctx.lineTo(x, y);
+        this.ctx.stroke();
+        this.ctx.closePath();
+        this.moving = true;
+      },
+
+      // 滑动中...
+      touchMove (e) {
+        if(this.moving) {
+          let x = e.touches[0].clientX - e.target.offsetLeft,
+            y = e.touches[0].clientY - e.target.offsetTop;  // 获取触摸点在画板（canvas）的坐标
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.point.x, this.point.y);  // 把路径移动到画布中的指定点，不创建线条(起始点)
+          this.ctx.lineTo(x, y); // 添加一个新点，然后创建从该点到画布中最后指定点的线条，不创建线条
+          this.ctx.stroke(); // 绘制
+          this.ctx.closePath();
+          this.point.x = x, this.point.y = y;  // 重置点坐标为上一个坐标
         }
       },
-      touchMove(ev) {
-        ev = ev || event
-        ev.preventDefault()
-        if (ev.touches.length == 1) {
-          let obj = {
-            x: ev.targetTouches[0].clientX - this.stageInfo.left,
-            y: ev.targetTouches[0].clientY - this.stageInfo.top
-          }
-          this.moveY = obj.y
-          this.moveX = obj.x
-          this.canvasTxt.beginPath()
-        //   strokeStyle = 'blue';
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
-          this.startY = obj.y
-          this.startX = obj.x
-          this.points.push(obj)
+      // 滑动结束
+      touchEnd () {
+        if(this.moving) {
+          let x = e.touches[0].clientX - e.target.offsetLeft,
+          y = e.touches[0].clientY - e.target.offsetTop;
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.point.x, this.point.y);
+          this.ctx.lineTo(x, y);
+          this.ctx.stroke();
+          this.ctx.closePath();  // 停止绘制
+          this.moving = false;  // 关闭绘制开关
         }
       },
-      touchEnd(ev) {
-        ev = ev || event
-        ev.preventDefault()
-        if (ev.touches.length == 1) {
-          let obj = {
-            x: ev.targetTouches[0].clientX - this.stageInfo.left,
-            y: ev.targetTouches[0].clientY - this.stageInfo.top
-          }
-          this.canvasTxt.beginPath()
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
-          this.points.push(obj)
-        }
-      },
+
       //pc
       mouseDown(ev) {
         ev = ev || event
@@ -122,11 +115,11 @@ import { mapGetters, mapMutations } from 'vuex'
           }
           this.startX = obj.x
           this.startY = obj.y
-          this.canvasTxt.beginPath()
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
+          this.ctx.beginPath()
+          this.ctx.moveTo(this.startX, this.startY)
+          this.ctx.lineTo(obj.x, obj.y)
+          this.ctx.stroke()
+          this.ctx.closePath()
           this.points.push(obj)
           this.isDown = true
         }
@@ -141,11 +134,11 @@ import { mapGetters, mapMutations } from 'vuex'
           }
           this.moveY = obj.y
           this.moveX = obj.x
-          this.canvasTxt.beginPath()
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
+          this.ctx.beginPath()
+          this.ctx.moveTo(this.startX, this.startY)
+          this.ctx.lineTo(obj.x, obj.y)
+          this.ctx.stroke()
+          this.ctx.closePath()
           this.startY = obj.y
           this.startX = obj.x
           this.points.push(obj)
@@ -159,11 +152,11 @@ import { mapGetters, mapMutations } from 'vuex'
             x: ev.offsetX,
             y: ev.offsetY
           }
-          this.canvasTxt.beginPath()
-          this.canvasTxt.moveTo(this.startX, this.startY)
-          this.canvasTxt.lineTo(obj.x, obj.y)
-          this.canvasTxt.stroke()
-          this.canvasTxt.closePath()
+          this.ctx.beginPath()
+          this.ctx.moveTo(this.startX, this.startY)
+          this.ctx.lineTo(obj.x, obj.y)
+          this.ctx.stroke()
+          this.ctx.closePath()
           this.points.push(obj)
           this.points.push({x: -1, y: -1})
           this.isDown = false
@@ -171,16 +164,16 @@ import { mapGetters, mapMutations } from 'vuex'
       },
       //重写
       overwrite() {
-        this.canvasTxt.clearRect(0, 0, this.$refs.canvasF.width, this.$refs.canvasF.height);
+        this.ctx.clearRect(0, 0, this.$refs.board.width, this.$refs.board.height);
         this.changeCurrentElectronicSignature({DtMsg: null})
         this.points = []
       },
       //确认签名
       commitSure() {
-        this.imgUrl = this.$refs.canvasF.toDataURL();
-        this.signNatureData = this.$refs.canvasF.toDataURL();
-        this.changeCurrentElectronicSignature({DtMsg:this.$refs.canvasF.toDataURL("image/png")})
-        console.log(this.$refs.canvasF.toDataURL())
+        this.imgUrl = this.$refs.board.toDataURL();
+        this.signNatureData = this.$refs.board.toDataURL();
+        this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")})
+        console.log(this.$refs.board.toDataURL())
       }
     }
   }
@@ -202,7 +195,7 @@ import { mapGetters, mapMutations } from 'vuex'
     flex: 1;
   }
   canvas {
-    height: 70%;
+    height: 100%;
     width: 100%;
     background: #efefef
   }

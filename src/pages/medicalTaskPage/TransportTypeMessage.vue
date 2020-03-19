@@ -13,7 +13,6 @@
       <van-field v-model="bedNumber" label="床号" placeholder="请输入床号"/>
       <van-field v-model="patientName"  label="病人姓名" placeholder="请输入病人姓名"/>
       <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
-      <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
       <van-field v-model="vehicleOperation"  label="转运工具" placeholder="请输入转运工具"/>
       <van-field v-model="taskDescribe"  label="任务描述" placeholder="请输入任务描述"/>
       <van-field v-model="actualData"  label="实际数据" placeholder="请输入实际数据"/>

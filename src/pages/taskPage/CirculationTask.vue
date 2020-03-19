@@ -9,7 +9,8 @@
       <h3>循环任务列表</h3>
     </div>
     <div class="circulation-task-list">
-       <div class="wait-handle-list" v-for="(item,index) in circulationTaskList" :key="index">
+       <div class="wait-handle-list" v-for="(item,index) in circulationTaskList" :key="index" @click="officeTaskEvent(item)">
+         <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
         <p class="wait-handle-message-createTime">
           创建时间：{{item.createTime}}
         </p>
@@ -48,6 +49,11 @@
             </p>
           </div>
         </div>
+        <div class="wait-handle-office-list" v-show="item.show">
+          <ul>
+            <li v-for="(val, key, index) in JSON.parse(item.spaces)" :key="index">{{val}}</li>
+          </ul>
+      </div>
       </div>
     </div>
     <div class="circultion-task-btn">
@@ -96,6 +102,7 @@
       if (!IsPC()) {
         pushHistory();
         this.gotoURL(() => {
+          this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
         })
@@ -103,7 +110,7 @@
       // 查询循环任务
       this.getCirculationTask({
         proId: this.proId,  //医院ID，必输
-        workerID: this.workerId,   //运送员ID
+        workerId: this.workerId,   //运送员ID
         states: [], //查询状态
         startDate: '',  //起始日期  YYYY-MM-dd
         endDate: ''  //终止日期  格式 YYYY-MM-dd
@@ -115,11 +122,17 @@
         'changeTitleTxt',
         'changeCirculationTaskMessage'
       ]),
+
       // 跳转到我的页
       skipMyInfo () {
       },
 
-       // 任务优先级转换
+      // 查看科室事件
+      viewOfficeHandle (item) {
+        item.show = !item.show;
+      },
+
+      // 任务优先级转换
       priorityTransfer (index) {
         switch(index) {
           case 1 :
@@ -184,7 +197,9 @@
                   workerName: item.workerName,
                   state: item.state,
                   priority: item.priority,
-                  taskNumber: item.taskNumber
+                  taskNumber: item.taskNumber,
+                  spaces: item.spaces,
+                  show: false
                 })
             } else {
               this.$dialog.alert({
@@ -211,13 +226,13 @@
         setStore('currentTitle','中央运送')
       },
 
-      // 科室任务点击
+      // 科室任务列表点击
       officeTaskEvent (item,index) {
         this.currentOfficeName = index;
         this.$router.push({'path':'/circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码');
-        // 改变调度具体某一任务的信息状态
+        // 改变循环具体某一任务的信息状态
         this.changeCirculationTaskMessage({DtMsg: item});
         setStore('currentCirculationTaskMessage',item);
       },
@@ -288,6 +303,27 @@
             }
           }
         };
+        .view-office {
+          position: absolute;
+          top: 18px;
+          right: 10px
+        }
+        .wait-handle-office-list {
+          position: absolute;
+          top: 48px;
+          left: 0;
+          width: 100%;
+          max-height: 160px;
+          overflow: auto;
+          ul {
+            li {
+              line-height: 30px;
+              font-size: 13px;
+              text-align: center;
+              background:#fff
+            }
+          }
+        }
         .wait-handle-check {
           position: absolute;
           top: 40px;

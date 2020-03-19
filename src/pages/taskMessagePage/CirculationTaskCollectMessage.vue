@@ -42,7 +42,7 @@ export default {
       patientName: '',
       sampleType: '',
       sampleAmount: '',
-      sampleTypeList: ['1','2','3','4']
+      sampleTypeList: ['血液','尿液']
     };
   },
 

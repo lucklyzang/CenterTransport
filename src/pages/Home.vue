@@ -36,11 +36,11 @@
             </p>
             <p class="transport-day-number">
               <span class="current-day-message-tit">昨日运送量</span>
-              <span>12</span>
+              <span>{{yesterdayNumber}}</span>
             </p>
             <p class="transport-day-rank">
               <span>昨日排名</span>
-              <span>2</span>
+              <span>{{yesterdayRank}}</span>
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@
 <script>
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
-  import {getAllTaskNumber} from '@/api/workerPort.js'
+  import {getAllTaskNumber, queryAllTaskMessage} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -142,6 +142,8 @@
         workerShow: true,
         liIndex: null,
         operateListInnerIndex: '',
+        yesterdayNumber: '',
+        yesterdayRank: '',
         leftDropdownDataList: ['退出登录'],
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng}, 
@@ -156,7 +158,7 @@
           {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
           {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
-        medicalTransportTypeList: ['类型一','类型二','类型三'],
+        medicalTransportTypeList: ['药品运送','标本运送','血液采集'],
         operateMessage: 1,
         operateCallOut: '',
         operateTaskTrace: '',
@@ -178,7 +180,9 @@
       // 查询任务数量
       if (this.presonIdentity == 0) {
         this.queryAllTaskNumber(this.proId, this.workerId);
-      }
+        this.getAllTaskMessage()
+      };
+      this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
     },
     
     watch : {
@@ -193,8 +197,9 @@
         if (this.presonIdentity == 0) {
           // 查询任务数量
           this.queryAllTaskNumber(this.proId, this.workerId);
-          this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
+          this.getAllTaskMessage()
         }
+        this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
       }  
     },
 
@@ -260,6 +265,25 @@
               this.dispatchTaskNumber = res.data.data.transTask,
               this.circulationTaskNumber = res.data.data.circleTask,
               this.appointTaskNumber = res.data.data.resTask
+            }
+          }
+        })
+        .catch((err) => {
+
+        })
+      },
+
+      //查询完成任务数量和排名
+      getAllTaskMessage () {
+        queryAllTaskMessage({proId: this.proId, // 项目ID 必输
+                            workerId: this.workerId, //运送员ID   非必输
+                            date: ''  })
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            if (res.data.data) {
+              let needPersonMessage = res.data.data.filter((item) => {return item['workerId'] == this.workerId});
+              this.yesterdayNumber = needPersonMessage[0].totalCount;
+              this.yesterdayRank = needPersonMessage[0].rank
             }
           }
         })

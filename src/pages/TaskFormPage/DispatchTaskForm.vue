@@ -31,9 +31,9 @@ export default {
     return {
       currentPerson: 0,
       onlinePersonLlist: [
-        { text: '全部商品', value: 0 },
-        { text: '新款商品', value: 1 },
-        { text: '活动商品', value: 2 }
+        { text: '张天强', value: 0 },
+        { text: '王虎', value: 1 },
+        { text: '刘杰', value: 2 }
       ]
     };
   },

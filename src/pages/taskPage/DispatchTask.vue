@@ -832,7 +832,7 @@
               } 
             } else {
               this.$dialog.alert({
-                message: '当前没有任何状态的任务',
+                message: '当前没有查询到对应状态的任务',
                 closeOnPopstate: true
               }).then(() => {
               });
