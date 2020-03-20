@@ -209,3 +209,15 @@ export const dealMedicalWast = (wasteType,wasteWeight) => {
   return map
 }
 
+// 数组去重
+export const checkEmptyArray = (currentArr) => {
+  var arr = [];
+  currentArr.map(function(val, index) {
+      //过滤规则为，不为空串、不为null、不为undefined，也可自行修改
+      if (val !== "" && val != undefined) {
+          arr.push(val);
+      }
+  });
+  return arr;
+}
+

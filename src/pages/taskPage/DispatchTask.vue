@@ -67,11 +67,11 @@
       <van-tabs v-model="activeName" @click="onClickTab">
         <van-tab name="0">
           <div slot="title">
-            <span class="title">未分配</span>
-            <span class="right-sign" v-show="currentIndex == 0">{{screenTaskList.length}}</span>
+            <span class="title">全部</span>
+            <span class="right-sign" v-show="currentIndex == 0">{{waitBaskList.length}}</span>
           </div>
           <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
@@ -106,6 +106,63 @@
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                   </p>
                 </div>
+                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                </p>
+                <p class="get-wait-task">
+                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </van-tab>
+        <van-tab name="2">
+          <div slot="title">
+            <span class="title">已获取</span>
+            <span class="right-sign" v-show="currentIndex == 2">{{waitBaskList.length}}</span>
+          </div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" @click="taskClickEvent(item)" :key="`${item}-${index}`">
+              <p class="wait-handle-message-createTime">
+                创建时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">优先级:</span>
+                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  </p>
+                </div>
+                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                </p>
+                <p class="get-wait-task">
+                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+                </p>
               </div>
             </div>
           </div>
@@ -113,10 +170,10 @@
         <van-tab name="3">
           <div slot="title">
             <span class="title">进行中</span>
-            <span class="right-sign" v-show="currentIndex == 3">{{screenTaskList.length}}</span>
+            <span class="right-sign" v-show="currentIndex == 3">{{waitBaskList.length}}</span>
           </div>
           <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" @click="taskClickEvent(item)" :key="`${item}-${index}`">
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
@@ -151,186 +208,12 @@
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </van-tab>
-        <van-tab name="4">
-          <div slot="title">
-            <span class="title">未结束</span>
-            <span class="right-sign" v-show="currentIndex == 4">{{screenTaskList.length}}</span>
-          </div>
-          <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
-              <p class="wait-handle-message-createTime">
-                创建时间：{{item.createTime}}
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">优先级:</span>
-                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </van-tab>
-        <van-tab name="5">
-          <div slot="title">
-            <span class="title">已延迟</span>
-            <span class="right-sign" v-show="currentIndex == 5">{{screenTaskList.length}}</span>
-          </div>
-          <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
-              <p class="wait-handle-message-createTime">
-                创建时间：{{item.createTime}}
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">优先级:</span>
-                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </van-tab>
-        <van-tab name="6">
-          <div slot="title">
-            <span class="title">已取消</span>
-            <span class="right-sign" v-show="currentIndex == 6">{{screenTaskList.length}}</span>
-          </div>
-          <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
-              <p class="wait-handle-message-createTime">
-                创建时间：{{item.createTime}}
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">优先级:</span>
-                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </van-tab>
-        <van-tab name="7">
-          <div slot="title">
-            <span class="title">已完成</span>
-            <span class="right-sign" v-show="currentIndex == 7">{{screenTaskList.length}}</span>
-          </div>
-          <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in screenTaskList" :key="`${item}-${index}`">
-              <p class="wait-handle-message-createTime">
-                创建时间：{{item.createTime}}
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">优先级:</span>
-                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                  </p>
-                </div>
+                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                </p>
+                <p class="get-wait-task">
+                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+                </p>
               </div>
             </div>
           </div>
@@ -480,10 +363,17 @@
                   id: item.id
                 })
               };
-              this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1 || item.state == 2})
+              this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
+              if ( this.waitBaskList.length == 0) {
+                this.$dialog.alert({
+                  message: '当前没有待处理的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+              }
             } else {
               this.$dialog.alert({
-                message: '当前没有要待处理的任务',
+                message: '当前没有任何状态的任务',
                 closeOnPopstate: true
               }).then(() => {
               });
@@ -627,7 +517,8 @@
           this.stateScreen = true;
           this.waitHandleShow = true;
           this.taskQueryShow = false;
-          this.statusHandleScreenShow = false
+          this.statusHandleScreenShow = false;
+          this.queryDispatchTask(this.proId, this.workerId);
         } else if (index == '1') {
           this.stateScreen = false;
           this.taskQueryShow = true;
@@ -664,7 +555,7 @@
                   id: item.id
                 })
               };
-              this.screenTaskList = temporaryTaskListFirst.filter((item) => {return item.state == 0});
+              this.screenTaskList = temporaryTaskListFirst;
               if (this.screenTaskList.length == 0) {
                 this.$dialog.alert({
                   message: '当前没有未分配的任务',
@@ -795,7 +686,7 @@
         getDispatchTaskMessage (this.proId, this.workerId)
         .then((res) => {
           let temporaryScreenTaskList = [];
-          this.screenTaskList = [];
+          this.waitBaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               for (let item of res.data.data) {
@@ -810,26 +701,13 @@
                   id: item.id
                 })
               };
-              switch(name) {
-                case 0:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 0})
-                  break;
-                case 3:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
-                  break;
-                case 4:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4})
-                  break;
-                case 5:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 5})
-                  break;
-                 case 6:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 6})
-                  break;
-                case 7:
-                  this.screenTaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7})
-                  break;
-              } 
+              if (name == 0) {
+                this.waitBaskList = temporaryScreenTaskList
+              } else if (name == 2) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2})
+              } else if (name == 3) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
+              }
             } else {
               this.$dialog.alert({
                 message: '当前没有查询到对应状态的任务',

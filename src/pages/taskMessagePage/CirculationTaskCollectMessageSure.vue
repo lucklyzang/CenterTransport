@@ -8,16 +8,42 @@
     <div class="sweep-code-title">
       <h3>运送信息采集确认</h3>
     </div>
+     <div class="form-two">
+      <van-field v-model="bedNumber" disabled label="床号" placeholder="请输入"/>
+      <van-field v-model="patientName" disabled type="tel" label="姓名" placeholder="请输入"/>
+    </div>
+    <div class="sample-number-box">
+      <van-field v-model="sampleAmount" disabled type="number" label="数量" placeholder="请输入标本数量"/>
+    </div>
     <div class="sweep-code-area">
-      <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
-      <van-field v-model="patientName" type="tel" label="姓名" placeholder="请输入"/>
-      <VanFieldSelectPicker
-        label="标本类型"
-        placeholder="请选择"
-        v-model="sampleType"
-        :columns="sampleTypeList"
-      />
-      <van-field v-model="sampleAmount" type="number" label="数量" placeholder="请输入"/>
+      <div class="increaseLineArea">
+        <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
+          <div class="sample-box">
+            <div class="sample-title">标本类型</div>
+            <div class="sample-content">
+                <van-dropdown-menu>
+                  <van-dropdown-item disabled v-model="item.sampleType" :options="item.sampleTypeList"/>
+                </van-dropdown-menu>
+            </div>
+          </div>
+          <div class="check-entry-box">
+            <div class="check-entry-title">检查项</div>
+              <div class="check-entry-content">
+                <van-checkbox-group v-model="item.checkEntryList">
+                  <van-checkbox
+                    disabled
+                    shape="quare"
+                    v-for="(item, index) in item.entryList"
+                    :key="`${item}-${index}`"
+                    :name="item"
+                  >
+                    {{ item }}
+                  </van-checkbox>
+                </van-checkbox-group>
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
     <div class="electronic-signature">
       <ElectronicSignature></ElectronicSignature>
@@ -44,9 +70,15 @@ export default {
     return {
       bedNumber: '',
       patientName: '',
-      sampleType: '',
       sampleAmount: '',
-      sampleTypeList: ['血液','尿液']
+      sampleMessageList: [
+        {
+          sampleType: '',
+          sampleTypeList: [],
+          entryList: [],
+          checkEntryList: []
+        }
+      ]
     };
   },
 
@@ -59,21 +91,24 @@ export default {
   },
 
   mounted () {
+    console.log(this.circulationCollectMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/circulationTaskCollectMessage'});
-        this.changeTitleTxt({tit:'信息采集'});
-        setStore('currentTitle','信息采集')
+        this.$router.push({path:'/circulationTask'})
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务')
       })
     };
+    this.echoCollectMessage()
   },
 
   computed:{
     ...mapGetters([
       'navTopTitle',
-      'currentElectronicSignature'
+      'currentElectronicSignature',
+      'circulationCollectMessage'
     ])
   },
 
@@ -87,11 +122,21 @@ export default {
 
     },
 
+
+    // 回显已经采集信息
+    echoCollectMessage () {
+      let msg = this.circulationCollectMessage;
+      this.sampleMessageList = msg.circulatioFormList;
+      this.bedNumber = msg.echoBedNumber;
+      this.patientName = msg.echoPatientName;
+      this.sampleAmount = msg.echoSampleAmount
+    },
+
     // 返回上一页
     backTo () {
       this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'信息采集'});
-      setStore('currentTitle','信息采集')
+      this.changeTitleTxt({tit:'循环信息采集'});
+      setStore('currentTitle','循环信息采集')
     },
 
      // 采集信息确认事件
@@ -116,27 +161,76 @@ export default {
   @import "~@/common/stylus/variable.less";
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
-  .content-wrapper {
+   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
     .sweep-code-title {
-      margin-top: 10px;
       height: 30px;
+      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
         font-size: 15px;
       }
     };
+    .form-two {
+      padding: 2px;
+    };
+    .sample-number-box {
+    }
     .sweep-code-area {
       flex:1;
       overflow: auto;
       margin: 0 auto;
       margin: 10px 0;
       width: 100%;
+      .increaseLineArea {
+        .circulation-area {
+          padding: 10px 20px;
+          position: relative;
+          border-bottom: 1px solid #dfdfdf;
+          .sample-box {
+            > div {
+              display: inline-block
+            };
+            .sample-title {
+              width: 30%
+            }
+            .sample-content {
+              width: 60%;
+              /deep/ .van-dropdown-menu {
+               .van-dropdown-menu__item {
+                 .van-dropdown-menu__title {
+                    width: 100%;
+                    padding: 0
+                 }
+               }
+              }
+            }
+          }
+          .check-entry-box {
+            > div {
+              display: inline-block
+            };
+            .check-entry-title {
+              width: 30%
+            }
+            .check-entry-content {
+              width: 60%;
+              height: 60px;
+              overflow: auto;
+               /depp/.van-checkbox-group {
+                .van-checkbox {
+                  display: inline-block
+                }
+              }
+            }
+          }
+        }
+      }
     };
     .electronic-signature {
-      height: 250px;
+      height: 250px
     }
     .btn-area {
       height: 50px;

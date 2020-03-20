@@ -8,20 +8,57 @@
     <div class="sweep-code-title">
       <h3>运送信息采集</h3>
     </div>
-    <div class="sweep-code-area">
+    <div class="form-two">
       <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
       <van-field v-model="patientName" type="tel" label="姓名" placeholder="请输入"/>
-      <VanFieldSelectPicker
-        label="标本类型"
-        placeholder="请选择"
-        v-model="sampleType"
-        :columns="sampleTypeList"
-      />
-      <van-field v-model="sampleAmount" type="number" label="数量" placeholder="请输入"/>
+    </div>
+    <div class="sample-number-box">
+      <van-field v-model="sampleAmount" disabled type="number" label="标本总数"/>
+    </div>
+    <div class="increase-btn">
+      <van-button type="info" size="small" @click="increaseSampleCollectBox">新增</van-button>
+    </div>
+    <div class="sweep-code-area">
+      <div class="increaseLineArea">
+        <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
+          <div class="sample-box">
+            <div class="sample-title">标本类型</div>
+            <div class="sample-content">
+                <van-dropdown-menu>
+                  <van-dropdown-item v-model="item.sampleType" :options="item.sampleTypeList"/>
+                </van-dropdown-menu>
+            </div>
+          </div>
+          <div class="check-entry-box">
+            <div class="check-entry-title">检查项</div>
+              <div class="check-entry-content">
+                <van-checkbox-group v-model="item.checkEntryList">
+                  <van-checkbox
+                    shape="quare"
+                    v-for="(item, index) in item.entryList"
+                    :key="`${item}-${index}`"
+                    :name="item"
+                  >
+                    {{ item }}
+                  </van-checkbox>
+                </van-checkbox-group>
+              </div>
+            </div>
+            <div class="inner-sample--number-box">
+                <div class="inner-sample--number-title">数量</div>
+                <div class="inner-sample--number-content">
+                  <van-field v-model="item.innerSampleAmount" type="number" placeholder="请输入该标本数量"/>
+                </div>
+            </div>
+            <div class="delete-box">
+              <van-button type="info" size="small" @click="deleteCurrentSampleCollectBox(item,index)">删除</van-button>
+            </div>
+          </div>
+      </div>
     </div>
     <div class="btn-area">
       <van-button type="info" @click="collectMessageSure">确认</van-button>
-      <van-button type="info" @click="collectMessageCancel">取消</van-button>
+      <van-button type="default" @click="collectMessageCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -30,20 +67,30 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-//  import {getAlltTaskNumber} from '@/api/workerPort.js'
+import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
       bedNumber: '',
       patientName: '',
-      sampleType: '',
-      sampleAmount: '',
-      sampleTypeList: ['血液','尿液']
-    };
+      sampleAmount: 0,
+      sampleMessageList: [
+        {
+          sampleType: '',
+          sampleTypeList: [],
+          entryList: [],
+          checkEntryList: [],
+          innerSampleAmount: ''
+        }
+      ],
+      temporarySampleTypeList: [],
+      temporarySampleType: '',
+      temporaryCheckEntryList: [],
+    }
   },
 
   components:{
@@ -51,6 +98,26 @@ export default {
     HeaderTop,
     NoData,
     FooterBottom
+  },
+
+  watch: {
+    sampleMessageList: {
+      handler(newName, oldName) {
+        let emptyArr = [];
+        for (let item of newName) {
+          for (let val in item) {
+           if (val == 'innerSampleAmount') {
+             emptyArr.push(item[val])
+           }
+          }
+        };
+        this.sampleAmount = checkEmptyArray(emptyArr).reduce(function(prev, curr, idx, arr){
+          return Number(prev) + Number(curr);
+        })
+      },
+      immediate: true,
+      deep: true
+    }
   },
 
   mounted () {
@@ -63,22 +130,90 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
+    this.getSampleMessage();
+    this.getCheckEntryMessage()
   },
 
   computed:{
     ...mapGetters([
       'navTopTitle'
-    ])
+    ]),
+    proId () {
+      return JSON.parse(getStore('userInfo')).extendData.proId
+    }
   },
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeCirculationCollectMessage'
     ]),
 
     // 我的页面
     skipMyInfo () {
 
+    },
+
+    // 查询标本信息
+    getSampleMessage () {
+      querySampleMessage(
+        { proId: this.proId, // 项目ID 必输
+         state: 0  //查询状态，0-启用，1-禁用，固定传 0
+        }).then((res) => {
+           this.sampleMessageList[0].sampleTypeList = [];
+           this.sampleMessageList[0].sampleType = '';
+           if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                this.sampleMessageList[0].sampleType = item.id;
+                this.sampleMessageList[0].sampleTypeList.push({
+                  text: item.specimenName,
+                  value: item.id,
+                });
+              };
+              this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList;
+              this.temporarySampleType =  this.sampleMessageList[0].sampleType
+            }
+           }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+    },
+
+    // 查询检查项信息
+    getCheckEntryMessage () {
+      queryCheckEntry(
+        { proId: this.proId, // 项目ID 必输
+         state: 0  //查询状态，0-启用，1-禁用，固定传 0
+        }).then((res) => {
+          this.sampleMessageList[0].entryList = [];
+          if (res && res.data.code == 200) {
+            let temporaryCheckList = [];
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                for (let val in item) {
+                  if (val == 'itemName') {
+                    temporaryCheckList.push(item[val])
+                  }
+                }
+              };
+              this.sampleMessageList[0].entryList = temporaryCheckList;
+              this.temporaryCheckEntryList = this.sampleMessageList[0].entryList;
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
     },
 
     // 返回上一页
@@ -92,7 +227,14 @@ export default {
     collectMessageSure () {
       this.$router.push({path:'/circulationTaskCollectMessageSure'})
       this.changeTitleTxt({tit:'采集信息确认'});
-      setStore('currentTitle','采集信息确认')
+      setStore('currentTitle','采集信息确认');
+      // 传出采集的信息
+      this.changeCirculationCollectMessage({DtMsg: {
+        circulatioFormList: this.sampleMessageList,
+        echoBedNumber: this.bedNumber,
+        echoPatientName: this.patientName,
+        echoSampleAmount: this.sampleAmount,
+      }})
     },
 
     // 采集信息取消事件
@@ -100,6 +242,27 @@ export default {
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
+    },
+
+    // 新增标本采集框
+    increaseSampleCollectBox () {
+      this.sampleMessageList.push( 
+        {
+          sampleType: this.temporarySampleType,
+          sampleTypeList: this.temporarySampleTypeList,
+          entryList: this.temporaryCheckEntryList,
+          checkEntryList: [],
+          innerSampleAmount: ''
+        }
+      );
+    },
+
+    // 删除当前标本采集项
+    deleteCurrentSampleCollectBox (item,index) {
+      this.sampleMessageList.splice(index, 1);
+      for (let i in this.sampleMessageList) {
+        this.sampleMessageList[i].index = i
+      }
     }
   }
 }
@@ -121,12 +284,85 @@ export default {
         font-size: 15px;
       }
     };
+    .form-two {
+      padding: 2px;
+    };
+    .increase-btn {
+      height: 40px;
+      line-height: 40px;
+      padding-right: 10px;
+      text-align: right;
+      background: #f6f6f6;
+    };
+    .inner-sample--number-box {
+       > div {
+          display: inline-block
+        };
+        .inner-sample--number-title {
+          width: 30%
+        };
+        .inner-sample--number-content {
+          width: 60%;
+          /deep/ .van-cell{
+            padding-left: 0
+          }
+        }
+    }
     .sweep-code-area {
       flex:1;
       overflow: auto;
       margin: 0 auto;
       margin: 10px 0;
       width: 100%;
+      .increaseLineArea {
+        .circulation-area {
+          padding: 10px 20px;
+          position: relative;
+          border-bottom: 1px solid #dfdfdf;
+          .sample-box {
+            > div {
+              display: inline-block
+            };
+            .sample-title {
+              width: 30%
+            }
+            .sample-content {
+              width: 60%;
+              /deep/ .van-dropdown-menu {
+               .van-dropdown-menu__item {
+                 .van-dropdown-menu__title {
+                    width: 100%;
+                    padding: 0
+                 }
+               }
+              }
+            }
+          }
+          .check-entry-box {
+            > div {
+              display: inline-block
+            };
+            .check-entry-title {
+              width: 30%
+            }
+            .check-entry-content {
+              width: 60%;
+              height: 60px;
+              overflow: auto;
+               /depp/.van-checkbox-group {
+                .van-checkbox {
+                  display: inline-block
+                }
+              }
+            }
+          }
+          .delete-box {
+            position: absolute;
+            bottom: 10px;
+            right: 10px
+          }
+        }
+      }
     };
     .btn-area {
       height: 50px;

@@ -104,3 +104,21 @@ export function queryCirculationTask(data) {
     params: data
   })
 };
+
+// 查询标本信息
+export function querySampleMessage(data) {
+  return request({
+    url: 'specimen/queryAll',
+    method: 'get',
+    params: data
+  })
+};
+
+// 查询检查项
+export function queryCheckEntry(data) {
+  return request({
+    url: 'collectionItem/queryAll',
+    method: 'get',
+    params: data
+  })
+};

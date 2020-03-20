@@ -76,8 +76,8 @@ export default {
     // 扫码确认事件
     sweepCodeSure () {
       this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'信息采集'});
-      setStore('currentTitle','信息采集')
+      this.changeTitleTxt({tit:'循环信息采集'});
+      setStore('currentTitle','循环信息采集')
     },
 
     // 取消扫码事件

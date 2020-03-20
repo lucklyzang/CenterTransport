@@ -4,10 +4,12 @@ export default {
   state:{
     circulationTaskMessage: null,
     currentElectronicSignature: null,
+    circulationCollectMessage: null
   },
   getters:{
     circulationTaskMessage: state => state.circulationTaskMessage,
-    currentElectronicSignature: state => state.currentElectronicSignature
+    currentElectronicSignature: state => state.currentElectronicSignature,
+    circulationCollectMessage: state => state.circulationCollectMessage,
   },
   mutations:{
     // 改变循环任务信息状态
@@ -18,6 +20,10 @@ export default {
     changeCurrentElectronicSignature (state,payLoad) {
       state.currentElectronicSignature = payLoad.DtMsg
     },
+    // 改变循环采集信息状态
+     changeCirculationCollectMessage (state,payLoad) {
+      state.circulationCollectMessage = payLoad.DtMsg
+    }
   },
   actions:{}
 }

@@ -9,7 +9,7 @@
       <h3>循环任务列表</h3>
     </div>
     <div class="circulation-task-list">
-       <div class="wait-handle-list" v-for="(item,index) in circulationTaskList" :key="index" @click="officeTaskEvent(item)">
+      <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
         <p class="wait-handle-message-createTime">
           创建时间：{{item.createTime}}
@@ -51,9 +51,9 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li v-for="(val, key, index) in JSON.parse(item.spaces)" :key="index">{{val}}</li>
+            <li v-for="(val, key, index) in JSON.parse(item.spaces)" :key="index" @click="officeTaskEvent(item, val, key, index, indexWrapper)">{{val}}</li>
           </ul>
-      </div>
+        </div>
       </div>
     </div>
     <div class="circultion-task-btn">
@@ -227,13 +227,13 @@
       },
 
       // 科室任务列表点击
-      officeTaskEvent (item,index) {
-        this.currentOfficeName = index;
+      officeTaskEvent (item, val, key, index, indexWrapper) {
+        this.currentOfficeName = indexWrapper;
         this.$router.push({'path':'/circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码');
         // 改变循环具体某一任务的信息状态
-        this.changeCirculationTaskMessage({DtMsg: item});
+        this.changeCirculationTaskMessage({DtMsg:{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key}});
         setStore('currentCirculationTaskMessage',item);
       },
 
