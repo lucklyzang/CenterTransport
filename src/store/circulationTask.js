@@ -1,15 +1,15 @@
-import { setStore, getStore, removeStore } from '@/common/js/utils'
+import { deepClone } from '@/common/js/utils'
 
 export default {
   state:{
     circulationTaskMessage: null,
     currentElectronicSignature: null,
-    circulationCollectMessage: null
+    circulationCollectMessageList: []
   },
   getters:{
     circulationTaskMessage: state => state.circulationTaskMessage,
     currentElectronicSignature: state => state.currentElectronicSignature,
-    circulationCollectMessage: state => state.circulationCollectMessage,
+    circulationCollectMessageList: state => state.circulationCollectMessageList
   },
   mutations:{
     // 改变循环任务信息状态
@@ -21,8 +21,8 @@ export default {
       state.currentElectronicSignature = payLoad.DtMsg
     },
     // 改变循环采集信息状态
-     changeCirculationCollectMessage (state,payLoad) {
-      state.circulationCollectMessage = payLoad.DtMsg
+     changeCirculationCollectMessageList (state,payLoad) {
+      state.circulationCollectMessageList = deepClone(payLoad.DtMsg)
     }
   },
   actions:{}

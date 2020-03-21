@@ -22,6 +22,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import { base64ImgtoFile } from '@/common/js/utils'
   export default {
     data() {
       return {
@@ -172,7 +173,8 @@ import { mapGetters, mapMutations } from 'vuex'
       commitSure() {
         this.imgUrl = this.$refs.board.toDataURL();
         this.signNatureData = this.$refs.board.toDataURL();
-        this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")})
+        this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")});
+        var imgFile = base64ImgtoFile(this.$refs.board.toDataURL());
         console.log(this.$refs.board.toDataURL())
       }
     }

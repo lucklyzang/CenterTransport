@@ -180,7 +180,9 @@
       // 查询任务数量
       if (this.presonIdentity == 0) {
         this.queryAllTaskNumber(this.proId, this.workerId);
-        this.getAllTaskMessage()
+        this.getAllTaskMessage();
+        this.changeTitleTxt({tit:'中央运送'});
+        setStore('currentTitle','中央运送'); 
       };
       this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
     },
@@ -197,7 +199,9 @@
         if (this.presonIdentity == 0) {
           // 查询任务数量
           this.queryAllTaskNumber(this.proId, this.workerId);
-          this.getAllTaskMessage()
+          this.getAllTaskMessage();
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送'); 
         }
         this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
       }  

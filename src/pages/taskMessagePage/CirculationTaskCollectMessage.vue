@@ -35,20 +35,20 @@
                 <van-checkbox-group v-model="item.checkEntryList">
                   <van-checkbox
                     shape="quare"
-                    v-for="(item, index) in item.entryList"
+                    v-for="(item,index) in item.entryList"
                     :key="`${item}-${index}`"
-                    :name="item"
+                    :name="`{id:${item.id},itemName:${item.itemName}}`"
                   >
-                    {{ item }}
+                    {{ item.itemName }}
                   </van-checkbox>
                 </van-checkbox-group>
               </div>
             </div>
             <div class="inner-sample--number-box">
-                <div class="inner-sample--number-title">数量</div>
-                <div class="inner-sample--number-content">
-                  <van-field v-model="item.innerSampleAmount" type="number" placeholder="请输入该标本数量"/>
-                </div>
+              <div class="inner-sample--number-title">数量</div>
+              <div class="inner-sample--number-content">
+                <van-field v-model="item.innerSampleAmount" type="number" placeholder="请输入该标本数量"/>
+              </div>
             </div>
             <div class="delete-box">
               <van-button type="info" size="small" @click="deleteCurrentSampleCollectBox(item,index)">删除</van-button>
@@ -60,6 +60,18 @@
       <van-button type="info" @click="collectMessageSure">确认</van-button>
       <van-button type="default" @click="collectMessageCancel">取消</van-button>
     </div>
+     <van-dialog
+      v-model="collectMessaheSureShow"
+      title="是否收集该科室其它床位标本"
+      show-cancel-button
+      confirmButtonText="确定"
+      cancelButtonText="取消"
+      :close-on-popstate="true"
+      :close-on-click-overlay="true"
+      @confirm="collectSure"
+      @cancel="collectCancel"
+      >
+    </van-dialog>
   </div>
 </template>
 
@@ -70,7 +82,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -78,13 +90,14 @@ export default {
       bedNumber: '',
       patientName: '',
       sampleAmount: 0,
+      collectMessaheSureShow: false,
       sampleMessageList: [
         {
           sampleType: '',
           sampleTypeList: [],
           entryList: [],
           checkEntryList: [],
-          innerSampleAmount: ''
+          innerSampleAmount: 0
         }
       ],
       temporarySampleTypeList: [],
@@ -104,16 +117,20 @@ export default {
     sampleMessageList: {
       handler(newName, oldName) {
         let emptyArr = [];
-        for (let item of newName) {
-          for (let val in item) {
-           if (val == 'innerSampleAmount') {
-             emptyArr.push(item[val])
-           }
-          }
+        if (newName.length > 0) {
+          for (let item of newName) {
+            for (let val in item) {
+              if (val == 'innerSampleAmount') {
+                emptyArr.push(item[val])
+              }
+            }
+          };
+        }
+        if (emptyArr.length>0) {
+            this.sampleAmount = checkEmptyArray(emptyArr).reduce((prev, curr, idx, arr) => {
+            return Number(prev) + Number(curr);
+          })
         };
-        this.sampleAmount = checkEmptyArray(emptyArr).reduce(function(prev, curr, idx, arr){
-          return Number(prev) + Number(curr);
-        })
       },
       immediate: true,
       deep: true
@@ -121,6 +138,7 @@ export default {
   },
 
   mounted () {
+    console.log(this.circulationCollectMessageList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -136,7 +154,8 @@ export default {
 
   computed:{
     ...mapGetters([
-      'navTopTitle'
+      'navTopTitle',
+      'circulationCollectMessageList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -146,7 +165,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeCirculationCollectMessage'
+      'changeCirculationCollectMessageList',
+      'circulationCollectMessageList1'
     ]),
 
     // 我的页面
@@ -196,11 +216,10 @@ export default {
             let temporaryCheckList = [];
             if (res.data.data.length > 0) {
               for (let item of res.data.data) {
-                for (let val in item) {
-                  if (val == 'itemName') {
-                    temporaryCheckList.push(item[val])
-                  }
-                }
+                temporaryCheckList.push({
+                  id: item.id,
+                  itemName: item.itemName
+                })
               };
               this.sampleMessageList[0].entryList = temporaryCheckList;
               this.temporaryCheckEntryList = this.sampleMessageList[0].entryList;
@@ -223,18 +242,55 @@ export default {
       setStore('currentTitle','循环任务')
     },
 
-     // 采集信息确认事件
+    // 采集信息确认事件
     collectMessageSure () {
-      this.$router.push({path:'/circulationTaskCollectMessageSure'})
+      this.collectMessaheSureShow = true;
+    },
+
+    // 收集是否完成弹框确定事件
+    collectSure () {
+      // store和localStorage同时存储采集的信息
+      let currentCollectAllMessageSure = deepClone(this.circulationCollectMessageList);
+      currentCollectAllMessageSure.push({
+        sampleMessageList: this.sampleMessageList,
+        bedNumber: this.bedNumber,
+        patientName: this.patientName,
+        sampleAmount: this.sampleAmount
+      });
+      this.changeCirculationCollectMessageList({DtMsg:currentCollectAllMessageSure});
+      setStore('currentCirculationCollectMessage',{innerMessage:currentCollectAllMessageSure});
+      // 清空上个床位的采集信息
+      this.bedNumber = '';
+      this.patientName = '';
+      this.sampleAmount = 0;
+      this.sampleMessageList = [
+        {
+          sampleType: '',
+          sampleTypeList: [],
+          entryList: [],
+          checkEntryList: [],
+          innerSampleAmount: 0
+        }
+      ];
+      this.getSampleMessage();
+      this.getCheckEntryMessage()
+    },
+
+    // 收集是否完成弹框取消事件
+    collectCancel () {
+      // store和localStorage同时存储采集的信息
+      let currentCollectAllMessageCancel = deepClone(this.circulationCollectMessageList);
+      currentCollectAllMessageCancel.push({
+        sampleMessageList: this.sampleMessageList,
+        bedNumber: this.bedNumber,
+        patientName: this.patientName,
+        sampleAmount: this.sampleAmount,
+      });
+      this.changeCirculationCollectMessageList({DtMsg:currentCollectAllMessageCancel});
+      setStore('currentCirculationCollectMessage',{innerMessage:currentCollectAllMessageCancel});
+      this.$router.push({path:'/circulationTaskCollectMessageSure'});
       this.changeTitleTxt({tit:'采集信息确认'});
-      setStore('currentTitle','采集信息确认');
-      // 传出采集的信息
-      this.changeCirculationCollectMessage({DtMsg: {
-        circulatioFormList: this.sampleMessageList,
-        echoBedNumber: this.bedNumber,
-        echoPatientName: this.patientName,
-        echoSampleAmount: this.sampleAmount,
-      }})
+      setStore('currentTitle','采集信息确认')
     },
 
     // 采集信息取消事件
@@ -252,7 +308,7 @@ export default {
           sampleTypeList: this.temporarySampleTypeList,
           entryList: this.temporaryCheckEntryList,
           checkEntryList: [],
-          innerSampleAmount: ''
+          innerSampleAmount: 0
         }
       );
     },
@@ -298,15 +354,15 @@ export default {
        > div {
           display: inline-block
         };
-        .inner-sample--number-title {
-          width: 30%
-        };
-        .inner-sample--number-content {
-          width: 60%;
-          /deep/ .van-cell{
-            padding-left: 0
-          }
+      .inner-sample--number-title {
+        width: 30%
+      };
+      .inner-sample--number-content {
+        width: 60%;
+        /deep/ .van-cell{
+          padding-left: 0
         }
+      }
     }
     .sweep-code-area {
       flex:1;
@@ -316,7 +372,7 @@ export default {
       width: 100%;
       .increaseLineArea {
         .circulation-area {
-          padding: 10px 20px;
+          padding: 10px 18px;
           position: relative;
           border-bottom: 1px solid #dfdfdf;
           .sample-box {

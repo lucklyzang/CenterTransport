@@ -221,3 +221,32 @@ export const checkEmptyArray = (currentArr) => {
   return arr;
 }
 
+// Base64编码转换图片
+export const base64ImgtoFile = (dataurl, filename = 'file') => {
+  let arr = dataurl.split(',')
+  let mime = arr[0].match(/:(.*?);/)[1]
+  let suffix = mime.split('/')[1]
+  let bstr = atob(arr[1])
+  let n = bstr.length
+  let u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], `${filename}.${suffix}`, {
+    type: mime
+  })
+}
+
+// 引用类型数据深度克隆
+export const deepClone = (obj) => {
+  let newObj=Array.isArray(obj)?[]:{}
+  if(obj&&typeof obj ==="object"){
+    for(let key in obj){
+      if(obj.hasOwnProperty(key)){
+        newObj[key]=(obj && typeof obj[key]==='object')?deepClone(obj[key]):obj[key];
+      }
+    }
+  }
+  return newObj
+}
+

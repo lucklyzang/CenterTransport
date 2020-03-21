@@ -767,7 +767,7 @@
         box-sizing: border-box;
         color: #7f7d7d;
         .taskLineTwoStyle {
-          color: red
+          color: #2895ea
         }
         span {
           font-size: 12px;

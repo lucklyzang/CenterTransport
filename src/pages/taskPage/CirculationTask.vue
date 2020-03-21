@@ -305,8 +305,15 @@
         };
         .view-office {
           position: absolute;
-          top: 18px;
-          right: 10px
+          top: 10px;
+          right: 10px;
+          padding: 8px 6px;
+          line-height: 14px;
+          background: #2895ea;
+          font-size: 14px;
+          color: #fff;
+          border-radius: 3px;
+          box-sizing: border-box
         }
         .wait-handle-office-list {
           position: absolute;

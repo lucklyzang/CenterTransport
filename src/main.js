@@ -41,8 +41,12 @@ store.commit('changeToken', getStore('questToken'));
 store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
 // 页面刷新重新存入预约任务具体信息
 store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
-// 页面刷新重新存入循环任务具体信息 currentTransportTypeMessage
-store.commit('changeCirculationTaskMessage', {DtMsg: getStore('currentCirculationTaskMessage')})
+// 页面刷新重新存入循环任务具体信息 
+store.commit('changeCirculationTaskMessage', {DtMsg: getStore('currentCirculationTaskMessage')});
+// 页面刷新重新存入循环任务科室采集信息 
+if (getStore('currentCirculationCollectMessage')) {
+  store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})
+};
 // 页面刷新重新存入医护人员生成运送类型信息
 store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
 if (IsPC()) {
