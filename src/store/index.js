@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import dispatchTask from './dispatchTask.js'
 import appointTask from './appointTask.js'
 import circulationTask from './circulationTask.js'
+import medicalTask from './medicalTask.js'
 import login from './login.js'
 Vue.use(Vuex);
 export default new Vuex.Store({
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     dispatchTask,
     appointTask,
     circulationTask,
+    medicalTask,
     login
   }
 });

@@ -11,11 +11,9 @@
       <div class="bed-number-list-outer">
         <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
           <div class="form-two">
-            <van-field v-model="outerItem.bedNumber" disabled label="床号" placeholder="请输入"/>
-            <van-field v-model="outerItem.patientName" disabled type="tel" label="姓名" placeholder="请输入"/>
-          </div>
-          <div class="sample-number-box">
-            <van-field v-model="outerItem.sampleAmount" disabled type="number" label="标本总数" placeholder="请输入标本数量"/>
+            <van-field v-model="outerItem.bedNumber" disabled label="床号"/>
+            <van-field v-model="outerItem.patientName" disabled type="tel" label="姓名"/>
+            <van-field v-model="outerItem.sampleAmount" disabled type="number" label="标本总数"/>
           </div>
           <div class="sweep-code-area">
             <div class="increaseLineArea">
@@ -31,12 +29,12 @@
                 <div class="check-entry-box">
                   <div class="check-entry-title">检查项</div>
                   <div class="check-entry-content">
-                      <van-checkbox-group v-model="item.checkEntryList">
+                      <van-checkbox-group v-model="item.checkEntryList" direction="horizontal">
                          <van-checkbox
                             shape="quare"
                             v-for="(item,index) in item.entryList"
                             :key="`${item}-${index}`"
-                            :name="`{id:${item.id},itemName:${item.itemName}}`"
+                            :name='`{"id":"${item.id}","itemName":"${item.itemName}"}`'
                           >
                             {{ item.itemName }}
                           </van-checkbox>
@@ -69,10 +67,10 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-//  import {getAlltTaskNumber} from '@/api/workerPort.js'
+ import {collectSampleInfo} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -104,6 +102,7 @@ export default {
   },
 
   mounted () {
+    // console.log(querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,"5"));
     console.log(this.circulationCollectMessageList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
@@ -121,8 +120,18 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'currentElectronicSignature',
-      'circulationCollectMessageList'
-    ])
+      'circulationCollectMessageList',
+      'circulationTaskMessage'
+    ]),
+     proId () {
+      return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+    circulationTaskId () {
+      return this.circulationTaskMessage.currentMsg.id
+    },
+    departmentId () {
+      return this.circulationTaskMessage.officeId
+    }
   },
 
   methods:{
@@ -139,12 +148,29 @@ export default {
 
     // 回显已经采集信息
     echoCollectMessage () {
-      // let msg = this.circulationCollectMessage;
-      // this.sampleMessageList = msg.circulatioFormList;
-      // this.bedNumber = msg.echoBedNumber;
-      // this.patientName = msg.echoPatientName;
-      // this.sampleAmount = msg.echoSampleAmount
       this.allcirculationCollectMessageList = this.circulationCollectMessageList
+    },
+
+     // 收集标本信息
+    getSampleMessage (data) {
+      collectSampleInfo(data).then((res) => {
+        if (res && res.data.code == 200) {
+          console.log(res);
+        } else {
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
     },
 
     // 返回上一页
@@ -159,7 +185,46 @@ export default {
       // this.$router.push({path:'/circulationTask'})
       // this.changeTitleTxt({tit:'循环任务'});
       // setStore('currentTitle','循环任务');
-      console.log(this.currentElectronicSignature);
+      let submitCollectMsg = {
+        proId: this.proId,   //项目ID
+        taskId: this.circulationTaskId,   //任务ID
+        departmentId: this.departmentId,  //部门ID
+        singImg: this.currentElectronicSignature, //签名照片
+        specimen: []
+      };
+      if (this.circulationCollectMessageList.length > 0) {
+        for (let i = 0, len = this.circulationCollectMessageList.length; i < len; i++) {
+          submitCollectMsg['specimen'].push(
+            {
+              patientName: this.circulationCollectMessageList[i].patientName,  //病人姓名
+              bedNumber: this.circulationCollectMessageList[i].bedNumber,  //病人床号
+              totalNum: this.circulationCollectMessageList[i].sampleAmount, //总数量
+              specList: [] //标本list
+            }
+          );
+          if (this.circulationCollectMessageList[i].sampleMessageList.length > 0) {
+            for (let j = 0, len = this.circulationCollectMessageList[i].sampleMessageList.length; j < len; j++) {
+              submitCollectMsg['specimen'][i]['specList'].push(
+                {
+                  specimenId: this.circulationCollectMessageList[i].sampleMessageList[j].sampleType,    //标本ID
+                  specimenName: querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,this.circulationCollectMessageList[i].sampleMessageList[j].sampleType), //标本名称
+                  quantity: this.circulationCollectMessageList[i].sampleMessageList[j].innerSampleAmount,    //标本数量
+                  checkItems: {} //检查项
+                }
+              );
+              if (this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList.length > 0)  {
+                let temporarySampleList = [];
+                for (let k = 0, len = this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList.length; k < len; k++) {
+                  let temporarySampleList = Object.values(JSON.parse(this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList[k]));
+                  submitCollectMsg['specimen'][i]['specList'][j]['checkItems'][temporarySampleList[0]] = temporarySampleList[1];
+                }
+              }
+            }
+          }
+        };
+        console.log('最终标本信息',submitCollectMsg);
+      }
+      this.getSampleMessage(submitCollectMsg);
       this.changeCirculationCollectMessageList({DtMsg:[]});
       removeStore('currentCirculationCollectMessage')
     },
@@ -196,20 +261,17 @@ export default {
         margin: 0 auto;
         margin: 10px 0;
       .bed-number-list {
-        height: 100%;
+        border-bottom: 2px solid #f2f2f2;
         .form-two {
           padding: 2px;
+          box-sizing: border-box;
         };
-        .sample-number-box {
-        }
         .sweep-code-area {
-          margin: 10px 0;
           width: 100%;
-          height: 150px;
           overflow: auto;
           .increaseLineArea {
             .circulation-area {
-              padding: 10px 18px;
+              padding: 0 18px;
               position: relative;
               border-bottom: 1px solid #dfdfdf;
               .sample-box {
@@ -236,11 +298,12 @@ export default {
                   display: inline-block
                 };
                 .check-entry-title {
-                  width: 30%
+                  width: 30%;
+                  vertical-align: top;
                 }
                 .check-entry-content {
                   width: 60%;
-                  height: 60px;
+                  height: 50px;
                   overflow: auto;
                   /depp/.van-checkbox-group {
                     .van-checkbox {

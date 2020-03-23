@@ -32,12 +32,12 @@
           <div class="check-entry-box">
             <div class="check-entry-title">检查项</div>
               <div class="check-entry-content">
-                <van-checkbox-group v-model="item.checkEntryList">
+                <van-checkbox-group v-model="item.checkEntryList" direction="horizontal">
                   <van-checkbox
                     shape="quare"
                     v-for="(item,index) in item.entryList"
                     :key="`${item}-${index}`"
-                    :name="`{id:${item.id},itemName:${item.itemName}}`"
+                    :name='`{"id":"${item.id}","itemName":"${item.itemName}"}`'
                   >
                     {{ item.itemName }}
                   </van-checkbox>
@@ -82,7 +82,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -138,7 +138,6 @@ export default {
   },
 
   mounted () {
-    console.log(this.circulationCollectMessageList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -191,6 +190,8 @@ export default {
                   value: item.id,
                 });
               };
+              // 标本信息存入locaStorage
+              setStore('sampleInfo',{sampleKey:this.sampleMessageList[0].sampleTypeList});
               this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList;
               this.temporarySampleType =  this.sampleMessageList[0].sampleType
             }
@@ -399,11 +400,12 @@ export default {
               display: inline-block
             };
             .check-entry-title {
-              width: 30%
+              width: 30%;
+              vertical-align: top;
             }
             .check-entry-content {
               width: 60%;
-              height: 60px;
+              height: 50px;
               overflow: auto;
                /depp/.van-checkbox-group {
                 .van-checkbox {

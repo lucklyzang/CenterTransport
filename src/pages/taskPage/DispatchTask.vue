@@ -64,7 +64,7 @@
     </div>
     <div class="task-query" v-show="taskQueryShow">任务查询</div>
     <div class="status-handle-screen" v-show="statusHandleScreenShow">
-      <van-tabs v-model="activeName" @click="onClickTab">
+      <van-tabs v-model="activeName" @click="onClickTab" color="#2895ea">
         <van-tab name="0">
           <div slot="title">
             <span class="title">全部</span>

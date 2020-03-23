@@ -250,3 +250,12 @@ export const deepClone = (obj) => {
   return newObj
 }
 
+// 根据标本id查询标本名称
+export const querySampleName = (sampleArray,sampleId) => {
+  if (!Array.isArray(sampleArray)) {return};
+  let targetSmple = sampleArray.filter((item) => {
+    return item.value == sampleId
+  });
+  return targetSmple[0].text
+}
+

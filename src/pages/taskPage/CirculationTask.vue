@@ -199,6 +199,7 @@
                   priority: item.priority,
                   taskNumber: item.taskNumber,
                   spaces: item.spaces,
+                  id: item.id,
                   show: false
                 })
             } else {
@@ -234,7 +235,7 @@
         setStore('currentTitle','扫码');
         // 改变循环具体某一任务的信息状态
         this.changeCirculationTaskMessage({DtMsg:{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key}});
-        setStore('currentCirculationTaskMessage',item);
+        setStore('currentCirculationTaskMessage',{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key});
       },
 
       // 循环情况事件

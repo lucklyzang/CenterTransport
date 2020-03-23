@@ -42,7 +42,7 @@ store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskM
 // 页面刷新重新存入预约任务具体信息
 store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
 // 页面刷新重新存入循环任务具体信息 
-store.commit('changeCirculationTaskMessage', {DtMsg: getStore('currentCirculationTaskMessage')});
+store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
 // 页面刷新重新存入循环任务科室采集信息 
 if (getStore('currentCirculationCollectMessage')) {
   store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})

@@ -122,3 +122,21 @@ export function queryCheckEntry(data) {
     params: data
   })
 };
+
+// 判断科室是否为指定的科室
+export function judgeDepartment(data) {
+  return request({
+    url: 'circleTask/verifySpaces',
+    method: 'get',
+    params: data
+  })
+};
+
+// 循环任务标本信息收集
+export function collectSampleInfo(data) {
+  return request({
+    url: 'taskSpecimen/specimens',
+    method: 'post',
+    data
+  })
+};

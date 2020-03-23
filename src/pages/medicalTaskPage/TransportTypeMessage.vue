@@ -6,7 +6,7 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="transport-type-title">
-      <h3>{{transportTypeMessage}}</h3>
+      <h3>{{transportantTaskMessage}}</h3>
     </div>
     <div class="transport-type-area">
       <van-field v-model="destinationAddress" label="目的地" placeholder="请输入目的地"/>
@@ -54,7 +54,7 @@ export default {
   computed: {
     ...mapGetters([
       'navTopTitle',
-      'transportTypeMessage'
+      'transportantTaskMessage'
     ])
   },
 

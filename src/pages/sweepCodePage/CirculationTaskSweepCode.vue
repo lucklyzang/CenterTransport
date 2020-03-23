@@ -19,7 +19,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-//  import {getAlltTaskNumber} from '@/api/workerPort.js'
+import {judgeDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -46,14 +46,24 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
-    console.log(this.circulationTaskMessage);
+    // 二维码回调方法绑定到window下面,提供给外部调用
+    let me = this;
+    window['scanQRcodeCallback'] = (code) => {
+      me.scanQRcodeCallback(code);
+    }
   },
 
   computed:{
     ...mapGetters([
       'navTopTitle',
       'circulationTaskMessage'
-    ])
+    ]),
+    proId () {
+      return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+    circulationId () {
+      return this.circulationTaskMessage.currentMsg.id
+    }
   },
 
   methods:{
@@ -73,11 +83,34 @@ export default {
       setStore('currentTitle','循环任务')
     },
 
+    // 摄像头扫码后的回调
+    scanQRcodeCallback(code) {
+
+    },
+
     // 扫码确认事件
     sweepCodeSure () {
       this.$router.push({path:'/circulationTaskCollectMessage'});
       this.changeTitleTxt({tit:'循环信息采集'});
       setStore('currentTitle','循环信息采集')
+    },
+
+    //判断扫码科室是否为当前要收集的科室
+    juddgeMedicalCorrect(id,proId,departmentId) {
+      judgeDepartment(id,proId,departmentId).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$router.push({path:'/circulationTaskCollectMessage'});
+          this.changeTitleTxt({tit:'循环信息采集'});
+          setStore('currentTitle','循环信息采集')
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
     },
 
     // 取消扫码事件
