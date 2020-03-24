@@ -140,3 +140,20 @@ export function collectSampleInfo(data) {
     data
   })
 };
+
+// 标本送达信息
+export function samplesArrived(data) {
+  return request({
+    url: 'taskSpecimen/arrive',
+    method: 'put',
+    data
+  })
+};
+
+// 根据项目ID和任务ID查询收集的标本信息
+export function queryCollectSampleMessage(proId,taskId) {
+  return request({
+    url: `taskSpecimen/specimen/${proId}/${taskId}`,
+    method: 'get'
+  })
+};

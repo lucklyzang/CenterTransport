@@ -95,7 +95,6 @@ export default {
     font-size: 14px;
     .sweep-code-title {
       height: 30px;
-      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
@@ -106,7 +105,6 @@ export default {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin: 10px 0;
       width: 100%;
     };
     .btn-area {

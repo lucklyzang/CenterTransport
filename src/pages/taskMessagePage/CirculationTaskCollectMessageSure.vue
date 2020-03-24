@@ -6,7 +6,7 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="sweep-code-title">
-      <h3>运送信息采集确认</h3>
+      <h3>科室信息采集确认</h3>
     </div>
       <div class="bed-number-list-outer">
         <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
@@ -76,7 +76,6 @@ export default {
   data () {
     return {
       allcirculationCollectMessageList: [],
-      
         bedNumber: '',
         patientName: '',
         sampleAmount: '',
@@ -123,7 +122,7 @@ export default {
       'circulationCollectMessageList',
       'circulationTaskMessage'
     ]),
-     proId () {
+    proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
     circulationTaskId () {
@@ -155,7 +154,15 @@ export default {
     getSampleMessage (data) {
       collectSampleInfo(data).then((res) => {
         if (res && res.data.code == 200) {
-          console.log(res);
+          // 当前页面回显数据
+          this.allcirculationCollectMessageList = [];
+          // 上一页面store采集数据
+          this.changeCirculationCollectMessageList({DtMsg:[]});
+          // 上一页面Localstorage采集数据
+          removeStore('currentCirculationCollectMessage');
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
         } else {
           this.$dialog.alert({
             message: res.data.msg,
@@ -182,29 +189,26 @@ export default {
 
      // 采集信息确认事件
     collectMessageSure () {
-      // this.$router.push({path:'/circulationTask'})
-      // this.changeTitleTxt({tit:'循环任务'});
-      // setStore('currentTitle','循环任务');
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
         departmentId: this.departmentId,  //部门ID
         singImg: this.currentElectronicSignature, //签名照片
-        specimen: []
+        specList: []
       };
       if (this.circulationCollectMessageList.length > 0) {
         for (let i = 0, len = this.circulationCollectMessageList.length; i < len; i++) {
-          submitCollectMsg['specimen'].push(
+          submitCollectMsg['specList'].push(
             {
               patientName: this.circulationCollectMessageList[i].patientName,  //病人姓名
               bedNumber: this.circulationCollectMessageList[i].bedNumber,  //病人床号
               totalNum: this.circulationCollectMessageList[i].sampleAmount, //总数量
-              specList: [] //标本list
+              specimen: [] //标本list
             }
           );
           if (this.circulationCollectMessageList[i].sampleMessageList.length > 0) {
             for (let j = 0, len = this.circulationCollectMessageList[i].sampleMessageList.length; j < len; j++) {
-              submitCollectMsg['specimen'][i]['specList'].push(
+              submitCollectMsg['specList'][i]['specimen'].push(
                 {
                   specimenId: this.circulationCollectMessageList[i].sampleMessageList[j].sampleType,    //标本ID
                   specimenName: querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,this.circulationCollectMessageList[i].sampleMessageList[j].sampleType), //标本名称
@@ -216,7 +220,7 @@ export default {
                 let temporarySampleList = [];
                 for (let k = 0, len = this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList.length; k < len; k++) {
                   let temporarySampleList = Object.values(JSON.parse(this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList[k]));
-                  submitCollectMsg['specimen'][i]['specList'][j]['checkItems'][temporarySampleList[0]] = temporarySampleList[1];
+                  submitCollectMsg['specList'][i]['specimen'][j]['checkItems'][temporarySampleList[0]] = temporarySampleList[1];
                 }
               }
             }
@@ -224,13 +228,17 @@ export default {
         };
         console.log('最终标本信息',submitCollectMsg);
       }
-      this.getSampleMessage(submitCollectMsg);
-      this.changeCirculationCollectMessageList({DtMsg:[]});
-      removeStore('currentCirculationCollectMessage')
+      this.getSampleMessage(submitCollectMsg)
     },
 
-    // 采集信息取消事件
+    // 采集信息确认取消事件
     collectMessageCancel () {
+      // 当前页面回显数据
+      this.allcirculationCollectMessageList = [];
+      // 上一页面store采集数据
+      this.changeCirculationCollectMessageList({DtMsg:[]});
+      // 上一页面Localstorage采集数据
+      removeStore('currentCirculationCollectMessage');
       this.$router.push({path:'/circulationTaskCollectMessage'});
       this.changeTitleTxt({tit:'信息采集'});
       setStore('currentTitle','信息采集')
@@ -248,7 +256,6 @@ export default {
     font-size: 14px;
     .sweep-code-title {
       height: 30px;
-      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
@@ -256,10 +263,10 @@ export default {
       }
     };
     .bed-number-list-outer {
-        flex:1;
-        overflow: auto;
-        margin: 0 auto;
-        margin: 10px 0;
+      flex:1;
+      overflow: auto;
+      margin: 0 auto;
+      margin: 10px 0;
       .bed-number-list {
         border-bottom: 2px solid #f2f2f2;
         .form-two {

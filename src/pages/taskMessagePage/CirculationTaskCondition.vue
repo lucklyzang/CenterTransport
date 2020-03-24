@@ -5,7 +5,9 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
-    <div class="circulation-task-condition-title">循环任务情况</div>
+    <div class="circulation-task-condition-title">
+      <h3>循环任务情况</h3>
+    </div>
   </div>
 </template>
 
@@ -85,6 +87,9 @@ export default {
       height: 30px;
       line-height: 30px;
       padding-left: 10px;
+      h3 {
+        font-size: 15px;
+      }
     }
   }
 </style>

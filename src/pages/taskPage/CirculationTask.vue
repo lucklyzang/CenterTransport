@@ -23,10 +23,10 @@
               <span class="message-tit">医院:</span>
               <span class="message-tit-real">{{item.proName}}</span>
             </p>
-            <P>
-              <span class="message-tit">科室:</span>
-              <span class="message-tit-real">{{item.officeName}}</span>
-            </P>
+            <p>
+              <span class="message-tit">优先级:</span>
+              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
           </div>
           <div class="handle-message-line-wrapper">
             <p>
@@ -43,10 +43,6 @@
               <span class="message-tit">状态:</span>
               <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
             </p>
-            <p>
-              <span class="message-tit">优先级:</span>
-              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-            </p>
           </div>
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
@@ -58,7 +54,7 @@
     </div>
     <div class="circultion-task-btn">
       <van-button type="info" @click="circulationConditionEvent">循环情况</van-button>
-      <van-button type="default">送达</van-button>
+      <van-button type="default" @click="circulationTaskArrived">送达</van-button>
     </div>
   </div>
 </template>
@@ -120,7 +116,8 @@
     methods: {
       ...mapMutations([
         'changeTitleTxt',
-        'changeCirculationTaskMessage'
+        'changeCirculationTaskMessage',
+        'changeIsCollectEnterSweepCodePage'
       ]),
 
       // 跳转到我的页
@@ -230,12 +227,21 @@
       // 科室任务列表点击
       officeTaskEvent (item, val, key, index, indexWrapper) {
         this.currentOfficeName = indexWrapper;
+        this.changeIsCollectEnterSweepCodePage(true);
         this.$router.push({'path':'/circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码');
         // 改变循环具体某一任务的信息状态
         this.changeCirculationTaskMessage({DtMsg:{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key}});
         setStore('currentCirculationTaskMessage',{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key});
+      },
+
+      // 循环任务送达
+      circulationTaskArrived () {
+        this.changeIsCollectEnterSweepCodePage(false);
+        this.$router.push({path: 'circulationTaskSweepCode'});
+        this.changeTitleTxt({tit:'扫码'});
+        setStore('currentTitle','扫码')
       },
 
       // 循环情况事件
@@ -258,17 +264,15 @@
     .circultion-task-title {
       height: 30px;
       line-height: 30px;
-      margin-top: 10px;
+      padding-left: 10px;
       h3 {
         font-size: 15px;
-        padding-left: 10px
       }
     };
     .circulation-task-list {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin-top: 10px;
       width: 100%;
       .wait-handle-list {
         box-sizing: border-box;

@@ -6,7 +6,7 @@
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
     <div class="sweep-code-title">
-      <h3>运送信息采集</h3>
+      <h3>科室信息采集</h3>
     </div>
     <div class="form-two">
       <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
@@ -334,7 +334,6 @@ export default {
     font-size: 14px;
     .sweep-code-title {
       height: 30px;
-      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
       h3 {

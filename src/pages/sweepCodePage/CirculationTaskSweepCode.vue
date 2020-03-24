@@ -56,7 +56,8 @@ export default {
   computed:{
     ...mapGetters([
       'navTopTitle',
-      'circulationTaskMessage'
+      'circulationTaskMessage',
+      'isCollectEnterSweepCodePage'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -90,9 +91,16 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'循环信息采集'});
-      setStore('currentTitle','循环信息采集')
+      console.log(this.isCollectEnterSweepCodePage);
+      if(this.isCollectEnterSweepCodePage) {
+        this.$router.push({path:'/circulationTaskCollectMessage'});
+        this.changeTitleTxt({tit:'循环信息采集'});
+        setStore('currentTitle','循环信息采集')
+      } else {
+        this.$router.push({path:'/circulationTaskMessageConnect'});
+        this.changeTitleTxt({tit:'循环信息交接'});
+        setStore('currentTitle','循环信息交接')
+      }
     },
 
     //判断扫码科室是否为当前要收集的科室
@@ -132,7 +140,6 @@ export default {
     font-size: 14px;
     .sweep-code-title {
       height: 30px;
-      margin-top: 10px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
@@ -143,7 +150,6 @@ export default {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin: 10px 0;
       width: 100%
     };
     .btn-area {

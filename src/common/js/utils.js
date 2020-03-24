@@ -259,3 +259,32 @@ export const querySampleName = (sampleArray,sampleId) => {
   return targetSmple[0].text
 }
 
+// 数组去重方法
+export const repeArray = (targetArray) => {
+  if (!Array.isArray(targetArray)) {return};
+  var result = [],
+  len = targetArray.length;
+  targetArray.forEach(function(v, i ,targetArray){  //这里利用map，filter方法也可以实现
+    var bool = targetArray.indexOf(v,i+1);  //从传入参数的下一个索引值开始寻找是否存在重复
+    if(bool === -1){
+      result.push(v);
+    }
+    })
+  return result;
+}
+
+ /**
+ * 去除包裹的大括号
+ */
+export const removeBlock = (str) => {
+  if (str) {
+    let reg = /^\{/gi;
+    let reg2 = /\}$/gi;
+    str = str.replace(reg,"");
+    str = str.replace(reg2,"");
+    return str;
+  } else {
+    return str;
+  }
+}
+
