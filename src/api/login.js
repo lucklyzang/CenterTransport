@@ -24,3 +24,12 @@ export function getDictionaryData (id) {
     method: 'get'
   })
 }
+
+// 根据条件获取相关运送员信息
+export function getWorkerMessage (data) {
+  return request({
+    url: 'worker/queryWorkersByState',
+    method: 'get',
+    params: data
+  })
+}

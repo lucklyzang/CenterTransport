@@ -54,8 +54,8 @@
             </p>
           </div>
         </div>
-        <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
-          <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+        <p class="wait-handle-check" v-show="item.state == 2">
+          <van-checkbox  v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
         </p>
         <p class="get-wait-task">
           <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
@@ -106,7 +106,7 @@
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                   </p>
                 </div>
-                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
                 <p class="get-wait-task">
@@ -157,7 +157,7 @@
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                   </p>
                 </div>
-                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                <p class="wait-handle-check" v-show="item.state == 2">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
                 <p class="get-wait-task">
@@ -208,7 +208,7 @@
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                   </p>
                 </div>
-                <p class="wait-handle-check" v-show="item.taskStatus !== '1'">
+                <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
                 <p class="get-wait-task">
@@ -289,7 +289,8 @@
 
     computed: {
       ...mapGetters([
-        'navTopTitle'
+        'navTopTitle',
+        'isRefershDispatchTaskPage'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -316,8 +317,21 @@
     },
 
     activated () {
+      // 控制设备物理返回按键测试
+      if (!IsPC()) {
+        pushHistory();
+        this.gotoURL(() => {
+          this.$router.push({path: 'home'});
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
+        })
+      };
       // 查询调度任务(分配给自己的)
-      // this.queryDispatchTask(this.proId, this.workerId)
+      if (this.isRefershDispatchTaskPage) {
+        this.activeName = 0;
+        this.currentIndex = 0;
+        this.queryDispatchTask(this.proId, this.workerId)
+      }
     },
 
     mounted () {
@@ -330,7 +344,6 @@
           setStore('currentTitle','中央运送') 
         })
       };
-
       // 查询调度任务(分配给自己的)
       this.queryDispatchTask(this.proId, this.workerId)
     },
@@ -339,7 +352,9 @@
       ...mapMutations([
         'changeTitleTxt',
         'changeDispatchTaskMessage',
-        'changedispatchTaskTransferIdList'
+        'changedispatchTaskTransferIdList',
+        'changeDispatchTaskDepartmentType',
+        'changeDispatchTaskState'
       ]),
 
       // 查询调度任务(分配给自己的)
@@ -537,10 +552,13 @@
         this.taskQueryShow = false;
         this.waitHandleShow = false;
         this.statusHandleScreenShow = true;
+        this.activeName = 0;
+        this.currentIndex = 0;
         getDispatchTaskMessage (this.proId, this.workerId)
         .then((res) => {
           let temporaryTaskListFirst = [];
           this.screenTaskList = [];
+          this.waitBaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               for (let item of res.data.data) {
@@ -556,6 +574,7 @@
                 })
               };
               this.screenTaskList = temporaryTaskListFirst;
+              this.waitBaskList = this.screenTaskList;
               if (this.screenTaskList.length == 0) {
                 this.$dialog.alert({
                   message: '当前没有未分配的任务',
@@ -650,6 +669,14 @@
       // 点击具体任务事件
       taskClickEvent (item) {
         if (item.state !== 1) {
+          // 传给扫码界面科室类型和任务状态的值
+          if (item.state == 2) {
+            this.changeDispatchTaskDepartmentType(0);
+            this.changeDispatchTaskState(3)
+          } else if (item.state == 3) {
+            this.changeDispatchTaskDepartmentType(1);
+            this.changeDispatchTaskState(7)
+          };
           this.$router.push({'path':'/dispatchTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
           setStore('currentTitle','扫码');

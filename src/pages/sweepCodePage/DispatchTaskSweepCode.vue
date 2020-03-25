@@ -19,7 +19,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {dispatchTaskSweepCodeSure} from '@/api/workerPort.js'
+import {judgeDispatchTaskDepartment,updateDispatchTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -41,18 +41,26 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
+        this.changeIsRefershDispatchTaskPage(false);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
         setStore('currentTitle','调度任务')
       })
     };
-    console.log(this.dispatchTaskMessage);
+    // 二维码回调方法绑定到window下面,提供给外部调用
+    let me = this;
+    window['scanQRcodeCallback'] = (code) => {
+      me.scanQRcodeCallback(code);
+    };
+    console.log('调度任务状态' ,this.dispatchTaskState, this.dispatchTaskDepartmentType);
   },
 
   computed:{
     ...mapGetters([
       'navTopTitle',
-      'dispatchTaskMessage'
+      'dispatchTaskMessage',
+      'dispatchTaskState',
+      'dispatchTaskDepartmentType'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -61,16 +69,95 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsRefershDispatchTaskPage'
     ]),
+
+    // 扫描二维码方法
+    sweepAstoffice () {
+      window.android.scanQRcode()
+    },
+
+    // 摄像头扫码后的回调
+    scanQRcodeCallback(code) {
+      let departmentId = '';
+      if (code) {
+        departmentId = code.id;
+        this.juddgeCurrentDepartment({
+          id: this.dispatchTaskMessage.id,  //任务ID
+			    proId: this.proId,  //项目ID
+          departmentId: departmentId,  //科室ID
+			    checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
+        })
+      } else {
+        this.$dialog.alert({
+          message: '当前没有扫描到任何信息,请重新扫描'
+        }).then(() => {
+          this.sweepAstoffice()
+        });
+      }
+    },
+
+    // 重新扫码弹窗
+    againSweepCode () {
+       this.$dialog.alert({
+        message: '扫描科室与任务要求科室不一致,请重新扫描'
+      }).then(() => {
+        this.sweepAstoffice()
+      });
+    },
 
     // 我的页面
     skipMyInfo () {
 
     },
 
+    // 判断扫码科室
+    juddgeCurrentDepartment (data) {
+      judgeDispatchTaskDepartment(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.updateTaskState({
+            proId: this.proId, //当前项目ID
+            id: this.dispatchTaskMessage.id, //当前任务ID
+            state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+          })
+        } else {
+          this.againSweepCode()
+        }
+      })
+      .catch((err) => {
+        this.againSweepCode()
+      })
+    },
+
+    // 更新任务状态
+    updateTaskState (data) {
+      updateDispatchTask(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.changeIsRefershDispatchTaskPage(true);
+          this.$router.push({path:'/dispatchTask'});
+          this.changeTitleTxt({tit:'调度任务'});
+          setStore('currentTitle','调度任务')
+        } else {
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
     // 返回上一页
     backTo () {
+      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -78,6 +165,7 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
+      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')

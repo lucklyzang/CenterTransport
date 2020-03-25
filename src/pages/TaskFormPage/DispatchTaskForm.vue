@@ -13,7 +13,7 @@
     </div>
     <div class="btn-area">
       <van-button type="info" @click="transferPersonSure">确定</van-button>
-      <van-button type="info" @click="transferPersonCancel">取消</van-button>
+      <van-button type="default" @click="transferPersonCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -21,6 +21,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
+import {getWorkerMessage} from '@/api/login.js'
 import {transferDispatchTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
@@ -29,12 +30,8 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-      currentPerson: 0,
-      onlinePersonLlist: [
-        { text: '张天强', value: 0 },
-        { text: '王虎', value: 1 },
-        { text: '刘杰', value: 2 }
-      ]
+      currentPerson: '',
+      onlinePersonLlist: []
     };
   },
 
@@ -49,11 +46,13 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
+        this.changeIsRefershDispatchTaskPage(false);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
         setStore('currentTitle','调度任务')
       })
     };
+    this.queryOnlineWorker({proId: this.proId, state:''})
   },
 
   computed:{
@@ -74,8 +73,33 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsRefershDispatchTaskPage'
     ]),
+
+    // 获取在线工作人员
+    queryOnlineWorker (data) {
+      getWorkerMessage().then((res) => {
+        if (res && res.data.code == 200) {
+          this.onlinePersonLlist = [];
+          for (let item of res.data.data) {
+            let temporaryWorkerMessageArray = [];
+            for (let innerItem in item) {
+              if (innerItem == 'id') {
+                temporaryWorkerMessageArray.push(item[innerItem])
+              };
+              if (innerItem == 'workerName') {
+                temporaryWorkerMessageArray.push(item[innerItem])
+              }
+            };
+            this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0]})
+          };
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
 
     // 我的页面
     skipMyInfo () {
@@ -94,9 +118,21 @@ export default {
       transferDispatchTask(data)
       .then((res) => {
         if (res && res.data.code == 200) {
-          this.$router.push({path:'/dispatchTask'});
-          this.changeTitleTxt({tit:'调度任务'});
-          setStore('currentTitle','调度任务')
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+            this.changeIsRefershDispatchTaskPage(true);
+            this.$router.push({path:'/dispatchTask'});
+            this.changeTitleTxt({tit:'调度任务'});
+            setStore('currentTitle','调度任务')
+          });
+        } else {
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         }
       })
       .catch((err) => {
@@ -110,10 +146,16 @@ export default {
 
     // 转移人员确认事件
     transferPersonSure () {
+      console.log('sa');
+      let taskAcceptName = '';
+      let currentCheckWorkerInfo = [];
+      currentCheckWorkerInfo = this.onlinePersonLlist.filter((item) => {return item.value == this.currentPerson});
+      taskAcceptName = currentCheckWorkerInfo[0]['text'];
       this.sureTransferDispatchTask ({
-        taskId: this.dispatchTaskTransferIdList,  //任务ID
-        afterId: 101,   //任务接受者ID
-        afterName: "过年好", //任务接受者姓名
+        // taskId: this.dispatchTaskTransferIdList[0],
+        taskIds: this.dispatchTaskTransferIdList,  //任务ID
+        afterId: this.currentPerson,   //任务接受者ID
+        afterName: taskAcceptName, //任务接受者姓名
         modifyId: this.workerId,      //转移者ID
         modifyName: this.workerName    //转移者姓名
       })

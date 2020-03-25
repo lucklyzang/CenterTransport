@@ -37,6 +37,7 @@ export default {
   },
 
   mounted () {
+    console.log('id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -57,7 +58,8 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'circulationTaskMessage',
-      'isCollectEnterSweepCodePage'
+      'isCollectEnterSweepCodePage',
+      'circulationTaskId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -77,6 +79,20 @@ export default {
 
     },
 
+    // 扫描二维码方法
+    sweepAstoffice () {
+      window.android.scanQRcode()
+    },
+
+     // 重新扫码弹窗
+    againSweepCode () {
+       this.$dialog.alert({
+        message: '扫描科室与任务要求科室不一致,请重新扫描'
+      }).then(() => {
+        this.sweepAstoffice()
+      });
+    },
+
     // 返回上一页
     backTo () {
       this.$router.push({path:'/circulationTask'});
@@ -86,7 +102,21 @@ export default {
 
     // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
-
+      let departmentId = '';
+      if (code) {
+        departmentId = code.id;
+        this.juddgeMedicalCorrect({
+          id: this.circulationId,// 循环任务ID 必输
+          proId: this.proId, // 项目ID 必输
+          departmentId: departmentId //扫描科室ID 必输
+        })
+      } else {
+         this.$dialog.alert({
+          message: '当前没有扫描到任何信息,请重新扫描'
+        }).then(() => {
+          this.sweepAstoffice()
+        });
+      }
     },
 
     // 扫码确认事件
@@ -104,20 +134,24 @@ export default {
     },
 
     //判断扫码科室是否为当前要收集的科室
-    juddgeMedicalCorrect(id,proId,departmentId) {
-      judgeDepartment(id,proId,departmentId).then((res) => {
+    juddgeMedicalCorrect(data) {
+      judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.$router.push({path:'/circulationTaskCollectMessage'});
-          this.changeTitleTxt({tit:'循环信息采集'});
-          setStore('currentTitle','循环信息采集')
+          if(this.isCollectEnterSweepCodePage) {
+            this.$router.push({path:'/circulationTaskCollectMessage'});
+            this.changeTitleTxt({tit:'循环信息采集'});
+            setStore('currentTitle','循环信息采集')
+          } else {
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'循环信息交接'});
+            setStore('currentTitle','循环信息交接')
+          }
+        } else {
+          this.againSweepCode()
         }
       })
       .catch((err) => {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
+        this.againSweepCode()
       })
     },
 

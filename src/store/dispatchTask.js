@@ -4,12 +4,18 @@ export default {
   state:{
     navTitle: '中央运送',
     dispatchTaskMessage: null,
-    dispatchTaskTransferIdList: []
+    dispatchTaskTransferIdList: [],
+    isRefershDispatchTaskPage: false,
+    dispatchTaskState: '',
+    dispatchTaskDepartmentType: ''
   },
   getters:{
     navTopTitle: state => state.navTitle,
     dispatchTaskMessage: state => state.dispatchTaskMessage,
-    dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList
+    dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
+    isRefershDispatchTaskPage: state => state.isRefershDispatchTaskPage,
+    dispatchTaskState: state => state.dispatchTaskState,
+    dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType
   },
   mutations:{
     // 改变页面标题
@@ -26,6 +32,18 @@ export default {
     changedispatchTaskTransferIdList (state,payLoad) {
       state.dispatchTaskTransferIdList = payLoad.DtMsg
     },
+    // 改变是否刷新调度任务页面状态
+    changeIsRefershDispatchTaskPage (state,payLoad) {
+      state.isRefershDispatchTaskPage = payLoad
+    },
+    // 改变调度任务状态的状态
+    changeDispatchTaskState (state,payLoad) {
+      state.dispatchTaskState = payLoad
+    },
+    // 改变调度任务科室类型的状态
+    changeDispatchTaskDepartmentType (state,payLoad) {
+      state.dispatchTaskDepartmentType = payLoad
+    }
   },
   actions:{}
 }

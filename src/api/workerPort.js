@@ -84,14 +84,16 @@ export function queryTaskDelayReason(data) {
     params: data
   })
 };
-// 调度任务(出发地 目的地)扫码确认
-export function dispatchTaskSweepCodeSure(data) {
+
+// 校验调度任务扫描科室信息
+export function judgeDispatchTaskDepartment(data) {
   return request({
-    url: 'delay/checkTransTask',
+    url: 'task/checkTransTask',
     method: 'post',
     data
   })
 };
+
 /**
  * 循环任务
 */
@@ -155,5 +157,14 @@ export function queryCollectSampleMessage(proId,taskId) {
   return request({
     url: `taskSpecimen/specimen/${proId}/${taskId}`,
     method: 'get'
+  })
+};
+
+// 标本送达信息
+export function sampleDelivery(data) {
+  return request({
+    url: 'taskSpecimen/arrive',
+    method: 'put',
+    data
   })
 };

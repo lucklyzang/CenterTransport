@@ -101,8 +101,6 @@ export default {
   },
 
   mounted () {
-    // console.log(querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,"5"));
-    console.log(this.circulationCollectMessageList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -120,7 +118,8 @@ export default {
       'navTopTitle',
       'currentElectronicSignature',
       'circulationCollectMessageList',
-      'circulationTaskMessage'
+      'circulationTaskMessage',
+      'completeDeparnmentInfo'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -136,7 +135,9 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeCirculationCollectMessageList'
+      'changeCirculationCollectMessageList',
+      'changeCompleteDeparnmentInfo',
+      'changeCurrentElectronicSignature'
     ]),
 
     // 我的页面
@@ -154,15 +155,33 @@ export default {
     getSampleMessage (data) {
       collectSampleInfo(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 当前页面回显数据
-          this.allcirculationCollectMessageList = [];
-          // 上一页面store采集数据
-          this.changeCirculationCollectMessageList({DtMsg:[]});
-          // 上一页面Localstorage采集数据
-          removeStore('currentCirculationCollectMessage');
-          this.$router.push({path:'/circulationTask'});
-          this.changeTitleTxt({tit:'循环任务'});
-          setStore('currentTitle','循环任务');
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+            // 当前页面回显数据
+            this.allcirculationCollectMessageList = [];
+            this.changeCurrentElectronicSignature({DtMsg: null})
+            // 上一页面store采集数据
+            this.changeCirculationCollectMessageList({DtMsg:[]});
+            // 上一页面Localstorage采集数据
+            removeStore('currentCirculationCollectMessage');
+            // 存储完成采集任务的科室信息
+            let temporaryDepartmentId = [];
+            temporaryDepartmentId = this.completeDeparnmentInfo['departmentIdList'];
+            temporaryDepartmentId.push(this.departmentId);
+            this.changeCompleteDeparnmentInfo({DtMsg: {
+              departmentIdList: temporaryDepartmentId,
+              taskId: this.circulationTaskId
+            }});
+            setStore('completeDepartmentMessage',{
+              departmentIdList: temporaryDepartmentId,
+              taskId: this.circulationTaskId
+            });
+            this.$router.push({path:'/circulationTask'});
+            this.changeTitleTxt({tit:'循环任务'});
+            setStore('currentTitle','循环任务');
+          });
         } else {
           this.$dialog.alert({
             message: res.data.msg,
@@ -192,7 +211,7 @@ export default {
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
-        departmentId: this.departmentId,  //部门ID
+        departmentId: this.departmentId,  //科室ID
         singImg: this.currentElectronicSignature, //签名照片
         specList: []
       };

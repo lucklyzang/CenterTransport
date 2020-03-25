@@ -10,7 +10,10 @@
     </div>
     <div class="circulation-task-list">
       <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-         <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+        <div class="sample-type-check">
+          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+        </div>
+        <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
         <p class="wait-handle-message-createTime">
           创建时间：{{item.createTime}}
         </p>
@@ -47,7 +50,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li v-for="(val, key, index) in JSON.parse(item.spaces)" :key="index" @click="officeTaskEvent(item, val, key, index, indexWrapper)">{{val}}</li>
+            <li :class="{officeCheckStyle: true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -65,7 +68,7 @@
   import {queryCirculationTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
@@ -84,6 +87,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
+        'isrefreshCirculationTaskPage',
+        'completeDeparnmentInfo'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -113,11 +118,35 @@
       })
     },
 
+    activated () {
+      console.log('完成科室信息',deepClone(this.completeDeparnmentInfo));
+      // 控制设备物理返回按键测试
+      if (!IsPC()) {
+        pushHistory();
+        this.gotoURL(() => {
+          this.$router.push({path: 'home'});
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
+        })
+      };
+      if (this.isrefreshCirculationTaskPage) {
+        // 查询循环任务
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        })
+      }
+    },
+
     methods: {
       ...mapMutations([
         'changeTitleTxt',
         'changeCirculationTaskMessage',
-        'changeIsCollectEnterSweepCodePage'
+        'changeIsCollectEnterSweepCodePage',
+        'changeCirculationTaskId'
       ]),
 
       // 跳转到我的页
@@ -184,7 +213,7 @@
         queryCirculationTask(data).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
-              for (let item of res.data.data)
+              for (let item of res.data.data) {
                 this.circulationTaskList.push({
                   createTime: item.createTime,
                   startTime: item.startTime,
@@ -197,8 +226,38 @@
                   taskNumber: item.taskNumber,
                   spaces: item.spaces,
                   id: item.id,
-                  show: false
+                  show: false,
+                  check: false
                 })
+              };
+              // 改变科室列表数据结构
+              for (let item = 0, len = this.circulationTaskList.length; item < len; item++) {
+                let temporaryArrayTwo = [];
+                for (let innerItem in this.circulationTaskList[item]) {
+                  if (innerItem == 'spaces') {
+                    let temporaryArrayTwo = [];
+                    let temporaryItem = removeBlock(this.circulationTaskList[item][innerItem]).split(",");
+                    let temporaryArrayOne = [];
+                    for (let kip of temporaryItem) {
+                      temporaryArrayOne = [];
+                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
+                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
+                    }
+                    this.circulationTaskList[item]['spaces'] = temporaryArrayTwo;
+                  };
+                }
+              };
+              // 科室列表增加字段
+              for (let item of this.circulationTaskList) {
+                for (let innerItem in item) {
+                  if (innerItem == 'spaces') {
+                    for (let medicalItem of item[innerItem]) {
+                      medicalItem['check'] = false
+                    }
+                  }
+                }
+              };
+              console.log('任务信息',this.circulationTaskList)
             } else {
               this.$dialog.alert({
                 message: '当前没有要循环的任务',
@@ -224,6 +283,10 @@
         setStore('currentTitle','中央运送')
       },
 
+      checkBoxEvent () {
+        console.log('选中',this.circulationTaskList);
+      },
+
       // 科室任务列表点击
       officeTaskEvent (item, val, key, index, indexWrapper) {
         this.currentOfficeName = indexWrapper;
@@ -238,6 +301,18 @@
 
       // 循环任务送达
       circulationTaskArrived () {
+        // 获取选中任务的id
+        let checkTaskId = '';
+        let checkList = [];
+        checkList = this.circulationTaskList.filter((item) => item.check == true);
+        for (let item of checkList) {
+          for (let innerItem in item) {
+            if (innerItem == 'id') {
+              checkTaskId = item[innerItem]
+            }
+          }
+        };
+        this.changeCirculationTaskId(checkTaskId);
         this.changeIsCollectEnterSweepCodePage(false);
         this.$router.push({path: 'circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
@@ -279,6 +354,11 @@
         position: relative;
         padding-bottom: 10px;
         box-sizing: border-box;
+        .sample-type-check {
+          position: absolute;
+          top: 10px;
+          left: 5px
+        };
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
           padding-left: 30px;
@@ -332,7 +412,12 @@
               line-height: 30px;
               font-size: 13px;
               text-align: center;
-              background:#fff
+              background:#fff;
+              border-bottom: 1px solid #fff
+            }
+            .officeCheckStyle {
+              color: #fff;
+              background: #2895ea
             }
           }
         }

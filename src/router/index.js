@@ -46,6 +46,9 @@ let baseRoute  = [
     path: '/circulationTask',
     name: 'circulationTask',
     component: CirculationTask,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/appointTask',
@@ -88,7 +91,10 @@ let baseRoute  = [
   {
     path: '/circulationTaskMessageConnect',
     name: 'circulationTaskMessageConnect',
-    component: CirculationTaskMessageConnect
+    component: CirculationTaskMessageConnect,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/circulationTaskConnectMessageSure',

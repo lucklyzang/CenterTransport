@@ -32,23 +32,43 @@ import App from './App'
 Vue.use(Vant);
 Vue.config.productionTip = false;
 // 页面刷新时重新存入用户信息
-store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
+if (getStore('userInfo')) {
+  store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
+}
 // 页面刷新后重新存入当前标题
-store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
+if (getStore('currentTitle')) {
+  store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
+}
 // 页面刷新重新存入请求token
-store.commit('changeToken', getStore('questToken'));
+if (getStore('questToken')) {
+  store.commit('changeToken', getStore('questToken'));
+}
 // 页面刷新重新存入调度任务具体信息
-store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
+if (getStore('currentDispatchTaskMessage')) {
+  store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
+}
 // 页面刷新重新存入预约任务具体信息
-store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
-// 页面刷新重新存入循环任务具体信息 
-store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
-// 页面刷新重新存入循环任务科室采集信息 
+if (getStore('currentAppointTaskMessage')) {
+  store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
+}
+// 页面刷新重新存入循环任务具体信息
+if (getStore('currentCirculationTaskMessage')) { 
+  store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
+}
+// 页面刷新重新存入循环任务科室采集信息
 if (getStore('currentCirculationCollectMessage')) {
   store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})
 };
+// 页面刷新重新存入循环任务科室交集信息
+if (getStore('currentCirculationConnectMessage')) {
+  store.commit('changeCirculationConnectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationConnectMessage'))['innerMessage'])})
+};
 // 页面刷新重新存入医护人员生成运送类型信息
 store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
+// 页面刷新重新存入循环任务完成采集科室信息
+if (getStore('completeDepartmentMessage')) {
+  store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))});
+}
 if (IsPC()) {
   Vue.use(new VueSocketIO({
      debug: true,

@@ -97,6 +97,7 @@ export default {
   },
 
   mounted () {
+    console.log('获取id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -109,21 +110,37 @@ export default {
     this.getCollectSampleMessage(this.proId,240)
   },
 
+  activated () {
+    // 控制设备物理返回按键测试
+    if (!IsPC()) {
+      pushHistory();
+      this.gotoURL(() => {
+        this.$router.push({path:'/circulationTask'})
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务')
+      })
+    };
+    if (this.isrefreshCirculationConnectPage) {
+      this.getCollectSampleMessage(this.proId,240)
+    }
+  },
+
   computed:{
     ...mapGetters([
-      'navTopTitle'
+      'navTopTitle',
+      'isrefreshCirculationConnectPage',
+      'circulationTaskId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
-    },
-    circulationTaskId () {
-      return this.circulationTaskMessage.currentMsg.id
-    },
+    }
   },
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeCirculationConnectMessageList',
+      'changeIsrefreshCirculationTaskPage'
     ]),
 
     // 我的页面
@@ -169,8 +186,9 @@ export default {
               }
             };
             let temporaryManageSampleDataList = [],
-            // 对同一标本类型的数量进行求和 deepClone(filterSampleMessage)
+            // 对同一标本类型的数量进行求和
             sameSampleTypeNumber = sameSampleNumberList.reduce((last, before, index, array) => last + before);
+            // 生成符合页面展示要求的数据结构
             this.manageSampleDataList.push(
               {
                 sampleTypeName: repeArray(this.allSampleTypeList)[i],
@@ -181,6 +199,7 @@ export default {
             );
             let manageCheckArray = [];
             let manageCheckArrayCheck = [];
+            // 格式换标本项里的检查项字段
             for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
               manageCheckArray = [];
               manageCheckArrayCheck = [];
@@ -219,6 +238,9 @@ export default {
 
     // 交接信息确认事件
     ConnectSure () {
+      let circulationMessageListSure = this.manageSampleDataList.filter((item) => { return item.check == true});
+      this.changeCirculationConnectMessageList({DtMsg: circulationMessageListSure});
+      setStore('currentCirculationConnectMessage',{innerMessage: circulationMessageListSure});
       this.$router.push({path:'/circulationTaskConnectMessageSure'})
       this.changeTitleTxt({tit:'交接信息确认'});
       setStore('currentTitle','交接信息确认')
@@ -226,6 +248,10 @@ export default {
 
     // 交接信息取消事件
     ConnectCancel () {
+      this.changeIsrefreshCirculationTaskPage(false);
+      this.$router.push({path:'/circulationTask'})
+      this.changeTitleTxt({tit:'循环任务'});
+      setStore('currentTitle','循环任务')
     }
   }
 }
