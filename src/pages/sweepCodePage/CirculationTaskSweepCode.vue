@@ -5,6 +5,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+     <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="sweep-code-title">
       <h3>扫描二维码</h3>
     </div>
@@ -27,6 +31,9 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+       leftDropdownDataList: ['退出登录'],
+      leftDownShow: false,
+      liIndex: null,
     };
   },
 
@@ -74,10 +81,17 @@ export default {
       'changeTitleTxt'
     ]),
 
-    // 我的页面
-    skipMyInfo () {
+     // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
 
-    },
+      // 跳转到我的页
+      skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
+      },
 
     // 扫描二维码方法
     sweepAstoffice () {
@@ -171,6 +185,9 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+      .left-dropDown {
+      .rightDropDown
+    }
     font-size: 14px;
     .sweep-code-title {
       height: 30px;

@@ -171,6 +171,7 @@
     },
     
     mounted() {
+      console.log('用户信息',this.userInfo);
       // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
@@ -178,32 +179,40 @@
         })
       };
       // 查询任务数量
-      if (this.presonIdentity == 0) {
+      if (this.userTypeId == 0) {
         this.queryAllTaskNumber(this.proId, this.workerId);
         this.getAllTaskMessage();
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送'); 
       };
-      this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
     },
     
-    watch : {
+    watch: {
+      userTypeId: {
+        handler(newName, oldName) {
+          if (newName == 0) {
+            this.workerShow = true
+          } else {
+            this.workerShow = false
+          }
+        },
+        immediate: true,
+        deep: true
+      }
     },
-
     activated () {
       if (this.isHomeJumpOtherPage) {
         if (!this.isRefershHome) {
           window.location.reload()
         }
       } else {
-        if (this.presonIdentity == 0) {
+        if (this.userTypeId == 0) {
           // 查询任务数量
           this.queryAllTaskNumber(this.proId, this.workerId);
           this.getAllTaskMessage();
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送'); 
         }
-        this.presonIdentity = JSON.parse(getStore('userInfo')).extendData.user_type_id;
       }  
     },
 
@@ -216,29 +225,22 @@
         'navTopTitle',
         'isRefershHome',
         'isHomeJumpOtherPage',
+        'userType',
+        'userInfo'
       ]),
       userName () {
-       return JSON.parse(getStore('userInfo')).extendData.userName
+       return this.userInfo.extendData.userName
       },
-      presonIdentity:  {
-        get: function() {
-          return JSON.parse(getStore('userInfo')).extendData.user_type_id
-        },
-        set: function(newVal) {
-          if (newVal == 0) {
-            this.workerShow = true
-          } else {
-            this.workerShow = false
-          }
-        }
+      userTypeId () {
+        return this.userInfo.extendData.user_type_id
       },
 
       proId () {
-        return JSON.parse(getStore('userInfo')).extendData.proId
+        return this.userInfo.extendData.proId
       },
 
       workerId () {
-        return JSON.parse(getStore('userInfo')).extendData.userId
+        return this.userInfo.extendData.userId
       }
     
     },

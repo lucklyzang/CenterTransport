@@ -5,6 +5,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+     <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="dispatch-task-title">
       <div class="task-line-one-wrapper">
         <ul class="task-line-one">
@@ -12,7 +16,7 @@
         </ul>
       </div>
       <p class="task-line-two">
-        <span :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">状态筛选</span>
+        <span v-show="stateScreen" :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">状态筛选</span>
         <span v-show="cancelTaskBtnShow" :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
         <span v-show="transferTaskBtnShow" :class="{'taskLineTwoStyle':transferTask == true}" @click="transferTaskEvent">转移任务</span>
       </p>
@@ -20,37 +24,37 @@
     <div class="wait-handle" v-show="waitHandleShow">
       <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
         <p class="wait-handle-message-createTime">
-          开始时间：{{item.taskCreateTime}}
+          开始时间：{{item.createTime}}
         </p>
         <div class="wait-handle-message">
           <div class="handle-message-line-wrapper">
             <p>
               <span class="message-tit">预约名称:</span>
-              <span class="message-tit-real">{{item.bedNumber}}</span>
+              <span class="message-tit-real">{{item.taskTypeName}}</span>
             </p>
             <P>
               <span class="message-tit">起点:</span>
-              <span class="message-tit-real">{{item.taskStartPoint}}</span>
+              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
             </P>
           </div>
           <div class="handle-message-line-wrapper">
             <p>
               <span class="message-tit">终点:</span>
-              <span class="message-tit-real">{{item.taskFinishPoint}}</span>
+              <span class="message-tit-real">{{item.destinationName}}</span>
             </p>
             <P>
               <span class="message-tit">运送类型:</span>
-              <span class="message-tit-real">{{item.taskTransportype}}</span>
+              <span class="message-tit-real">{{item.taskType}}</span>
             </P>
           </div>
           <div class="handle-message-line-wrapper">
             <p>
               <span class="message-tit">转运工具:</span>
-              <span class="message-tit-real">{{item.taskTransportTools}}</span>
+              <span class="message-tit-real">{{item.toolName}}</span>
             </p>
             <P>
               <span class="message-tit">状态:</span>
-              <span class="message-tit-real">{{item.taskStatus == 0 ? '待处理' : '未开始' }}</span>
+              <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
             </P>
           </div>
           <div class="handle-message-line-wrapper">
@@ -60,11 +64,11 @@
             </p>
           </div>
         </div>
-        <p class="wait-handle-check" v-show="item.taskStatus !== '0'">
+        <p class="wait-handle-check" v-show="item.state == 2">
           <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
         </p>
         <p class="get-wait-task">
-          <van-button type="info" v-show="item.taskStatus == '0'" @click.stop="getTask">获取</van-button>
+          <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
         </p>
       </div>
     </div>
@@ -73,34 +77,263 @@
       <van-tabs v-model="activeName" @click="onClickTab" color="#2895ea">
         <van-tab name="0">
           <div slot="title">
-            <span class="title">未开始</span>
-            <span class="right-sign" v-show="currentIndex == 0">12</span>
+            <span class="title">全部</span>
+            <span class="right-sign" v-show="currentIndex == 0">{{waitBaskList.length}}</span>
           </div>
-          <div class="task-status-list">1</div>
-        </van-tab>
-        <van-tab name="1">
-          <div slot="title">
-            <span class="title">派送中</span>
-            <span class="right-sign" v-show="currentIndex == 1">23</span>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+              <p class="wait-handle-message-createTime">
+                开始时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">预约名称:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskType}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
+                </div>
+              </div>
+              <p class="wait-handle-check" v-show="item.state == 2">
+                <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
+            </div>
           </div>
-          <div class="task-status-list">2</div>
         </van-tab>
         <van-tab name="2">
           <div slot="title">
-            <span class="title">已完成</span>
-            <span class="right-sign" v-show="currentIndex == 2">3</span>
+            <span class="title">已获取</span>
+            <span class="right-sign" v-show="currentIndex == 2">{{waitBaskList.length}}</span>
           </div>
-          <div class="task-status-list">3</div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+              <p class="wait-handle-message-createTime">
+                开始时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">预约名称:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskType}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
+                </div>
+              </div>
+              <p class="wait-handle-check" v-show="item.state == 2">
+                <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
+            </div>
+          </div>
+        </van-tab>
+        <van-tab name="3">
+          <div slot="title">
+            <span class="title">进行中</span>
+            <span class="right-sign" v-show="currentIndex == 3">{{waitBaskList.length}}</span>
+          </div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+              <p class="wait-handle-message-createTime">
+                开始时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">预约名称:</span>
+                    <span class="message-tit-real">{{item.patientName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
+                </div>
+              </div>
+             <p class="wait-handle-check" v-show="item.state == 2">
+              <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
+            </div>
+          </div>
+        </van-tab>
+          <van-tab name="4">
+          <div slot="title">
+            <span class="title">未结束</span>
+            <span class="right-sign" v-show="currentIndex == 4">{{waitBaskList.length}}</span>
+          </div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+              <p class="wait-handle-message-createTime">
+                开始时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">预约名称:</span>
+                    <span class="message-tit-real">{{item.patientName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
+                </div>
+              </div>
+             <p class="wait-handle-check" v-show="item.state == 2">
+              <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
+            </div>
+          </div>
         </van-tab>
       </van-tabs>
     </div>
+    <van-dialog
+      v-model="taskCancelReasonShow"
+      title="任务取消原因"
+      show-cancel-button
+      confirmButtonText="确定"
+      cancelButtonText="取消"
+      :close-on-popstate="true"
+      :close-on-click-overlay="true"
+      @confirm="taskCancelSure"
+      @cancel="taskCancel"
+      >
+      <van-cell-group>
+        <van-field
+          v-model="taskCancelReason"
+          label=取消原因
+          type="textarea"
+          placeholder="请输入取消原因"
+          rows="3"
+          autosize
+        />
+      </van-cell-group>
+    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  //  import {getAlltTaskNumber} from '@/api/workerPort.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -108,9 +341,14 @@
   export default {
     data () {
       return {
+        leftDropdownDataList: ['退出登录'],
+        leftDownShow: false,
+        liIndex: null,
+        transferWorkerShow: false,
         taskOneList: ['待处理', '任务查询'],
         taskLlineOneIndex: '0',
         statusScreen: false,
+        stateScreen: false,
         cancelTask: false,
         transferTask: false,
         stateScreen: false,
@@ -120,41 +358,12 @@
         waitHandleCheck: true,
         cancelTaskBtnShow: false,
         transferTaskBtnShow: false,
-        waitBaskList: [
-          {
-            taskCheck: false,
-            appointName: '预约一',
-            taskCreateTime: '2020-3-21:12:21:30',
-            taskStatus: '0',
-            taskStartPoint: '科室一',
-            taskFinishPoint: '科室二',
-            taskTransportype: '类型一',
-            taskTransportTools: '小车',
-            bedNumber: '床号一'
-          },
-          {
-            taskCheck: false,
-            appointName: '预约二',
-            taskCreateTime: '2020-3-22:12:21:30',
-            taskStatus: '1',
-            taskStartPoint: '科室三',
-            taskFinishPoint: '科室四',
-            taskTransportype: '类型二',
-            taskTransportTools: '大车',
-            bedNumber: '床号二'
-          },
-          {
-            taskCheck: false,
-            appointName: '预约三',
-            taskCreateTime: '2020-3-23:12:21:30',
-            taskStatus: '0',
-            taskStartPoint: '科室五',
-            taskFinishPoint: '科室六',
-            taskTransportype: '类型三',
-            taskTransportTools: '推车',
-            bedNumber: '床号三'
-          }
-        ],
+        taskCancelReasonShow: false,
+        taskCancelReason: '',
+        waitBaskList: [],
+        screenTaskList: [],
+        cancelTaskIdList: [],
+        transferTaskIdList: [],
         activeName: 0,
         currentIndex: ''
       };
@@ -168,8 +377,15 @@
 
     computed: {
       ...mapGetters([
-        'navTopTitle'
-      ])
+        'navTopTitle',
+        'isRefershDispatchTaskPage'
+      ]),
+      proId () {
+        return JSON.parse(getStore('userInfo')).extendData.proId
+      },
+      workerId () {
+        return JSON.parse(getStore('userInfo')).extendData.userId
+      }
     },
 
     watch : {
@@ -197,17 +413,103 @@
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
         })
-      }
+      };
+      this.getAppointTaskMessage(this.proId, this.workerId)
     },
 
     methods: {
       ...mapMutations([
         'changeTitleTxt',
-        'changeAppointTaskMessage'
+        'changeAppointTaskMessage',
+        'changeAppointTaskTransferIdList',
+        'changeAppointSweepCodeNumber',
+        'changeAppointSweepCodeIntoPage',
+        'changeAppointTaskDepartmentType',
+        'changeAppointTaskState'
       ]),
+
+      // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
 
       // 跳转到我的页
       skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
+      },
+
+      // 任务状态转换
+      stateTransfer (index) {
+        switch(index) {
+          case 0 :
+            return '未分配'
+            break;
+          case 1 :
+            return '未查阅'
+            break;
+          case 2 :
+            return '未开始'
+            break;
+          case 3 :
+            return '进行中'
+            break;
+          case 4 :
+            return '未结束'
+            break;
+          case 5 :
+            return '已延迟'
+            break;
+          case 6 :
+            return '已取消'
+            break;
+          case 7 :
+            return '已完成'
+            break;
+        }
+      },
+
+      // 查询预约任务
+      getAppointTaskMessage (proID, workerId) {
+        queryAppointTaskMessage(proID, workerId).then((res) => {
+          let temporaryTaskList = [];
+          this.waitBaskList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                  temporaryTaskList.push({
+                    taskCheck: false,
+                    createTime: item.createTime,
+                    state: item.state,
+                    taskType: '',
+                    setOutPlaceName: item.setOutPlaceName,
+                    destinationName: item.destinationName,
+                    taskTypeName: item.taskName,
+                    toolName: item.toolName,
+                    id: item.id
+                })
+              };
+              this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
+              if ( this.waitBaskList.length == 0) {
+                this.$dialog.alert({
+                  message: '当前没有待处理的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+              }
+            } else {
+              this.$dialog.alert({
+                message: '当前没有任何状态的任务',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
       },
 
       // 阻止change事件冒泡
@@ -222,22 +524,160 @@
 
       // 调度任务第一行按钮点击
       taskLineOneEvent (item,index) {
-        this.taskLlineOneIndex = index;
+       this.taskLlineOneIndex = index;
         this.statusScreen = false;
         this.transferTask = false;
         this.cancelTask = false;
         if (index == '0') {
+          this.stateScreen = true;
           this.waitHandleShow = true;
           this.taskQueryShow = false;
-          this.statusHandleScreenShow = false
+          this.statusHandleScreenShow = false;
+          this.getAppointTaskMessage(this.proId, this.workerId);
         } else if (index == '1') {
-          this.taskQueryShow = true;
           this.stateScreen = false;
+          this.taskQueryShow = true;
           this.waitHandleShow = false;
           this.statusHandleScreenShow = false;
           this.cancelTaskBtnShow = false;
           this.transferTaskBtnShow = false
         }
+      },
+
+
+      // 取消任务按钮点击
+      cancelTaskEvent () {
+        this.cancelTask = true;
+        this.transferTask = false;
+        this.statusScreen = false;
+        this.cancelTaskIdList = [];
+        this.taskCancelReasonShow = true;
+      },
+
+      // 转移任务按钮点击
+      transferTaskEvent () {
+        this.transferTask = true;
+        this.cancelTask = false;
+        this.statusScreen = false;
+        this.transferWorkerShow = true;
+        this.$router.push({path:'/appointTaskForm'});
+        this.changeTitleTxt({tit:'转移人员选择'});
+        setStore('currentTitle','转移人员选择');
+        this.transferTaskIdList = [];
+        let temporaryTransferTaskCheckList = [];
+        temporaryTransferTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        for (let item of temporaryTransferTaskCheckList)  {
+          for (let key in item) {
+            if (key == 'id')
+            this.transferTaskIdList.push(item['id'])
+          }
+        };
+        this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList})
+      },
+
+      // 复选框选择事件 
+      waitTaskChecked (waitHandleCheck) {
+      },
+
+       // 获取待处理任务事件
+      getTask (taskId) {
+        updateAppointTaskMessage({
+          proId: this.proId,//当前项目ID
+          id: taskId, //当前任务ID
+          state: 2 //更新后的状态
+        })
+        .then(res => {
+          if (res && res.data.code == 200) {
+            this.getAppointTaskMessage(this.proId, this.workerId)
+          }
+        })
+        .catch(err => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 点击具体任务事件
+      taskClickEvent (item) {
+        if (item.state !== 1) {
+          // 传给扫码界面科室类型和任务状态的值
+          if (item.state == 2) {
+            this.changeAppointSweepCodeIntoPage(true);
+            this.changeAppointTaskDepartmentType(0);
+            this.changeAppointTaskState(3)
+          } else if (item.state == 3) {
+            this.changeAppointSweepCodeIntoPage(false);
+            this.changeAppointSweepCodeNumber(true);
+            this.changeAppointTaskDepartmentType(1);
+          } else if (item.state == 4) {
+            this.changeAppointSweepCodeNumber(false);
+            this.changeAppointTaskDepartmentType(2);
+            this.changeAppointTaskState(7)
+          };
+          this.$router.push({'path':'/appointTaskSweepCode'});
+          this.changeTitleTxt({tit:'扫码'});
+          setStore('currentTitle','扫码');
+          // 改变调度具体某一预约任务的信息状态
+          this.changeAppointTaskMessage({DtMsg: item});
+          setStore('currentAppointTaskMessage',item);
+        }
+      },
+
+      // 取消任务按钮点击
+      cancelTaskEvent () {
+        this.cancelTask = true;
+        this.transferTask = false;
+        this.statusScreen = false;
+        this.cancelTaskIdList = [];
+        this.taskCancelReasonShow = true;
+      },
+
+      //任务取消原因确定
+      taskCancelSure () {
+        this.taskCancelReasonShow = false;
+        let temporaryCancelTaskCheckList = [];
+        temporaryCancelTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        for (let item of temporaryCancelTaskCheckList)  {
+          for (let key in item) {
+            if (key == 'id')
+            this.cancelTaskIdList.push(item['id'])
+          }
+        };
+        this.cancelCheckAppointTask({
+          proId: this.proId,	//当前项目ID
+          ids: this.cancelTaskIdList, //当前任务ID
+          cancelReason: this.taskCancelReason //取消原因
+        })
+      },
+
+      // 预约任务的取消
+      cancelCheckAppointTask (data) {
+        cancelAppointTask(data)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            this.$dialog.alert({
+              message: res.data.msg,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.getAppointTaskMessage(this.proId, this.workerId);
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      //任务取消原因取消
+      taskCancel () {
+        this.taskCancelReasonShow = false
       },
 
       // 状态筛选按钮点击
@@ -247,47 +687,103 @@
         this.cancelTask = false;
         this.taskQueryShow = false;
         this.waitHandleShow = false;
-        this.statusHandleScreenShow = true
-      },
-
-      // 取消任务按钮点击
-      cancelTaskEvent () {
-        this.cancelTask = true;
-        this.transferTask = false;
-        this.statusScreen = false;
-      },
-
-      // 转移任务按钮点击
-      transferTaskEvent () {
-        this.transferTask = true;
-        this.cancelTask = false;
-        this.statusScreen = false;
-      },
-
-      // 复选框选择事件 
-      waitTaskChecked (waitHandleCheck) {
-      },
-
-      // 点击具体任务事件
-      taskClickEvent (item) {
-        if (item.taskStatus == '1') {
-          this.$router.push({'path':'/appointTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码');
-          // 改变调度具体某一任务的信息状态
-          this.changeAppointTaskMessage({DtMsg: item});
-          setStore('currentAppointTaskMessage',item);
-        }
-      },
-
-      // 获取待处理任务事件
-      getTask () {
-
+        this.statusHandleScreenShow = true;
+        this.activeName = 0;
+        this.currentIndex = 0;
+        queryAppointTaskMessage (this.proId, this.workerId)
+        .then((res) => {
+          let temporaryTaskListFirst = [];
+          this.screenTaskList = [];
+          this.waitBaskList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                temporaryTaskListFirst.push({
+                  taskCheck: false,
+                  createTime: item.createTime,
+                  state: item.state,
+                  taskType: '',
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskName,
+                  toolName: item.toolName,
+                  id: item.id
+                })
+              };
+              this.screenTaskList = temporaryTaskListFirst;
+              this.waitBaskList = this.screenTaskList;
+              if (this.screenTaskList.length == 0) {
+                this.$dialog.alert({
+                  message: '当前没有未分配的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+              }
+            } else {
+              this.$dialog.alert({
+                message: '当前没有任何状态的任务',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
       },
 
       // 状态筛选标签点击切换
-      onClickTab (name, title) {
+      onClickTab (name) {
         this.currentIndex = name;
+        queryAppointTaskMessage(this.proId, this.workerId)
+        .then((res) => {
+          let temporaryScreenTaskList = [];
+          this.waitBaskList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                temporaryScreenTaskList.push({
+                  taskCheck: false,
+                  createTime: item.createTime,
+                  state: item.state,
+                  taskType: '',
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskName,
+                  toolName: item.toolName,
+                  id: item.id
+                })
+              };
+              if (name == 0) {
+                this.waitBaskList = temporaryScreenTaskList
+              } else if (name == 2) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2})
+              } else if (name == 3) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
+              } else if (name == 4) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4})
+              }
+            } else {
+              this.$dialog.alert({
+                message: '当前没有查询到对应状态的任务',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
       }
     }
 }
@@ -297,9 +793,12 @@
   @import "~@/common/stylus/variable.less";
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
-  .content-wrapper {
+   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+    .left-dropDown {
+      .rightDropDown
+    }
     .dispatch-task-title {
       .task-line-one-wrapper {
           height: 36px;
@@ -331,7 +830,7 @@
         box-sizing: border-box;
         color: #7f7d7d;
         .taskLineTwoStyle {
-          color: red
+          color: #2895ea
         }
         span {
           font-size: 12px;
@@ -397,6 +896,52 @@
         }
       }
     };
+    .status-handle-screen {
+       .wait-handle-list {
+        box-sizing: border-box;
+        position: relative;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+        .wait-handle-message-createTime {
+          border-top: 1px solid #e3ece9;
+          padding-left: 30px;
+          background: #ececec;
+          height: 24px;
+          line-height: 24px;
+          font-size: 12px;
+          color: #7f7d7d
+        };
+        .wait-handle-message {
+          margin-left: 30px;
+          font-size: 12px;
+          padding-top: 15px;
+          padding-bottom: 15px;
+          box-sizing: border-box;
+          .handle-message-line-wrapper {
+            p {
+              margin-bottom: 10px;
+              width: 47%;
+              display: inline-block;
+              .message-tit {
+                color: #7f7d7d
+              };
+              .message-tit-real {
+                color: black
+              }
+            }
+          }
+        };
+        .wait-handle-check {
+          position: absolute;
+          top: 40px;
+          left: 6px
+        };
+        .get-wait-task {
+          width: 100%;
+          text-align: center
+        }
+      }
+    }
     .status-handle-screen {
       /deep/ .van-tabs {
         .right-sign {

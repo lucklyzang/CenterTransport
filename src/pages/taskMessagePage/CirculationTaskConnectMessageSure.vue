@@ -5,6 +5,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+     <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="sweep-code-title">
       <h3>交接信息确认</h3>
     </div>
@@ -76,7 +80,7 @@ import HeaderTop from '@/components/HeaderTop'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {sampleDelivery} from '@/api/workerPort.js'
+import {sampleDelivery, updateCirculationTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, deepClone } from '@/common/js/utils'
@@ -84,6 +88,9 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+       leftDropdownDataList: ['退出登录'],
+      leftDownShow: false,
+      liIndex: null,
       manageSampleDataList: []
     };
   },
@@ -97,7 +104,7 @@ export default {
   },
 
   mounted () {
-    console.log('交接信息', this.circulationConnectMessageList);
+    console.log('交接信息', this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -115,11 +122,15 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'currentElectronicSignature',
-      'circulationConnectMessageList'
+      'circulationConnectMessageList',
+      'circulationTaskMessage'
     ]),
     proId () {
-    return JSON.parse(getStore('userInfo')).extendData.proId
-  },
+      return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+     circulationTaskId () {
+      return this.circulationTaskMessage.currentMsg.id
+    },
   },
 
   methods:{
@@ -127,13 +138,21 @@ export default {
       'changeTitleTxt',
       'changeIsrefreshCirculationConnectPage',
       'changeCirculationConnectMessageList',
-      'changeIsrefreshCirculationTaskPage'
+      'changeIsrefreshCirculationTaskPage',
+      'changeCompleteDeparnmentInfo'
     ]),
 
-    // 我的页面
-    skipMyInfo () {
+     // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
 
-    },
+      // 跳转到我的页
+      skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
+      },
 
     // 回显交接信息
     echoConectMessage () {
@@ -173,16 +192,11 @@ export default {
               setStore('currentTitle','循环任务');
             })
             .catch(() => {
-              this.this.changeIsrefreshCirculationTaskPage(false);
-              // 当前页面回显数据
-              this.manageSampleDataList = [];
-              // 上一页面store采集数据
-              this.changeCirculationConnectMessageList({DtMsg:[]});
-              // 上一页面Localstorage采集数据
-              removeStore('currentCirculationConnectMessage');
-              this.$router.push({path:'/circulationTask'});
-              this.changeTitleTxt({tit:'循环任务'});
-              setStore('currentTitle','循环任务');
+              this.updateCirculationtaskState({
+                proId: this.proId,		 //当前项目ID
+                id: this.circulationTaskId, //当前任务ID
+                state: 7 //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'}
+              });
             })
           });
         } else {
@@ -191,6 +205,36 @@ export default {
           closeOnPopstate: true
         }).then(() => {
         });
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
+    // 更新循环任务状态
+    updateCirculationtaskState (data) {
+      updateCirculationTask(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.changeIsrefreshCirculationTaskPage(true);
+          // 当前页面回显数据
+          this.manageSampleDataList = [];
+          // 上一页面store采集数据
+          this.changeCirculationConnectMessageList({DtMsg:[]});
+          // 上一页面Localstorage采集数据
+          removeStore('currentCirculationConnectMessage');
+          this.changeCompleteDeparnmentInfo({DtMsg: {
+            departmentIdList: [],
+            taskId: ''
+          }});
+          removeStore('completeDepartmentMessage');
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
         }
       })
       .catch((err) => {
@@ -244,6 +288,9 @@ export default {
   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+      .left-dropDown {
+      .rightDropDown
+    }
     .sweep-code-title {
       height: 30px;
       line-height: 30px;

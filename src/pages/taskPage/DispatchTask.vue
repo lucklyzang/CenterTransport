@@ -5,6 +5,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+   <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="dispatch-task-title">
       <div class="task-line-one-wrapper">
         <ul class="task-line-one">
@@ -257,6 +261,9 @@
     data () {
       return {
         transferWorkerShow: false,
+        leftDropdownDataList: ['退出登录'],
+        leftDownShow: false,
+        liIndex: null,
         taskOneList: ['待处理', '任务查询'],
         taskLlineOneIndex: '0',
         checkPerson: 0,
@@ -458,6 +465,11 @@
           updateDispatchTask(data)
           .then((res) => {
             if (res && res.data.code == 200) {
+              this.$dialog.alert({
+                message: res.data.msg,
+                closeOnPopstate: true
+              }).then(() => {
+              });
               this.queryDispatchTask(this.proId, this.workerId)
             }
           })
@@ -472,6 +484,11 @@
           cancelDispatchTaskBatch(data)
           .then((res) => {
             if (res && res.data.code == 200) {
+              this.$dialog.alert({
+                message: res.data.msg,
+                closeOnPopstate: true
+              }).then(() => {
+              });
               this.queryDispatchTask(this.proId, this.workerId)
             }
           })
@@ -507,9 +524,16 @@
         })
       },
 
+      // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
 
       // 跳转到我的页
       skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
       },
 
       // 阻止change事件冒泡
@@ -763,6 +787,9 @@
   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+    .left-dropDown {
+      .rightDropDown
+    }
     .dispatch-task-title {
       .task-line-one-wrapper {
           height: 36px;

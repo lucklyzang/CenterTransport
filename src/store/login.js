@@ -4,13 +4,16 @@ export default {
     routerFlag: true,
     token: null, //请求token
     // 是否扫码登录
-    loginSweepCode: false
+    loginSweepCode: false,
+    // 用户身份
+    userType: '',
   },
   getters:{
     userInfo : state => state.userInfo,
     routerFlag : state => state.routerFlag,
     loginSweepCode : state => state.loginSweepCode,
     token : state => state.token,
+    userType: state => state.userType
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -27,6 +30,10 @@ export default {
       if (playLoad && playLoad != 'null') {
         state.token = playLoad
       }
+    },
+    // 修改用户状态
+    changeUserType (state, playLoad) {
+      state.userType = playLoad
     },
   },
   actions:{}

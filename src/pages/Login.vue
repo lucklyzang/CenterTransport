@@ -108,7 +108,8 @@ export default {
       'storeUserInfo',
       'changeTitleTxt',
       'changeRouterFlag',
-      'changeLoginMethod'
+      'changeLoginMethod',
+      'changeUserType'
     ]),
 
     // 登录方式切换点击事件
@@ -207,6 +208,9 @@ export default {
             // 登录用户名密码及用户信息存入Locastorage
             setStore('userInfo', res.data.data);
             setStore('isLogin', true);
+            // 用户身份类别存入store和Locastorage
+            this.changeUserType(res.data.data["extendData"]['user_type_id']);
+            setStore('userType', res.data.data["extendData"]['user_type_id']);
             this.storeUserInfo(JSON.parse(getStore('userInfo')));
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});

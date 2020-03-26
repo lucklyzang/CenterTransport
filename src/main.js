@@ -35,6 +35,9 @@ Vue.config.productionTip = false;
 if (getStore('userInfo')) {
   store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
 }
+if (getStore('userType')) {
+  store.commit('changeUserType',getStore('userType'));
+}
 // 页面刷新后重新存入当前标题
 if (getStore('currentTitle')) {
   store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
@@ -64,7 +67,9 @@ if (getStore('currentCirculationConnectMessage')) {
   store.commit('changeCirculationConnectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationConnectMessage'))['innerMessage'])})
 };
 // 页面刷新重新存入医护人员生成运送类型信息
-store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
+if (getStore('currentTransportTypeMessage')) {
+  store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
+}
 // 页面刷新重新存入循环任务完成采集科室信息
 if (getStore('completeDepartmentMessage')) {
   store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))});

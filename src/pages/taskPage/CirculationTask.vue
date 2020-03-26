@@ -5,13 +5,17 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+     <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="circultion-task-title">
       <h3>循环任务列表</h3>
     </div>
     <div class="circulation-task-list">
       <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
         <div class="sample-type-check">
-          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+          <van-checkbox v-show="item.state == 2" v-model="item.check" @click="checkBoxEvent"></van-checkbox>
         </div>
         <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
         <p class="wait-handle-message-createTime">
@@ -50,7 +54,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -68,11 +72,14 @@
   import {queryCirculationTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
       return {
+        leftDropdownDataList: ['退出登录'],
+        leftDownShow: false,
+        liIndex: null,
         circulationTaskList: [],
         currentOfficeName: ''
       };
@@ -119,7 +126,7 @@
     },
 
     activated () {
-      console.log('完成科室信息',deepClone(this.completeDeparnmentInfo));
+      console.log('完成科室信息',this.completeDeparnmentInfo);
       // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
@@ -149,8 +156,16 @@
         'changeCirculationTaskId'
       ]),
 
+      // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
+
       // 跳转到我的页
       skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
       },
 
       // 查看科室事件
@@ -211,6 +226,7 @@
       // 查询循环任务
       getCirculationTask (data) {
         queryCirculationTask(data).then((res) => {
+          this.circulationTaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               for (let item of res.data.data) {
@@ -257,6 +273,19 @@
                   }
                 }
               };
+              // 为完成采集的科室增加标记this.completeDeparnmentInfo['taskId']
+              let completeDepartmentList = repeArray(this.completeDeparnmentInfo['departmentIdList']);
+              let completeCurrentTaskId = this.completeDeparnmentInfo['taskId'];
+              let taskIndex = this.circulationTaskList.indexOf(this.circulationTaskList.filter((item) => item.id == completeCurrentTaskId)[0]);
+              if (taskIndex !== -1) {
+                for (let i = 0, len1 = completeDepartmentList.length; i < len1; i++) {
+                  for (let j = 0, len2 = this.circulationTaskList[taskIndex]['spaces'].length; j < len2; j++) {
+                    if (this.circulationTaskList[taskIndex]['spaces'][j]['value'] == completeDepartmentList[i]) {
+                      this.circulationTaskList[taskIndex]['spaces'][j]['check'] = true
+                    }
+                  }
+                }
+              };
               console.log('任务信息',this.circulationTaskList)
             } else {
               this.$dialog.alert({
@@ -289,6 +318,7 @@
 
       // 科室任务列表点击
       officeTaskEvent (item, val, key, index, indexWrapper) {
+        if (item.state == 7) {return};
         this.currentOfficeName = indexWrapper;
         this.changeIsCollectEnterSweepCodePage(true);
         this.$router.push({'path':'/circulationTaskSweepCode'});
@@ -305,18 +335,40 @@
         let checkTaskId = '';
         let checkList = [];
         checkList = this.circulationTaskList.filter((item) => item.check == true);
-        for (let item of checkList) {
-          for (let innerItem in item) {
-            if (innerItem == 'id') {
-              checkTaskId = item[innerItem]
-            }
+        if (checkList.length == 0) {
+          this.$dialog.alert({
+            message: '请选择要送达的循环任务',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        } else if (checkList.length > 1) {
+          this.$dialog.alert({
+            message: '最多只能同时送达一条循环任务',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        } else if (checkList.length == 1) {
+          if (checkList[0]['spaces'].filter((item) => item.check == true).length == checkList[0]['spaces'].length) {
+            for (let item of checkList) {
+              for (let innerItem in item) {
+                if (innerItem == 'id') {
+                  checkTaskId = item[innerItem]
+                }
+              }
+            };
+            this.changeCirculationTaskId(checkTaskId);
+            this.changeIsCollectEnterSweepCodePage(false);
+            this.$router.push({path: 'circulationTaskSweepCode'});
+            this.changeTitleTxt({tit:'扫码'});
+            setStore('currentTitle','扫码')
+          } else {
+            this.$dialog.alert({
+              message: '请采集完所有科室标本',
+              closeOnPopstate: true
+            }).then(() => {
+            });
           }
         };
-        this.changeCirculationTaskId(checkTaskId);
-        this.changeIsCollectEnterSweepCodePage(false);
-        this.$router.push({path: 'circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码')
       },
 
       // 循环情况事件
@@ -336,6 +388,9 @@
   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+    .left-dropDown {
+      .rightDropDown
+    }
     .circultion-task-title {
       height: 30px;
       line-height: 30px;

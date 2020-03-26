@@ -50,8 +50,16 @@
       ...mapMutations([
         'changeTitleTxt'
       ]),
+      // 右边下拉框菜单点击
+      leftLiCLick (index) {
+        this.liIndex = index;
+        localStorage.clear();
+        this.$router.push({path:'/'})
+      },
+
       // 跳转到我的页
       skipMyInfo () {
+        this.leftDownShow = !this.leftDownShow;
       },
 
       // 返回上一页

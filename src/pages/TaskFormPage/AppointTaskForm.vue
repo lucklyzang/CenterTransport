@@ -26,7 +26,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import {getWorkerMessage} from '@/api/login.js'
-import {transferDispatchTask} from '@/api/workerPort.js'
+import {transferAppointTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -53,10 +53,10 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.changeIsRefershDispatchTaskPage(false);
-        this.$router.push({path:'/dispatchTask'});
-        this.changeTitleTxt({tit:'调度任务'});
-        setStore('currentTitle','调度任务')
+        this.changeIsRefershAppointTaskPage(false);
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')
       })
     };
     this.queryOnlineWorker({proId: this.proId, state:''})
@@ -64,7 +64,7 @@ export default {
 
   computed:{
     ...mapGetters([
-      'dispatchTaskTransferIdList',
+      'appointTaskTransferIdList',
       'navTopTitle'
     ]),
     proId () {
@@ -81,7 +81,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsRefershDispatchTaskPage'
+      'changeAppointTaskTransferIdList',
+      'changeIsRefershAppointTaskPage'
     ]),
 
     // 获取在线工作人员
@@ -122,24 +123,24 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/dispatchTask'});
-      this.changeTitleTxt({tit:'调度任务'});
-      setStore('currentTitle','调度任务')
+      this.$router.push({path:'/appointTask'});
+      this.changeTitleTxt({tit:'预约任务'});
+      setStore('currentTitle','预约任务')
     },
 
     // 转移任务
     sureTransferDispatchTask (data) {
-      transferDispatchTask(data)
+      transferAppointTask(data)
       .then((res) => {
         if (res && res.data.code == 200) {
           this.$dialog.alert({
             message: res.data.msg,
             closeOnPopstate: true
           }).then(() => {
-            this.changeIsRefershDispatchTaskPage(true);
-            this.$router.push({path:'/dispatchTask'});
-            this.changeTitleTxt({tit:'调度任务'});
-            setStore('currentTitle','调度任务')
+            this.changeIsRefershAppointTaskPage(true);
+            this.$router.push({path:'/appointTask'});
+            this.changeTitleTxt({tit:'预约任务'});
+            setStore('currentTitle','预约任务')
           });
         } else {
           this.$dialog.alert({
@@ -167,7 +168,7 @@ export default {
       taskAcceptName = currentCheckWorkerInfo[0]['text'];
       this.sureTransferDispatchTask ({
         // taskId: this.dispatchTaskTransferIdList[0],
-        taskIds: this.dispatchTaskTransferIdList,  //任务ID
+        taskIds: this.appointTaskTransferIdList,  //任务ID
         afterId: this.currentPerson,   //任务接受者ID
         afterName: taskAcceptName, //任务接受者姓名
         modifyId: this.workerId,      //转移者ID
@@ -177,9 +178,9 @@ export default {
 
     // 转移人员取消事件
     transferPersonCancel () {
-      this.$router.push({path:'/dispatchTask'});
-      this.changeTitleTxt({tit:'调度任务'});
-      setStore('currentTitle','调度任务')
+      this.$router.push({path:'/appointTask'});
+      this.changeTitleTxt({tit:'预约任务'});
+      setStore('currentTitle','预约任务')
     }
   }
 }
@@ -191,10 +192,10 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
-    font-size: 14px;
       .left-dropDown {
       .rightDropDown
     }
+    font-size: 14px;
     .sweep-code-title {
       flex:1;
       overflow: auto;

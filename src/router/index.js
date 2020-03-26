@@ -18,6 +18,8 @@ const CirculationTaskConnectMessageSure = () => import('../pages/taskMessagePage
 const CirculationTaskCondition = () => import('../pages/taskMessagePage/CirculationTaskCondition')
 const TransportTypeMessage = () => import('../pages/medicalTaskPage/TransportTypeMessage')
 const DispatchTaskForm = () => import('../pages/taskFormPage/DispatchTaskForm')
+const AppointTaskForm = () => import('../pages/taskFormPage/AppointTaskForm')
+const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskCustomerInfo')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -115,7 +117,17 @@ let baseRoute  = [
     path: '/dispatchTaskForm',
     name: 'dispatchTaskForm',
     component: DispatchTaskForm
-  }
+  },
+  {
+    path: '/appointTaskForm',
+    name: 'appointTaskForm',
+    component: AppointTaskForm
+  },
+  {
+    path: '/appointTaskCustomerInfo',
+    name: 'appointTaskCustomerInfo',
+    component: AppointTaskCustomerInfo
+  } 
 ];
 let router = new Router({
   routes: baseRoute

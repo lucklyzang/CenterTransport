@@ -5,6 +5,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
     </HeaderTop>
+     <!-- 右边下拉框菜单 -->
+    <ul class="left-dropDown" v-show="leftDownShow">
+      <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
+    </ul>
     <div class="sweep-code-title">
       <h3>科室信息采集确认</h3>
     </div>
@@ -67,7 +71,7 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
- import {collectSampleInfo} from '@/api/workerPort.js'
+ import {collectSampleInfo, updateCirculationTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName } from '@/common/js/utils'
@@ -75,6 +79,9 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+       leftDropdownDataList: ['退出登录'],
+      leftDownShow: false,
+      liIndex: null,
       allcirculationCollectMessageList: [],
         bedNumber: '',
         patientName: '',
@@ -101,6 +108,7 @@ export default {
   },
 
   mounted () {
+    console.log('id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -137,12 +145,29 @@ export default {
       'changeTitleTxt',
       'changeCirculationCollectMessageList',
       'changeCompleteDeparnmentInfo',
-      'changeCurrentElectronicSignature'
+      'changeCurrentElectronicSignature',
+      'changeIsrefreshCirculationTaskPage'
     ]),
 
     // 我的页面
     skipMyInfo () {
 
+    },
+
+    // 更新循环任务状态
+    updateCirculationtaskState (data) {
+      updateCirculationTask(data).then((res) => {
+        if (res && res.data.code == 200) {
+
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
     },
 
 
@@ -178,6 +203,7 @@ export default {
               departmentIdList: temporaryDepartmentId,
               taskId: this.circulationTaskId
             });
+            this.changeIsrefreshCirculationTaskPage(true);
             this.$router.push({path:'/circulationTask'});
             this.changeTitleTxt({tit:'循环任务'});
             setStore('currentTitle','循环任务');
@@ -273,6 +299,9 @@ export default {
    .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+      .left-dropDown {
+      .rightDropDown
+    }
     .sweep-code-title {
       height: 30px;
       line-height: 30px;

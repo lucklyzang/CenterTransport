@@ -1,5 +1,5 @@
 <template>
- <div class="content-wrapper">
+  <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
@@ -9,8 +9,12 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <div class="circulation-task-condition-title">
-      <h3>循环任务情况</h3>
+    <div class="sweep-code-title">
+      <h3>客户预约信息确认</h3>
+    </div>
+    <div class="customerInfo-box"></div>
+    <div class="electronic-signature">
+      <ElectronicSignature></ElectronicSignature>
     </div>
   </div>
 </template>
@@ -18,11 +22,12 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
+import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-//  import {getAlltTaskNumber} from '@/api/workerPort.js'
+import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -30,11 +35,6 @@ export default {
        leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      bedNumber: '',
-      patientName: '',
-      sampleType: '',
-      sampleAmount: '',
-      sampleTypeList: ['1','2','3','4']
     };
   },
 
@@ -42,32 +42,15 @@ export default {
     VanFieldSelectPicker,
     HeaderTop,
     NoData,
-    FooterBottom
+    FooterBottom,
+    ElectronicSignature
   },
 
-  mounted () {
-    // 控制设备物理返回按键测试
-    if (!IsPC()) {
-      pushHistory();
-      this.gotoURL(() => {
-        this.$router.push({path:'/circulationTask'})
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
-      })
-    };
-  },
+  computed: {},
 
-  computed:{
-    ...mapGetters([
-      'navTopTitle'
-    ])
-  },
+  mounted () {},
 
-  methods:{
-    ...mapMutations([
-      'changeTitleTxt'
-    ]),
-
+  methods: {
      // 右边下拉框菜单点击
       leftLiCLick (index) {
         this.liIndex = index;
@@ -79,34 +62,36 @@ export default {
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
       },
-
-    // 返回上一页
-    backTo () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
-    }
   }
 }
 
 </script>
 <style lang='less' scoped>
-  @import "~@/common/stylus/variable.less";
-  @import "~@/common/stylus/mixin.less";
-  @import "~@/common/stylus/modifyUi.less";
+@import "~@/common/stylus/variable.less";
+@import "~@/common/stylus/mixin.less";
+@import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
-    font-size: 14px;
       .left-dropDown {
       .rightDropDown
     }
-    .circulation-task-condition-title {
+    font-size: 14px;
+    .sweep-code-title {
       height: 30px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
         font-size: 15px;
       }
+    };
+    .customerInfo-box {
+      flex:1;
+      overflow: auto;
+      margin: 0 auto;
+      margin: 10px 0;
+    };
+    .electronic-signature {
+      height: 250px
     }
   }
 </style>

@@ -168,3 +168,60 @@ export function sampleDelivery(data) {
     data
   })
 };
+
+// 循环任务更新
+export function updateCirculationTask(data) {
+  return request({
+    url: 'circleTask/update',
+    method: 'put',
+    data
+  })
+};
+
+/**
+ * 预约任务
+*/
+
+// 查询预约任务(分配给本人的)
+export function queryAppointTaskMessage(proId, workerId) {
+  return request({
+    url: `reserve/allTask/${proId}/${workerId}`,
+    method: 'get'
+  })
+};
+
+// 预约任务的更新
+export function updateAppointTaskMessage(data) {
+  return request({
+    url: 'reserve/update',
+    method: 'put',
+    data
+  })
+};
+
+// 任务转移
+export function transferAppointTask(data) {
+  return request({
+    url: 'reserve/batchTransfer',
+    method: 'put',
+    data
+  })
+};
+
+// 任务取消
+export function cancelAppointTask(data) {
+  return request({
+    url: 'reserve/batchCancel',
+    method: 'put',
+    data
+  })
+};
+
+// 校验科室
+export function judgeAppointTaskDepartment(data) {
+  return request({
+    url: 'reserve/verifySpace',
+    method: 'post',
+    data
+  })
+};
