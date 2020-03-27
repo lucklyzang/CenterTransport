@@ -361,7 +361,8 @@
         'changeDispatchTaskMessage',
         'changedispatchTaskTransferIdList',
         'changeDispatchTaskDepartmentType',
-        'changeDispatchTaskState'
+        'changeDispatchTaskState',
+        'changeIsCoerceTakePhoto'
       ]),
 
       // 查询调度任务(分配给自己的)
@@ -382,7 +383,9 @@
                   taskTypeName: item.taskTypeName,
                   toolName: item.toolName,
                   priority: item.priority,
-                  id: item.id
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto
                 })
               };
               this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
@@ -594,7 +597,9 @@
                   taskTypeName: item.taskTypeName,
                   toolName: item.toolName,
                   priority: item.priority,
-                  id: item.id
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto
                 })
               };
               this.screenTaskList = temporaryTaskListFirst;
@@ -695,9 +700,13 @@
         if (item.state !== 1) {
           // 传给扫码界面科室类型和任务状态的值
           if (item.state == 2) {
+            // 判断出发地是否强制拍照
+            this.changeIsCoerceTakePhoto(item.startPhoto);
             this.changeDispatchTaskDepartmentType(0);
             this.changeDispatchTaskState(3)
           } else if (item.state == 3) {
+            // 判断目的地地是否强制拍照
+            this.changeIsCoerceTakePhoto(item.endPhoto);
             this.changeDispatchTaskDepartmentType(1);
             this.changeDispatchTaskState(7)
           };
@@ -749,7 +758,9 @@
                   taskTypeName: item.taskTypeName,
                   toolName: item.toolName,
                   priority: item.priority,
-                  id: item.id
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto
                 })
               };
               if (name == 0) {

@@ -16,6 +16,10 @@
     <div class="electronic-signature">
       <ElectronicSignature></ElectronicSignature>
     </div>
+    <div class="btn-area">
+      <van-button type="info" @click="appointMessageSure">确认</van-button>
+      <van-button type="info" @click="appointMessageCancel">取消</van-button>
+    </div>
   </div>
 </template>
 
@@ -24,7 +28,7 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
+import {queryCustomerAppointInfo,sureCustomerAppointInfo} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
@@ -32,7 +36,7 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
     };
@@ -46,22 +50,89 @@ export default {
     ElectronicSignature
   },
 
-  computed: {},
+  computed: {
+    ...mapGetters([
+      'navTopTitle',
+      'appointTaskMessage'
+    ]),
+    proId () {
+      return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+  },
 
-  mounted () {},
+  mounted () {
+    console.log(this.appointTaskMessage);
+    // 控制设备物理返回按键测试
+    if (!IsPC()) {
+      pushHistory();
+      this.gotoURL(() => {
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')
+      })
+    };
+  },
 
   methods: {
-     // 右边下拉框菜单点击
-      leftLiCLick (index) {
-        this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
-      },
+    ...mapMutations([
+      'changeTitleTxt'
+    ]),
+    // 右边下拉框菜单点击
+    leftLiCLick (index) {
+      this.liIndex = index;
+      localStorage.clear();
+      this.$router.push({path:'/'})
+    },
 
-      // 跳转到我的页
-      skipMyInfo () {
-        this.leftDownShow = !this.leftDownShow;
-      },
+    // 查询客户预约信息
+    getCustomerAppointInfo (data) {
+      queryCustomerAppointInfo(data).then((res) => {
+        if (res && res.data.code == 200) {}
+      })
+      .catch((err)=>{
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
+    // 确认客户信息
+    checkCustomerInfo (data) {
+      sureCustomerAppointInfo(data).then((res) => {
+        if (res && res.data.code == 200) {}
+      })
+      .catch((err)=>{
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
+    // 跳转到我的页
+    skipMyInfo () {
+      this.leftDownShow = !this.leftDownShow;
+    },
+
+    // 预约信息确认
+    appointMessageSure () {
+
+    },
+
+    // 预约信息取消
+    appointMessageCancel () {
+
+    },
+
+    // 返回上一页
+    backTo () {
+      this.$router.push({path:'/appointTask'});
+      this.changeTitleTxt({tit:'预约任务'});
+      setStore('currentTitle','预约任务')
+    }
   }
 }
 
@@ -92,6 +163,11 @@ export default {
     };
     .electronic-signature {
       height: 250px
+    }
+    .btn-area {
+      height: 50px;
+      text-align: center;
+      line-height: 50px;
     }
   }
 </style>

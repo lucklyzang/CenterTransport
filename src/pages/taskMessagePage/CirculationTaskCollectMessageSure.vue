@@ -113,9 +113,9 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/circulationTask'})
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({path:'/circulationTaskCollectMessage'});
+        this.changeTitleTxt({tit:'循环信息采集'});
+        setStore('currentTitle','循环信息采集')
       })
     };
     this.echoCollectMessage()

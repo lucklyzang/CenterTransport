@@ -14,7 +14,7 @@
     </div>
     <div class="form-two">
       <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
-      <van-field v-model="patientName" type="tel" label="姓名" placeholder="请输入"/>
+      <van-field v-model="patientName" label="姓名" placeholder="请输入"/>
     </div>
     <div class="sample-number-box">
       <van-field v-model="sampleAmount" disabled type="number" label="标本总数"/>
@@ -149,9 +149,9 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/circulationTask'})
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({'path':'/circulationTaskSweepCode'});
+        this.changeTitleTxt({tit:'扫码'});
+        setStore('currentTitle','扫码');
       })
     };
     this.getSampleMessage();
@@ -252,9 +252,9 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationTaskSweepCode'});
+      this.changeTitleTxt({tit:'扫码'});
+      setStore('currentTitle','扫码');
     },
 
     // 采集信息确认事件
@@ -310,9 +310,9 @@ export default {
 
     // 采集信息取消事件
     collectMessageCancel () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationTaskSweepCode'});
+      this.changeTitleTxt({tit:'扫码'});
+      setStore('currentTitle','扫码');
     },
 
     // 新增标本采集框

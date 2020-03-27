@@ -82,23 +82,25 @@
           </div>
         </div>
         <div class="medical-worker-operate-right">
-          <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
-            <p>消息</p>
-          </div>
-          <div class="medical-worker-operate-right-callOut" v-show="operateCallOut == 2">
-            <p class="medical-worker-transport-type">运送类型</p>
-            <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
-              {{item}}
+          <div class="medical-worker-operate-right-inner">
+            <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
+              <p>消息</p>
             </div>
-          </div>
-          <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
-            <p>任务跟踪</p>
-          </div>
-          <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
-            <p>历史任务</p>
-          </div>
-          <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
-            <p>收藏</p>
+            <div class="medical-worker-operate-right-callOut" v-show="operateCallOut == 2">
+              <p class="medical-worker-transport-type">运送类型</p>
+              <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
+                {{item}}
+              </div>
+            </div>
+            <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
+              <p>任务跟踪</p>
+            </div>
+            <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
+              <p>历史任务</p>
+            </div>
+            <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
+              <p>收藏</p>
+            </div>
           </div>
         </div>
       </div>
@@ -576,6 +578,9 @@
     }
     .medical-worker-show {
       .content-wrapper();
+       .left-dropDown {
+        .rightDropDown
+      }
       .medical-worker-operate {
         font-size: 14px;
         flex:1;
@@ -620,21 +625,27 @@
         };
         .medical-worker-operate-right {
           flex: 76%;
-          padding: 10px;
-          > div {
-            > p {
-              height: 30px;
-              font-size: 15px;
-              line-height: 30px;
-              margin-bottom: 10px;
-            }
-            .medical-worker-task-list {
-               line-height: 30px;
-               background: #15c4f9;
-               margin-bottom: 4px;
-               color: #fff;
-               padding-left: 5px;
-               box-sizing: border-box
+          padding: 6px;
+          background: #f2f2f2;
+          .medical-worker-operate-right-inner {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            > div {
+              > p {
+                height: 30px;
+                font-size: 15px;
+                line-height: 30px;
+                margin-bottom: 10px;
+              }
+              .medical-worker-task-list {
+                line-height: 30px;
+                background: #15c4f9;
+                margin-bottom: 4px;
+                color: #fff;
+                padding-left: 5px;
+                box-sizing: border-box
+              }
             }
           }
         }

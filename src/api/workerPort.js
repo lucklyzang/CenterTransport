@@ -225,3 +225,21 @@ export function judgeAppointTaskDepartment(data) {
     data
   })
 };
+
+// 查询客户预约信息
+export function queryCustomerAppointInfo (data) {
+  return request({
+    url: '',
+    method: 'post',
+    data
+  })
+};
+
+// 客户预约信息确认
+export function sureCustomerAppointInfo (data) {
+  return request({
+    url: '',
+    method: 'post',
+    data
+  })
+};

@@ -13,23 +13,38 @@
       <h3>{{transportantTaskMessage}}</h3>
     </div>
     <div class="transport-type-area">
-      <van-field v-model="destinationAddress" label="目的地" placeholder="请输入目的地"/>
+      <div class="destination-box">
+        <div class="destination-title">目的地</div>
+        <div class="destination-content">
+          <van-dropdown-menu>
+            <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>
+          </van-dropdown-menu>
+        </div>
+      </div>
       <van-field v-model="bedNumber" label="床号" placeholder="请输入床号"/>
       <van-field v-model="patientName"  label="病人姓名" placeholder="请输入病人姓名"/>
       <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
-      <van-field v-model="vehicleOperation"  label="转运工具" placeholder="请输入转运工具"/>
+      <div class="destination-box">
+        <div class="destination-title">工具</div>
+        <div class="destination-content">
+          <van-dropdown-menu>
+            <van-dropdown-item v-model="vehicleOperation" :options="vehicleOperationList"/>
+          </van-dropdown-menu>
+        </div>
+      </div>
       <van-field v-model="taskDescribe"  label="任务描述" placeholder="请输入任务描述"/>
       <van-field v-model="actualData"  label="实际数据" placeholder="请输入实际数据"/>
     </div>
     <div class="btn-area">
       <van-button type="info" @click="dispatchTaskSure">确认</van-button>
-      <van-button type="info" @click="dispatchTaskCancel">取消</van-button>
+      <van-button type="default" @click="dispatchTaskCancel">取消</van-button>
     </div>
   </div>
 </template>
 
 <script>
 import HeaderTop from '@/components/HeaderTop'
+import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
 //  import {getAlltTaskNumber} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
@@ -39,14 +54,22 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      destinationAddress: '',
+      destinationAddress: 0,
+      destinationList: [ { text: '全部商品', value: 0 },
+        { text: '新款商品', value: 1 },
+        { text: '活动商品', value: 2 }
+      ],
+      vehicleOperation: '',
+      vehicleOperationList: [{ text: '全部商品', value: 0 },
+        { text: '新款商品', value: 1 },
+        { text: '活动商品', value: 2 }
+      ],
       bedNumber: '',
       patientName: '',
       patientNumber: '',
-      vehicleOperation: '',
       taskDescribe: '',
       actualData: ''
     }
@@ -55,7 +78,8 @@ export default {
   components: {
     HeaderTop,
     NoData,
-    FooterBottom
+    FooterBottom,
+    VanFieldSelectPicker
   },
 
   computed: {
@@ -66,6 +90,7 @@ export default {
   },
 
   mounted () {
+    console.log(this.changetransportTypeMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -148,6 +173,29 @@ export default {
       margin: 0 auto;
       margin: 10px 0;
       width: 100%;
+      .destination-box {
+        padding-left: 15px;
+        > div {
+            display: inline-block
+          };
+          .destination-title {
+            width: 24%;
+            color: #323233;
+          }
+        .destination-content {
+          width: 66%;
+          /deep/ .van-dropdown-menu {
+            .van-dropdown-menu__item {
+              .van-dropdown-menu__title {
+                  width: 100%;
+                  padding: 0;
+                  color: #999999;
+                  font-size: 14px;
+              }
+            }
+          }
+        }
+      }
     }
     .btn-area {
       height: 50px;

@@ -7,7 +7,8 @@ export default {
     dispatchTaskTransferIdList: [],
     isRefershDispatchTaskPage: false,
     dispatchTaskState: '',
-    dispatchTaskDepartmentType: ''
+    dispatchTaskDepartmentType: '',
+    isCoerceTakePhoto: false
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -15,7 +16,8 @@ export default {
     dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
     isRefershDispatchTaskPage: state => state.isRefershDispatchTaskPage,
     dispatchTaskState: state => state.dispatchTaskState,
-    dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType
+    dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
+    isCoerceTakePhoto: state => state.isCoerceTakePhoto
   },
   mutations:{
     // 改变页面标题
@@ -43,6 +45,10 @@ export default {
     // 改变调度任务科室类型的状态
     changeDispatchTaskDepartmentType (state,payLoad) {
       state.dispatchTaskDepartmentType = payLoad
+    },
+    //改变是否强制拍照的状态
+    changeIsCoerceTakePhoto (state,payLoad) {
+      state.isCoerceTakePhoto = payLoad
     }
   },
   actions:{}

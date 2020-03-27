@@ -95,15 +95,17 @@ export default {
 
      // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
-      let departmentId = '';
       if (code) {
-        departmentId = code.id;
-        this.juddgeCurrentDepartment({
-          id: this.appointTaskMessage.id,  //任务ID
-			    proId: this.proId,  //项目ID
-          departmentId: departmentId,  //科室ID
-			    checkType: this.appointTaskDepartmentType   //校验类型  0-出发地，1-目的地，2-出发地(当任务状态为4时)
-        })
+        let codeData = code.split('|');
+        if (codeData.length > 0) {
+          let departmentId = codeData[0];
+          this.juddgeCurrentDepartment({
+            id: this.appointTaskMessage.id,  //任务ID
+            proId: this.proId,  //项目ID
+            departmentId: departmentId,  //科室ID
+            checkType: this.appointTaskDepartmentType   //校验类型  0-出发地，1-目的地，2-出发地(当任务状态为4时)
+          })
+        }
       } else {
         this.$dialog.alert({
           message: '当前没有扫描到任何信息,请重新扫描'
@@ -126,11 +128,21 @@ export default {
             })
           }
         } else {
-          this.againSweepCode()
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true,
+            showCancelButton: true 
+          }).then(() => {
+            this.againSweepCode()
+          }).catch((err) =>{})
         }
       })
       .catch((err) => {
-        this.againSweepCode()
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
       })
     },
 
@@ -175,11 +187,7 @@ export default {
 
     // 重新扫码弹窗
     againSweepCode () {
-       this.$dialog.alert({
-        message: '扫描科室与任务要求科室不一致,请重新扫描'
-      }).then(() => {
-        this.sweepAstoffice()
-      });
+      this.sweepAstoffice()
     },
 
     // 扫描二维码方法
@@ -189,7 +197,9 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-
+      this.$router.push({path:'/appointTaskCustomerInfo'});
+      this.changeTitleTxt({tit:'客户预约信息确认'});
+      setStore('currentTitle','客户预约信息确认')
     },
 
     // 取消扫码事件

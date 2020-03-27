@@ -92,7 +92,7 @@ import { base64ImgtoFile } from '@/common/js/utils'
         }
       },
       // 滑动结束
-      touchEnd () {
+      touchEnd (e) {
         if(this.moving) {
           let x = e.touches[0].clientX - e.target.offsetLeft,
           y = e.touches[0].clientY - e.target.offsetTop;

@@ -14,7 +14,7 @@
     </div>
     <div class="sweep-code-area"></div>
     <div class="btn-area">
-      <van-button type="info">扫描二维码</van-button>
+      <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
       <van-button type="default" @click="cancelSweepCode">取消</van-button>
     </div>
   </div>
@@ -59,7 +59,7 @@ export default {
     window['scanQRcodeCallback'] = (code) => {
       me.scanQRcodeCallback(code);
     };
-    console.log('调度任务状态' ,this.dispatchTaskState, this.dispatchTaskDepartmentType);
+    console.log('调度任务状态' ,this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
   },
 
   computed:{
@@ -67,7 +67,8 @@ export default {
       'navTopTitle',
       'dispatchTaskMessage',
       'dispatchTaskState',
-      'dispatchTaskDepartmentType'
+      'dispatchTaskDepartmentType',
+      'isCoerceTakePhoto'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -87,15 +88,17 @@ export default {
 
     // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
-      let departmentId = '';
       if (code) {
-        departmentId = code.id;
-        this.juddgeCurrentDepartment({
-          id: this.dispatchTaskMessage.id,  //任务ID
-			    proId: this.proId,  //项目ID
-          departmentId: departmentId,  //科室ID
-			    checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
-        })
+        let codeData = code.split('|');
+        if (codeData.length > 0) {
+          let departmentId = codeData[0];
+          this.juddgeCurrentDepartment({
+            id: this.dispatchTaskMessage.id,  //任务ID
+            proId: this.proId,  //项目ID
+            departmentId: departmentId,  //科室ID
+            checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
+          })
+        }
       } else {
         this.$dialog.alert({
           message: '当前没有扫描到任何信息,请重新扫描'
@@ -107,11 +110,7 @@ export default {
 
     // 重新扫码弹窗
     againSweepCode () {
-       this.$dialog.alert({
-        message: '扫描科室与任务要求科室不一致,请重新扫描'
-      }).then(() => {
-        this.sweepAstoffice()
-      });
+      this.sweepAstoffice()
     },
 
     // 右边下拉框菜单点击
@@ -136,11 +135,21 @@ export default {
             state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
           })
         } else {
-          this.againSweepCode()
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true,
+            showCancelButton: true 
+          }).then(() => {
+            this.againSweepCode()
+          }).catch((err) =>{})
         }
       })
       .catch((err) => {
-        this.againSweepCode()
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
       })
     },
 
@@ -175,6 +184,11 @@ export default {
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
+    },
+
+     // 扫码确认事件
+    sweepCodeSure () {
+      this.sweepAstoffice()
     },
 
     // 取消扫码事件

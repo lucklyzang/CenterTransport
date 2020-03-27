@@ -65,7 +65,7 @@
           </div>
         </div>
         <p class="wait-handle-check" v-show="item.state == 2">
-          <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
         </p>
         <p class="get-wait-task">
           <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
@@ -124,7 +124,7 @@
                 </div>
               </div>
               <p class="wait-handle-check" v-show="item.state == 2">
-                <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
               </p>
               <p class="get-wait-task">
                 <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
@@ -181,7 +181,7 @@
                 </div>
               </div>
               <p class="wait-handle-check" v-show="item.state == 2">
-                <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
               </p>
               <p class="get-wait-task">
                 <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
@@ -238,7 +238,7 @@
                 </div>
               </div>
              <p class="wait-handle-check" v-show="item.state == 2">
-              <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
               </p>
               <p class="get-wait-task">
                 <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
@@ -295,7 +295,7 @@
                 </div>
               </div>
              <p class="wait-handle-check" v-show="item.state == 2">
-              <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
               </p>
               <p class="get-wait-task">
                 <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>

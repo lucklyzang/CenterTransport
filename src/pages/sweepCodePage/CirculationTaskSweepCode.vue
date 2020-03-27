@@ -100,11 +100,7 @@ export default {
 
      // 重新扫码弹窗
     againSweepCode () {
-       this.$dialog.alert({
-        message: '扫描科室与任务要求科室不一致,请重新扫描'
-      }).then(() => {
-        this.sweepAstoffice()
-      });
+      this.sweepAstoffice()
     },
 
     // 返回上一页
@@ -116,14 +112,16 @@ export default {
 
     // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
-      let departmentId = '';
       if (code) {
-        departmentId = code.id;
-        this.juddgeMedicalCorrect({
-          id: this.circulationId,// 循环任务ID 必输
-          proId: this.proId, // 项目ID 必输
-          departmentId: departmentId //扫描科室ID 必输
-        })
+        let codeData = code.split('|');
+        if (codeData.length > 0) {
+          let departmentId = codeData[0];
+          this.juddgeMedicalCorrect({
+            id: this.circulationId,// 循环任务ID 必输
+            proId: this.proId, // 项目ID 必输
+            departmentId: departmentId //扫描科室ID 必输
+          })
+        }
       } else {
          this.$dialog.alert({
           message: '当前没有扫描到任何信息,请重新扫描'
@@ -161,11 +159,21 @@ export default {
             setStore('currentTitle','循环信息交接')
           }
         } else {
-          this.againSweepCode()
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true,
+            showCancelButton: true 
+          }).then(() => {
+            this.againSweepCode()
+          }).catch((err) =>{})
         }
       })
       .catch((err) => {
-        this.againSweepCode()
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
       })
     },
 
