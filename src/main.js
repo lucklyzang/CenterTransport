@@ -29,6 +29,13 @@ import './common/stylus/index.less'
 //移动端适配
 import 'lib-flexible/flexible.js'
 import App from './App'
+import preview from 'vue-photo-preview'
+import 'vue-photo-preview/dist/skin.css'
+let options = {
+  fullscreenEl: false
+};
+Vue.use(preview, options);
+Vue.use(preview);
 Vue.use(Vant);
 Vue.config.productionTip = false;
 // 页面刷新时重新存入用户信息

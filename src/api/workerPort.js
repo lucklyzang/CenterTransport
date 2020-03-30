@@ -94,6 +94,15 @@ export function judgeDispatchTaskDepartment(data) {
   })
 };
 
+// 调度任务上传拍照信息
+export function dispatchTaskUploadMsg(data) {
+  return request({
+    url: 'taskPhoto/saveOrUpdatePhotoByString',
+    method: 'post',
+    data
+  })
+};
+
 /**
  * 循环任务
 */
@@ -238,7 +247,7 @@ export function queryCustomerAppointInfo (data) {
 // 客户预约信息确认
 export function sureCustomerAppointInfo (data) {
   return request({
-    url: '',
+    url: 'reserve/updateSign',
     method: 'post',
     data
   })

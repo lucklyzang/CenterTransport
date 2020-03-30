@@ -49,9 +49,16 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/appointTask'});
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+         this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+        }).then(() => {
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务')
+        })
+        .catch(() => {})
       })
     };
     // 二维码回调方法绑定到window下面,提供给外部调用
@@ -105,9 +112,16 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/circulationTask'});
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$dialog.alert({
+        message: '返回上级后,将丢失本页数据!',
+        closeOnPopstate: true,
+        showCancelButton: true   
+      }).then(() => {
+        this.$router.push({path:'/circulationTask'});
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务')
+      })
+      .catch(() => {})
     },
 
     // 摄像头扫码后的回调

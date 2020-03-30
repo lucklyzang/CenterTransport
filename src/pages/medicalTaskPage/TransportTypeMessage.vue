@@ -46,7 +46,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-//  import {getAlltTaskNumber} from '@/api/workerPort.js'
+import {queryAllDestination, queryTransportTools, generateDispatchTask} from '@/api/medicalPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -129,23 +129,65 @@ export default {
         this.leftDownShow = !this.leftDownShow;
       },
 
-    // 运送类型信息确认事件
-    dispatchTaskSure () {
-      this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'中央运送'});
-      setStore('currentTitle','中央运送');
-      this.changeIsRefershHome({DtMsg: true});
-      this.changeIsHomeJumpOtherPage({DtMsg: true})
-    },
+      // 查询目的地
+      getAllDestination (data) {
+        queryAllDestination(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
 
-    // 运送类型信息取消事件
-    dispatchTaskCancel () {
-      this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'中央运送'});
-      setStore('currentTitle','中央运送');
-      this.changeIsRefershHome({DtMsg: false});
-      this.changeIsHomeJumpOtherPage({DtMsg: true})
-    }
+      // 查询转运工具
+      getTransportTools (data) {
+        queryTransportTools(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 生成调度任务
+      postGenerateDispatchTask (data) {
+        generateDispatchTask(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 运送类型信息确认事件
+      dispatchTaskSure () {
+        this.$router.push({path:'/home'});
+        this.changeTitleTxt({tit:'中央运送'});
+        setStore('currentTitle','中央运送');
+        this.changeIsRefershHome({DtMsg: true});
+        this.changeIsHomeJumpOtherPage({DtMsg: true})
+      },
+
+      // 运送类型信息取消事件
+      dispatchTaskCancel () {
+        this.$router.push({path:'/home'});
+        this.changeTitleTxt({tit:'中央运送'});
+        setStore('currentTitle','中央运送');
+        this.changeIsRefershHome({DtMsg: false});
+        this.changeIsHomeJumpOtherPage({DtMsg: true})
+      }
   }
 }
 

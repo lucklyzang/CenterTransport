@@ -2,7 +2,7 @@ import { setStore, getStore, removeStore } from '@/common/js/utils'
 
 export default {
   state:{
-    apointTaskMessage: null,
+    appointTaskMessage: null,
     isRefershAppointTaskPage: false,
     appointTaskTransferIdList: [],
     appointTaskState: '',
@@ -11,7 +11,7 @@ export default {
     appointSweepCodeIntoPage: false
   },
   getters:{
-    appointTaskMessage: state => state.apointTaskMessage,
+    appointTaskMessage: state => state.appointTaskMessage,
     isRefershAppointTaskPage : state => state.isRefershAppointTaskPage,
     appointTaskTransferIdList: state => state.appointTaskTransferIdList,
     appointTaskState: state => state.appointTaskState,
@@ -22,7 +22,7 @@ export default {
   mutations:{
     // 改变调度任务信息状态
     changeAppointTaskMessage (state,payLoad) {
-      state.apointTaskMessage = payLoad.DtMsg
+      state.appointTaskMessage = payLoad.DtMsg
     },
     // 改变是否刷新预约任务页面状态
      changeIsRefershAppointTaskPage (state,payLoad) {

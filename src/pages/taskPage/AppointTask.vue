@@ -487,7 +487,13 @@
                     destinationName: item.destinationName,
                     taskTypeName: item.taskName,
                     toolName: item.toolName,
-                    id: item.id
+                    id: item.id,
+                    patientName: item.patientName,
+                    bedNumber: item.bedNumber,
+                    sex: item.bedNumber,
+                    age: item.age,
+                    patientId: item.id,
+                    number: item.number
                 })
               };
               this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
@@ -707,7 +713,13 @@
                   destinationName: item.destinationName,
                   taskTypeName: item.taskName,
                   toolName: item.toolName,
-                  id: item.id
+                  id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  sex: item.bedNumber,
+                  age: item.age,
+                  patientId: item.id,
+                  number: item.number
                 })
               };
               this.screenTaskList = temporaryTaskListFirst;
@@ -756,7 +768,13 @@
                   destinationName: item.destinationName,
                   taskTypeName: item.taskName,
                   toolName: item.toolName,
-                  id: item.id
+                  id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  sex: item.bedNumber,
+                  age: item.age,
+                  patientId: item.id,
+                  number: item.number
                 })
               };
               if (name == 0) {

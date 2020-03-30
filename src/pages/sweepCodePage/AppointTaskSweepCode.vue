@@ -48,9 +48,16 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/appointTask'});
-        this.changeTitleTxt({tit:'预约任务'});
-        setStore('currentTitle','预约任务')
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+        }).then(() => {
+          this.$router.push({path:'/appointTask'});
+          this.changeTitleTxt({tit:'预约任务'});
+          setStore('currentTitle','预约任务')
+        })
+        .catch(() => {})
       })
     };
     // 二维码回调方法绑定到window下面,提供给外部调用
@@ -81,19 +88,19 @@ export default {
       'changeIsRefershAppointTaskPage'
     ]),
 
-     // 右边下拉框菜单点击
-      leftLiCLick (index) {
-        this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
-      },
+    // 右边下拉框菜单点击
+    leftLiCLick (index) {
+      this.liIndex = index;
+      localStorage.clear();
+      this.$router.push({path:'/'})
+    },
 
-      // 跳转到我的页
-      skipMyInfo () {
-        this.leftDownShow = !this.leftDownShow;
-      },
+    // 跳转到我的页
+    skipMyInfo () {
+      this.leftDownShow = !this.leftDownShow;
+    },
 
-     // 摄像头扫码后的回调
+    // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
       if (code) {
         let codeData = code.split('|');
@@ -180,9 +187,15 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/appointTask'});
-      this.changeTitleTxt({tit:'预约任务'});
-      setStore('currentTitle','预约任务')
+      this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+      }).then(() => {
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')})
+      .catch(() => {})
     },
 
     // 重新扫码弹窗

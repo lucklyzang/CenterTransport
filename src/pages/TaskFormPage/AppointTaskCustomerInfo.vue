@@ -10,7 +10,14 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="sweep-code-title">
-      <h3>客户预约信息确认</h3>
+      <h3>客户预约信息</h3>
+      <div class="custormer-info">
+        <van-field disabled v-model="patientName" label="病人姓名"/>
+        <van-field  disabled v-model="sex" label="病人性别"/>
+        <van-field  disabled v-model="age" label="病人年龄"/>
+        <van-field  disabled v-model="bedNumber" label="病人床号"/>
+        <van-field  disabled v-model="number" label="任务编号"/>
+      </div>
     </div>
     <div class="customerInfo-box"></div>
     <div class="electronic-signature">
@@ -18,7 +25,7 @@
     </div>
     <div class="btn-area">
       <van-button type="info" @click="appointMessageSure">确认</van-button>
-      <van-button type="info" @click="appointMessageCancel">取消</van-button>
+      <van-button type="default" @click="appointMessageCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -39,6 +46,11 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      patientName: '',
+      sex: '',
+      age: '',
+      bedNumber: '',
+      number: ''
     };
   },
 
@@ -53,10 +65,15 @@ export default {
   computed: {
     ...mapGetters([
       'navTopTitle',
-      'appointTaskMessage'
+      'appointTaskMessage',
+      'appointTaskMessage',
+      'currentElectronicSignature'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
+    },
+    taskId () {
+      return this.appointTaskMessage.id
     },
   },
 
@@ -71,17 +88,45 @@ export default {
         setStore('currentTitle','预约任务')
       })
     };
+    this.echoCustomerInfo()
   },
 
   methods: {
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsRefershAppointTaskPage'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {
       this.liIndex = index;
       localStorage.clear();
       this.$router.push({path:'/'})
+    },
+
+     // 性别转换
+      sexTransfer (index) {
+        switch(index) {
+          case 0 :
+            return '未指定'
+            break;
+          case 1 :
+            return '男'
+            break;
+          case 2 :
+            return '女'
+            break;
+          default:
+            return '未指定'
+        }
+      },
+
+    // 回显客户预约信息
+    echoCustomerInfo () {
+      this.patientName = this.appointTaskMessage['patientName'],
+      this.sex = this.sexTransfer(this.appointTaskMessage['sex']),
+      this.age = this.appointTaskMessage['age'],
+      this.bedNumber = this.appointTaskMessage['bedNumber'],
+      this.number = this.appointTaskMessage['number']
     },
 
     // 查询客户预约信息
@@ -101,7 +146,17 @@ export default {
     // 确认客户信息
     checkCustomerInfo (data) {
       sureCustomerAppointInfo(data).then((res) => {
-        if (res && res.data.code == 200) {}
+        if (res && res.data.code == 200) {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true   
+          }).then(() => {
+            this.changeIsRefershAppointTaskPage(true);
+            this.$router.push({path:'/appointTask'});
+            this.changeTitleTxt({tit:'预约任务'});
+            setStore('currentTitle','预约任务')
+          });
+        }
       })
       .catch((err)=>{
         this.$dialog.alert({
@@ -119,7 +174,11 @@ export default {
 
     // 预约信息确认
     appointMessageSure () {
-
+      this.checkCustomerInfo({
+        id: this.taskId,//任务Id,必填项
+			  proId: this.proId,//项目ID，必填项
+			  ensureSign: this.currentElectronicSignature //base64字符串 必填项
+      })
     },
 
     // 预约信息取消

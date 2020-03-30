@@ -111,6 +111,7 @@
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
   import {getAllTaskNumber, queryAllTaskMessage} from '@/api/workerPort.js'
+  import {queryTransportType, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask} from '@/api/medicalPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -277,15 +278,21 @@
           }
         })
         .catch((err) => {
-
+          this.$dialog.alert({
+          message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         })
       },
 
       //查询完成任务数量和排名
       getAllTaskMessage () {
-        queryAllTaskMessage({proId: this.proId, // 项目ID 必输
-                            workerId: this.workerId, //运送员ID   非必输
-                            date: ''  })
+        queryAllTaskMessage({
+          proId: this.proId, // 项目ID 必输
+          workerId: this.workerId, //运送员ID   非必输
+          date: ''  
+        })
         .then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data) {
@@ -296,7 +303,11 @@
           }
         })
         .catch((err) => {
-
+          this.$dialog.alert({
+          message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         })
       },
 
@@ -387,6 +398,62 @@
           this.operateHistoryTask = '';
           this.operateTaskCollect = 5
         }
+      },
+
+      // 查询运送类型
+      getTransportsType (data) {
+        queryTransportType(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 跟踪任务(当天发起的任务)
+      tailAfterTask (data) {
+        queryGenerateDispatchTask(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 历史任务(已完成状态)
+      getHistoryTask (data) {
+        queryhistoryDispatchTask(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 收藏任务(经常发起的调度任务)
+       getCollectTask (data) {
+        collectDispatchTask(data).then((res) => {
+          if (res && res.data.code == 200) {}
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
       },
 
       // 运送类型点击
