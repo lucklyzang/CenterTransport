@@ -30,7 +30,7 @@
           <div class="handle-message-line-wrapper">
             <p>
               <span class="message-tit">状态:</span>
-              <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
             </p>
             <P>
               <span class="message-tit">起点:</span>
@@ -55,6 +55,16 @@
             <p>
               <span class="message-tit">优先级:</span>
               <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">出发地拍照:</span>
+              <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+            </p>
+            <p>
+              <span class="message-tit">目的地拍照:</span>
+              <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
             </p>
           </div>
         </div>
@@ -83,7 +93,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+                    <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
                   </p>
                   <P>
                     <span class="message-tit">起点:</span>
@@ -108,6 +118,16 @@
                   <p>
                     <span class="message-tit">优先级:</span>
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">出发地拍照:</span>
+                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">目的地拍照:</span>
+                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -134,7 +154,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+                    <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
                   </p>
                   <P>
                     <span class="message-tit">起点:</span>
@@ -159,6 +179,16 @@
                   <p>
                     <span class="message-tit">优先级:</span>
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">出发地拍照:</span>
+                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">目的地拍照:</span>
+                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2">
@@ -185,7 +215,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+                    <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
                   </p>
                   <P>
                     <span class="message-tit">起点:</span>
@@ -210,6 +240,77 @@
                   <p>
                     <span class="message-tit">优先级:</span>
                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">出发地拍照:</span>
+                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">目的地拍照:</span>
+                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                <p class="wait-handle-check" v-show="item.state == 2 ">
+                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                </p>
+                <p class="get-wait-task">
+                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </van-tab>
+        <van-tab name="7">
+          <div slot="title">
+            <span class="title">已完成</span>
+            <span class="right-sign" v-show="currentIndex == 7">{{waitBaskList.length}}</span>
+          </div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" @click="taskClickEvent(item)" :key="`${item}-${index}`">
+              <p class="wait-handle-message-createTime">
+                创建时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">运送类型:</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">优先级:</span>
+                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">出发地拍照:</span>
+                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">目的地拍照:</span>
+                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -697,7 +798,7 @@
 
       // 点击具体任务事件
       taskClickEvent (item) {
-        if (item.state !== 1) {
+        if (item.state !== 1 && item.state !== 7) {
           // 传给扫码界面科室类型和任务状态的值
           if (item.state == 2) {
             // 判断出发地是否强制拍照
@@ -769,6 +870,8 @@
                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2})
               } else if (name == 3) {
                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
+              } else if (name == 7) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7})
               }
             } else {
               this.$dialog.alert({

@@ -10,9 +10,20 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="sweep-code-title">
-      <h3>扫描二维码</h3>
+      <h3></h3>
     </div>
-    <div class="sweep-code-area">{{appointTaskMessage}}</div>
+    <div class="sweep-code-area">
+      <div class="point-area">
+        <p class="task-start-point">
+          <span>任务起点:</span>
+          <span>{{appointTaskMessage.setOutPlaceName}}</span>
+        </p>
+        <p class="task-end-point">
+          <span>任务终点:</span>
+          <span>{{appointTaskMessage.destinationName}}</span>
+        </p>
+      </div>
+    </div>
     <div class="btn-area">
       <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
       <van-button type="default" @click="cancelSweepCode">取消</van-button>
@@ -23,7 +34,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {getAlltTaskNumber,judgeAppointTaskDepartment} from '@/api/workerPort.js'
+import {getAlltTaskNumber,judgeAppointTaskDepartment,updateAppointTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
@@ -53,6 +64,7 @@ export default {
           closeOnPopstate: true,
           showCancelButton: true   
         }).then(() => {
+          this.changeIsRefershAppointTaskPage(false);
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
@@ -122,7 +134,7 @@ export default {
       }
     },
 
-     // 判断扫码科室
+    // 判断扫码科室
     juddgeCurrentDepartment (data) {
       judgeAppointTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
@@ -133,6 +145,11 @@ export default {
               id: this.appointTaskMessage.id, //当前任务ID
               state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             })
+          } else {
+            this.changeIsRefershAppointTaskPage(true);
+            this.$router.push({path:'/appointTask'});
+            this.changeTitleTxt({tit:'预约任务'});
+            setStore('currentTitle','预约任务')
           }
         } else {
           this.$dialog.alert({
@@ -155,11 +172,18 @@ export default {
 
     // 更新任务状态
     updateTaskState (data) {
-      updateAppointTask(data).then((res) => {
+      updateAppointTaskMessage(data).then((res) => {
         if (res && res.data.code == 200) {
           this.changeIsRefershAppointTaskPage(true);
           // 第一次扫码出发地后进入客户预约信息确认页面
           if (!this.appointSweepCodeIntoPage) {
+            if (this.appointTaskState == 7) {
+               this.$dialog.alert({
+                message: '该任务已完成',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            };
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
@@ -192,6 +216,7 @@ export default {
           closeOnPopstate: true,
           showCancelButton: true   
       }).then(() => {
+        this.changeIsRefershAppointTaskPage(false);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')})
@@ -210,13 +235,12 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      this.$router.push({path:'/appointTaskCustomerInfo'});
-      this.changeTitleTxt({tit:'客户预约信息确认'});
-      setStore('currentTitle','客户预约信息确认')
+      this.sweepAstoffice()
     },
 
     // 取消扫码事件
     cancelSweepCode () {
+      this.changeIsRefershAppointTaskPage(false);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -248,6 +272,28 @@ export default {
       overflow: auto;
       margin: 0 auto;
       width: 100%;
+      .point-area {
+        height: auto;
+        width: 80%;
+        background: #fff;
+        margin-left: 4%;
+        margin-top: 10px;
+        padding: 20px 10px 20px 20px;
+        box-shadow: 0 2.5px 12px 4px #d1d1d1;
+        border-radius: 8px;
+        color: #313131;
+        font-weight: bold;
+        letter-spacing: 2px;
+        p {
+          margin-bottom: 10px;
+          padding-left: 10px;
+          span {
+            &:first-child {
+              color: #585858;
+            }
+          }
+        }
+      }
     };
     .btn-area {
       height: 50px;

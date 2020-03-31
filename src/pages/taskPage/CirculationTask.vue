@@ -15,7 +15,7 @@
     <div class="circulation-task-list">
       <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
         <div class="sample-type-check">
-          <van-checkbox v-show="item.state == 2" v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
         </div>
         <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
         <p class="wait-handle-message-createTime">
@@ -48,13 +48,13 @@
           <div class="handle-message-line-wrapper">
             <p>
               <span class="message-tit">状态:</span>
-              <span class="message-tit-real">{{stateTransfer(item.state)}}</span>
+              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
             </p>
           </div>
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -153,7 +153,8 @@
         'changeTitleTxt',
         'changeCirculationTaskMessage',
         'changeIsCollectEnterSweepCodePage',
-        'changeCirculationTaskId'
+        'changeCirculationTaskId',
+        'changeStipulateOfficeList'
       ]),
 
       // 右边下拉框菜单点击
@@ -317,10 +318,26 @@
       },
 
       // 科室任务列表点击
-      officeTaskEvent (item, val, key, index, indexWrapper) {
-        if (item.state == 7) {return};
+      officeTaskEvent (item, val, key, check, index, indexWrapper) {
+        if (check == true) {
+           this.$dialog.alert({
+            message: '该科室已完成标本收集',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          return
+        };
+        if (item.state == 7) {
+          this.$dialog.alert({
+            message: '该科室对应的循环任务已完成',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          return
+        };
         this.currentOfficeName = indexWrapper;
         this.changeIsCollectEnterSweepCodePage(true);
+        this.changeStipulateOfficeList(item.spaces.filter((inx) => { return inx.check == false}));
         this.$router.push({'path':'/circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码');
@@ -396,7 +413,8 @@
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .circulation-task-list {

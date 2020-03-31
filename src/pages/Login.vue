@@ -15,7 +15,7 @@
       <img :src="loginBtnPng" alt="">
     </div>
     <div class="loading-btn">
-      <loading :isShow="showLoadingHint" textContent="登录中,请稍候····" textColor="rgb(29, 102, 113)"></loading>
+      <loading :isShow="showLoadingHint" textContent="登录中,请稍候····" textColor="#2895ea"></loading>
     </div>
   </div>
 </template>

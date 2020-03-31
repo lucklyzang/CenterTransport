@@ -13,7 +13,8 @@ export default {
     completeDeparnmentInfo: {
       "departmentIdList": [],
       "taskId": ''
-    }
+    },
+    stipulateOfficeList: []
   },
   getters:{
     circulationTaskId: state => state.circulationTaskId,
@@ -24,7 +25,8 @@ export default {
     circulationConnectMessageList: state => state.circulationConnectMessageList,
     isrefreshCirculationConnectPage: state => state.isrefreshCirculationConnectPage,
     isrefreshCirculationTaskPage: state => state.isrefreshCirculationTaskPage,
-    completeDeparnmentInfo: state => state.completeDeparnmentInfo
+    completeDeparnmentInfo: state => state.completeDeparnmentInfo,
+    stipulateOfficeList: state => state.stipulateOfficeList
   },
   mutations:{
     // 改变循环任务ID状态
@@ -62,6 +64,10 @@ export default {
     // 改变采集完成科室信息的状态
     changeCompleteDeparnmentInfo (state,payLoad) {
       state.completeDeparnmentInfo = deepClone(payLoad.DtMsg)
+    },
+    // 改变要扫码的科室列表状态
+    changeStipulateOfficeList (state,payLoad) {
+      state.stipulateOfficeList = payLoad
     }
   },
   actions:{}

@@ -74,28 +74,27 @@ import FooterBottom from '@/components/FooterBottom'
  import {collectSampleInfo, updateCirculationTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
       allcirculationCollectMessageList: [],
-        bedNumber: '',
-        patientName: '',
-        sampleAmount: '',
-        sampleMessageList: [
-          {
-            sampleType: '',
-            innerSampleAmount: '',
-            sampleTypeList: [],
-            entryList: [],
-            checkEntryList: []
-          }
-        ]
-      
+      bedNumber: '',
+      patientName: '',
+      sampleAmount: '',
+      sampleMessageList: [
+        {
+          sampleType: '',
+          innerSampleAmount: '',
+          sampleTypeList: [],
+          entryList: [],
+          checkEntryList: []
+        }
+      ]
     };
   },
 
@@ -113,9 +112,18 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({path:'/circulationTaskCollectMessage'});
-        this.changeTitleTxt({tit:'循环信息采集'});
-        setStore('currentTitle','循环信息采集')
+        this.$dialog.alert({
+        message: '返回上级后,将丢失本页及本科室的数据',
+        closeOnPopstate: true,
+        showCancelButton: true   
+        }).then(() => {
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeCirculationCollectMessageList({DtMsg:[]});
+          removeStore('currentCirculationCollectMessage');
+          this.$router.push({path:'/circulationTaskCollectMessage'});
+          this.changeTitleTxt({tit:'循环信息采集'});
+          setStore('currentTitle','循环信息采集')})
+        .catch(() => {})
       })
     };
     this.echoCollectMessage()
@@ -173,7 +181,8 @@ export default {
 
     // 回显已经采集信息
     echoCollectMessage () {
-      this.allcirculationCollectMessageList = this.circulationCollectMessageList
+      this.allcirculationCollectMessageList = [];
+      this.allcirculationCollectMessageList = deepClone(this.circulationCollectMessageList)
     },
 
      // 收集标本信息
@@ -227,13 +236,31 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'循环信息采集'});
-      setStore('currentTitle','循环信息采集')
+      this.$dialog.alert({
+        message: '返回上级后,将丢失本页及本科室的数据',
+        closeOnPopstate: true,
+        showCancelButton: true   
+        })
+        .then(() => {
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeCirculationCollectMessageList({DtMsg:[]});
+          removeStore('currentCirculationCollectMessage');
+          this.$router.push({path:'/circulationTaskCollectMessage'});
+          this.changeTitleTxt({tit:'循环信息采集'});
+          setStore('currentTitle','循环信息采集')})
+        .catch(() => {})
     },
 
-     // 采集信息确认事件
+    // 采集信息确认事件
     collectMessageSure () {
+      if (!this.this.currentElectronicSignature) {
+        this.$dialog.alert({
+          message: '签名不能为空，请确认签名!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return;
+      };
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
@@ -280,6 +307,7 @@ export default {
     collectMessageCancel () {
       // 当前页面回显数据
       this.allcirculationCollectMessageList = [];
+      this.changeCurrentElectronicSignature({DtMsg: null});
       // 上一页面store采集数据
       this.changeCirculationCollectMessageList({DtMsg:[]});
       // 上一页面Localstorage采集数据

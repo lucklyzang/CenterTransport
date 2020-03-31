@@ -65,15 +65,15 @@
       <van-button type="default" @click="collectMessageCancel">取消</van-button>
     </div>
      <van-dialog
-      v-model="collectMessaheSureShow"
-      title="是否收集该科室其它床位标本"
-      show-cancel-button
-      confirmButtonText="确定"
-      cancelButtonText="取消"
-      :close-on-popstate="true"
-      :close-on-click-overlay="true"
-      @confirm="collectSure"
-      @cancel="collectCancel"
+        v-model="collectMessaheSureShow"
+        title="是否收集该科室其它床位标本"
+        show-cancel-button
+        confirmButtonText="确定"
+        cancelButtonText="取消"
+        :close-on-popstate="true"
+        :close-on-click-overlay="true"
+        @confirm="collectSure"
+        @cancel="collectCancel"
       >
     </van-dialog>
   </div>
@@ -91,7 +91,7 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
       bedNumber: '',
@@ -149,9 +149,27 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.$router.push({'path':'/circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码');
+        if (this.collectMessaheSureShow == true) {
+          this.$dialog.alert({
+            message: '请先处理是否收集该科室其它床位标本弹框',
+            closeOnPopstate: true,
+            showCancelButton: true   
+          }).then(() => {
+          })
+          .catch(() => {})
+        } else {
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+          }).then(() => {
+            this.changeCirculationCollectMessageList({DtMsg:[]});
+            this.$router.push({'path':'/circulationTaskSweepCode'});
+            this.changeTitleTxt({tit:'扫码'});
+            setStore('currentTitle','扫码');}
+          )
+          .catch(() => {})
+        }
       })
     };
     this.getSampleMessage();
@@ -252,9 +270,27 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({'path':'/circulationTaskSweepCode'});
-      this.changeTitleTxt({tit:'扫码'});
-      setStore('currentTitle','扫码');
+      if (this.collectMessaheSureShow == true) {
+        this.$dialog.alert({
+          message: '请先处理是否收集该科室其它床位标本弹框',
+          closeOnPopstate: true,
+          showCancelButton: true   
+        }).then(() => {
+        })
+        .catch(() => {})
+      } else {
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+        }).then(() => {
+          this.changeCirculationCollectMessageList({DtMsg:[]});
+          this.$router.push({'path':'/circulationTaskSweepCode'});
+          this.changeTitleTxt({tit:'扫码'});
+          setStore('currentTitle','扫码');}
+          )
+        .catch(() => {})
+      }
     },
 
     // 采集信息确认事件

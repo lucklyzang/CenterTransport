@@ -13,6 +13,16 @@
       <h3></h3>
     </div>
     <div class="sweep-code-area">
+      <div class="point-area" v-show="appointAreaShow">
+        <p class="task-start-point">
+          <span>任务起点:</span>
+          <span>{{dispatchTaskMessage.setOutPlaceName}}</span>
+        </p>
+        <p class="task-end-point">
+          <span>任务终点:</span>
+          <span>{{dispatchTaskMessage.destinationName}}</span>
+        </p>
+      </div>
       <div class="photo-area-box" v-show="photoAreaBoxShow">
         <div class="photo-preview">
           <img width="100" height="130" id="preview1" :src="upImgUrl"/>
@@ -49,6 +59,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       photoAreaBoxShow: false,
+      appointAreaShow: true,
       srcUrl: '',
       headerImg: '',
       liIndex: null,
@@ -143,6 +154,12 @@ export default {
             state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
           });
           this.photoAreaBoxShow = false
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         }
       })
       .catch((err) => {
@@ -161,7 +178,7 @@ export default {
           taskId: this.taskId,  //任务ID必填
           proId: this.proId,  //项目ID必填
           proName: this.proName,//项目名称必填项
-          type:  this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
+          type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
           taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
           photo: this.upImgUrl //base64字符串必填
         }
@@ -217,9 +234,11 @@ export default {
               id: this.dispatchTaskMessage.id, //当前任务ID
               state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             });
-            this.photoAreaBoxShow = false
+            this.photoAreaBoxShow = false;
+            this.appointAreaShow = true;
           } else {
-            this.photoAreaBoxShow = true
+            this.photoAreaBoxShow = true;
+            this.appointAreaShow = false;
           }
         } else {
           this.$dialog.alert({
@@ -244,6 +263,13 @@ export default {
     updateTaskState (data) {
       updateDispatchTask(data).then((res) => {
         if (res && res.data.code == 200) {
+          if (this.dispatchTaskDepartmentType == 1) {
+            this.$dialog.alert({
+              message: '该条任务已完成',
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          };
           this.changeIsRefershDispatchTaskPage(true);
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
@@ -319,9 +345,32 @@ export default {
       overflow: auto;
       margin: 0 auto;
       width: 100%;
+      .point-area {
+        height: auto;
+        width: 80%;
+        background: #fff;
+        margin-left: 4%;
+        margin-top: 10px;
+        padding: 20px 10px 20px 20px;
+        box-shadow: 0 2.5px 12px 4px #d1d1d1;
+        border-radius: 8px;
+        color: #313131;
+        font-weight: bold;
+        letter-spacing: 2px;
+        p {
+          margin-bottom: 10px;
+          padding-left: 10px;
+          span {
+            &:first-child {
+              color: #585858;
+            }
+          }
+        }
+      }
       .photo-area-box {
         .photo-preview {
-          width: 30%;
+          width: 40%;
+          height: 120px;
           margin: 0 auto;
           margin-top: 60px;
           box-shadow: 0px 0px 8px 6px rgba(231, 231, 231, 0.8);
@@ -331,14 +380,14 @@ export default {
           }
         }
         .choose-photo-box {
-          margin-top: 20px;
+          margin-top: 30px;
           text-align: center;
           > div {
             display: inline-block;
             width: 100px
           }
           .choose-photo {
-            padding: 4px 10px;
+            padding: 8px 10px;
             height: 20px;
             line-height: 20px;
             position: relative;
@@ -367,7 +416,7 @@ export default {
             background: #D0EEFF;
             border: 1px solid #99D3F5;
             border-radius: 4px;
-            padding: 4px 12px;
+            padding: 8px 12px;
             overflow: hidden;
             color: #1E88C7;
             text-decoration: none;

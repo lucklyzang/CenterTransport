@@ -10,9 +10,18 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="sweep-code-title">
-      <h3>扫描二维码</h3>
+      <h3></h3>
     </div>
-    <div class="sweep-code-area">{{circulationTaskMessage}}</div>
+    <div class="sweep-code-area">
+      <div class="point-area">
+        <div class="task-start-point">
+          <p>任务起点:(扫码科室必须为下列其中一个)</p>
+          <ul>
+            <li v-for="(item,index) in startPointList" :key="index">{{item.text}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <div class="btn-area">
       <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
       <van-button type="default" @click="cancelSweepCode">取消</van-button>
@@ -31,9 +40,10 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      startPointList: []
     };
   },
 
@@ -44,7 +54,7 @@ export default {
   },
 
   mounted () {
-    console.log('id',this.circulationTaskId);
+    console.log('id',this.circulationTaskId, this.stipulateOfficeList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       pushHistory();
@@ -61,6 +71,7 @@ export default {
         .catch(() => {})
       })
     };
+    this.echoOfficeList();
     // 二维码回调方法绑定到window下面,提供给外部调用
     let me = this;
     window['scanQRcodeCallback'] = (code) => {
@@ -73,13 +84,17 @@ export default {
       'navTopTitle',
       'circulationTaskMessage',
       'isCollectEnterSweepCodePage',
-      'circulationTaskId'
+      'circulationTaskId',
+      'stipulateOfficeList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
     circulationId () {
       return this.circulationTaskMessage.currentMsg.id
+    },
+    officeNameList () {
+      return this.stipulateOfficeList
     }
   },
 
@@ -108,6 +123,11 @@ export default {
      // 重新扫码弹窗
     againSweepCode () {
       this.sweepAstoffice()
+    },
+
+    // 回显要扫码的科室列表
+    echoOfficeList () {
+      this.startPointList = this.officeNameList
     },
 
     // 返回上一页
@@ -147,16 +167,7 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      console.log(this.isCollectEnterSweepCodePage);
-      if(this.isCollectEnterSweepCodePage) {
-        this.$router.push({path:'/circulationTaskCollectMessage'});
-        this.changeTitleTxt({tit:'循环信息采集'});
-        setStore('currentTitle','循环信息采集')
-      } else {
-        this.$router.push({path:'/circulationTaskMessageConnect'});
-        this.changeTitleTxt({tit:'循环信息交接'});
-        setStore('currentTitle','循环信息交接')
-      }
+      this.sweepAstoffice();
     },
 
     //判断扫码科室是否为当前要收集的科室
@@ -223,7 +234,34 @@ export default {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      width: 100%
+      width: 100%;
+       .point-area {
+        height: auto;
+        width: 80%;
+        background: #fff;
+        margin-left: 4%;
+        margin-top: 10px;
+        padding: 20px 10px 20px 20px;
+        box-shadow: 0 2.5px 12px 4px #d1d1d1;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: #313131;
+        font-weight: bold;
+        letter-spacing: 2px;
+        .task-start-point{
+          margin-bottom: 10px;
+          padding-left: 10px;
+          span {
+            color: #585858;
+          }
+          ul {
+             margin-top: 6px;
+             li {
+               line-height: 20px
+             }
+          }
+        }
+      }
     };
     .btn-area {
       height: 50px;

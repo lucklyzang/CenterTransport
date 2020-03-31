@@ -72,6 +72,18 @@
       <van-button type="info" @click="connectMessageSure">确认</van-button>
       <van-button type="default" @click="connectMessageCancel">取消</van-button>
     </div>
+     <van-dialog
+        v-model="connectMessaheSureShow"
+        title="是否还有需要交接的标本?"
+        show-cancel-button
+        confirmButtonText="确定"
+        cancelButtonText="取消"
+        :close-on-popstate="true"
+        :close-on-click-overlay="true"
+        @confirm="connectSure"
+        @cancel="connectCancel"
+      >
+    </van-dialog>
   </div>
 </template>
 
@@ -88,8 +100,9 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      connectMessaheSureShow: false,
       liIndex: null,
       manageSampleDataList: []
     };
@@ -109,10 +122,28 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        this.changeIsrefreshCirculationConnectPage(false);
-        this.$router.push({path:'/circulationTaskMessageConnect'});
-        this.changeTitleTxt({tit:'信息交接'});
-        setStore('currentTitle','信息交接')
+        if (this.connectMessaheSureShow == true) {
+          this.$dialog.alert({
+            message: '请先处理是否还有需要交接的标本弹框',
+            closeOnPopstate: true,
+            showCancelButton: true   
+          }).then(() => {
+          })
+          .catch(() => {})
+        } else {
+          this.$dialog.alert({
+            message: '返回上级后,将丢失本页数据!',
+            closeOnPopstate: true,
+            showCancelButton: true   
+            }).then(() => {
+              this.changeCurrentElectronicSignature({DtMsg: null})
+              this.changeIsrefreshCirculationConnectPage(false);
+              this.$router.push({path:'/circulationTaskMessageConnect'});
+              this.changeTitleTxt({tit:'信息交接'});
+              setStore('currentTitle','信息交接')}
+            )
+            .catch(() => {})
+        };
       })
     };
     this.echoConectMessage()
@@ -161,48 +192,65 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsrefreshCirculationConnectPage(false);
-      this.$router.push({path:'/circulationTaskMessageConnect'});
-      this.changeTitleTxt({tit:'信息交接'});
-      setStore('currentTitle','信息交接')
+      if (this.connectMessaheSureShow == true) {
+          this.$dialog.alert({
+            message: '请先处理是否还有需要交接的标本弹框',
+            closeOnPopstate: true,
+            showCancelButton: true   
+          }).then(() => {
+          })
+          .catch(() => {})
+      } else {
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+          }).then(() => {
+            this.changeCurrentElectronicSignature({DtMsg: null});
+            this.changeCirculationConnectMessageList({DtMsg:[]});
+            this.changeIsrefreshCirculationConnectPage(false);
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'信息交接'});
+            setStore('currentTitle','信息交接')}
+          )
+          .catch(() => {})
+      };
+    },
+
+    // 是否有未交接的标本确定
+    connectSure () {
+      this.changeIsrefreshCirculationTaskPage(false);
+      // 当前页面回显数据
+      this.manageSampleDataList = [];
+      // 上一页面store采集数据
+      this.changeCurrentElectronicSignature({DtMsg: null});
+      this.changeCirculationConnectMessageList({DtMsg:[]});
+      // 上一页面Localstorage采集数据
+      removeStore('currentCirculationConnectMessage');
+      this.$router.push({path:'/circulationTask'});
+      this.changeTitleTxt({tit:'循环任务'});
+      setStore('currentTitle','循环任务');
+    },
+
+    // 是否有未交接的标本取消
+    connectSure () {
+      this.updateCirculationtaskState({
+        proId: this.proId,		 //当前项目ID
+        id: this.circulationTaskId, //当前任务ID
+        state: 7 //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'}
+      });
     },
 
     // 提交标本交接信息
     postSampleConnectMessage (data) {
       sampleDelivery(data).then((res) => {
         if (res && res.data.code == 200) {
-           this.$dialog.alert({
-            message: res.data.msg,
-            closeOnPopstate: true
-          }).then(() => {
-            this.$dialog.alert({
-            message: '是否还有需要交接的标本?',
-            closeOnPopstate: true,
-            showCancelButton: true
-            }).then(() => {
-              this.changeIsrefreshCirculationTaskPage(false);
-              // 当前页面回显数据
-              this.manageSampleDataList = [];
-              // 上一页面store采集数据
-              this.changeCirculationConnectMessageList({DtMsg:[]});
-              // 上一页面Localstorage采集数据
-              removeStore('currentCirculationConnectMessage');
-              this.$router.push({path:'/circulationTask'});
-              this.changeTitleTxt({tit:'循环任务'});
-              setStore('currentTitle','循环任务');
-            })
-            .catch(() => {
-              this.updateCirculationtaskState({
-                proId: this.proId,		 //当前项目ID
-                id: this.circulationTaskId, //当前任务ID
-                state: 7 //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'}
-              });
-            })
-          });
+          this.connectMessaheSureShow = true;
+          this.changeCurrentElectronicSignature({DtMsg: null})
         } else {
           this.$dialog.alert({
-          message: res.data.msg,
-          closeOnPopstate: true
+            message: res.data.msg,
+            closeOnPopstate: true
         }).then(() => {
         });
         }
@@ -220,10 +268,16 @@ export default {
     updateCirculationtaskState (data) {
       updateCirculationTask(data).then((res) => {
         if (res && res.data.code == 200) {
+          this.$dialog.alert({
+            message: '该条循环任务已经完成',
+            closeOnPopstate: true
+          }).then(() => {
+          });
           this.changeIsrefreshCirculationTaskPage(true);
           // 当前页面回显数据
           this.manageSampleDataList = [];
           // 上一页面store采集数据
+          this.changeCurrentElectronicSignature({DtMsg: null});
           this.changeCirculationConnectMessageList({DtMsg:[]});
           // 上一页面Localstorage采集数据
           removeStore('currentCirculationConnectMessage');
@@ -235,6 +289,12 @@ export default {
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.data}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         }
       })
       .catch((err) => {
@@ -248,6 +308,14 @@ export default {
 
      // 交接信息确认事件
     connectMessageSure () {
+      if (!this.this.currentElectronicSignature) {
+        this.$dialog.alert({
+          message: '签名不能为空，请确认签名!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return;
+      };
       let connectSampleId = [];
       // 获取需要交接的标本id
       for (let item of this.manageSampleDataList) {
@@ -273,6 +341,8 @@ export default {
 
     // 交接信息取消事件
     connectMessageCancel () {
+      this.changeCurrentElectronicSignature({DtMsg: null});
+      this.changeCirculationConnectMessageList({DtMsg:[]});
       this.$router.push({path:'/circulationTaskMessageConnect'});
       this.changeTitleTxt({tit:'信息交接'});
       setStore('currentTitle','信息交接')

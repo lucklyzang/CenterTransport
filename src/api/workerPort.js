@@ -230,7 +230,7 @@ export function cancelAppointTask(data) {
 export function judgeAppointTaskDepartment(data) {
   return request({
     url: 'reserve/verifySpace',
-    method: 'post',
+    method: 'put',
     data
   })
 };

@@ -42,10 +42,10 @@
               <span class="message-tit">终点:</span>
               <span class="message-tit-real">{{item.destinationName}}</span>
             </p>
-            <P>
-              <span class="message-tit">运送类型:</span>
-              <span class="message-tit-real">{{item.taskType}}</span>
-            </P>
+            <p>
+              <span class="message-tit">床号:</span>
+              <span class="message-tit-real">{{item.bedNumber}}</span>
+            </p>
           </div>
           <div class="handle-message-line-wrapper">
             <p>
@@ -54,14 +54,8 @@
             </p>
             <P>
               <span class="message-tit">状态:</span>
-              <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+              <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
             </P>
-          </div>
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">床号:</span>
-              <span class="message-tit-real">{{item.bedNumber}}</span>
-            </p>
           </div>
         </div>
         <p class="wait-handle-check" v-show="item.state == 2">
@@ -101,10 +95,10 @@
                     <span class="message-tit">终点:</span>
                     <span class="message-tit-real">{{item.destinationName}}</span>
                   </p>
-                  <P>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskType}}</span>
-                  </P>
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
                 </div>
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -113,14 +107,8 @@
                   </p>
                   <P>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                    <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                   </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">床号:</span>
-                    <span class="message-tit-real">{{item.bedNumber}}</span>
-                  </p>
                 </div>
               </div>
               <p class="wait-handle-check" v-show="item.state == 2">
@@ -158,10 +146,10 @@
                     <span class="message-tit">终点:</span>
                     <span class="message-tit-real">{{item.destinationName}}</span>
                   </p>
-                  <P>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskType}}</span>
-                  </P>
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
                 </div>
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -170,14 +158,8 @@
                   </p>
                   <P>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                    <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                   </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">床号:</span>
-                    <span class="message-tit-real">{{item.bedNumber}}</span>
-                  </p>
                 </div>
               </div>
               <p class="wait-handle-check" v-show="item.state == 2">
@@ -215,10 +197,10 @@
                     <span class="message-tit">终点:</span>
                     <span class="message-tit-real">{{item.destinationName}}</span>
                   </p>
-                  <P>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </P>
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
                 </div>
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -227,14 +209,8 @@
                   </p>
                   <P>
                     <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
+                    <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                   </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">床号:</span>
-                    <span class="message-tit-real">{{item.bedNumber}}</span>
-                  </p>
                 </div>
               </div>
              <p class="wait-handle-check" v-show="item.state == 2">
@@ -246,7 +222,7 @@
             </div>
           </div>
         </van-tab>
-          <van-tab name="4">
+        <van-tab name="4">
           <div slot="title">
             <span class="title">未结束</span>
             <span class="right-sign" v-show="currentIndex == 4">{{waitBaskList.length}}</span>
@@ -272,10 +248,61 @@
                     <span class="message-tit">终点:</span>
                     <span class="message-tit-real">{{item.destinationName}}</span>
                   </p>
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">转运工具:</span>
+                    <span class="message-tit-real">{{item.toolName}}</span>
+                  </p>
                   <P>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                    <span class="message-tit">状态:</span>
+                    <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                   </P>
+                </div>
+              </div>
+             <p class="wait-handle-check" v-show="item.state == 2">
+              <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
+            </div>
+          </div>
+        </van-tab>
+        <van-tab name="7">
+          <div slot="title">
+            <span class="title">已完成</span>
+            <span class="right-sign" v-show="currentIndex == 7">{{waitBaskList.length}}</span>
+          </div>
+          <div class="task-status-list">
+            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+              <p class="wait-handle-message-createTime">
+                开始时间：{{item.createTime}}
+              </p>
+              <div class="wait-handle-message">
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">预约名称:</span>
+                    <span class="message-tit-real">{{item.patientName}}</span>
+                  </p>
+                  <P>
+                    <span class="message-tit">起点:</span>
+                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  </P>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">终点:</span>
+                    <span class="message-tit-real">{{item.destinationName}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">床号:</span>
+                    <span class="message-tit-real">{{item.bedNumber}}</span>
+                  </p>
                 </div>
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -286,12 +313,6 @@
                     <span class="message-tit">状态:</span>
                     <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
                   </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">床号:</span>
-                    <span class="message-tit-real">{{item.bedNumber}}</span>
-                  </p>
                 </div>
               </div>
              <p class="wait-handle-check" v-show="item.state == 2">
@@ -378,7 +399,7 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'isRefershDispatchTaskPage'
+        'isRefershAppointTaskPage'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -401,6 +422,24 @@
         },
         deep: true,
         immediate: true
+      }
+    },
+    
+    activated () {
+      // 控制设备物理返回按键测试
+      if (!IsPC()) {
+        pushHistory();
+        this.gotoURL(() => {
+          this.$router.push({path: 'home'});
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
+        })
+      };
+      // 查询调度任务(分配给自己的)
+      if (this.isRefershAppointTaskPage) {
+        this.activeName = 0;
+        this.currentIndex = 0;
+        this.getAppointTaskMessage(this.proId, this.workerId)
       }
     },
 
@@ -482,7 +521,6 @@
                     taskCheck: false,
                     createTime: item.createTime,
                     state: item.state,
-                    taskType: '',
                     setOutPlaceName: item.setOutPlaceName,
                     destinationName: item.destinationName,
                     taskTypeName: item.taskName,
@@ -585,7 +623,7 @@
       waitTaskChecked (waitHandleCheck) {
       },
 
-       // 获取待处理任务事件
+      // 获取待处理任务事件
       getTask (taskId) {
         updateAppointTaskMessage({
           proId: this.proId,//当前项目ID
@@ -608,9 +646,10 @@
 
       // 点击具体任务事件
       taskClickEvent (item) {
-        if (item.state !== 1) {
+        if (item.state !== 1 && item.state !== 7) {
           // 传给扫码界面科室类型和任务状态的值
           if (item.state == 2) {
+            this.changeAppointSweepCodeNumber(false);
             this.changeAppointSweepCodeIntoPage(true);
             this.changeAppointTaskDepartmentType(0);
             this.changeAppointTaskState(3)
@@ -708,7 +747,6 @@
                   taskCheck: false,
                   createTime: item.createTime,
                   state: item.state,
-                  taskType: '',
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,
                   taskTypeName: item.taskName,
@@ -785,6 +823,8 @@
                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
               } else if (name == 4) {
                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4})
+              } else if (name == 7) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7})
               }
             } else {
               this.$dialog.alert({
