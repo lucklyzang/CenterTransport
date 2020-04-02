@@ -51,8 +51,10 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         this.changeIsRefershDispatchTaskPage(false);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
@@ -206,7 +208,8 @@ export default {
         margin-top: 10px;
         line-height: 30px;
         padding-left: 10px;
-        font-size: 15px
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .btn-area {

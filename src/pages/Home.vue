@@ -304,7 +304,7 @@
         })
         .catch((err) => {
           this.$dialog.alert({
-          message: `${err.message}`,
+            message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
           });

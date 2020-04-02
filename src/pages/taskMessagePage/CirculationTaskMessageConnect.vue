@@ -1,5 +1,11 @@
 <template>
    <div class="content-wrapper">
+    <div class="no-data" v-show="noDataShow">
+      <NoData></NoData>
+    </div>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+    </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
@@ -12,7 +18,7 @@
     <div class="sweep-code-title">
       <h3>采集信息交接</h3>
     </div>
-    <div class="sweep-code-area">
+    <div class="sweep-code-area" v-show="connectMessageArea">
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
         <div class="sample-type-title-wrapper">
           <div class="sample-type-check">
@@ -81,14 +87,18 @@ import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
 import {queryCollectSampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
+import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone, removeBlock} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+      showLoadingHint: false,
+      noDataShow: false,
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      connectMessageArea: false,
       liIndex: null,
       originCollectSampleMessageList: [],
       allSampleTypeList: [],
@@ -100,6 +110,7 @@ export default {
     VanFieldSelectPicker,
     HeaderTop,
     NoData,
+    Loading,
     FooterBottom
   },
 
@@ -107,28 +118,34 @@ export default {
     console.log('获取id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
+        this.changeIsrefreshCirculationTaskPage(false);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
       })
     };
-    this.getCollectSampleMessage(this.proId,240)
+    this.getCollectSampleMessage(this.proId,this.circulationTaskId)
   },
 
   activated () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
+        this.changeIsrefreshCirculationTaskPage(false);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
       })
     };
     if (this.isrefreshCirculationConnectPage) {
-      this.getCollectSampleMessage(this.proId,240)
+      this.getCollectSampleMessage(this.proId,this.circulationTaskId)
     }
   },
 
@@ -164,6 +181,7 @@ export default {
 
     // 返回上一页
     backTo () {
+      this.changeIsrefreshCirculationTaskPage(false);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -171,78 +189,96 @@ export default {
 
     // 查询收集的标本信息 queryCollectSampleMessage
     getCollectSampleMessage (proId, taskId) {
+      this.showLoadingHint = true;
       queryCollectSampleMessage(proId, taskId).then((res) => {
          if (res && res.data.code == 200) {
-          this.originCollectSampleMessageList = res.data.data;
-          this.allSampleTypeList = [];
-          for (let item of this.originCollectSampleMessageList) {
-            for (let currentItem in item) {
-              if (currentItem === 'specimenName') {
-                this.allSampleTypeList.push(item[currentItem])
-              }
-            }
-          };
-          this.manageSampleDataList = [];
-          let filterSampleMessage = [];
-          let sameSampleTypeNumber = '';
-          let sameSampleNumberList = [];
-          for (let i = 0, len = repeArray(this.allSampleTypeList).length; i < len; i++) {
-            sameSampleTypeNumber = '';
-            sameSampleNumberList = [];
-            // 过滤标本为同一类型的数据
-            filterSampleMessage =  this.originCollectSampleMessageList.filter((itemInfo) => {return itemInfo['specimenName'] == repeArray(this.allSampleTypeList)[i]});
-            // 提取同一类型标本里的数量字段
-            for (let numberFiel of filterSampleMessage) {
-              for (let currentNumberFiel in numberFiel) {
-                if (currentNumberFiel === 'quantity') {
-                  sameSampleNumberList.push(numberFiel[currentNumberFiel])
+           if (res.data.data.length == 0) {
+              this.connectMessageArea = false;
+              this.noDataShow = true;
+              return
+           };
+            this.connectMessageArea = true;
+            this.originCollectSampleMessageList = res.data.data;
+            this.allSampleTypeList = [];
+            for (let item of this.originCollectSampleMessageList) {
+              for (let currentItem in item) {
+                if (currentItem === 'specimenName') {
+                  this.allSampleTypeList.push(item[currentItem])
                 }
               }
             };
-            let temporaryManageSampleDataList = [],
-            // 对同一标本类型的数量进行求和
-            sameSampleTypeNumber = sameSampleNumberList.reduce((last, before, index, array) => last + before);
-            // 生成符合页面展示要求的数据结构
-            this.manageSampleDataList.push(
-              {
-                sampleTypeName: repeArray(this.allSampleTypeList)[i],
-                check: false,
-                sampleTotal: sameSampleTypeNumber,
-                sampleList: deepClone(filterSampleMessage)
-              }
-            );
-            let manageCheckArray = [];
-            let manageCheckArrayCheck = [];
-            // 格式换标本项里的检查项字段
-            for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
-              manageCheckArray = [];
-              manageCheckArrayCheck = [];
-              let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
-              for (let currentCheckEntry of removeBraceArray) {
-                let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
-                manageCheckArray.push({
-                  itemName: transferArray[1],
-                  id: transferArray[0]
-                });
-                manageCheckArrayCheck.push(JSON.stringify({
-                  itemName: transferArray[1],
-                  id: transferArray[0]
-                }))
+            this.manageSampleDataList = [];
+            let filterSampleMessage = [];
+            let sameSampleTypeNumber = '';
+            let sameSampleNumberList = [];
+            for (let i = 0, len = repeArray(this.allSampleTypeList).length; i < len; i++) {
+              sameSampleTypeNumber = '';
+              sameSampleNumberList = [];
+              // 过滤标本为同一类型的数据
+              filterSampleMessage =  this.originCollectSampleMessageList.filter((itemInfo) => {return itemInfo['specimenName'] == repeArray(this.allSampleTypeList)[i]});
+              // 提取同一类型标本里的数量字段
+              for (let numberFiel of filterSampleMessage) {
+                for (let currentNumberFiel in numberFiel) {
+                  if (currentNumberFiel === 'quantity') {
+                    sameSampleNumberList.push(numberFiel[currentNumberFiel])
+                  }
+                }
               };
-              this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
-              this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
-            }
-          };
-          console.log('最终信息',this.manageSampleDataList)
-         }
+              let temporaryManageSampleDataList = [],
+              // 对同一标本类型的数量进行求和
+              sameSampleTypeNumber = sameSampleNumberList.reduce((last, before, index, array) => last + before);
+              // 生成符合页面展示要求的数据结构
+              this.manageSampleDataList.push(
+                {
+                  sampleTypeName: repeArray(this.allSampleTypeList)[i],
+                  check: false,
+                  sampleTotal: sameSampleTypeNumber,
+                  sampleList: deepClone(filterSampleMessage)
+                }
+              );
+              let manageCheckArray = [];
+              let manageCheckArrayCheck = [];
+              // 格式换标本项里的检查项字段
+              for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
+                manageCheckArray = [];
+                manageCheckArrayCheck = [];
+                let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
+                for (let currentCheckEntry of removeBraceArray) {
+                  let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
+                  manageCheckArray.push({
+                    itemName: transferArray[1],
+                    id: transferArray[0]
+                  });
+                  manageCheckArrayCheck.push(JSON.stringify({
+                    itemName: transferArray[1],
+                    id: transferArray[0]
+                  }))
+                };
+                this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
+                this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
+              }
+            };
+            console.log('最终信息',this.manageSampleDataList)
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.connectMessageArea = false;
+              this.noDataShow = true;
+            });
+          }
       })
       .catch((err) => {
-         this.$dialog.alert({
+        this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
         }).then(() => {
+          this.connectMessageArea = false;
+          this.noDataShow = true;
         });
-      })
+      });
+      this.showLoadingHint = false;
     },
 
     // 复选框点击事件
@@ -253,6 +289,14 @@ export default {
     // 交接信息确认事件
     ConnectSure () {
       let circulationMessageListSure = this.manageSampleDataList.filter((item) => { return item.check == true});
+      if (circulationMessageListSure.length == 0) {
+        this.$dialog.alert({
+          message: '请选择要交接的标本',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };
       this.changeCirculationConnectMessageList({DtMsg: circulationMessageListSure});
       setStore('currentCirculationConnectMessage',{innerMessage: circulationMessageListSure});
       this.$router.push({path:'/circulationTaskConnectMessageSure'})
@@ -278,15 +322,32 @@ export default {
   .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+    position: relative;
     .left-dropDown {
       .rightDropDown
+    }
+    .no-data {
+      position: absolute;
+      top: 200px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .loading {
+      position: absolute;
+      top: 260px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
     }
     .sweep-code-title {
       height: 30px;
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .sweep-code-area {

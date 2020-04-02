@@ -57,19 +57,14 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
-        this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-        }).then(() => {
-          this.changeIsRefershAppointTaskPage(false);
-          this.$router.push({path:'/appointTask'});
-          this.changeTitleTxt({tit:'预约任务'});
-          setStore('currentTitle','预约任务')
-        })
-        .catch(() => {})
+      that.gotoURL(() => {
+        pushHistory();
+        this.changeIsRefershAppointTaskPage(false);
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')
       })
     };
     // 二维码回调方法绑定到window下面,提供给外部调用
@@ -211,16 +206,10 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-      }).then(() => {
-        this.changeIsRefershAppointTaskPage(false);
-        this.$router.push({path:'/appointTask'});
-        this.changeTitleTxt({tit:'预约任务'});
-        setStore('currentTitle','预约任务')})
-      .catch(() => {})
+      this.changeIsRefershAppointTaskPage(false);
+      this.$router.push({path:'/appointTask'});
+      this.changeTitleTxt({tit:'预约任务'});
+      setStore('currentTitle','预约任务')
     },
 
     // 重新扫码弹窗
@@ -264,7 +253,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .sweep-code-area {
@@ -277,7 +267,7 @@ export default {
         width: 80%;
         background: #fff;
         margin-left: 4%;
-        margin-top: 10px;
+        margin-top: 140px;
         padding: 20px 10px 20px 20px;
         box-shadow: 0 2.5px 12px 4px #d1d1d1;
         border-radius: 8px;
@@ -285,8 +275,9 @@ export default {
         font-weight: bold;
         letter-spacing: 2px;
         p {
-          margin-bottom: 10px;
+          margin-bottom: 20px;
           padding-left: 10px;
+          font-size: 16px;
           span {
             &:first-child {
               color: #585858;

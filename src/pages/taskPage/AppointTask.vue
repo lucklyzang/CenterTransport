@@ -1,5 +1,11 @@
 <template>
   <div class="content-wrapper">
+    <div class="no-data" v-show="noDataShow">
+      <NoData></NoData>
+    </div>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+    </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
@@ -356,12 +362,15 @@
   import FooterBottom from '@/components/FooterBottom'
   import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
+  import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
       return {
+        showLoadingHint: false,
+        noDataShow: false,
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
@@ -393,6 +402,7 @@
     components: {
       HeaderTop,
       NoData,
+      Loading,
       FooterBottom
     },
 
@@ -428,8 +438,10 @@
     activated () {
       // 控制设备物理返回按键测试
       if (!IsPC()) {
+        let that = this;
         pushHistory();
-        this.gotoURL(() => {
+        that.gotoURL(() => {
+          pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
@@ -446,8 +458,10 @@
     mounted () {
       // 控制设备物理返回按键测试
       if (!IsPC()) {
+        let that = this;
         pushHistory();
-        this.gotoURL(() => {
+        that.gotoURL(() => {
+          pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
@@ -509,13 +523,15 @@
         }
       },
 
-      // 查询预约任务
+      // 查询预约任务 
       getAppointTaskMessage (proID, workerId) {
+        this.showLoadingHint = true;
         queryAppointTaskMessage(proID, workerId).then((res) => {
           let temporaryTaskList = [];
           this.waitBaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.noDataShow = false;
               for (let item of res.data.data) {
                   temporaryTaskList.push({
                     taskCheck: false,
@@ -536,24 +552,29 @@
               };
               this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
               if ( this.waitBaskList.length == 0) {
-                this.$dialog.alert({
-                  message: '当前没有待处理的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
+                this.noDataShow = true;
               }
             } else {
-              this.$dialog.alert({
-                message: '当前没有任何状态的任务',
-                closeOnPopstate: true
-              }).then(() => {
-              });
+              this.noDataShow = true;
             }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
           }
         })
         .catch((err) => {
-          console.log(err);
-        })
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+        });
+        this.showLoadingHint = false;
       },
 
       // 阻止change事件冒泡
@@ -735,6 +756,7 @@
         this.statusHandleScreenShow = true;
         this.activeName = 0;
         this.currentIndex = 0;
+        this.showLoadingHint = true;
         queryAppointTaskMessage (this.proId, this.workerId)
         .then((res) => {
           let temporaryTaskListFirst = [];
@@ -742,6 +764,7 @@
           this.waitBaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.noDataShow = false;
               for (let item of res.data.data) {
                 temporaryTaskListFirst.push({
                   taskCheck: false,
@@ -763,19 +786,18 @@
               this.screenTaskList = temporaryTaskListFirst;
               this.waitBaskList = this.screenTaskList;
               if (this.screenTaskList.length == 0) {
-                this.$dialog.alert({
-                  message: '当前没有未分配的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
+                this.noDataShow = true;
               }
             } else {
-              this.$dialog.alert({
-                message: '当前没有任何状态的任务',
-                closeOnPopstate: true
-              }).then(() => {
-              });
+              this.noDataShow = true;
             }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
           }
         })
         .catch((err) => {
@@ -783,19 +805,23 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
+            this.noDataShow = true;
           });
-        })
+        });
+        this.showLoadingHint = false;
       },
 
       // 状态筛选标签点击切换
       onClickTab (name) {
         this.currentIndex = name;
+        this.showLoadingHint = true;
         queryAppointTaskMessage(this.proId, this.workerId)
         .then((res) => {
           let temporaryScreenTaskList = [];
           this.waitBaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.noDataShow = false;
               for (let item of res.data.data) {
                 temporaryScreenTaskList.push({
                   taskCheck: false,
@@ -816,23 +842,31 @@
                 })
               };
               if (name == 0) {
-                this.waitBaskList = temporaryScreenTaskList
+                this.waitBaskList = temporaryScreenTaskList;
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
               } else if (name == 2) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2})
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
               } else if (name == 3) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3})
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
               } else if (name == 4) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4})
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
               } else if (name == 7) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7})
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
               }
             } else {
-              this.$dialog.alert({
-                message: '当前没有查询到对应状态的任务',
-                closeOnPopstate: true
-              }).then(() => {
-              });
+              this.noDataShow = true;
             }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
           }
         })
         .catch((err) => {
@@ -840,8 +874,10 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
+            this.noDataShow = true;
           });
-        })
+        });
+        this.showLoadingHint = false;
       }
     }
 }
@@ -854,6 +890,22 @@
    .content-wrapper {
     .content-wrapper();
     font-size: 14px;
+    position: relative;
+    .no-data {
+      position: absolute;
+      top: 200px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .loading {
+      position: absolute;
+      top: 260px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
+    }
     .left-dropDown {
       .rightDropDown
     }

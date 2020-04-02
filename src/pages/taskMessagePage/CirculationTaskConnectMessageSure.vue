@@ -51,6 +51,7 @@
                     <van-checkbox-group  v-model="innerItem.checkEntryList" direction="horizontal">
                       <van-checkbox
                         shape="quare"
+                        disabled
                         v-for="(item,index) in innerItem.collectionItem"
                         :key="`${item}-${index}`"
                         :name='`{"itemName":"${item.itemName}","id":"${item.id}"}`'
@@ -120,8 +121,10 @@ export default {
     console.log('交接信息', this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         if (this.connectMessaheSureShow == true) {
           this.$dialog.alert({
             message: '请先处理是否还有需要交接的标本弹框',
@@ -136,7 +139,7 @@ export default {
             closeOnPopstate: true,
             showCancelButton: true   
             }).then(() => {
-              this.changeCurrentElectronicSignature({DtMsg: null})
+              this.changeCurrentElectronicSignature({DtMsg: null});
               this.changeIsrefreshCirculationConnectPage(false);
               this.$router.push({path:'/circulationTaskMessageConnect'});
               this.changeTitleTxt({tit:'信息交接'});
@@ -154,7 +157,8 @@ export default {
       'navTopTitle',
       'currentElectronicSignature',
       'circulationConnectMessageList',
-      'circulationTaskMessage'
+      'circulationTaskMessage',
+      'storeArriveDeparnmentId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -170,7 +174,8 @@ export default {
       'changeIsrefreshCirculationConnectPage',
       'changeCirculationConnectMessageList',
       'changeIsrefreshCirculationTaskPage',
-      'changeCompleteDeparnmentInfo'
+      'changeCompleteDeparnmentInfo',
+      'changeCurrentElectronicSignature'
     ]),
 
      // 右边下拉框菜单点击
@@ -233,7 +238,7 @@ export default {
     },
 
     // 是否有未交接的标本取消
-    connectSure () {
+    connectCancel () {
       this.updateCirculationtaskState({
         proId: this.proId,		 //当前项目ID
         id: this.circulationTaskId, //当前任务ID
@@ -308,7 +313,7 @@ export default {
 
      // 交接信息确认事件
     connectMessageSure () {
-      if (!this.this.currentElectronicSignature) {
+      if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',
           closeOnPopstate: true
@@ -331,21 +336,30 @@ export default {
           }
         }
       };
+      console.log('交接标本id',connectSampleId);
       this.postSampleConnectMessage({
-        proId: this.proId,        //项目ID
-        departmentId: 2,  //送达科室ID
-        singImg: this.currentElectronicSignature,      //送达签名图片信息
-        ids: connectSampleId       //送达选择的标本ID
+        proId: this.proId,  //项目ID
+        departmentId: this.storeArriveDeparnmentId,  //送达科室ID
+        singImg: this.currentElectronicSignature,   //送达签名图片信息
+        ids: connectSampleId   //送达选择的标本ID
       })
     },
 
     // 交接信息取消事件
     connectMessageCancel () {
-      this.changeCurrentElectronicSignature({DtMsg: null});
-      this.changeCirculationConnectMessageList({DtMsg:[]});
-      this.$router.push({path:'/circulationTaskMessageConnect'});
-      this.changeTitleTxt({tit:'信息交接'});
-      setStore('currentTitle','信息交接')
+       this.$dialog.alert({
+          message: '返回上页后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
+          }).then(() => {
+            this.changeCurrentElectronicSignature({DtMsg: null});
+            this.changeCirculationConnectMessageList({DtMsg:[]});
+            this.changeIsrefreshCirculationConnectPage(false);
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'信息交接'});
+            setStore('currentTitle','信息交接')}
+          )
+        .catch(() => {})
     }
   }
 }
@@ -366,7 +380,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .sweep-code-area {

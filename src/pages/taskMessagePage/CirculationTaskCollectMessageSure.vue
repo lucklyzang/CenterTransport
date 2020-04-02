@@ -35,6 +35,7 @@
                   <div class="check-entry-content">
                       <van-checkbox-group v-model="item.checkEntryList" direction="horizontal">
                          <van-checkbox
+                            disabled
                             shape="quare"
                             v-for="(item,index) in item.entryList"
                             :key="`${item}-${index}`"
@@ -110,8 +111,10 @@ export default {
     console.log('id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         this.$dialog.alert({
         message: '返回上级后,将丢失本页及本科室的数据',
         closeOnPopstate: true,
@@ -253,7 +256,7 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      if (!this.this.currentElectronicSignature) {
+      if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',
           closeOnPopstate: true
@@ -305,16 +308,23 @@ export default {
 
     // 采集信息确认取消事件
     collectMessageCancel () {
-      // 当前页面回显数据
-      this.allcirculationCollectMessageList = [];
-      this.changeCurrentElectronicSignature({DtMsg: null});
-      // 上一页面store采集数据
-      this.changeCirculationCollectMessageList({DtMsg:[]});
-      // 上一页面Localstorage采集数据
-      removeStore('currentCirculationCollectMessage');
-      this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'信息采集'});
-      setStore('currentTitle','信息采集')
+      this.$dialog.alert({
+        message: '取消确认后,将丢失本页及本科室的采集数据',
+        closeOnPopstate: true,
+        showCancelButton: true   
+        })
+        .then(() => {
+          // 当前页面回显数据
+          this.allcirculationCollectMessageList = [];
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          // 上一页面store采集数据
+          this.changeCirculationCollectMessageList({DtMsg:[]});
+          // 上一页面Localstorage采集数据
+          removeStore('currentCirculationCollectMessage');
+          this.$router.push({path:'/circulationTaskCollectMessage'});
+          this.changeTitleTxt({tit:'信息采集'});
+          setStore('currentTitle','信息采集')})
+      .catch(() => {})
     }
   }
 }
@@ -335,7 +345,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .bed-number-list-outer {

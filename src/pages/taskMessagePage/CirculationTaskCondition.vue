@@ -48,8 +48,10 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -105,7 +107,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     }
   }

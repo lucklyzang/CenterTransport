@@ -25,7 +25,7 @@ import {logIn, getDictionaryData} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
 import passwordPng from '@/components/images/password.png'
 import userPng from '@/components/images/user.png'
-import Loading from '../components/Loading'
+import Loading from '@/components/Loading'
 import { setStore, getStore, IsPC, scanCode } from '@/common/js/utils'
 export default {
   components: {

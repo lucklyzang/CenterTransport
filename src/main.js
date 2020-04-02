@@ -76,11 +76,15 @@ if (getStore('currentCirculationConnectMessage')) {
 // 页面刷新重新存入医护人员生成运送类型信息
 if (getStore('currentTransportTypeMessage')) {
   store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
-}
+};
 // 页面刷新重新存入循环任务完成采集科室信息
 if (getStore('completeDepartmentMessage')) {
   store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))});
-}
+};
+// 页面刷新重新存入送达的科室id
+if (getStore('currentDepartmentId')) {
+  store.commit('changeStoreArriveDeparnmentId',getStore('currentDepartmentId'));
+};
 if (IsPC()) {
   Vue.use(new VueSocketIO({
      debug: true,

@@ -1,5 +1,11 @@
 <template>
   <div class="content-wrapper">
+    <div class="no-data" v-show="noDataShow">
+      <NoData></NoData>
+    </div>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+    </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
@@ -12,7 +18,7 @@
     <div class="circultion-task-title">
       <h3>循环任务列表</h3>
     </div>
-    <div class="circulation-task-list">
+    <div class="circulation-task-list" v-show="circulationTaskListShow">
       <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
         <div class="sample-type-check">
           <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
@@ -71,12 +77,16 @@
   import FooterBottom from '@/components/FooterBottom'
   import {queryCirculationTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
+  import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
       return {
+        showLoadingHint: false,
+        noDataShow: false,
+        circulationTaskListShow: false,
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
@@ -88,6 +98,7 @@
     components: {
       HeaderTop,
       NoData,
+      Loading,
       FooterBottom
     },
 
@@ -108,8 +119,10 @@
     mounted () {
       // 控制设备物理返回按键测试
       if (!IsPC()) {
+        let that = this;
         pushHistory();
-        this.gotoURL(() => {
+        that.gotoURL(() => {
+          pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
@@ -129,8 +142,10 @@
       console.log('完成科室信息',this.completeDeparnmentInfo);
       // 控制设备物理返回按键测试
       if (!IsPC()) {
+        let that = this;
         pushHistory();
-        this.gotoURL(() => {
+        that.gotoURL(() => {
+          pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送') 
@@ -154,7 +169,8 @@
         'changeCirculationTaskMessage',
         'changeIsCollectEnterSweepCodePage',
         'changeCirculationTaskId',
-        'changeStipulateOfficeList'
+        'changeStipulateOfficeList',
+        'changeArriveDepartmentId'
       ]),
 
       // 右边下拉框菜单点击
@@ -226,10 +242,13 @@
 
       // 查询循环任务
       getCirculationTask (data) {
+        this.showLoadingHint = true;
         queryCirculationTask(data).then((res) => {
           this.circulationTaskList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.circulationTaskListShow = true;
+              this.noDataShow = false;
               for (let item of res.data.data) {
                 this.circulationTaskList.push({
                   createTime: item.createTime,
@@ -289,12 +308,17 @@
               };
               console.log('任务信息',this.circulationTaskList)
             } else {
-              this.$dialog.alert({
-                message: '当前没有要循环的任务',
-                closeOnPopstate: true
-              }).then(() => {
-              });
+              this.circulationTaskListShow = false;
+              this.noDataShow = true;
             }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.circulationTaskListShow = false;
+              this.noDataShow = true;
+            });
           }
         })
         .catch((err) => {
@@ -302,8 +326,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
+            this.circulationTaskListShow = false;
+            this.noDataShow = true;
           });
-        })
+        });
+        this.showLoadingHint = false;
       },
 
       // 返回上一页
@@ -335,6 +362,7 @@
           });
           return
         };
+        this.changeArriveDepartmentId(false);
         this.currentOfficeName = indexWrapper;
         this.changeIsCollectEnterSweepCodePage(true);
         this.changeStipulateOfficeList(item.spaces.filter((inx) => { return inx.check == false}));
@@ -352,6 +380,14 @@
         let checkTaskId = '';
         let checkList = [];
         checkList = this.circulationTaskList.filter((item) => item.check == true);
+        if (checkList[0].state == 7) {
+          this.$dialog.alert({
+            message: '该条循环任务已完成',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          return
+        };
         if (checkList.length == 0) {
           this.$dialog.alert({
             message: '请选择要送达的循环任务',
@@ -365,6 +401,7 @@
           }).then(() => {
           });
         } else if (checkList.length == 1) {
+          this.changeArriveDepartmentId(true);
           if (checkList[0]['spaces'].filter((item) => item.check == true).length == checkList[0]['spaces'].length) {
             for (let item of checkList) {
               for (let innerItem in item) {
@@ -404,9 +441,25 @@
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    position: relative;
     font-size: 14px;
     .left-dropDown {
       .rightDropDown
+    }
+    .no-data {
+      position: absolute;
+      top: 200px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+    }
+    .loading {
+      position: absolute;
+      top: 260px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
     }
     .circultion-task-title {
       height: 30px;
@@ -480,9 +533,10 @@
           width: 100%;
           max-height: 160px;
           overflow: auto;
+          z-index: 100;
           ul {
             li {
-              line-height: 30px;
+              line-height: 50px;
               font-size: 13px;
               text-align: center;
               background:#fff;

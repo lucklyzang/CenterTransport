@@ -81,8 +81,11 @@ export default {
     console.log(this.appointTaskMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
+        this.changeCurrentElectronicSignature({DtMsg: null});
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -94,7 +97,8 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsRefershAppointTaskPage'
+      'changeIsRefershAppointTaskPage',
+      'changeCurrentElectronicSignature'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {
@@ -174,6 +178,14 @@ export default {
 
     // 预约信息确认
     appointMessageSure () {
+      if (this.currentElectronicSignature) {
+        this.$dialog.alert({
+          message: '签名不能为空,请确认签名',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };
       this.checkCustomerInfo({
         id: this.taskId,//任务Id,必填项
 			  proId: this.proId,//项目ID，必填项
@@ -188,6 +200,7 @@ export default {
 
     // 返回上一页
     backTo () {
+      this.changeCurrentElectronicSignature({DtMsg: null});
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -211,7 +224,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .customerInfo-box {

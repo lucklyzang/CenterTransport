@@ -175,7 +175,11 @@ import { base64ImgtoFile } from '@/common/js/utils'
         this.signNatureData = this.$refs.board.toDataURL();
         this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")});
         var imgFile = base64ImgtoFile(this.$refs.board.toDataURL());
-        console.log(this.$refs.board.toDataURL())
+        this.$dialog.alert({
+          message: '签名已保存',
+          closeOnPopstate: true   
+        }).then(() => {
+        });
       }
     }
   }

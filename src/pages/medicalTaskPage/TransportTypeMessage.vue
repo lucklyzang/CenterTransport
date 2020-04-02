@@ -93,8 +93,10 @@ export default {
     console.log(this.changetransportTypeMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'首页'});
         setStore('currentTitle','首页') 
@@ -207,7 +209,10 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       background: #e2e2e2;
-      margin-top: 10px;
+      h3 {
+        font-size: 14px;
+        color: #1699e8
+      }
     };
     .transport-type-area {
       flex:1;

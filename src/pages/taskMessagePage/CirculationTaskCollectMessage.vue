@@ -147,8 +147,10 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
+      that.gotoURL(() => {
+        pushHistory();
         if (this.collectMessaheSureShow == true) {
           this.$dialog.alert({
             message: '请先处理是否收集该科室其它床位标本弹框',
@@ -159,7 +161,7 @@ export default {
           .catch(() => {})
         } else {
         this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
+          message: '返回上页后,将丢失本科室采集数据!',
           closeOnPopstate: true,
           showCancelButton: true   
           }).then(() => {
@@ -280,7 +282,7 @@ export default {
         .catch(() => {})
       } else {
         this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
+          message: '返回上页后,将丢失本科室采集数据',
           closeOnPopstate: true,
           showCancelButton: true   
         }).then(() => {
@@ -337,6 +339,7 @@ export default {
         patientName: this.patientName,
         sampleAmount: this.sampleAmount,
       });
+      console.log('传的数据',currentCollectAllMessageCancel,currentCollectAllMessageCancel);
       this.changeCirculationCollectMessageList({DtMsg:currentCollectAllMessageCancel});
       setStore('currentCirculationCollectMessage',{innerMessage:currentCollectAllMessageCancel});
       this.$router.push({path:'/circulationTaskCollectMessageSure'});
@@ -346,9 +349,17 @@ export default {
 
     // 采集信息取消事件
     collectMessageCancel () {
-      this.$router.push({'path':'/circulationTaskSweepCode'});
-      this.changeTitleTxt({tit:'扫码'});
-      setStore('currentTitle','扫码');
+      this.$dialog.alert({
+        message: '取消采集后,将丢失本科室采集数据!',
+        closeOnPopstate: true,
+        showCancelButton: true   
+      }).then(() => {
+        this.changeCirculationCollectMessageList({DtMsg:[]});
+        this.$router.push({'path':'/circulationTaskSweepCode'});
+        this.changeTitleTxt({tit:'扫码'});
+        setStore('currentTitle','扫码');}
+        )
+      .catch(() => {})
     },
 
     // 新增标本采集框
@@ -390,7 +401,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px;
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .form-two {

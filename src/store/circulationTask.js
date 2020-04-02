@@ -3,13 +3,15 @@ import { deepClone } from '@/common/js/utils'
 export default {
   state:{
     circulationTaskId: '',
+    arriveDepartmentId: false,
+    storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
     currentElectronicSignature: null,
     circulationCollectMessageList: [],
     isCollectEnterSweepCodePage: false,
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
-    isrefreshCirculationTaskPage: false,
+    isrefreshCirculationTaskPage: true,
     completeDeparnmentInfo: {
       "departmentIdList": [],
       "taskId": ''
@@ -26,7 +28,9 @@ export default {
     isrefreshCirculationConnectPage: state => state.isrefreshCirculationConnectPage,
     isrefreshCirculationTaskPage: state => state.isrefreshCirculationTaskPage,
     completeDeparnmentInfo: state => state.completeDeparnmentInfo,
-    stipulateOfficeList: state => state.stipulateOfficeList
+    stipulateOfficeList: state => state.stipulateOfficeList,
+    arriveDepartmentId: state => state.arriveDepartmentId,
+    storeArriveDeparnmentId: state => state.storeArriveDeparnmentId
   },
   mutations:{
     // 改变循环任务ID状态
@@ -68,6 +72,14 @@ export default {
     // 改变要扫码的科室列表状态
     changeStipulateOfficeList (state,payLoad) {
       state.stipulateOfficeList = payLoad
+    },
+    // 改变送达科室是否扫码状态
+    changeArriveDepartmentId (state,payLoad) {
+      state.arriveDepartmentId = payLoad
+    },
+    // 改变送达科室id状态
+    changeStoreArriveDeparnmentId (state,payLoad) {
+      state.storeArriveDeparnmentId = payLoad
     }
   },
   actions:{}

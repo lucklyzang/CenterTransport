@@ -14,11 +14,14 @@
     </div>
     <div class="sweep-code-area">
       <div class="point-area">
-        <div class="task-start-point">
+        <div class="task-start-point" v-show="arriveDepartmentId == false">
           <p>任务起点:(扫码科室必须为下列其中一个)</p>
           <ul>
             <li v-for="(item,index) in startPointList" :key="index">{{item.text}}</li>
           </ul>
+        </div>
+        <div class="task-start-point" v-show="arriveDepartmentId == true">
+          <p>请扫描标本送达的科室</p>
         </div>
       </div>
     </div>
@@ -54,21 +57,15 @@ export default {
   },
 
   mounted () {
-    console.log('id',this.circulationTaskId, this.stipulateOfficeList);
+    console.log('id',this.stipulateOfficeList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
+      let that = this;
       pushHistory();
-      this.gotoURL(() => {
-         this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-        }).then(() => {
-          this.$router.push({path:'/circulationTask'});
-          this.changeTitleTxt({tit:'循环任务'});
-          setStore('currentTitle','循环任务')
-        })
-        .catch(() => {})
+      that.gotoURL(() => {
+        this.$router.push({path:'/circulationTask'});
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务')
       })
     };
     this.echoOfficeList();
@@ -85,7 +82,8 @@ export default {
       'circulationTaskMessage',
       'isCollectEnterSweepCodePage',
       'circulationTaskId',
-      'stipulateOfficeList'
+      'stipulateOfficeList',
+      'arriveDepartmentId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -100,7 +98,8 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeStoreArriveDeparnmentId'
     ]),
 
      // 右边下拉框菜单点击
@@ -132,16 +131,9 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$dialog.alert({
-        message: '返回上级后,将丢失本页数据!',
-        closeOnPopstate: true,
-        showCancelButton: true   
-      }).then(() => {
-        this.$router.push({path:'/circulationTask'});
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
-      })
-      .catch(() => {})
+      this.$router.push({path:'/circulationTask'});
+      this.changeTitleTxt({tit:'循环任务'});
+      setStore('currentTitle','循环任务')
     },
 
     // 摄像头扫码后的回调
@@ -150,11 +142,20 @@ export default {
         let codeData = code.split('|');
         if (codeData.length > 0) {
           let departmentId = codeData[0];
-          this.juddgeMedicalCorrect({
-            id: this.circulationId,// 循环任务ID 必输
-            proId: this.proId, // 项目ID 必输
-            departmentId: departmentId //扫描科室ID 必输
-          })
+          if (!this.arriveDepartmentId) {
+            this.juddgeMedicalCorrect({
+              id: this.circulationId,// 循环任务ID 必输
+              proId: this.proId, // 项目ID 必输
+              departmentId: departmentId //扫描科室ID 必输
+            })
+          } else {
+            // 存储送达的科室id
+            this.changeStoreArriveDeparnmentId(departmentId);
+            setStore('currentDepartmentId', departmentId);
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'循环信息交接'});
+            setStore('currentTitle','循环信息交接')
+          }
         }
       } else {
          this.$dialog.alert({
@@ -178,10 +179,6 @@ export default {
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')
-          } else {
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'循环信息交接'});
-            setStore('currentTitle','循环信息交接')
           }
         } else {
           this.$dialog.alert({
@@ -227,7 +224,8 @@ export default {
       line-height: 30px;
       padding-left: 10px;
       h3 {
-        font-size: 15px
+        font-size: 14px;
+        color: #1699e8
       }
     };
     .sweep-code-area {
@@ -240,7 +238,7 @@ export default {
         width: 80%;
         background: #fff;
         margin-left: 4%;
-        margin-top: 10px;
+        margin-top: 140px;
         padding: 20px 10px 20px 20px;
         box-shadow: 0 2.5px 12px 4px #d1d1d1;
         border-radius: 8px;
@@ -249,8 +247,9 @@ export default {
         font-weight: bold;
         letter-spacing: 2px;
         .task-start-point{
-          margin-bottom: 10px;
+          margin-bottom: 20px;
           padding-left: 10px;
+          font-size: 16px;
           span {
             color: #585858;
           }
