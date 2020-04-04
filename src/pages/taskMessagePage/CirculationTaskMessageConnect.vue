@@ -122,7 +122,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsrefreshCirculationTaskPage(false);
+        this.changeIsrefreshCirculationTaskPage(true);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -138,7 +138,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsrefreshCirculationTaskPage(false);
+        this.changeIsrefreshCirculationTaskPage(true);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -181,7 +181,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsrefreshCirculationTaskPage(false);
+      this.changeIsrefreshCirculationTaskPage(true);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -306,7 +306,7 @@ export default {
 
     // 交接信息取消事件
     ConnectCancel () {
-      this.changeIsrefreshCirculationTaskPage(false);
+      this.changeIsrefreshCirculationTaskPage(true);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -411,9 +411,9 @@ export default {
       }
     };
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

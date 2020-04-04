@@ -62,7 +62,7 @@
     </div>
     <div class="btn-area">
       <van-button type="info" @click="collectMessageSure">确认</van-button>
-      <van-button type="info" @click="collectMessageCancel">取消</van-button>
+      <van-button type="default" @click="collectMessageCancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -429,9 +429,9 @@ export default {
       height: 250px
     }
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

@@ -8,7 +8,9 @@ export default {
     appointTaskState: '',
     appointTaskDepartmentType: '',
     appointSweepCodeNumber: false,
-    appointSweepCodeIntoPage: false
+    appointSweepCodeIntoPage: false,
+    cancelTaskIdList: [],
+    originalSignature: null,
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
@@ -17,7 +19,9 @@ export default {
     appointTaskState: state => state.appointTaskState,
     appointTaskDepartmentType: state => state.appointTaskDepartmentType,
     appointSweepCodeNumber: state => state.appointSweepCodeNumber,
-    appointSweepCodeIntoPage: state => state.appointSweepCodeIntoPage
+    appointSweepCodeIntoPage: state => state.appointSweepCodeIntoPage,
+    cancelTaskIdList: state => state.cancelTaskIdList,
+    originalSignature: state => state.originalSignature
   },
   mutations:{
     // 改变调度任务信息状态
@@ -47,7 +51,15 @@ export default {
     // 改变预约任务扫码后进入页面的状态
     changeAppointSweepCodeIntoPage (state,payLoad) {
       state.appointSweepCodeIntoPage = payLoad
-    }
+    },
+    // 改变取消原因列表状态
+    changeAppoinTaskCancelIdList (state,payLoad) {
+      state.cancelTaskIdList = payLoad.DtMsg
+    },
+    // 改变原始签名状态
+    changeOriginalSignature (state,payLoad) {
+      state.originalSignature = payLoad
+    },
   },
   actions:{}
 }

@@ -32,7 +32,7 @@
         <span v-show="transferTaskBtnShow" :class="{'taskLineTwoStyle':transferTask == true}" @click="transferTaskEvent">转移任务</span>
       </p>
     </div>
-    <div class="state-filter-all wait-handle" v-show="stateFilterAll">
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 0">
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
               <p class="wait-handle-message-createTime">
@@ -89,7 +89,7 @@
             </div>
           </div>
     </div>
-    <div class="state-filter-no-get wait-handle" v-show="stateIndex == 0">
+    <div class="state-filter-no-get wait-handle" v-show="stateIndex == 1">
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
               <p class="wait-handle-message-createTime">
@@ -146,7 +146,7 @@
             </div>
           </div>
     </div>
-    <div class="state-filter-get wait-handle" v-show="stateIndex == 1">
+    <div class="state-filter-get wait-handle" v-show="stateIndex == 2">
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
               <p class="wait-handle-message-createTime">
@@ -196,14 +196,14 @@
                 <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
           </div>
     </div>
-    <div class="state-filter-going wait-handle" v-show="stateIndex == 2">
+    <div class="state-filter-going wait-handle" v-show="stateIndex == 3">
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
               <p class="wait-handle-message-createTime">
@@ -253,10 +253,10 @@
                 <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
           </div>
     </div>
@@ -310,10 +310,10 @@
                 <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
         </div>
     </div>
@@ -373,10 +373,10 @@
                 <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
           </div>
         </van-tab>
@@ -434,10 +434,10 @@
                 <p class="wait-handle-check" v-show="item.state == 2">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+               <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
           </div>
         </van-tab>
@@ -495,44 +495,22 @@
                 <p class="wait-handle-check" v-show="item.state == 2 ">
                   <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
-                <p class="get-wait-task">
-                  <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-                </p>
               </div>
+              <p class="get-wait-task">
+                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+              </p>
             </div>
           </div>
         </van-tab>
       </van-tabs>
     </div>
-    <van-dialog
-      v-model="taskCancelReasonShow"
-      title="任务取消原因"
-      show-cancel-button
-      confirmButtonText="确定"
-      cancelButtonText="取消"
-      :close-on-popstate="true"
-      :close-on-click-overlay="true"
-      @confirm="taskCancelSure"
-      @cancel="taskCancel"
-      >
-      <van-cell-group>
-        <van-field
-          v-model="taskCancelReason"
-          label=取消原因
-          type="textarea"
-          placeholder="请输入取消原因"
-          rows="3"
-          autosize
-        />
-      </van-cell-group>
-    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {getDispatchTaskMessage, updateDispatchTask, queryTaskCancelReason, queryTaskDelayReason, cancelDispatchTaskBatch} from '@/api/workerPort.js'
+  import {getDispatchTaskMessage, getDispatchTaskComplete, updateDispatchTask, queryTaskCancelReason, queryTaskDelayReason, cancelDispatchTaskBatch} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
@@ -543,11 +521,9 @@
       return {
         showLoadingHint: false,
         noDataShow: false,
-        transferWorkerShow: false,
         stateListShow: false,
         stateIndex: null,
-        stateList: ['未获取','已获取', '进行中'],
-        stateFilterAll: true,
+        stateList: ['全部','未获取','已获取', '进行中'],
         stateFilterList: [],
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
@@ -563,15 +539,13 @@
         stateScreen: true,
         transferTask: false,
         taskQueryShow: false,
-        statusHandleScreenShow: false,
+        statusHandleScreenShow: true,
         waitHandleCheck: true,
         cancelTaskBtnShow: false,
         transferTaskBtnShow: false,
-        taskCancelReason: '',
-        taskCancelReasonShow: false,
         waitBaskList: [],
         activeName: 0,
-        currentIndex: ''
+        currentIndex: 1
       };
     },
 
@@ -585,10 +559,11 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'isRefershDispatchTaskPage'
+        'isRefershDispatchTaskPage',
+        'userInfo'
       ]),
       proId () {
-        return JSON.parse(getStore('userInfo')).extendData.proId
+        return this.userInfo.extendData.proId
       },
       workerId () {
         return JSON.parse(getStore('userInfo')).extendData.userId
@@ -597,6 +572,19 @@
 
     watch : {
       waitBaskList: {
+        handler(newName, oldName) {
+          if (newName.some(function (item, index) {return item.taskCheck == true})) {
+            this.cancelTaskBtnShow = true;
+            this.transferTaskBtnShow = true;
+          } else {
+            this.cancelTaskBtnShow = false;
+            this.transferTaskBtnShow = false;
+          }
+        },
+        deep: true,
+        immediate: true
+      },
+      stateFilterList: {
         handler(newName, oldName) {
           if (newName.some(function (item, index) {return item.taskCheck == true})) {
             this.cancelTaskBtnShow = true;
@@ -629,10 +617,10 @@
         }
       });
       // 查询调度任务(分配给自己的)
-      if (this.isRefershDispatchTaskPage) {
-        this.activeName = 0;
-        this.currentIndex = 0;
-        this.queryDispatchTask(this.proId, this.workerId)
+      if (this.statusHandleScreenShow) {
+        this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+      } else if (this.stateIndex !== null) {
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
       }
     },
 
@@ -654,7 +642,11 @@
         }
       });
       // 查询调度任务(分配给自己的)
-      this.queryDispatchTask(this.proId, this.workerId)
+      if (this.statusHandleScreenShow) {
+        this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+      } else if (this.stateIndex !== null) {
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+      }
     },
 
     methods: {
@@ -662,24 +654,25 @@
         'changeTitleTxt',
         'changeDispatchTaskMessage',
         'changedispatchTaskTransferIdList',
+        'changedispatchTaskCancelIdList',
         'changeDispatchTaskDepartmentType',
         'changeDispatchTaskState',
         'changeIsCoerceTakePhoto'
       ]),
 
-      // 查询调度任务(分配给自己的)  
-      queryDispatchTask (proID, workerId) {
+      // 查询调度任务(状态筛选点击专用)  
+      queryStateFilterDispatchTask (proID, workerId, index) {
         this.showLoadingHint = true;
         getDispatchTaskMessage (proID, workerId)
-        .then(res => {
-          let temporaryTaskList = [];
-          this.waitBaskList = [];
+        .then((res) => {
+          this.showLoadingHint = false;
+          this.noDataShow = false;
+          let temporaryTaskListFirst = [];
+          this.stateFilterList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
-              this.noDataShow = false;
               for (let item of res.data.data) {
-                temporaryTaskList.push({
-                  taskCheck: false,
+                temporaryTaskListFirst.push({
                   createTime: item.createTime,
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
@@ -692,9 +685,26 @@
                   endPhoto: item.endPhoto
                 })
               };
-              this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
-              if ( this.waitBaskList.length == 0) {
-                this.noDataShow = true;
+              if (index == 0) {
+                this.stateFilterList = temporaryTaskListFirst;
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 1) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 1});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 2) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 3) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
               }
             } else {
               this.noDataShow = true;
@@ -715,8 +725,113 @@
           }).then(() => {
             this.noDataShow = true;
           });
-        });
-        this.showLoadingHint = false;
+          this.showLoadingHint = false;
+        })
+      },
+
+      // 查询调度任务(tab切换专用)
+      querySwitchDispatchTask (proID, workerId, name) {
+        this.showLoadingHint = true;
+        getDispatchTaskMessage (proID, workerId)
+        .then((res) => {
+          this.showLoadingHint = false;
+          this.noDataShow = false;
+          let temporaryScreenTaskList = [];
+          this.waitBaskList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                temporaryScreenTaskList.push({
+                  createTime: item.createTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskTypeName,
+                  toolName: item.toolName,
+                  priority: item.priority,
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto
+                })
+              };
+              if (name == 1) {
+                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 1});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              } else if (name == 2) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              } else if (name == 3) { 
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              }
+            } else {
+              this.noDataShow = true;
+            }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
+      },
+
+      // 查询调度任务(已完成)
+      queryCompleteDispatchTask (data) {
+        this.showLoadingHint = true;
+        getDispatchTaskComplete(data).then((res) => {
+          this.showLoadingHint = false;
+          this.stateCompleteList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                this.stateCompleteList.push({
+                  createTime: item.createTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskTypeName,
+                  toolName: item.toolName,
+                  priority: item.priority,
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto
+                })
+              };
+            } else {
+              this.noDataShow = true;
+            }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
       },
       
       // 任务优先级转换
@@ -767,58 +882,6 @@
         }
       },
 
-      // 调度任务的取消
-      cancelDispatchTask (data) {
-        if (this.cancelTaskIdList.lenth == 1) {
-          updateDispatchTask(data)
-          .then((res) => {
-            if (res && res.data.code == 200) {
-              this.$dialog.alert({
-                message: res.data.msg,
-                closeOnPopstate: true
-              }).then(() => {
-              });
-            }
-          })
-          .catch((err) => {
-            this.$dialog.alert({
-              message: `${err.message}`,
-              closeOnPopstate: true
-            }).then(() => {
-            });
-          })
-        } else {
-          cancelDispatchTaskBatch(data)
-          .then((res) => {
-            if (res && res.data.code == 200) {
-              this.$dialog.alert({
-                message: res.data.msg,
-                closeOnPopstate: true
-              }).then(() => {
-              });
-            }
-          })
-          .catch((err) => {
-            this.$dialog.alert({
-              message: `${err.message}`,
-              closeOnPopstate: true
-            }).then(() => {
-            });
-          })
-        }
-      },
-
-      // 任务取消原因查询
-      getTaskCancelReason (data) {
-        queryTaskCancelReason(data)
-        .then((res) => {
-
-        })
-        .catch((err) => {
-
-        })
-      },
-
       // 任务延迟原因查询
       getTaskDelayReason (data) {
         queryTaskDelayReason(data)
@@ -854,7 +917,6 @@
 
       // 调度任务第一行按钮点击
       taskLineOneEvent (item,index) {
-        this.currentIndex = 1;
         this.stateIndex = null;
         this.taskLlineOneIndex = index;
         this.stateListShow = false;
@@ -863,11 +925,12 @@
         this.cancelTask = false;
         this.noDataShow = false;
         if (index == '0') {
+          this.activeName = 0;
+          this.currentIndex = 1;
           this.stateScreen = true;
           this.taskQueryShow = false;
-          this.stateFilterAll = false;
           this.statusHandleScreenShow = true;
-          this.queryDispatchTask(this.proId, this.workerId);
+          this.querySwitchDispatchTask(this.proId, this.workerId,1);
         } else if (index == '1') {
           this.stateIndex = null;
           this.stateScreen = false;
@@ -875,144 +938,29 @@
           this.statusHandleScreenShow = false;
           this.cancelTaskBtnShow = false;
           this.transferTaskBtnShow = false;
-          this.stateFilterAll = false;
+          this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7})
         }
       },
 
       // 状态筛选按钮点击
       statusScreenEvent () {
-        this.stateIndex = null;
+        this.stateIndex = 0;
+        this.cancelTaskBtnShow = false;
+        this.transferTaskBtnShow = false;
         this.statusHandleScreenShow = false;
-        this.stateFilterAll = true;
+        this.taskQueryShow = false;
         this.stateListShow = !this.stateListShow;
         this.transferTask = false;
         this.cancelTask = false;
-        this.taskQueryShow = false;
-        this.activeName = 0;
-        this.currentIndex = 0;
-        this.showLoadingHint = true;
-        getDispatchTaskMessage (this.proId, this.workerId)
-        .then((res) => {
-          let temporaryTaskListFirst = [];
-          this.stateFilterList = [];
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.noDataShow = false;
-              for (let item of res.data.data) {
-                temporaryTaskListFirst.push({
-                  createTime: item.createTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  id: item.id,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto
-                })
-              };
-              this.stateFilterList = temporaryTaskListFirst;
-              if (this.stateFilterList.length == 0) {
-                this.noDataShow = true;
-                this.stateFilterAll = false
-              }
-            } else {
-              this.noDataShow = true;
-              this.stateFilterAll = false
-            }
-          } else {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.noDataShow = true;
-              this.stateFilterAll = false
-            });
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-            this.noDataShow = true;
-            this.stateFilterAll = false
-          });
-        })
-        this.showLoadingHint = false;
+        this.queryStateFilterDispatchTask(this.proId, this.workerId, 0)
       },
 
       // 状态筛选列表点击
       stateListEvent (index) {
         this.stateIndex = index;
-        this.stateFilterAll = false;
         this.showLoadingHint = true;
         this.statusHandleScreenShow = false;
-         getDispatchTaskMessage (this.proId, this.workerId)
-        .then((res) => {
-          let temporaryTaskListFirst = [];
-          this.stateFilterList = [];
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.noDataShow = false;
-              for (let item of res.data.data) {
-                temporaryTaskListFirst.push({
-                  createTime: item.createTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  id: item.id,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto
-                })
-              };
-              if (index == 0) {
-                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 1});
-                if (this.stateFilterList.length == 0) {
-                  this.noDataShow = true;
-                  this.stateIndex = null
-                }
-              } else if (index == 1) {
-                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
-                if (this.stateFilterList.length == 0) {
-                  this.noDataShow = true;
-                  this.stateIndex = null
-                }
-              } else if (index == 2) {
-                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
-                if (this.stateFilterList.length == 0) {
-                  this.noDataShow = true;
-                  this.stateIndex = null
-                }
-              }
-            } else {
-              this.noDataShow = true;
-              this.stateIndex  = null
-            }
-          } else {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.noDataShow = true;
-              this.stateIndex  = null
-            });
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-            this.noDataShow = true;
-            this.stateIndex  = null
-          });
-        })
-        this.showLoadingHint = false;
+        this.queryStateFilterDispatchTask(this.proId, this.workerId, index)
       },
 
       // 取消任务按钮点击
@@ -1021,39 +969,23 @@
         this.transferTask = false;
         this.statusScreen = false;
         this.cancelTaskIdList = [];
-        this.taskCancelReasonShow = true;
-      },
-
-      //任务取消原因确定
-      taskCancelSure () {
-        this.taskCancelReasonShow = false;
+        this.$router.push({path:'/dispatchTaskCancelForm'});
+        this.changeTitleTxt({tit:'取消原因选择'});
+        setStore('currentTitle','取消原因选择');
+        this.cancelTaskIdList = [];
         let temporaryCancelTaskCheckList = [];
-        temporaryCancelTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        if (this.statusHandleScreenShow) {
+          temporaryCancelTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        } else if (this.stateIndex !== null) {
+          temporaryCancelTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+        };
         for (let item of temporaryCancelTaskCheckList)  {
           for (let key in item) {
             if (key == 'id')
             this.cancelTaskIdList.push(item['id'])
           }
         };
-        if (this.cancelTaskIdList.lenth == 1) {
-          this.cancelDispatchTask({
-            proId: this.proId,	//当前项目ID
-            id: this.cancelTaskIdList[0], //当前任务ID
-            state: 6, //取消后的状态
-            cancelReason: this.taskCancelReason //取消原因
-          })
-        } else {
-            this.cancelDispatchTask({
-              proId: this.proId,	//当前项目ID
-              ids: this.cancelTaskIdList, //当前任务ID
-              cancelReason: this.taskCancelReason //取消原因
-          })
-        }
-      },
-
-      //任务取消原因取消
-      taskCancel () {
-        this.taskCancelReasonShow = false
+        this.changedispatchTaskCancelIdList({DtMsg: this.cancelTaskIdList})
       },
 
       // 转移任务按钮点击
@@ -1061,13 +993,16 @@
         this.transferTask = true;
         this.cancelTask = false;
         this.statusScreen = false;
-        this.transferWorkerShow = true;
-        this.$router.push({path:'/dispatchTaskForm'});
+        this.$router.push({path:'/dispatchTaskTransferForm'});
         this.changeTitleTxt({tit:'转移人员选择'});
         setStore('currentTitle','转移人员选择');
         this.transferTaskIdList = [];
         let temporaryTransferTaskCheckList = [];
-        temporaryTransferTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        if (this.statusHandleScreenShow) {
+          temporaryTransferTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        } else if (this.stateIndex !== null) {
+          temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+        };
         for (let item of temporaryTransferTaskCheckList)  {
           for (let key in item) {
             if (key == 'id')
@@ -1114,6 +1049,16 @@
         })
         .then(res => {
           if (res && res.data.code == 200) {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            if (this.statusHandleScreenShow) {
+              this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+            } else if (this.stateIndex !== null) {
+              this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+            }
           }
         })
         .catch(err => {
@@ -1128,59 +1073,7 @@
       // 状态筛选标签点击切换 
       onClickTab (name) {
         this.currentIndex = name;
-        this.showLoadingHint = true;
-        getDispatchTaskMessage (this.proId, this.workerId)
-        .then((res) => {
-          let temporaryScreenTaskList = [];
-          this.waitBaskList = [];
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.noDataShow = false;
-              for (let item of res.data.data) {
-                temporaryScreenTaskList.push({
-                  createTime: item.createTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  id: item.id,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto
-                })
-              };
-              if (name == 1) {
-                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 1});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 2) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 3) { 
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              }
-            } else {
-              this.noDataShow = true;
-            }
-          } else {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.noDataShow = true;
-            });
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-            this.noDataShow = true;
-          });
-        })
-        this.showLoadingHint = false;
+        this.querySwitchDispatchTask(this.proId, this.workerId, name);
       }
     }
 }
@@ -1313,6 +1206,7 @@
               margin-bottom: 10px;
               width: 47%;
               display: inline-block;
+              vertical-align: top;
               .message-tit {
                 color: #7f7d7d
               };
@@ -1359,6 +1253,7 @@
               margin-bottom: 10px;
               width: 47%;
               display: inline-block;
+              vertical-align: top;
               .message-tit {
                 color: #7f7d7d
               };

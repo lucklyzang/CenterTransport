@@ -38,9 +38,9 @@
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info" v-show="photoAreaBoxShow == true" @click="submitPhoto">提交</van-button>
-      <van-button type="info" v-show="photoAreaBoxShow == false" @click="sweepCodeSure">扫描二维码</van-button>
-      <van-button type="default" @click="cancelSweepCode">取消</van-button>
+      <van-button type="info"  v-show="photoAreaBoxShow == true" @click="submitPhoto">提交</van-button>
+      <van-button type="info"  v-show="photoAreaBoxShow == false" @click="sweepCodeSure">扫描二维码</van-button>
+      <van-button type="default"  @click="cancelSweepCode">取消</van-button>
     </div>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershDispatchTaskPage(false);
+        this.changeIsRefershDispatchTaskPage(true);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
         setStore('currentTitle','调度任务')
@@ -100,7 +100,8 @@ export default {
       'dispatchTaskMessage',
       'dispatchTaskState',
       'dispatchTaskDepartmentType',
-      'isCoerceTakePhoto'
+      'isCoerceTakePhoto',
+      'isCompleteSweepCode'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -116,7 +117,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsRefershDispatchTaskPage'
+      'changeIsRefershDispatchTaskPage',
+      'changeisCompleteSweepCode'
     ]),
 
     // 扫描二维码方法
@@ -223,6 +225,7 @@ export default {
     juddgeCurrentDepartment (data) {
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
+          this.changeisCompleteSweepCode(true);
           if (this.isCoerceTakePhoto == 0) {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
@@ -265,6 +268,7 @@ export default {
             }).then(() => {
             });
           };
+          this.changeisCompleteSweepCode(false);
           this.changeIsRefershDispatchTaskPage(true);
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
@@ -288,7 +292,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershDispatchTaskPage(false);
+      this.changeIsRefershDispatchTaskPage(true);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -296,12 +300,24 @@ export default {
 
      // 扫码确认事件
     sweepCodeSure () {
+      if (this.isCompleteSweepCode) {
+        if (this.isCoerceTakePhoto == 1) {
+          this.$dialog.alert({
+            message: '科室校验已验证通过,请拍照',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          this.photoAreaBoxShow = true;
+          this.appointAreaShow = false
+        }
+        return
+      };
       this.sweepAstoffice()
     },
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsRefershDispatchTaskPage(false);
+      this.changeIsRefershDispatchTaskPage(true);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -424,9 +440,9 @@ export default {
       }
     };
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px
+      line-height: 80px
     }
   }
 </style>

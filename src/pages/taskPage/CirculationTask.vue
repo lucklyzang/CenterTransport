@@ -16,9 +16,21 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="circultion-task-title">
-      <h3>循环任务列表</h3>
+      <div class="task-line-one-wrapper">
+        <ul class="task-line-one">
+          <li :class="{'taskLineOneStyle':taskLlineOneIndex == index}" :key="index" v-for="(item,index) in taskOneList" @click="taskLineOneEvent(item, index)">{{item}}</li>
+        </ul>
+      </div>
+      <p class="task-line-two">
+        <span v-show="stateScreen" class="state-filter-span"  @click="statusScreenEvent">
+          状态筛选
+          <ul v-show="stateListShow">
+            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index)">{{item}}</li>
+          </ul>
+        </span>
+      </p>
     </div>
-    <div class="circulation-task-list" v-show="circulationTaskListShow">
+    <div class="circulation-task-list" v-show="stateIndex == 0">
       <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
         <div class="sample-type-check">
           <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
@@ -65,6 +77,253 @@
         </div>
       </div>
     </div>
+    <div class="circulation-task-list" v-show="stateIndex == 1">
+      <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+        <div class="sample-type-check">
+          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+        </div>
+        <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+        <p class="wait-handle-message-createTime">
+          创建时间：{{item.createTime}}
+        </p>
+        <p class="wait-handle-message-createTime">
+          开始时间：{{item.startTime}}
+        </p>
+        <div class="wait-handle-message">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">医院:</span>
+              <span class="message-tit-real">{{item.proName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">优先级:</span>
+              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">任务名称:</span>
+              <span class="message-tit-real">{{item.taskTypeName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">工作人员:</span>
+              <span class="message-tit-real">{{item.workerName}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">状态:</span>
+              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+            </p>
+          </div>
+        </div>
+        <div class="wait-handle-office-list" v-show="item.show">
+          <ul>
+            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="circulation-task-list" v-show="stateIndex == 2">
+      <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+        <div class="sample-type-check">
+          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+        </div>
+        <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+        <p class="wait-handle-message-createTime">
+          创建时间：{{item.createTime}}
+        </p>
+        <p class="wait-handle-message-createTime">
+          开始时间：{{item.startTime}}
+        </p>
+        <div class="wait-handle-message">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">医院:</span>
+              <span class="message-tit-real">{{item.proName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">优先级:</span>
+              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">任务名称:</span>
+              <span class="message-tit-real">{{item.taskTypeName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">工作人员:</span>
+              <span class="message-tit-real">{{item.workerName}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">状态:</span>
+              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+            </p>
+          </div>
+        </div>
+        <div class="wait-handle-office-list" v-show="item.show">
+          <ul>
+            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="circulation-task-list" v-show="taskQueryShow">
+      <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+        <div class="sample-type-check">
+          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+        </div>
+        <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+        <p class="wait-handle-message-createTime">
+          创建时间：{{item.createTime}}
+        </p>
+        <p class="wait-handle-message-createTime">
+          开始时间：{{item.startTime}}
+        </p>
+        <div class="wait-handle-message">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">医院:</span>
+              <span class="message-tit-real">{{item.proName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">优先级:</span>
+              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">任务名称:</span>
+              <span class="message-tit-real">{{item.taskTypeName}}</span>
+            </p>
+            <p>
+              <span class="message-tit">工作人员:</span>
+              <span class="message-tit-real">{{item.workerName}}</span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">状态:</span>
+              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+            </p>
+          </div>
+        </div>
+        <div class="wait-handle-office-list" v-show="item.show">
+          <ul>
+            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="circulation-task-list" v-show="statusHandleScreenShow">
+      <van-tabs v-model="activeName" @click="onClickTab" color="#2895ea">
+        <van-tab name="2">
+          <div slot="title">
+            <span class="title">未开始</span>
+            <span class="right-sign" v-show="currentIndex == 2">{{circulationTaskList.length}}</span>
+          </div>
+          <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <div class="sample-type-check">
+              <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+            </div>
+            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+            <p class="wait-handle-message-createTime">
+              创建时间：{{item.createTime}}
+            </p>
+            <p class="wait-handle-message-createTime">
+              开始时间：{{item.startTime}}
+            </p>
+            <div class="wait-handle-message">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
+            </div>
+          </div>
+        </van-tab>
+         <van-tab name="3">
+          <div slot="title">
+            <span class="title">进行中</span>
+            <span class="right-sign" v-show="currentIndex == 3">{{circulationTaskList.length}}</span>
+          </div>
+          <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <div class="sample-type-check">
+              <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+            </div>
+            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+            <p class="wait-handle-message-createTime">
+              创建时间：{{item.createTime}}
+            </p>
+            <p class="wait-handle-message-createTime">
+              开始时间：{{item.startTime}}
+            </p>
+            <div class="wait-handle-message">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
+            </div>
+          </div>
+        </van-tab>
+      </van-tabs>
+    </div>
     <div class="circultion-task-btn">
       <van-button type="info" @click="circulationConditionEvent">循环情况</van-button>
       <van-button type="default" @click="circulationTaskArrived">送达</van-button>
@@ -85,13 +344,23 @@
     data () {
       return {
         showLoadingHint: false,
+        stateListShow: false,
+        taskQueryShow: false,
         noDataShow: false,
+        stateScreen: true,
+        stateIndex: null,
+        taskLlineOneIndex: '0',
+        statusHandleScreenShow: true,
+        taskOneList: ['待处理', '任务查询'],
+        stateList: ['全部','未开始','进行中'],
         circulationTaskListShow: false,
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
         circulationTaskList: [],
-        currentOfficeName: ''
+        currentOfficeName: '',
+        activeName: 0,
+        currentIndex: 2
       };
     },
 
@@ -128,14 +397,28 @@
           setStore('currentTitle','中央运送') 
         })
       };
-      // 查询循环任务
-      this.getCirculationTask({
-        proId: this.proId,  //医院ID，必输
-        workerId: this.workerId,   //运送员ID
-        states: [], //查询状态
-        startDate: '',  //起始日期  YYYY-MM-dd
-        endDate: ''  //终止日期  格式 YYYY-MM-dd
-      })
+      document.addEventListener('click', (e) => {
+        if(e.target.className!='state-li' && e.target.className != 'state-filter-span'){
+          this.stateListShow = false;
+        }
+      });
+      if (this.statusHandleScreenShow) {
+        this.getCirculationTask ({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.currentIndex)
+      } else if (this.stateIndex !== null) {
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.stateIndex)
+      }
     },
 
     activated () {
@@ -151,15 +434,29 @@
           setStore('currentTitle','中央运送') 
         })
       };
+      document.addEventListener('click', (e) => {
+        if(e.target.className!='state-li' && e.target.className != 'state-filter-span'){
+          this.stateListShow = false;
+        }
+      });
       if (this.isrefreshCirculationTaskPage) {
-        // 查询循环任务
-        this.getCirculationTask({
+        if (this.statusHandleScreenShow) {
+        this.getCirculationTask ({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        })
+        }, this.currentIndex)
+        } else if (this.stateIndex !== null) {
+          this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          }, this.stateIndex)
+        } 
       }
     },
 
@@ -240,17 +537,84 @@
         }
       },
 
+      // 循环任务第一行按钮点击
+      taskLineOneEvent (item,index) {
+        this.stateIndex = null;
+        this.taskLlineOneIndex = index;
+        this.stateListShow = false;
+        this.noDataShow = false;
+        if (index == '0') {
+          this.activeName = 0;
+          this.currentIndex = 2;
+          this.stateScreen = true;
+          this.taskQueryShow = false;
+          this.statusHandleScreenShow = true;
+          this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          },2);
+        } else if (index == '1') {
+            this.stateIndex = null;
+            this.stateScreen = false;
+            this.taskQueryShow = true;
+            this.statusHandleScreenShow = false;
+            this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          },7)
+        }
+      },
+
+      // 状态筛选按钮点击
+      statusScreenEvent () {
+        this.stateIndex = 0;
+        this.statusHandleScreenShow = false;
+        this.taskQueryShow = false;
+        this.stateListShow = !this.stateListShow;
+        this.showLoadingHint = true;
+        this.getCirculationTask ({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, 0)
+      },
+
+      // 状态筛选列表点击
+      stateListEvent (index) {
+        this.stateIndex = index;
+        this.showLoadingHint = true;
+        this.statusHandleScreenShow = false;
+        this.getCirculationTask ({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, index)
+      },
+
+
       // 查询循环任务
-      getCirculationTask (data) {
+      getCirculationTask (data,index) {
         this.showLoadingHint = true;
         queryCirculationTask(data).then((res) => {
+          this.showLoadingHint = false;
           this.circulationTaskList = [];
+          let temporaryTaskListFirst = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               this.circulationTaskListShow = true;
               this.noDataShow = false;
               for (let item of res.data.data) {
-                this.circulationTaskList.push({
+                temporaryTaskListFirst.push({
                   createTime: item.createTime,
                   startTime: item.startTime,
                   proName: item.proName,
@@ -266,6 +630,49 @@
                   check: false
                 })
               };
+              if (this.statusHandleScreenShow) {
+                if (index == 2) {
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                } else if (index == 3) {
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                } 
+              } else if (this.stateIndex !== null) {
+                if (index == 0) {
+                  this.circulationTaskList = temporaryTaskListFirst;
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                } else if (index == 1) {
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                } else if (index == 2) {
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                }
+              } else if (this.taskQueryShow) {
+                 if (index == 7) {
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 7});
+                  if (this.circulationTaskList.length == 0) {
+                    this.noDataShow = true;
+                    return
+                  }
+                }
+              }
               // 改变科室列表数据结构
               for (let item = 0, len = this.circulationTaskList.length; item < len; item++) {
                 let temporaryArrayTwo = [];
@@ -329,8 +736,8 @@
             this.circulationTaskListShow = false;
             this.noDataShow = true;
           });
+          this.showLoadingHint = false;
         });
-        this.showLoadingHint = false;
       },
 
       // 返回上一页
@@ -342,6 +749,18 @@
 
       checkBoxEvent () {
         console.log('选中',this.circulationTaskList);
+      },
+
+      // 状态筛选标签点击切换 
+      onClickTab (name) {
+        this.currentIndex = name;
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, name);
       },
 
       // 科室任务列表点击
@@ -462,12 +881,79 @@
       text-align: center;
     }
     .circultion-task-title {
-      height: 30px;
-      line-height: 30px;
-      padding-left: 10px;
-      h3 {
-        font-size: 14px;
-        color: #1699e8
+      .task-line-one-wrapper {
+          height: 36px;
+          background-image: linear-gradient(to bottom, #2895ea, #5173f8);
+        .task-line-one {
+          width: 70%;
+          margin: 0 auto;
+          .taskLineOneStyle {
+            color: #2895ea;
+            background: #ffff;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px
+          }
+          li {
+            display: inline-block;
+            margin-top: 1px;
+            color: #fff;
+            width: 46%;
+            height: 36px;
+            line-height: 36px;
+            text-align: center
+          }
+        };
+      }
+      .task-line-two {
+        height: auto;
+        font-size: 0;
+        padding: 14px 0;
+        box-sizing: border-box;
+        color: #7f7d7d;
+        .taskLineTwoStyle {
+          color: #2895ea
+        }
+        span {
+          font-size: 15px;
+          display: inline-block;
+          width: 33%;
+          text-align: center;
+          border-right: 1px solid #dedada;
+          &:first-child {
+            position: relative;
+            ul {
+              z-index: 1000;
+              width: 90px;
+              position: absolute;
+              top: 20px;
+              left: 30px;
+              background: #fff;
+              text-align: left;
+              box-shadow: 0 1px 6px 2px #d1d1d1;
+              padding-top: 4px;
+              li {
+                color: #646566;
+                font-size: 14px;
+                line-height: 30px;
+                padding-left: 4px;
+              }
+              .stateListStyle {
+                color: #fff;
+                background: #2895ea
+              }
+            }
+          }
+          &:last-child {
+            border-right: none
+          }
+        }
+      }
+    };
+    .circulation-task-list {
+      /deep/ .van-tabs {
+        .right-sign {
+          .status-sign 
+        }
       }
     };
     .circulation-task-list {
@@ -561,7 +1047,8 @@
     };
     .circultion-task-btn {
       text-align: center;
-      height: 50px;
+      height: 80px;
+      line-height: 80px;
     }
   }
 </style>

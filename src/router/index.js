@@ -17,8 +17,10 @@ const CirculationTaskMessageConnect = () => import('../pages/taskMessagePage/Cir
 const CirculationTaskConnectMessageSure = () => import('../pages/taskMessagePage/CirculationTaskConnectMessageSure')
 const CirculationTaskCondition = () => import('../pages/taskMessagePage/CirculationTaskCondition')
 const TransportTypeMessage = () => import('../pages/medicalTaskPage/TransportTypeMessage')
-const DispatchTaskForm = () => import('../pages/taskFormPage/DispatchTaskForm')
+const DispatchTaskTransferForm = () => import('../pages/taskFormPage/DispatchTaskTransferForm')
+const DispatchTaskCancelForm = () => import('../pages/taskFormPage/DispatchTaskCancelForm')
 const AppointTaskForm = () => import('../pages/taskFormPage/AppointTaskForm')
+const AppointTaskCancelForm = () => import('../pages/taskFormPage/AppointTaskCancelForm')
 const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskCustomerInfo')
 Vue.use(Router)
 
@@ -114,14 +116,24 @@ let baseRoute  = [
     component: TransportTypeMessage
   },
   {
-    path: '/dispatchTaskForm',
-    name: 'dispatchTaskForm',
-    component: DispatchTaskForm
+    path: '/dispatchTaskTransferForm',
+    name: 'dispatchTaskTransferForm',
+    component: DispatchTaskTransferForm
+  },
+  {
+    path: '/dispatchTaskCancelForm',
+    name: 'dispatchTaskCancelForm',
+    component: DispatchTaskCancelForm
   },
   {
     path: '/appointTaskForm',
     name: 'appointTaskForm',
     component: AppointTaskForm
+  },
+  {
+    path: '/appointTaskCancelForm',
+    name: 'appointTaskCancelForm',
+    component: AppointTaskCancelForm
   },
   {
     path: '/appointTaskCustomerInfo',

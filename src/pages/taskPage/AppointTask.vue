@@ -22,63 +22,304 @@
         </ul>
       </div>
       <p class="task-line-two">
-        <span v-show="stateScreen" :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">状态筛选</span>
+        <span v-show="stateScreen" class="state-filter-span" :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">
+          状态筛选
+          <ul v-show="stateListShow">
+            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index)">{{item}}</li>
+          </ul>
+        </span>
         <span v-show="cancelTaskBtnShow" :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
         <span v-show="transferTaskBtnShow" :class="{'taskLineTwoStyle':transferTask == true}" @click="transferTaskEvent">转移任务</span>
       </p>
     </div>
-    <div class="wait-handle" v-show="waitHandleShow">
-      <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
-        <p class="wait-handle-message-createTime">
-          开始时间：{{item.createTime}}
-        </p>
-        <div class="wait-handle-message">
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">预约名称:</span>
-              <span class="message-tit-real">{{item.taskTypeName}}</span>
-            </p>
-            <P>
-              <span class="message-tit">起点:</span>
-              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-            </P>
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 0">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
           </div>
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">终点:</span>
-              <span class="message-tit-real">{{item.destinationName}}</span>
-            </p>
-            <p>
-              <span class="message-tit">床号:</span>
-              <span class="message-tit-real">{{item.bedNumber}}</span>
-            </p>
-          </div>
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">转运工具:</span>
-              <span class="message-tit-real">{{item.toolName}}</span>
-            </p>
-            <P>
-              <span class="message-tit">状态:</span>
-              <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-            </P>
-          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
         </div>
-        <p class="wait-handle-check" v-show="item.state == 2">
-          <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-        </p>
-        <p class="get-wait-task">
-          <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-        </p>
       </div>
     </div>
-    <div class="task-query" v-show="taskQueryShow">任务查询</div>
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 1">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
+          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 2">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
+          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 3">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
+          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="state-filter-all wait-handle" v-show="stateIndex == 4">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
+          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="task-query wait-handle" v-show="taskQueryShow">
+      <div class="task-status-list">
+        <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.createTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">预约名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
+              </p>
+              <P>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
+              </P>
+            </div>
+          </div>
+          <p class="wait-handle-check" v-show="item.state == 2">
+            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+          </p>
+          <p class="get-wait-task">
+            <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
+          </p>
+        </div>
+      </div>
+    </div>
     <div class="status-handle-screen" v-show="statusHandleScreenShow">
       <van-tabs v-model="activeName" @click="onClickTab" color="#2895ea">
-        <van-tab name="0">
+        <van-tab name="1">
           <div slot="title">
-            <span class="title">全部</span>
-            <span class="right-sign" v-show="currentIndex == 0">{{waitBaskList.length}}</span>
+            <span class="title">未获取</span>
+            <span class="right-sign" v-show="currentIndex == 1">{{waitBaskList.length}}</span>
           </div>
           <div class="task-status-list">
             <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
@@ -191,7 +432,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">预约名称:</span>
-                    <span class="message-tit-real">{{item.patientName}}</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
                   </p>
                   <P>
                     <span class="message-tit">起点:</span>
@@ -242,7 +483,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">预约名称:</span>
-                    <span class="message-tit-real">{{item.patientName}}</span>
+                    <span class="message-tit-real">{{item.taskTypeName}}</span>
                   </p>
                   <P>
                     <span class="message-tit">起点:</span>
@@ -279,88 +520,15 @@
             </div>
           </div>
         </van-tab>
-        <van-tab name="7">
-          <div slot="title">
-            <span class="title">已完成</span>
-            <span class="right-sign" v-show="currentIndex == 7">{{waitBaskList.length}}</span>
-          </div>
-          <div class="task-status-list">
-            <div class="wait-handle-list" v-for="(item,index) in waitBaskList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
-              <p class="wait-handle-message-createTime">
-                开始时间：{{item.createTime}}
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">预约名称:</span>
-                    <span class="message-tit-real">{{item.patientName}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">床号:</span>
-                    <span class="message-tit-real">{{item.bedNumber}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real">{{ stateTransfer(item.state) }}</span>
-                  </P>
-                </div>
-              </div>
-             <p class="wait-handle-check" v-show="item.state == 2">
-              <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-              </p>
-              <p class="get-wait-task">
-                <van-button type="info" v-show="item.state == '1'" @click.stop="getTask(item.id)">获取</van-button>
-              </p>
-            </div>
-          </div>
-        </van-tab>
       </van-tabs>
     </div>
-    <van-dialog
-      v-model="taskCancelReasonShow"
-      title="任务取消原因"
-      show-cancel-button
-      confirmButtonText="确定"
-      cancelButtonText="取消"
-      :close-on-popstate="true"
-      :close-on-click-overlay="true"
-      @confirm="taskCancelSure"
-      @cancel="taskCancel"
-      >
-      <van-cell-group>
-        <van-field
-          v-model="taskCancelReason"
-          label=取消原因
-          type="textarea"
-          placeholder="请输入取消原因"
-          rows="3"
-          autosize
-        />
-      </van-cell-group>
-    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask} from '@/api/workerPort.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
@@ -371,31 +539,32 @@
       return {
         showLoadingHint: false,
         noDataShow: false,
+        stateIndex: null,
+        taskQueryShow: false,
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
+        stateListShow: false,
+        stateList:['全部','未获取','已获取', '进行中', '未结束'],
         liIndex: null,
         transferWorkerShow: false,
         taskOneList: ['待处理', '任务查询'],
         taskLlineOneIndex: '0',
         statusScreen: false,
-        stateScreen: false,
+        stateScreen: true,
         cancelTask: false,
         transferTask: false,
-        stateScreen: false,
-        waitHandleShow: true,
-        taskQueryShow: false,
-        statusHandleScreenShow: false,
+        statusHandleScreenShow: true,
         waitHandleCheck: true,
         cancelTaskBtnShow: false,
         transferTaskBtnShow: false,
-        taskCancelReasonShow: false,
-        taskCancelReason: '',
+        stateFilterList: [],
+        stateCompleteList: [],
         waitBaskList: [],
         screenTaskList: [],
         cancelTaskIdList: [],
         transferTaskIdList: [],
         activeName: 0,
-        currentIndex: ''
+        currentIndex: 1
       };
     },
 
@@ -409,7 +578,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'isRefershAppointTaskPage'
+        'isRefershAppointTaskPage',
+        'userInfo'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -421,6 +591,19 @@
 
     watch : {
       waitBaskList: {
+        handler(newName, oldName) {
+          if (newName.some(function (item, index) {return item.taskCheck == true})) {
+            this.cancelTaskBtnShow = true;
+            this.transferTaskBtnShow = true;
+          } else {
+            this.cancelTaskBtnShow = false;
+            this.transferTaskBtnShow = false;
+          }
+        },
+        deep: true,
+        immediate: true
+      },
+      stateFilterList: {
         handler(newName, oldName) {
           if (newName.some(function (item, index) {return item.taskCheck == true})) {
             this.cancelTaskBtnShow = true;
@@ -447,11 +630,18 @@
           setStore('currentTitle','中央运送') 
         })
       };
-      // 查询调度任务(分配给自己的)
+      document.addEventListener('click',(e) => {
+        if(e.target.className!='state-li' && e.target.className != 'state-filter-span') {
+          this.stateListShow = false;
+        }
+      });
       if (this.isRefershAppointTaskPage) {
-        this.activeName = 0;
-        this.currentIndex = 0;
-        this.getAppointTaskMessage(this.proId, this.workerId)
+        // 查询预约任务(分配给自己的)
+        if (this.statusHandleScreenShow) {
+          this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+        } else if (this.stateIndex !== null) {
+          this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+        }
       }
     },
 
@@ -467,7 +657,17 @@
           setStore('currentTitle','中央运送') 
         })
       };
-      this.getAppointTaskMessage(this.proId, this.workerId)
+      document.addEventListener('click',(e) => {
+        if(e.target.className!='state-li' && e.target.className != 'state-filter-span') {
+          this.stateListShow = false;
+        }
+      });
+      // 查询预约任务(分配给自己的)
+      if (this.statusHandleScreenShow) {
+        this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+      } else if (this.stateIndex !== null) {
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+      }
     },
 
     methods: {
@@ -475,6 +675,7 @@
         'changeTitleTxt',
         'changeAppointTaskMessage',
         'changeAppointTaskTransferIdList',
+        'changeAppoinTaskCancelIdList',
         'changeAppointSweepCodeNumber',
         'changeAppointSweepCodeIntoPage',
         'changeAppointTaskDepartmentType',
@@ -523,36 +724,60 @@
         }
       },
 
-      // 查询预约任务 
-      getAppointTaskMessage (proID, workerId) {
+      // 查询预约任务(状态筛选点击专用)  
+      queryStateFilterDispatchTask (proID, workerId, index) {
         this.showLoadingHint = true;
-        queryAppointTaskMessage(proID, workerId).then((res) => {
-          let temporaryTaskList = [];
-          this.waitBaskList = [];
+        queryAppointTaskMessage (proID, workerId)
+        .then((res) => {
+          this.showLoadingHint = false;
+          let temporaryTaskListFirst = [];
+          this.stateFilterList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               this.noDataShow = false;
               for (let item of res.data.data) {
-                  temporaryTaskList.push({
-                    taskCheck: false,
-                    createTime: item.createTime,
-                    state: item.state,
-                    setOutPlaceName: item.setOutPlaceName,
-                    destinationName: item.destinationName,
-                    taskTypeName: item.taskName,
-                    toolName: item.toolName,
-                    id: item.id,
-                    patientName: item.patientName,
-                    bedNumber: item.bedNumber,
-                    sex: item.bedNumber,
-                    age: item.age,
-                    patientId: item.id,
-                    number: item.number
+                temporaryTaskListFirst.push({
+                  taskCheck: false,
+                  createTime: item.createTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskName,
+                  toolName: item.toolName,
+                  id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  sex: item.bedNumber,
+                  age: item.age,
+                  patientId: item.id,
+                  number: item.number
                 })
               };
-              this.waitBaskList = temporaryTaskList.filter((item) => {return item.state == 1});
-              if ( this.waitBaskList.length == 0) {
-                this.noDataShow = true;
+              if (index == 0) {
+                this.stateFilterList = temporaryTaskListFirst;
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 1) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 1});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 2) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 3) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
+              } else if (index == 4) {
+                this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 4});
+                if (this.stateFilterList.length == 0) {
+                  this.noDataShow = true;
+                }
               }
             } else {
               this.noDataShow = true;
@@ -573,9 +798,126 @@
           }).then(() => {
             this.noDataShow = true;
           });
-        });
-        this.showLoadingHint = false;
+          this.showLoadingHint = false;
+        })
       },
+
+      // 查询调度任务(tab切换专用)
+      querySwitchDispatchTask (proID, workerId, name) {
+        this.showLoadingHint = true;
+        queryAppointTaskMessage (proID, workerId)
+        .then((res) => {
+          this.showLoadingHint = false;
+          let temporaryScreenTaskList = [];
+          this.waitBaskList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                temporaryScreenTaskList.push({
+                  taskCheck: false,
+                  createTime: item.createTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskName,
+                  toolName: item.toolName,
+                  id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  sex: item.bedNumber,
+                  age: item.age,
+                  patientId: item.id,
+                  number: item.number
+                })
+              };
+              if (name == 1) {
+                 this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 1});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              } else if (name == 2) {
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              } else if (name == 3) { 
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              } else if (name == 4) { 
+                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4});
+                if (this.waitBaskList.length == 0) {this.noDataShow = true}
+              }
+            } else {
+              this.noDataShow = true;
+            }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
+      },
+
+       // 查询调度任务(已完成)
+      queryCompleteDispatchTask (data) {
+        this.showLoadingHint = true;
+        getAppointTaskComplete(data).then((res) => {
+          this.stateCompleteList = [];
+          this.showLoadingHint = false;
+          this.noDataShow = true
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                this.stateCompleteList.push({
+                  taskCheck: false,
+                  createTime: item.createTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskName,
+                  toolName: item.toolName,
+                  id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  sex: item.bedNumber,
+                  age: item.age,
+                  patientId: item.id,
+                  number: item.number
+                })
+              };
+            } else {
+              this.noDataShow = true;
+            }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
+      },
+      
 
       // 阻止change事件冒泡
       emptyHandle () {},
@@ -589,35 +931,38 @@
 
       // 调度任务第一行按钮点击
       taskLineOneEvent (item,index) {
-       this.taskLlineOneIndex = index;
+        this.stateIndex = null;
+        this.taskLlineOneIndex = index;
+        this.stateListShow = false;
         this.statusScreen = false;
         this.transferTask = false;
         this.cancelTask = false;
+        this.noDataShow = false;
         if (index == '0') {
+          this.activeName = 0;
+          this.currentIndex = 1;
           this.stateScreen = true;
-          this.waitHandleShow = true;
           this.taskQueryShow = false;
-          this.statusHandleScreenShow = false;
-          this.getAppointTaskMessage(this.proId, this.workerId);
+          this.statusHandleScreenShow = true;
+          this.querySwitchDispatchTask(this.userInfo.extendData.proId, this.workerId,1);
         } else if (index == '1') {
+          this.stateIndex = null;
           this.stateScreen = false;
           this.taskQueryShow = true;
-          this.waitHandleShow = false;
           this.statusHandleScreenShow = false;
           this.cancelTaskBtnShow = false;
-          this.transferTaskBtnShow = false
+          this.transferTaskBtnShow = false;
+          this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7,startDate:"",endDate:""})
         }
       },
 
-
-      // 取消任务按钮点击
-      cancelTaskEvent () {
-        this.cancelTask = true;
-        this.transferTask = false;
-        this.statusScreen = false;
-        this.cancelTaskIdList = [];
-        this.taskCancelReasonShow = true;
+       // 状态筛选列表点击
+      stateListEvent (index) {
+        this.stateIndex = index;
+        this.statusHandleScreenShow = false;
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, index)
       },
+
 
       // 转移任务按钮点击
       transferTaskEvent () {
@@ -630,7 +975,11 @@
         setStore('currentTitle','转移人员选择');
         this.transferTaskIdList = [];
         let temporaryTransferTaskCheckList = [];
-        temporaryTransferTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        if (this.statusHandleScreenShow) {
+          temporaryTransferTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        } else if (this.stateIndex !== null) {
+          temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+        };
         for (let item of temporaryTransferTaskCheckList)  {
           for (let key in item) {
             if (key == 'id')
@@ -653,7 +1002,11 @@
         })
         .then(res => {
           if (res && res.data.code == 200) {
-            this.getAppointTaskMessage(this.proId, this.workerId)
+            if (this.statusHandleScreenShow) {
+              this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
+            } else if (this.stateIndex !== null) {
+              this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+            }
           }
         })
         .catch(err => {
@@ -698,186 +1051,44 @@
         this.transferTask = false;
         this.statusScreen = false;
         this.cancelTaskIdList = [];
-        this.taskCancelReasonShow = true;
-      },
-
-      //任务取消原因确定
-      taskCancelSure () {
-        this.taskCancelReasonShow = false;
+        this.$router.push({path:'/appointTaskCancelForm'});
+        this.changeTitleTxt({tit:'取消原因选择'});
+        setStore('currentTitle','取消原因选择');
+        this.cancelTaskIdList = [];
         let temporaryCancelTaskCheckList = [];
-        temporaryCancelTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        if (this.statusHandleScreenShow) {
+          temporaryCancelTaskCheckList = this.waitBaskList.filter((item) => {return item.taskCheck == true});
+        } else if (this.stateIndex !== null) {
+          temporaryCancelTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+        };
         for (let item of temporaryCancelTaskCheckList)  {
           for (let key in item) {
             if (key == 'id')
             this.cancelTaskIdList.push(item['id'])
           }
         };
-        this.cancelCheckAppointTask({
-          proId: this.proId,	//当前项目ID
-          ids: this.cancelTaskIdList, //当前任务ID
-          cancelReason: this.taskCancelReason //取消原因
-        })
+        this.changeAppoinTaskCancelIdList({DtMsg: this.cancelTaskIdList})
       },
 
-      // 预约任务的取消
-      cancelCheckAppointTask (data) {
-        cancelAppointTask(data)
-        .then((res) => {
-          if (res && res.data.code == 200) {
-            this.$dialog.alert({
-              message: res.data.msg,
-              closeOnPopstate: true
-            }).then(() => {
-            });
-            this.getAppointTaskMessage(this.proId, this.workerId);
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        })
-      },
-
-      //任务取消原因取消
-      taskCancel () {
-        this.taskCancelReasonShow = false
-      },
 
       // 状态筛选按钮点击
       statusScreenEvent () {
-        this.statusScreen = true;
+        this.stateIndex = 0;
+        this.cancelTaskBtnShow = false;
+        this.transferTaskBtnShow = false;
+        this.statusHandleScreenShow = false;
+        this.taskQueryShow = false;
+        this.stateListShow = !this.stateListShow;
         this.transferTask = false;
         this.cancelTask = false;
-        this.taskQueryShow = false;
-        this.waitHandleShow = false;
-        this.statusHandleScreenShow = true;
-        this.activeName = 0;
-        this.currentIndex = 0;
         this.showLoadingHint = true;
-        queryAppointTaskMessage (this.proId, this.workerId)
-        .then((res) => {
-          let temporaryTaskListFirst = [];
-          this.screenTaskList = [];
-          this.waitBaskList = [];
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.noDataShow = false;
-              for (let item of res.data.data) {
-                temporaryTaskListFirst.push({
-                  taskCheck: false,
-                  createTime: item.createTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskName,
-                  toolName: item.toolName,
-                  id: item.id,
-                  patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  sex: item.bedNumber,
-                  age: item.age,
-                  patientId: item.id,
-                  number: item.number
-                })
-              };
-              this.screenTaskList = temporaryTaskListFirst;
-              this.waitBaskList = this.screenTaskList;
-              if (this.screenTaskList.length == 0) {
-                this.noDataShow = true;
-              }
-            } else {
-              this.noDataShow = true;
-            }
-          } else {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.noDataShow = true;
-            });
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-            this.noDataShow = true;
-          });
-        });
-        this.showLoadingHint = false;
+        this.queryStateFilterDispatchTask (this.userInfo.extendData.proId, this.workerId, 0)
       },
 
       // 状态筛选标签点击切换
       onClickTab (name) {
         this.currentIndex = name;
-        this.showLoadingHint = true;
-        queryAppointTaskMessage(this.proId, this.workerId)
-        .then((res) => {
-          let temporaryScreenTaskList = [];
-          this.waitBaskList = [];
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.noDataShow = false;
-              for (let item of res.data.data) {
-                temporaryScreenTaskList.push({
-                  taskCheck: false,
-                  createTime: item.createTime,
-                  state: item.state,
-                  taskType: '',
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskName,
-                  toolName: item.toolName,
-                  id: item.id,
-                  patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  sex: item.bedNumber,
-                  age: item.age,
-                  patientId: item.id,
-                  number: item.number
-                })
-              };
-              if (name == 0) {
-                this.waitBaskList = temporaryScreenTaskList;
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 2) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 2});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 3) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 3});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 4) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 4});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              } else if (name == 7) {
-                this.waitBaskList = temporaryScreenTaskList.filter((item) => {return item.state == 7});
-                if (this.waitBaskList.length == 0) {this.noDataShow = true}
-              }
-            } else {
-              this.noDataShow = true;
-            }
-          } else {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.noDataShow = true;
-            });
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-            this.noDataShow = true;
-          });
-        });
-        this.showLoadingHint = false;
+        this.querySwitchDispatchTask(this.userInfo.extendData.proId, this.workerId, name);
       }
     }
 }
@@ -943,11 +1154,35 @@
           color: #2895ea
         }
         span {
-          font-size: 12px;
+          font-size: 15px;
           display: inline-block;
           width: 33%;
           text-align: center;
           border-right: 1px solid #dedada;
+            &:first-child {
+            position: relative;
+            ul {
+              z-index: 1000;
+              width: 90px;
+              position: absolute;
+              top: 20px;
+              left: 30px;
+              background: #fff;
+              text-align: left;
+              box-shadow: 0 1px 6px 2px #d1d1d1;
+              padding-top: 4px;
+              li {
+                color: #646566;
+                font-size: 14px;
+                line-height: 30px;
+                padding-left: 4px;
+              }
+              .stateListStyle {
+                color: #fff;
+                background: #2895ea
+              }
+            }
+          }
           &:last-child {
             border-right: none
           }
@@ -986,6 +1221,7 @@
               margin-bottom: 10px;
               width: 47%;
               display: inline-block;
+              vertical-align: top;
               .message-tit {
                 color: #7f7d7d
               };
@@ -1032,6 +1268,7 @@
               margin-bottom: 10px;
               width: 47%;
               display: inline-block;
+              vertical-align: top;
               .message-tit {
                 color: #7f7d7d
               };

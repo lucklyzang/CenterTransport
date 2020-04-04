@@ -5,19 +5,23 @@ export default {
     navTitle: '中央运送',
     dispatchTaskMessage: null,
     dispatchTaskTransferIdList: [],
+    dispatchTaskCancelIdList: [],
     isRefershDispatchTaskPage: false,
     dispatchTaskState: '',
     dispatchTaskDepartmentType: '',
-    isCoerceTakePhoto: false
+    isCoerceTakePhoto: false,
+    isCompleteSweepCode: false
   },
   getters:{
     navTopTitle: state => state.navTitle,
     dispatchTaskMessage: state => state.dispatchTaskMessage,
     dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
+    dispatchTaskCancelIdList: state => state.dispatchTaskCancelIdList,
     isRefershDispatchTaskPage: state => state.isRefershDispatchTaskPage,
     dispatchTaskState: state => state.dispatchTaskState,
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
-    isCoerceTakePhoto: state => state.isCoerceTakePhoto
+    isCoerceTakePhoto: state => state.isCoerceTakePhoto,
+    isCompleteSweepCode: state => state.isCompleteSweepCode
   },
   mutations:{
     // 改变页面标题
@@ -34,6 +38,10 @@ export default {
     changedispatchTaskTransferIdList (state,payLoad) {
       state.dispatchTaskTransferIdList = payLoad.DtMsg
     },
+    // 改变取消原因列表状态
+    changedispatchTaskCancelIdList (state,payLoad) {
+      state.dispatchTaskCancelIdList = payLoad.DtMsg
+    },
     // 改变是否刷新调度任务页面状态
     changeIsRefershDispatchTaskPage (state,payLoad) {
       state.isRefershDispatchTaskPage = payLoad
@@ -49,6 +57,10 @@ export default {
     //改变是否强制拍照的状态
     changeIsCoerceTakePhoto (state,payLoad) {
       state.isCoerceTakePhoto = payLoad
+    },
+    //改变是否完成扫码的状态
+    changeisCompleteSweepCode (state,payLoad) {
+      state.isCompleteSweepCode = payLoad
     }
   },
   actions:{}

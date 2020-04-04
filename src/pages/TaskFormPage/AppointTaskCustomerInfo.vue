@@ -86,6 +86,7 @@ export default {
       that.gotoURL(() => {
         pushHistory();
         this.changeCurrentElectronicSignature({DtMsg: null});
+        this.changeIsRefershAppointTaskPage(true);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -160,6 +161,12 @@ export default {
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
           });
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
         }
       })
       .catch((err)=>{
@@ -178,7 +185,7 @@ export default {
 
     // 预约信息确认
     appointMessageSure () {
-      if (this.currentElectronicSignature) {
+      if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空,请确认签名',
           closeOnPopstate: true
@@ -201,6 +208,7 @@ export default {
     // 返回上一页
     backTo () {
       this.changeCurrentElectronicSignature({DtMsg: null});
+      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -238,9 +246,9 @@ export default {
       height: 250px
     }
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

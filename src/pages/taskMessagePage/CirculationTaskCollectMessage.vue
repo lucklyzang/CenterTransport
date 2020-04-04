@@ -192,7 +192,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeCirculationCollectMessageList',
-      'circulationCollectMessageList1'
+      'circulationCollectMessageList1',
+      'changeIsrefreshCirculationConnectPage'
     ]),
 
      // 右边下拉框菜单点击
@@ -487,9 +488,9 @@ export default {
       }
     };
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

@@ -224,7 +224,6 @@ export default {
 
     // 是否有未交接的标本确定
     connectSure () {
-      this.changeIsrefreshCirculationTaskPage(false);
       // 当前页面回显数据
       this.manageSampleDataList = [];
       // 上一页面store采集数据
@@ -232,6 +231,7 @@ export default {
       this.changeCirculationConnectMessageList({DtMsg:[]});
       // 上一页面Localstorage采集数据
       removeStore('currentCirculationConnectMessage');
+      this.changeIsrefreshCirculationTaskPage(true);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务');
@@ -278,7 +278,6 @@ export default {
             closeOnPopstate: true
           }).then(() => {
           });
-          this.changeIsrefreshCirculationTaskPage(true);
           // 当前页面回显数据
           this.manageSampleDataList = [];
           // 上一页面store采集数据
@@ -291,6 +290,7 @@ export default {
             taskId: ''
           }});
           removeStore('completeDepartmentMessage');
+          this.changeIsrefreshCirculationTaskPage(true);
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');
@@ -448,9 +448,9 @@ export default {
       height: 250px
     }
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

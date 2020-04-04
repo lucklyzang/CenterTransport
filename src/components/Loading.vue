@@ -42,7 +42,9 @@ export default {
 
   computed: {},
 
-  mounted () {},
+  mounted () {
+    console.log('显示',this.isShow);
+  },
 
   methods: {}
 }

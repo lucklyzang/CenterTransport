@@ -56,10 +56,18 @@ import { base64ImgtoFile } from '@/common/js/utils'
       this.ctx = board.getContext('2d');  // 二维绘图
       this.ctx.strokeStyle = '#000';  // 颜色
       this.ctx.lineWidth = 2; // 线条宽度
+      this.changeOriginalSignature(this.$refs.board.toDataURL("image/png"));
+    },
+     computed:{
+      ...mapGetters([
+        'currentElectronicSignature',
+        'originalSignature'
+      ]),
     },
     methods: {
       ...mapMutations([
-        'changeCurrentElectronicSignature'
+        'changeCurrentElectronicSignature',
+        'changeOriginalSignature'
       ]),
 
     //mobile
@@ -166,15 +174,25 @@ import { base64ImgtoFile } from '@/common/js/utils'
       //重写
       overwrite() {
         this.ctx.clearRect(0, 0, this.$refs.board.width, this.$refs.board.height);
-        this.changeCurrentElectronicSignature({DtMsg: null})
-        this.points = []
+        this.changeCurrentElectronicSignature({DtMsg: null});
+        this.changeOriginalSignature(this.$refs.board.toDataURL("image/png"));
+        this.points = [];
       },
       //确认签名
       commitSure() {
+        if (this.originalSignature ==  this.$refs.board.toDataURL("image/png")) {
+          this.$dialog.alert({
+            message: '请签名',
+            closeOnPopstate: true   
+          }).then(() => {
+          });
+          return
+        };
         this.imgUrl = this.$refs.board.toDataURL();
-        this.signNatureData = this.$refs.board.toDataURL();
+        this.signNatureData = this.$refs.board.toDataURL("image/png");
         this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")});
         var imgFile = base64ImgtoFile(this.$refs.board.toDataURL());
+        this.changeOriginalSignature(null);
         this.$dialog.alert({
           message: '签名已保存',
           closeOnPopstate: true   

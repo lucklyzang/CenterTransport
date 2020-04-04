@@ -61,7 +61,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershAppointTaskPage(false);
+        this.changeIsRefershAppointTaskPage(true);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -206,7 +206,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershAppointTaskPage(false);
+      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -229,7 +229,7 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsRefershAppointTaskPage(false);
+      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -287,9 +287,9 @@ export default {
       }
     };
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }
 </style>

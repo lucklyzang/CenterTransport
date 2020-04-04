@@ -11,7 +11,7 @@ export default {
     isCollectEnterSweepCodePage: false,
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
-    isrefreshCirculationTaskPage: true,
+    isrefreshCirculationTaskPage: false,
     completeDeparnmentInfo: {
       "departmentIdList": [],
       "taskId": ''

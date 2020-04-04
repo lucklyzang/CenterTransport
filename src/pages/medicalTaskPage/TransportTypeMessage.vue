@@ -245,9 +245,9 @@ export default {
       }
     }
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px;
+      line-height: 80px;
     }
   }  
 </style>

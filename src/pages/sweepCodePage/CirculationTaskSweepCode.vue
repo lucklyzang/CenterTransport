@@ -63,6 +63,7 @@ export default {
       let that = this;
       pushHistory();
       that.gotoURL(() => {
+        this.changeIsrefreshCirculationConnectPage(true);
         this.$router.push({path:'/circulationTask'});
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -99,7 +100,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeStoreArriveDeparnmentId'
+      'changeStoreArriveDeparnmentId',
+      'changeIsrefreshCirculationConnectPage'
     ]),
 
      // 右边下拉框菜单点击
@@ -131,6 +133,7 @@ export default {
 
     // 返回上一页
     backTo () {
+      this.changeIsrefreshCirculationConnectPage(true);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -152,6 +155,7 @@ export default {
             // 存储送达的科室id
             this.changeStoreArriveDeparnmentId(departmentId);
             setStore('currentDepartmentId', departmentId);
+            this.changeIsrefreshCirculationConnectPage(true);
             this.$router.push({path:'/circulationTaskMessageConnect'});
             this.changeTitleTxt({tit:'循环信息交接'});
             setStore('currentTitle','循环信息交接')
@@ -201,6 +205,7 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
+      this.changeIsrefreshCirculationConnectPage(true);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -263,9 +268,9 @@ export default {
       }
     };
     .btn-area {
-      height: 50px;
+      height: 80px;
       text-align: center;
-      line-height: 50px
+      line-height: 80px
     }
   }
 </style>

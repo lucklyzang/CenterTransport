@@ -52,6 +52,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
+        this.changeIsrefreshCirculationConnectPage(true);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -67,7 +68,8 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsrefreshCirculationConnectPage'
     ]),
 
      // 右边下拉框菜单点击
@@ -84,6 +86,7 @@ export default {
 
     // 返回上一页
     backTo () {
+      this.changeIsrefreshCirculationConnectPage(true);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')

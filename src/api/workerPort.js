@@ -27,6 +27,14 @@ export function getDispatchTaskMessage(proID,workerId) {
     method: 'get',
   })
 };
+// 查询调度任务(分配给本人的已完成)
+export function getDispatchTaskComplete(data) {
+  return request({
+    url: 'task/queryTask',
+    method: 'get',
+    params: data
+  })
+};
 // 调度任务的操作(更新、延迟、取消)
 export function updateDispatchTask(data) {
   return request({
@@ -41,6 +49,14 @@ export function cancelDispatchTaskBatch(data) {
     url: 'task/batchCancel',
     method: 'put',
     data
+  })
+};
+// 取消原因查询
+export function queryDispatchTaskCancelReason(data) {
+  return request({
+    url: 'cancel/queryAll',
+    method: 'get',
+    params: data
   })
 };
 // // 调度任务的延迟
@@ -196,6 +212,15 @@ export function queryAppointTaskMessage(proId, workerId) {
   return request({
     url: `reserve/allTask/${proId}/${workerId}`,
     method: 'get'
+  })
+};
+
+// 查询调度任务(分配给本人的已完成)
+export function getAppointTaskComplete(data) {
+  return request({
+    url: 'reserve/queryTask',
+    method: 'get',
+    params: data
   })
 };
 
