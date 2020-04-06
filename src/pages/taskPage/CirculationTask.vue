@@ -22,10 +22,10 @@
         </ul>
       </div>
       <p class="task-line-two">
-        <span v-show="stateScreen" class="state-filter-span"  @click="statusScreenEvent">
-          状态筛选
+        <span v-show="stateScreen" class="state-filter-span" :class="{'taskLineTwoStyle':statusScreen == true}"  @click.stop="statusScreenEvent">
+          {{stateScreenVal}}
           <ul v-show="stateListShow">
-            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index)">{{item}}</li>
+            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index,item)">{{item}}</li>
           </ul>
         </span>
       </p>
@@ -345,6 +345,7 @@
       return {
         showLoadingHint: false,
         stateListShow: false,
+        statusScreen: false,
         taskQueryShow: false,
         noDataShow: false,
         stateScreen: true,
@@ -353,6 +354,7 @@
         statusHandleScreenShow: true,
         taskOneList: ['待处理', '任务查询'],
         stateList: ['全部','未开始','进行中'],
+        stateScreenVal: '状态筛选',
         circulationTaskListShow: false,
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
@@ -439,25 +441,23 @@
           this.stateListShow = false;
         }
       });
-      if (this.isrefreshCirculationTaskPage) {
-        if (this.statusHandleScreenShow) {
-        this.getCirculationTask ({
+      if (this.statusHandleScreenShow) {
+      this.getCirculationTask ({
+        proId: this.proId,  //医院ID，必输
+        workerId: this.workerId,   //运送员ID
+        states: [], //查询状态
+        startDate: '',  //起始日期  YYYY-MM-dd
+        endDate: ''  //终止日期  格式 YYYY-MM-dd
+      }, this.currentIndex)
+      } else if (this.stateIndex !== null) {
+        this.getCirculationTask({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, this.currentIndex)
-        } else if (this.stateIndex !== null) {
-          this.getCirculationTask({
-            proId: this.proId,  //医院ID，必输
-            workerId: this.workerId,   //运送员ID
-            states: [], //查询状态
-            startDate: '',  //起始日期  YYYY-MM-dd
-            endDate: ''  //终止日期  格式 YYYY-MM-dd
-          }, this.stateIndex)
-        } 
-      }
+        }, this.stateIndex)
+      } 
     },
 
     methods: {
@@ -540,9 +540,10 @@
       // 循环任务第一行按钮点击
       taskLineOneEvent (item,index) {
         this.stateIndex = null;
+        this.statusScreen = false;
         this.taskLlineOneIndex = index;
-        this.stateListShow = false;
         this.noDataShow = false;
+        this.stateScreenVal = '状态筛选'
         if (index == '0') {
           this.activeName = 0;
           this.currentIndex = 2;
@@ -573,25 +574,27 @@
 
       // 状态筛选按钮点击
       statusScreenEvent () {
-        this.stateIndex = 0;
+        this.statusScreen = true;
         this.statusHandleScreenShow = false;
         this.taskQueryShow = false;
         this.stateListShow = !this.stateListShow;
-        this.showLoadingHint = true;
-        this.getCirculationTask ({
+        if (this.stateScreenVal == '状态筛选') {
+          this.getCirculationTask ({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
         }, 0)
+        this.stateIndex = 0;
+        }
       },
 
       // 状态筛选列表点击
-      stateListEvent (index) {
+      stateListEvent (index, item) {
         this.stateIndex = index;
-        this.showLoadingHint = true;
         this.statusHandleScreenShow = false;
+        this.stateScreenVal = item;
         this.getCirculationTask ({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID

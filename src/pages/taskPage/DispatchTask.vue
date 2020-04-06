@@ -22,10 +22,10 @@
         </ul>
       </div>
       <p class="task-line-two">
-        <span v-show="stateScreen" class="state-filter-span" :class="{'taskLineTwoStyle':statusScreen == true}" @click="statusScreenEvent">
-          状态筛选
+        <span v-show="stateScreen" class="state-filter-span"  :class="{'taskLineTwoStyle':statusScreen == true}" @click.stop="statusScreenEvent">
+          {{stateScreenVal}}
           <ul v-show="stateListShow">
-            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index)">{{item}}</li>
+            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index, item)">{{item}}</li>
           </ul>
         </span>
         <span v-show="cancelTaskBtnShow" :class="{'taskLineTwoStyle':cancelTask == true}" @click="cancelTaskEvent">取消任务</span>
@@ -525,6 +525,7 @@
         stateIndex: null,
         stateList: ['全部','未获取','已获取', '进行中'],
         stateFilterList: [],
+        stateScreenVal: '状态筛选',
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
@@ -918,12 +919,13 @@
       // 调度任务第一行按钮点击
       taskLineOneEvent (item,index) {
         this.stateIndex = null;
+        this.statusScreen = false;
         this.taskLlineOneIndex = index;
         this.stateListShow = false;
-        this.statusScreen = false;
         this.transferTask = false;
         this.cancelTask = false;
         this.noDataShow = false;
+        this.stateScreenVal = '状态筛选'
         if (index == '0') {
           this.activeName = 0;
           this.currentIndex = 1;
@@ -944,7 +946,7 @@
 
       // 状态筛选按钮点击
       statusScreenEvent () {
-        this.stateIndex = 0;
+        this.statusScreen = true;
         this.cancelTaskBtnShow = false;
         this.transferTaskBtnShow = false;
         this.statusHandleScreenShow = false;
@@ -952,15 +954,18 @@
         this.stateListShow = !this.stateListShow;
         this.transferTask = false;
         this.cancelTask = false;
-        this.queryStateFilterDispatchTask(this.proId, this.workerId, 0)
+        if (this.stateScreenVal == '状态筛选') {
+          this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
+          this.stateIndex = 0;
+        }
       },
 
       // 状态筛选列表点击
-      stateListEvent (index) {
+      stateListEvent (index, item) {
         this.stateIndex = index;
-        this.showLoadingHint = true;
         this.statusHandleScreenShow = false;
-        this.queryStateFilterDispatchTask(this.proId, this.workerId, index)
+        this.queryStateFilterDispatchTask(this.proId, this.workerId, index);
+        this.stateScreenVal = item
       },
 
       // 取消任务按钮点击
