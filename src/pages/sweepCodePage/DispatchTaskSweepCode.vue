@@ -9,6 +9,9 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="上传中,请稍候····" textColor="#2895ea"></loading>
+    </div>
     <div class="sweep-code-title">
       <h3></h3>
     </div>
@@ -50,14 +53,17 @@ import HeaderTop from '@/components/HeaderTop'
 import AfterSaleImage from '@/components/AfterSaleImage'
 import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
+import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
+      temporaryUpImgUrl: '',
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      showLoadingHint: false,
       photoAreaBoxShow: false,
       appointAreaShow: true,
       srcUrl: '',
@@ -70,6 +76,7 @@ export default {
   components:{
     HeaderTop,
     NoData,
+    Loading,
     AfterSaleImage
   },
 
@@ -80,7 +87,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershDispatchTaskPage(true);
+        this.changeIsRefershDispatchTaskPage(false);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
         setStore('currentTitle','调度任务')
@@ -118,7 +125,7 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeIsRefershDispatchTaskPage',
-      'changeisCompleteSweepCode'
+      'changeisCompleteSweepCode',
     ]),
 
     // 扫描二维码方法
@@ -131,10 +138,21 @@ export default {
       let img = document.getElementById("preview1");
       let file =document.getElementById("demo1").files[0];
       let dataImg;
+      let that = this;
       let reader = new FileReader();
+      let isLt2M = file.size/1024/1024 < 16;
+      if (!isLt2M) {
+        this.$dialog.alert({
+          message: '上传图片大小不能超过16MB!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };  
       reader.addEventListener("load", function () {
-      img.src = reader.result;
-      this.upImgUrl = reader.result;
+        img.src = reader.result;
+        that.upImgUrl = reader.result;
+        that.temporaryUpImgUrl = reader.result
       }, false);
       if (file) {
         reader.readAsDataURL(file);
@@ -144,6 +162,7 @@ export default {
     // 上传图片
     uploadPhoto (data) {
       dispatchTaskUploadMsg(data).then((res) => {
+        this.showLoadingHint = false;
         if (res && res.data.code == 200) {
           this.updateTaskState({
             proId: this.proId, //当前项目ID
@@ -165,11 +184,21 @@ export default {
           closeOnPopstate: true
         }).then(() => {
         });
+        this.showLoadingHint = false;
       })
     },
 
     // 提交图片
     submitPhoto () {
+      if (this.temporaryUpImgUrl == '') {
+        this.$dialog.alert({
+          message: '请上传照片',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };
+      this.showLoadingHint = true;
       this.uploadPhoto(
         {
           taskId: this.taskId,  //任务ID必填
@@ -261,6 +290,7 @@ export default {
     updateTaskState (data) {
       updateDispatchTask(data).then((res) => {
         if (res && res.data.code == 200) {
+          this.temporaryUpImgUrl = '';
           if (this.dispatchTaskDepartmentType == 1) {
             this.$dialog.alert({
               message: '该条任务已完成',
@@ -292,7 +322,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershDispatchTaskPage(true);
+      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -317,7 +347,7 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsRefershDispatchTaskPage(true);
+      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -332,10 +362,19 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
-      .left-dropDown {
+    position: relative;
+    font-size: 14px;
+    .left-dropDown {
       .rightDropDown
     }
-    font-size: 14px;
+    .loading {
+      position: absolute;
+      top: 450px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
+    };
     .sweep-code-title {
       height: 30px;
       line-height: 30px;

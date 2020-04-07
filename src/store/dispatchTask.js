@@ -21,7 +21,7 @@ export default {
     dispatchTaskState: state => state.dispatchTaskState,
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
-    isCompleteSweepCode: state => state.isCompleteSweepCode
+    isCompleteSweepCode: state => state.isCompleteSweepCode,
   },
   mutations:{
     // 改变页面标题

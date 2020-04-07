@@ -17,6 +17,14 @@
         <van-field  disabled v-model="age" label="病人年龄"/>
         <van-field  disabled v-model="bedNumber" label="病人床号"/>
         <van-field  disabled v-model="number" label="任务编号"/>
+        <van-field
+          v-model="appointDescribe"
+          rows="1"
+          autosize
+          disabled
+          label="描述"
+          type="textarea"
+        />
       </div>
     </div>
     <div class="customerInfo-box"></div>
@@ -46,6 +54,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      appointDescribe: '',
       patientName: '',
       sex: '',
       age: '',
@@ -131,7 +140,8 @@ export default {
       this.sex = this.sexTransfer(this.appointTaskMessage['sex']),
       this.age = this.appointTaskMessage['age'],
       this.bedNumber = this.appointTaskMessage['bedNumber'],
-      this.number = this.appointTaskMessage['number']
+      this.number = this.appointTaskMessage['number'],
+      this.appointDescribe = this.appointTaskMessage['taskRemark']
     },
 
     // 查询客户预约信息

@@ -24,7 +24,7 @@ export default {
     originalSignature: state => state.originalSignature
   },
   mutations:{
-    // 改变调度任务信息状态
+    // 改变预约任务信息状态
     changeAppointTaskMessage (state,payLoad) {
       state.appointTaskMessage = payLoad.DtMsg
     },

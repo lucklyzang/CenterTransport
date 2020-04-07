@@ -347,19 +347,19 @@ export default {
 
     // 交接信息取消事件
     connectMessageCancel () {
-       this.$dialog.alert({
-          message: '返回上页后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-          }).then(() => {
-            this.changeCurrentElectronicSignature({DtMsg: null});
-            this.changeCirculationConnectMessageList({DtMsg:[]});
-            this.changeIsrefreshCirculationConnectPage(false);
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'信息交接'});
-            setStore('currentTitle','信息交接')}
-          )
-        .catch(() => {})
+      this.$dialog.alert({
+        message: '返回上页后,将丢失本页数据!',
+        closeOnPopstate: true,
+        showCancelButton: true   
+        }).then(() => {
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeCirculationConnectMessageList({DtMsg:[]});
+          this.changeIsrefreshCirculationConnectPage(false);
+          this.$router.push({path:'/circulationTaskMessageConnect'});
+          this.changeTitleTxt({tit:'信息交接'});
+          setStore('currentTitle','信息交接')}
+        )
+      .catch(() => {})
     }
   }
 }

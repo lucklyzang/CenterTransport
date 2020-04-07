@@ -43,7 +43,6 @@ export default {
   computed: {},
 
   mounted () {
-    console.log('显示',this.isShow);
   },
 
   methods: {}

@@ -441,22 +441,24 @@
           this.stateListShow = false;
         }
       });
-      if (this.statusHandleScreenShow) {
-      this.getCirculationTask ({
-        proId: this.proId,  //医院ID，必输
-        workerId: this.workerId,   //运送员ID
-        states: [], //查询状态
-        startDate: '',  //起始日期  YYYY-MM-dd
-        endDate: ''  //终止日期  格式 YYYY-MM-dd
-      }, this.currentIndex)
-      } else if (this.stateIndex !== null) {
-        this.getCirculationTask({
+      if(this.isrefreshCirculationTaskPage) {
+        if (this.statusHandleScreenShow) {
+        this.getCirculationTask ({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, this.stateIndex)
+        }, this.currentIndex)
+        } else if (this.stateIndex !== null) {
+          this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          }, this.stateIndex)
+        }
       } 
     },
 
@@ -649,7 +651,7 @@
                 } 
               } else if (this.stateIndex !== null) {
                 if (index == 0) {
-                  this.circulationTaskList = temporaryTaskListFirst;
+                  this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state !== 7});
                   if (this.circulationTaskList.length == 0) {
                     this.noDataShow = true;
                     return
@@ -802,49 +804,53 @@
         let checkTaskId = '';
         let checkList = [];
         checkList = this.circulationTaskList.filter((item) => item.check == true);
-        if (checkList[0].state == 7) {
-          this.$dialog.alert({
-            message: '该条循环任务已完成',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          return
-        };
         if (checkList.length == 0) {
           this.$dialog.alert({
             message: '请选择要送达的循环任务',
             closeOnPopstate: true
           }).then(() => {
           });
-        } else if (checkList.length > 1) {
+          return;
+        };
+        if (checkList.length > 1) {
           this.$dialog.alert({
             message: '最多只能同时送达一条循环任务',
             closeOnPopstate: true
           }).then(() => {
           });
-        } else if (checkList.length == 1) {
-          this.changeArriveDepartmentId(true);
-          if (checkList[0]['spaces'].filter((item) => item.check == true).length == checkList[0]['spaces'].length) {
-            for (let item of checkList) {
-              for (let innerItem in item) {
-                if (innerItem == 'id') {
-                  checkTaskId = item[innerItem]
-                }
-              }
-            };
-            this.changeCirculationTaskId(checkTaskId);
-            this.changeIsCollectEnterSweepCodePage(false);
-            this.$router.push({path: 'circulationTaskSweepCode'});
-            this.changeTitleTxt({tit:'扫码'});
-            setStore('currentTitle','扫码')
-          } else {
+          return
+        }; 
+        if (checkList.length == 1) {
+          if (checkList[0].state == 7) { 
             this.$dialog.alert({
-              message: '请采集完所有科室标本',
+              message: '该条循环任务已完成,不能进行送达',
               closeOnPopstate: true
             }).then(() => {
             });
+          } else {
+            this.changeArriveDepartmentId(true);
+            if (checkList[0]['spaces'].filter((item) => item.check == true).length == checkList[0]['spaces'].length) {
+              for (let item of checkList) {
+                for (let innerItem in item) {
+                  if (innerItem == 'id') {
+                    checkTaskId = item[innerItem]
+                  }
+                }
+              };
+              this.changeCirculationTaskId(checkTaskId);
+              this.changeIsCollectEnterSweepCodePage(false);
+              this.$router.push({path: 'circulationTaskSweepCode'});
+              this.changeTitleTxt({tit:'扫码'});
+              setStore('currentTitle','扫码')
+            } else {
+              this.$dialog.alert({
+                message: '请采集完该条循环任务下所有科室',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
           }
-        };
+        }
       },
 
       // 循环情况事件

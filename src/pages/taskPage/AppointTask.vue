@@ -21,7 +21,7 @@
           <li :class="{'taskLineOneStyle':taskLlineOneIndex == index}" :key="index" v-for="(item,index) in taskOneList" @click="taskLineOneEvent(item, index)">{{item}}</li>
         </ul>
       </div>
-      <p class="task-line-two">
+      <p class="task-line-two" v-show="taskQueryShow == false">
         <span v-show="stateScreen" class="state-filter-span" :class="{'taskLineTwoStyle':statusScreen == true}" @click.stop="statusScreenEvent">
           {{stateScreenVal}}
           <ul v-show="stateListShow">
@@ -267,7 +267,29 @@
         </div>
       </div>
     </div>
-    <div class="task-query wait-handle" v-show="taskQueryShow">
+    <div class="task-query wait-handle task-complete" v-show="taskQueryShow">
+      <div class="content-middle-top">
+        <span class="time-between">至</span>
+        <div class="content-middle-top-content">
+          <div style="left:0">
+            <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+          </div>
+          <div style="right:0">
+            <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
+          </div>
+        </div>
+        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+          <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
+          @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+        </van-popup>
+        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true"> 
+          <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
+          @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
+        </van-popup>
+      </div>
+      <p class="middle-top-search" v-show="true">
+        <van-button type="info" size="small" @click="searchCompleteTask">搜索</van-button>
+      </p>
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`" @click="taskClickEvent(item)">
           <p class="wait-handle-message-createTime">
@@ -545,6 +567,14 @@
         leftDownShow: false,
         stateListShow: false,
         stateList:['全部','未获取','已获取', '进行中', '未结束'],
+        startTime: '',
+        endTime: '',
+        startTimePop: false,
+        endTimePop: false,
+        currentDateStart: new Date(),
+        currentDateEnd: new Date(),
+        minDateStart: new Date(2020, 0, 1),
+        minDateEnd: new Date(2020, 0, 1),
         stateScreenVal: '状态筛选',
         liIndex: null,
         transferWorkerShow: false,
@@ -643,7 +673,7 @@
         } else if (this.stateIndex !== null) {
           this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
         }
-      }
+      };
     },
 
     mounted () {
@@ -668,7 +698,7 @@
         this.querySwitchDispatchTask (this.userInfo.extendData.proId, this.workerId, this.currentIndex)
       } else if (this.stateIndex !== null) {
         this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
-      }
+      };
     },
 
     methods: {
@@ -693,6 +723,28 @@
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
+      },
+
+       startTimeChange(e) { 
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
+      },
+
+      endTimeChange(e) {
+        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
+      },
+
+      // 初始化时间显示框
+      initDate () {
+        let currentDateList = formatTime('YYYY-MM-DD').split('-');
+        this.startTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`;
+        this.endTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
+      },
+
+      // 搜索完成的任务
+      searchCompleteTask () {
+        this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7, startDate: this.startTime, endDate: this.endTime})
       },
 
       // 任务状态转换
@@ -751,7 +803,8 @@
                   sex: item.bedNumber,
                   age: item.age,
                   patientId: item.id,
-                  number: item.number
+                  number: item.number,
+                  taskRemark: item.taskRemark
                 })
               };
               if (index == 0) {
@@ -829,7 +882,8 @@
                   sex: item.bedNumber,
                   age: item.age,
                   patientId: item.id,
-                  number: item.number
+                  number: item.number,
+                  taskRemark: item.taskRemark
                 })
               };
               if (name == 1) {
@@ -893,7 +947,8 @@
                   sex: item.bedNumber,
                   age: item.age,
                   patientId: item.id,
-                  number: item.number
+                  number: item.number,
+                  taskRemark: item.taskRemark
                 })
               };
             } else {
@@ -954,7 +1009,8 @@
           this.statusHandleScreenShow = false;
           this.cancelTaskBtnShow = false;
           this.transferTaskBtnShow = false;
-          this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7,startDate:"",endDate:""})
+          this.initDate();
+          this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7,startDate: this.startTime, endDate: this.endTime})
         }
       },
 
@@ -1200,6 +1256,56 @@
       margin: 0 auto;
       width: 100%;
     };
+     .task-complete {
+      display: flex;
+      flex-direction: column;
+      .middle-top-search {
+        width: auto;
+        margin: 0 auto;
+        line-height: 30px;
+        height: 30px;
+        margin-bottom: 6px;
+        button {
+          background: @color-theme;
+          border-color: @color-theme
+        }
+      }
+      .content-middle-top {
+        background: #fff;
+        margin-top: 3%;
+        height: 52px;
+        position: relative;
+        box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
+        0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
+        /deep/ .van-cell {
+          width: 100%;
+          display: inline-block;
+          padding: 10px 24px;
+          border: 1px solid #d8d5d5;
+          border-radius: 4px;
+          line-height: 0;
+        }
+        .time-between {
+          color: black;
+          position: absolute;
+        }
+        .content-middle-top-content {
+          position: relative;
+          height: 100%;
+          width: 98%;
+          margin: 0 auto;
+          > div {
+            width: 44%;
+            position: absolute;
+            top: 14%;
+          }
+        }
+      };
+      .task-status-list {
+        flex: 1;
+        overflow: auto
+      }
+    }
     .wait-handle {
       .wait-handle-list {
         box-sizing: border-box;

@@ -63,7 +63,7 @@ export default {
       let that = this;
       pushHistory();
       that.gotoURL(() => {
-        this.changeIsrefreshCirculationConnectPage(true);
+        this.changeIsrefreshCirculationConnectPage(false);
         this.$router.push({path:'/circulationTask'});
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -133,7 +133,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsrefreshCirculationConnectPage(true);
+      this.changeIsrefreshCirculationConnectPage(false);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -205,7 +205,7 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsrefreshCirculationConnectPage(true);
+      this.changeIsrefreshCirculationConnectPage(false);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')

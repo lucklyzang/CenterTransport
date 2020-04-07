@@ -305,7 +305,7 @@ export default {
       /deep/.van-loading {
         top: 90%;
         .van-loading__text {
-          color: #198c87
+          color: #2895ea
         }
       } 
     }
