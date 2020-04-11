@@ -25,8 +25,12 @@
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
-      <van-button type="default" @click="cancelSweepCode">取消</van-button>
+      <span>
+        <img :src="taskSweepCodePng" alt=""  @click="sweepCodeSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="cancelSweepCode">
+      </span>
     </div>
   </div>
 </template>
@@ -42,9 +46,11 @@ import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
-       leftDropdownDataList: ['退出登录'],
+      leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      taskCancelPng: require('@/components/images/task-cancel.png'),
+      taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     };
   },
 
@@ -61,7 +67,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershAppointTaskPage(false);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -91,8 +96,7 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt',
-      'changeIsRefershAppointTaskPage'
+      'changeTitleTxt'
     ]),
 
     // 右边下拉框菜单点击
@@ -141,7 +145,6 @@ export default {
               state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             })
           } else {
-            this.changeIsRefershAppointTaskPage(true);
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
@@ -169,7 +172,6 @@ export default {
     updateTaskState (data) {
       updateAppointTaskMessage(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.changeIsRefershAppointTaskPage(true);
           // 第一次扫码出发地后进入客户预约信息确认页面
           if (!this.appointSweepCodeIntoPage) {
             if (this.appointTaskState == 7) {
@@ -206,7 +208,6 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershAppointTaskPage(false);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -229,7 +230,6 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsRefershAppointTaskPage(false);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -290,6 +290,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

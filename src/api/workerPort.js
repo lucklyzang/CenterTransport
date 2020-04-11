@@ -8,6 +8,22 @@ export function queryAllTaskMessage(proID,workerId) {
   })
 };
 
+// 用户签退
+export function userSignOut(proId,workerId) {
+  return request({
+    url: `login/signOut/${proId}/${workerId}`,
+    method: 'get'
+  })
+};
+
+// 获取是否有新任务 
+export function getNewWork(proId,workerId) {
+  return request({
+    url: `worker/getNew/${proId}/${workerId}`,
+    method: 'get'
+  })
+};
+
 // 获取所有任务数量
 export function getAllTaskNumber(proID,workerId) {
   return request({
@@ -200,6 +216,15 @@ export function updateCirculationTask(data) {
     url: 'circleTask/update',
     method: 'put',
     data
+  })
+};
+
+// 获取循环情况接口
+export function getCirculationCondition(data) {
+  return request({
+    url: 'circleTask/circleCondition',
+    method: 'get',
+    params: data
   })
 };
 

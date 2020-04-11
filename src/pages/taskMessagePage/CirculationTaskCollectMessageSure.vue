@@ -11,6 +11,9 @@
     </ul>
     <div class="sweep-code-title">
       <h3>科室信息采集确认</h3>
+      <span class="control-signature" @click="controlSignatureEvent">
+        {{showSignature == true ? '隐藏签名框' : '显示签名框'}}
+      </span>
     </div>
       <div class="bed-number-list-outer">
         <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
@@ -57,12 +60,16 @@
           </div>
         </div>
       </div>
-    <div class="electronic-signature">
+    <div class="electronic-signature" v-if="showSignature">
       <ElectronicSignature></ElectronicSignature>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="collectMessageSure">确认</van-button>
-      <van-button type="default" @click="collectMessageCancel">取消</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="collectMessageSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="collectMessageCancel">
+      </span>
     </div>
   </div>
 </template>
@@ -83,6 +90,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      showSignature: false,
       allcirculationCollectMessageList: [],
       bedNumber: '',
       patientName: '',
@@ -95,7 +103,9 @@ export default {
           entryList: [],
           checkEntryList: []
         }
-      ]
+      ],
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png')
     };
   },
 
@@ -156,15 +166,17 @@ export default {
       'changeTitleTxt',
       'changeCirculationCollectMessageList',
       'changeCompleteDeparnmentInfo',
-      'changeCurrentElectronicSignature',
-      'changeIsrefreshCirculationTaskPage'
+      'changeCurrentElectronicSignature'
     ]),
 
     // 我的页面
     skipMyInfo () {
 
     },
-
+    // 显示签名框点击
+    controlSignatureEvent () {
+      this.showSignature = !this.showSignature
+    },
     // 更新循环任务状态
     updateCirculationtaskState (data) {
       updateCirculationTask(data).then((res) => {
@@ -196,12 +208,12 @@ export default {
             message: res.data.msg,
             closeOnPopstate: true
           }).then(() => {
-            // 当前页面回显数据
+            // 清空当前页面回显数据
             this.allcirculationCollectMessageList = [];
             this.changeCurrentElectronicSignature({DtMsg: null})
-            // 上一页面store采集数据
+            // 清空上一页面store科室采集数据
             this.changeCirculationCollectMessageList({DtMsg:[]});
-            // 上一页面Localstorage采集数据
+            // 清空上一页面Localstorage的科室采集数据
             removeStore('currentCirculationCollectMessage');
             // 存储完成采集任务的科室信息
             let temporaryDepartmentId = [];
@@ -215,7 +227,6 @@ export default {
               departmentIdList: temporaryDepartmentId,
               taskId: this.circulationTaskId
             });
-            this.changeIsrefreshCirculationTaskPage(true);
             this.$router.push({path:'/circulationTask'});
             this.changeTitleTxt({tit:'循环任务'});
             setStore('currentTitle','循环任务');
@@ -342,11 +353,27 @@ export default {
     }
     .sweep-code-title {
       height: 30px;
-      line-height: 30px;
       padding-left: 10px;
+      position: relative;
       h3 {
+        width: auto;
+        height: 30px;
+        line-height: 30px;
         font-size: 14px;
-        color: #1699e8
+        color: #1699e8;
+        position: absolute;
+        top: 0;
+        left: 8px      
+        };
+      .control-signature {
+        font-size: 14px;
+        height: 30px;
+        line-height: 30px;
+        color: #1699e8;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 8px
       }
     };
     .bed-number-list-outer {
@@ -362,10 +389,13 @@ export default {
         };
         .sweep-code-area {
           width: 100%;
+          height: auto;
           overflow: auto;
           .increaseLineArea {
+            height: 100%;
             .circulation-area {
-              padding: 0 18px;
+              padding: 10px 18px;
+              height: 100%;
               position: relative;
               border-bottom: 1px solid #dfdfdf;
               .sample-box {
@@ -399,6 +429,7 @@ export default {
                   width: 60%;
                   height: 50px;
                   overflow: auto;
+                  height: 100px;
                   /depp/.van-checkbox-group {
                     .van-checkbox {
                       display: inline-block
@@ -432,6 +463,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

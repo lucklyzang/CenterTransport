@@ -75,8 +75,12 @@
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="ConnectSure">确认交接</van-button>
-      <van-button type="default" @click="ConnectCancel">取消交接</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="ConnectSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="ConnectCancel">
+      </span>
     </div>
   </div>
 </template>
@@ -89,7 +93,7 @@ import {queryCollectSampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone, removeBlock} from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone, removeBlock, arrayDiff} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -102,7 +106,9 @@ export default {
       liIndex: null,
       originCollectSampleMessageList: [],
       allSampleTypeList: [],
-      manageSampleDataList: []
+      manageSampleDataList: [],
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png'),
     };
   },
 
@@ -122,7 +128,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsrefreshCirculationTaskPage(false);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -138,7 +143,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsrefreshCirculationTaskPage(false);
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -153,7 +157,9 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'isrefreshCirculationConnectPage',
-      'circulationTaskId'
+      'circulationTaskId',
+      'storeNoConnectSample',
+      'storeAlreadyConnectSample'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -164,7 +170,7 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeCirculationConnectMessageList',
-      'changeIsrefreshCirculationTaskPage'
+      'changeIsStoreNoConnectSample'
     ]),
 
      // 右边下拉框菜单点击
@@ -181,7 +187,6 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsrefreshCirculationTaskPage(false);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -258,6 +263,8 @@ export default {
                 this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
               }
             };
+            // 去除已经交接过的标本
+            this.manageSampleDataList = arrayDiff(this.manageSampleDataList, this.storeAlreadyConnectSample);
             console.log('最终信息',this.manageSampleDataList)
           } else {
             this.$dialog.alert({
@@ -289,6 +296,9 @@ export default {
     // 交接信息确认事件
     ConnectSure () {
       let circulationMessageListSure = this.manageSampleDataList.filter((item) => { return item.check == true});
+      // 存储没有交接的标本
+      this.changeIsStoreNoConnectSample(this.manageSampleDataList.filter((item) => { return item.check == false}));
+      console.log('没有交接',this.storeNoConnectSample);
       if (circulationMessageListSure.length == 0) {
         this.$dialog.alert({
           message: '请选择要交接的标本',
@@ -306,7 +316,6 @@ export default {
 
     // 交接信息取消事件
     ConnectCancel () {
-      this.changeIsrefreshCirculationTaskPage(false);
       this.$router.push({path:'/circulationTask'})
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -414,6 +423,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+       .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

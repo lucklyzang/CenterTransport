@@ -11,6 +11,9 @@
     </ul>
     <div class="sweep-code-title">
       <h3>交接信息确认</h3>
+      <span class="control-signature" @click="controlSignatureEvent">
+        {{showSignature == true ? '隐藏签名框' : '显示签名框'}}
+      </span>
     </div>
      <div class="sweep-code-area">
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
@@ -66,25 +69,17 @@
         </div>
       </div>
     </div>
-    <div class="electronic-signature">
+    <div class="electronic-signature" v-if="showSignature">
       <ElectronicSignature></ElectronicSignature>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="connectMessageSure">确认</van-button>
-      <van-button type="default" @click="connectMessageCancel">取消</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="connectMessageSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="connectMessageCancel">
+      </span>
     </div>
-     <van-dialog
-        v-model="connectMessaheSureShow"
-        title="是否还有需要交接的标本?"
-        show-cancel-button
-        confirmButtonText="确定"
-        cancelButtonText="取消"
-        :close-on-popstate="true"
-        :close-on-click-overlay="true"
-        @confirm="connectSure"
-        @cancel="connectCancel"
-      >
-    </van-dialog>
   </div>
 </template>
 
@@ -103,9 +98,11 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
-      connectMessaheSureShow: false,
+      showSignature: false,
       liIndex: null,
-      manageSampleDataList: []
+      manageSampleDataList: [],
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png')
     };
   },
 
@@ -125,28 +122,18 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        if (this.connectMessaheSureShow == true) {
-          this.$dialog.alert({
-            message: '请先处理是否还有需要交接的标本弹框',
-            closeOnPopstate: true,
-            showCancelButton: true   
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: true,
+          showCancelButton: true   
           }).then(() => {
-          })
+            this.changeCurrentElectronicSignature({DtMsg: null});
+            this.changeIsrefreshCirculationConnectPage(false);
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'信息交接'});
+            setStore('currentTitle','信息交接')}
+          )
           .catch(() => {})
-        } else {
-          this.$dialog.alert({
-            message: '返回上级后,将丢失本页数据!',
-            closeOnPopstate: true,
-            showCancelButton: true   
-            }).then(() => {
-              this.changeCurrentElectronicSignature({DtMsg: null});
-              this.changeIsrefreshCirculationConnectPage(false);
-              this.$router.push({path:'/circulationTaskMessageConnect'});
-              this.changeTitleTxt({tit:'信息交接'});
-              setStore('currentTitle','信息交接')}
-            )
-            .catch(() => {})
-        };
       })
     };
     this.echoConectMessage()
@@ -158,7 +145,9 @@ export default {
       'currentElectronicSignature',
       'circulationConnectMessageList',
       'circulationTaskMessage',
-      'storeArriveDeparnmentId'
+      'storeArriveDeparnmentId',
+      'storeAlreadyConnectSample',
+      'storeNoConnectSample'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -173,9 +162,10 @@ export default {
       'changeTitleTxt',
       'changeIsrefreshCirculationConnectPage',
       'changeCirculationConnectMessageList',
-      'changeIsrefreshCirculationTaskPage',
       'changeCompleteDeparnmentInfo',
-      'changeCurrentElectronicSignature'
+      'changeCurrentElectronicSignature',
+      'changeIsstoreAlreadyConnectSample',
+      'changeIsStoreNoConnectSample'
     ]),
 
      // 右边下拉框菜单点击
@@ -190,6 +180,11 @@ export default {
         this.leftDownShow = !this.leftDownShow;
       },
 
+      // 显示签名框点击
+      controlSignatureEvent () {
+        this.showSignature = !this.showSignature
+      },
+
     // 回显交接信息
     echoConectMessage () {
       this.manageSampleDataList = deepClone(this.circulationConnectMessageList)
@@ -197,47 +192,37 @@ export default {
 
     // 返回上一页
     backTo () {
-      if (this.connectMessaheSureShow == true) {
-          this.$dialog.alert({
-            message: '请先处理是否还有需要交接的标本弹框',
-            closeOnPopstate: true,
-            showCancelButton: true   
-          }).then(() => {
-          })
-          .catch(() => {})
-      } else {
-        this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-          }).then(() => {
-            this.changeCurrentElectronicSignature({DtMsg: null});
-            this.changeCirculationConnectMessageList({DtMsg:[]});
-            this.changeIsrefreshCirculationConnectPage(false);
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'信息交接'});
-            setStore('currentTitle','信息交接')}
-          )
-          .catch(() => {})
-      };
+      this.$dialog.alert({
+        message: '返回上级后,将丢失本页数据!',
+        closeOnPopstate: true,
+        showCancelButton: true   
+        }).then(() => {
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeCirculationConnectMessageList({DtMsg:[]});
+          this.changeIsrefreshCirculationConnectPage(false);
+          this.$router.push({path:'/circulationTaskMessageConnect'});
+          this.changeTitleTxt({tit:'信息交接'});
+          setStore('currentTitle','信息交接')}
+        )
+        .catch(() => {})
     },
 
-    // 是否有未交接的标本确定
+    // 还有要交接的标本
     connectSure () {
       // 当前页面回显数据
       this.manageSampleDataList = [];
-      // 上一页面store采集数据
+      // 清空本页面store的签名数据
       this.changeCurrentElectronicSignature({DtMsg: null});
+      // 清空上一页面store的已选择标本
       this.changeCirculationConnectMessageList({DtMsg:[]});
-      // 上一页面Localstorage采集数据
+      // 清空上一页面Localstorage已选择标本
       removeStore('currentCirculationConnectMessage');
-      this.changeIsrefreshCirculationTaskPage(true);
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务');
     },
 
-    // 是否有未交接的标本取消
+    // 没有要交接的标本
     connectCancel () {
       this.updateCirculationtaskState({
         proId: this.proId,		 //当前项目ID
@@ -247,17 +232,33 @@ export default {
     },
 
     // 提交标本交接信息
-    postSampleConnectMessage (data) {
+    postSampleConnectMessage(data) {
       sampleDelivery(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.connectMessaheSureShow = true;
-          this.changeCurrentElectronicSignature({DtMsg: null})
+          // 存储已经交接的标本信息
+          let temporarySampleArrayOne = [];
+          let temporarySampleArrayTwo = [];
+          // store存的交接标本信息赋值
+          temporarySampleArrayOne = deepClone(this.storeAlreadyConnectSample);
+          // 将本次交接的标本信息和之前存的已交接标本信息合并
+          temporarySampleArrayTwo = temporarySampleArrayOne.concat(this.circulationConnectMessageList);
+          // 新的已交接标本信息重新存入store
+          this.changeIsstoreAlreadyConnectSample(temporarySampleArrayTwo);
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          // 删除本次locaStorage的交接科室id
+          removeStore('currentDepartmentId');
+          // 如果未交接的标本信息数量为0,则结束本次循环任务,更新该条任务状态为已完成
+          if (this.storeNoConnectSample.length == 0) {
+            this.connectCancel()
+          } else {
+            this.connectSure()
+          }
         } else {
           this.$dialog.alert({
             message: res.data.msg,
             closeOnPopstate: true
-        }).then(() => {
-        });
+          }).then(() => {
+          });
         }
       })
       .catch((err) => {
@@ -278,19 +279,25 @@ export default {
             closeOnPopstate: true
           }).then(() => {
           });
-          // 当前页面回显数据
+          // 清空当前页面回显数据
           this.manageSampleDataList = [];
-          // 上一页面store采集数据
+          // 清空本页store的签名信息
           this.changeCurrentElectronicSignature({DtMsg: null});
+          // 清空上一页面store的标本选择信息
           this.changeCirculationConnectMessageList({DtMsg:[]});
-          // 上一页面Localstorage采集数据
-          removeStore('currentCirculationConnectMessage');
+          // 清空store已完成科室信息
           this.changeCompleteDeparnmentInfo({DtMsg: {
             departmentIdList: [],
             taskId: ''
           }});
+          // 清空store的没有完成交接的标本信息
+          this.changeIsStoreNoConnectSample([]);
+          // 清空store存储的已交接标本信息
+          this.changeIsstoreAlreadyConnectSample([]);
+          // 清空上一页面Localstorage标本选择信息
+          removeStore('currentCirculationConnectMessage');
+          // 清空Localstorage的已完成科室信息
           removeStore('completeDepartmentMessage');
-          this.changeIsrefreshCirculationTaskPage(true);
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');
@@ -377,11 +384,27 @@ export default {
     }
     .sweep-code-title {
       height: 30px;
-      line-height: 30px;
       padding-left: 10px;
+      position: relative;
       h3 {
+        width: auto;
+        height: 30px;
+        line-height: 30px;
         font-size: 14px;
-        color: #1699e8
+        color: #1699e8;
+        position: absolute;
+        top: 0;
+        left: 8px      
+        };
+      .control-signature {
+        font-size: 14px;
+        height: 30px;
+        line-height: 30px;
+        color: #1699e8;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 8px
       }
     };
     .sweep-code-area {
@@ -451,6 +474,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

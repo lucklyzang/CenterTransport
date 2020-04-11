@@ -6,18 +6,16 @@ export default {
     dispatchTaskMessage: null,
     dispatchTaskTransferIdList: [],
     dispatchTaskCancelIdList: [],
-    isRefershDispatchTaskPage: false,
     dispatchTaskState: '',
     dispatchTaskDepartmentType: '',
     isCoerceTakePhoto: false,
-    isCompleteSweepCode: false
+    isCompleteSweepCode: []
   },
   getters:{
     navTopTitle: state => state.navTitle,
     dispatchTaskMessage: state => state.dispatchTaskMessage,
     dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
     dispatchTaskCancelIdList: state => state.dispatchTaskCancelIdList,
-    isRefershDispatchTaskPage: state => state.isRefershDispatchTaskPage,
     dispatchTaskState: state => state.dispatchTaskState,
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
@@ -41,10 +39,6 @@ export default {
     // 改变取消原因列表状态
     changedispatchTaskCancelIdList (state,payLoad) {
       state.dispatchTaskCancelIdList = payLoad.DtMsg
-    },
-    // 改变是否刷新调度任务页面状态
-    changeIsRefershDispatchTaskPage (state,payLoad) {
-      state.isRefershDispatchTaskPage = payLoad
     },
     // 改变调度任务状态的状态
     changeDispatchTaskState (state,payLoad) {

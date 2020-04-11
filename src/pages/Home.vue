@@ -110,7 +110,7 @@
 <script>
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
-  import {getAllTaskNumber, queryAllTaskMessage} from '@/api/workerPort.js'
+  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork} from '@/api/workerPort.js'
   import {queryTransportType, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask} from '@/api/medicalPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
@@ -181,12 +181,21 @@
         this.gotoURL(() => { 
         })
       };
+      document.addEventListener('click',(e) => {
+        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+          this.leftDownShow = false;
+        }
+      });
       // 查询任务数量
       if (this.userTypeId == 0) {
         this.queryAllTaskNumber(this.proId, this.workerId);
         this.getAllTaskMessage();
         this.changeTitleTxt({tit:'中央运送'});
-        setStore('currentTitle','中央运送'); 
+        setStore('currentTitle','中央运送');
+        // 轮询是否有新任务
+        window.setInterval(() => {
+          setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
+        }, 600000)
       };
     },
     
@@ -211,12 +220,21 @@
       } else {
         if (this.userTypeId == 0) {
           // 查询任务数量
+          this.leftDownShow = false;
           this.queryAllTaskNumber(this.proId, this.workerId);
           this.getAllTaskMessage();
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送'); 
         }
-      }  
+      };
+      document.addEventListener('click',(e) => {
+        if(e.target.className!='status-name'){
+          this.stateListShow = false;
+        };
+        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+          this.leftDownShow = false;
+        }
+      })  
     },
 
     beforeRouteLeave(to, from, next) {
@@ -257,6 +275,28 @@
         return IsPC()
       },
 
+      queryNewWork (proId,workerId) {
+        getNewWork(proId,workerId).then((res) => {
+          if (res && res.data.code == 200) {
+            if (res.data.data == true) {
+              this.queryAllTaskNumber(this.proId, this.workerId);
+              let audio = new Audio();
+              audio.src = "/static/audios/task-info-voice.wav";
+              let playPromiser = audio.play();//进行播放
+              audio.onended = () => {
+              }
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
       // 返回上一页
       backTo () {
       },
@@ -264,6 +304,28 @@
       /**
        * 工作人员代码
       */
+
+      // 用户签退
+      userLoginOut (proId,workerId) {
+        userSignOut(proId,workerId).then((res) => {
+          if (res && res.data.code == 200) {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            localStorage.clear();
+            this.$router.push({path:'/'})
+          }
+        }).
+        catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
 
       // 查询所有任务数量
       queryAllTaskNumber (proID, workerId) {
@@ -356,7 +418,17 @@
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
-        } else {
+        } else if (name === '下班签退') {
+          this.$dialog.alert({
+            message: '确定签退?',
+            closeOnPopstate: true,
+            showCancelButton: true
+          }).then(() => {
+            this.userLoginOut(this.proId, this.workerId)
+          })
+          .catch(() => {
+
+          })
         }
       },
 

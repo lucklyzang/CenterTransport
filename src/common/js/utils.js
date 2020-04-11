@@ -302,3 +302,43 @@ export const UUID = () => {
   return uuid
 }
 
+/*
+ * 去除两个数组的相同值
+ */
+export const arrayDiff = (a, b) => { 
+  for(let i=0; i<b.length; i++) { 
+    for(let j=0; j<a.length; j++) { 
+      if(a[j] == b[i]){ 
+        a.splice(j,1); 
+        j=j-1; 
+      } 
+    } 
+  } 
+    return a; 
+  }
+
+/*
+ * 压缩图片方法
+ */
+export const compressImg = (originSite,callback) => {
+  let image = new Image(); //新建一个img标签（还没嵌入DOM节点)
+  image.src = originSite;
+  image.onload = function() {
+    let canvas = document.createElement('canvas'),
+    context = canvas.getContext('2d');
+    let x = image.width/500;  //压缩倍数
+    if (image.width > 500) {
+      var imageWidth = image.width / x;   //压缩后图片的大小
+      var imageHeight = image.height / x;
+    } else {
+      var imageWidth = image.width / 1;   //不进行压缩大小
+      var imageHeight = image.height / 1;
+    };
+    let data = '';
+    canvas.width = imageWidth;
+    canvas.height = imageHeight;
+    context.drawImage(image, 0, 0, imageWidth, imageHeight);
+    data = canvas.toDataURL('image/jpeg');
+    callback(data)
+  }
+}

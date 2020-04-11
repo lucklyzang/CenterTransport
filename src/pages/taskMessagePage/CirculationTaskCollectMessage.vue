@@ -20,7 +20,9 @@
       <van-field v-model="sampleAmount" disabled type="number" label="标本总数"/>
     </div>
     <div class="increase-btn">
-      <van-button type="info" size="small" @click="increaseSampleCollectBox">新增</van-button>
+      <span>
+        <img :src="taskIncreasePng" alt=""  @click="increaseSampleCollectBox">
+      </span>
     </div>
     <div class="sweep-code-area">
       <div class="increaseLineArea">
@@ -55,14 +57,20 @@
               </div>
             </div>
             <div class="delete-box">
-              <van-button type="info" size="small" @click="deleteCurrentSampleCollectBox(item,index)">删除</van-button>
+              <span>
+                <img :src="taskDeletePng" alt=""  @click="deleteCurrentSampleCollectBox(item,index)">
+              </span>
             </div>
           </div>
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="collectMessageSure">确认</van-button>
-      <van-button type="default" @click="collectMessageCancel">取消</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="collectMessageSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="collectMessageCancel">
+      </span>
     </div>
      <van-dialog
         v-model="collectMessaheSureShow"
@@ -110,6 +118,10 @@ export default {
       temporarySampleTypeList: [],
       temporarySampleType: '',
       temporaryCheckEntryList: [],
+      taskIncreasePng: require('@/components/images/task-increase.png'),
+      taskDeletePng: require('@/components/images/task-delete.png'),
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png'),
     }
   },
 
@@ -415,6 +427,16 @@ export default {
       padding-right: 10px;
       text-align: right;
       background: #f6f6f6;
+      span {
+        display: inline-block;
+        width: 70px;
+        height: 30px;
+        margin-top: 5px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     };
     .inner-sample--number-box {
        > div {
@@ -439,6 +461,7 @@ export default {
       .increaseLineArea {
         .circulation-area {
           padding: 10px 18px;
+          height: 200px;
           position: relative;
           border-bottom: 1px solid #dfdfdf;
           .sample-box {
@@ -470,7 +493,7 @@ export default {
             }
             .check-entry-content {
               width: 60%;
-              height: 50px;
+              height: 100px;
               overflow: auto;
                /depp/.van-checkbox-group {
                 .van-checkbox {
@@ -482,7 +505,17 @@ export default {
           .delete-box {
             position: absolute;
             bottom: 10px;
-            right: 10px
+            right: 10px;
+            span {
+              display: inline-block;
+              width: 70px;
+              height: 30px;
+              margin-top: 5px;
+              img {
+                width: 100%;
+                height: 100%
+              }
+            }
           }
         }
       }
@@ -491,6 +524,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

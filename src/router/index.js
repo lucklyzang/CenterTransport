@@ -41,26 +41,17 @@ let baseRoute  = [
   {
     path: '/dispatchTask',
     name: 'dispatchTask',
-    component: DispatchTask,
-    meta: {
-      keepAlive: true
-    }
+    component: DispatchTask
   },
   {
     path: '/circulationTask',
     name: 'circulationTask',
     component: CirculationTask,
-    meta: {
-      keepAlive: true
-    }
   },
   {
     path: '/appointTask',
     name: 'appointTask',
-    component: AppointTask,
-    meta: {
-      keepAlive: true
-    }
+    component: AppointTask
   },
   {
     path: '/autonomicTask',

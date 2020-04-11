@@ -32,8 +32,12 @@
       <ElectronicSignature></ElectronicSignature>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="appointMessageSure">确认</van-button>
-      <van-button type="default" @click="appointMessageCancel">取消</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="appointMessageSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="appointMessageCancel">
+      </span>
     </div>
   </div>
 </template>
@@ -59,7 +63,9 @@ export default {
       sex: '',
       age: '',
       bedNumber: '',
-      number: ''
+      number: '',
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png')
     };
   },
 
@@ -95,7 +101,6 @@ export default {
       that.gotoURL(() => {
         pushHistory();
         this.changeCurrentElectronicSignature({DtMsg: null});
-        this.changeIsRefershAppointTaskPage(true);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -107,7 +112,6 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsRefershAppointTaskPage',
       'changeCurrentElectronicSignature'
     ]),
     // 右边下拉框菜单点击
@@ -166,7 +170,6 @@ export default {
             message: `${res.data.msg}`,
             closeOnPopstate: true   
           }).then(() => {
-            this.changeIsRefershAppointTaskPage(true);
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
@@ -218,7 +221,6 @@ export default {
     // 返回上一页
     backTo () {
       this.changeCurrentElectronicSignature({DtMsg: null});
-      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -259,6 +261,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+       .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

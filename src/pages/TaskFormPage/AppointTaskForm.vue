@@ -16,8 +16,12 @@
       </van-dropdown-menu>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="transferPersonSure">确定</van-button>
-      <van-button type="default" @click="transferPersonCancel">取消</van-button>
+      <span>
+        <img :src="taskSurePng" alt=""  @click="transferPersonSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="transferPersonCancel">
+      </span>
     </div>
   </div>
 </template>
@@ -38,7 +42,9 @@ export default {
       leftDownShow: false,
       liIndex: null,
       currentPerson: '',
-      onlinePersonLlist: []
+      onlinePersonLlist: [],
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png')
     };
   },
 
@@ -55,7 +61,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershAppointTaskPage(true);
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
@@ -84,8 +89,7 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeAppointTaskTransferIdList',
-      'changeIsRefershAppointTaskPage'
+      'changeAppointTaskTransferIdList'
     ]),
 
     // 获取在线工作人员
@@ -126,7 +130,6 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -141,7 +144,6 @@ export default {
             message: res.data.msg,
             closeOnPopstate: true
           }).then(() => {
-            this.changeIsRefershAppointTaskPage(true);
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
@@ -189,7 +191,6 @@ export default {
 
     // 转移人员取消事件
     transferPersonCancel () {
-      this.changeIsRefershAppointTaskPage(true);
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
@@ -227,6 +228,15 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

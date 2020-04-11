@@ -35,15 +35,21 @@
             <input name="uploadImg1" id="demo1" @change="previewFileOne" type="file" accept="image/album"/>上传照片
           </div>
           <div class="photo-graph">
-            <input name="uploadImg2" id="demo2"  type="file" accept="image/camera"/>拍照
+            <input name="uploadImg2" id="demo2"  @change="previewFileTwo" type="file" accept="image/camera"/>拍照
           </div>
         </div>
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info"  v-show="photoAreaBoxShow == true" @click="submitPhoto">提交</van-button>
-      <van-button type="info"  v-show="photoAreaBoxShow == false" @click="sweepCodeSure">扫描二维码</van-button>
-      <van-button type="default"  @click="cancelSweepCode">取消</van-button>
+      <span v-show="photoAreaBoxShow == true">
+        <img :src="taskSurePng" alt=""  @click="submitPhoto">
+      </span>
+      <span v-show="photoAreaBoxShow == false">
+        <img :src="taskSweepCodePng" alt=""  @click="sweepCodeSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="cancelSweepCode">
+      </span>
     </div>
   </div>
 </template>
@@ -55,7 +61,7 @@ import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} fr
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC} from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, compressImg} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -69,7 +75,13 @@ export default {
       srcUrl: '',
       headerImg: '',
       liIndex: null,
+      departmentId: '',
+      currentSiteId: '',
+      compressImgUrl: '',
       upImgUrl: require('@/common/images/home/no-data-default.png'),
+      taskSurePng: require('@/components/images/task-sure.png'),
+      taskCancelPng: require('@/components/images/task-cancel.png'),
+      taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     };
   },
 
@@ -87,7 +99,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershDispatchTaskPage(false);
         this.$router.push({path:'/dispatchTask'});
         this.changeTitleTxt({tit:'调度任务'});
         setStore('currentTitle','调度任务')
@@ -98,7 +109,12 @@ export default {
     window['scanQRcodeCallback'] = (code) => {
       me.scanQRcodeCallback(code);
     };
-    console.log('调度任务状态' ,this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
+    if (this.dispatchTaskDepartmentType == 0) {
+      this.currentSiteId = this.dispatchTaskMessage.setOutPlaceId
+    } else if (this.dispatchTaskDepartmentType == 1) {
+      this.currentSiteId = this.dispatchTaskMessage.destinationId
+    };
+    console.log('调度任务状态' ,this.dispatchTaskMessage, this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
   },
 
   computed:{
@@ -124,7 +140,6 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsRefershDispatchTaskPage',
       'changeisCompleteSweepCode',
     ]),
 
@@ -133,12 +148,11 @@ export default {
       window.android.scanQRcode()
     },
 
-    // 图片预览
+    // 图片上传预览
     previewFileOne() {
       let img = document.getElementById("preview1");
-      let file =document.getElementById("demo1").files[0];
-      let dataImg;
-      let that = this;
+      let file = document.getElementById("demo1").files[0];
+      let _this = this;
       let reader = new FileReader();
       let isLt2M = file.size/1024/1024 < 16;
       if (!isLt2M) {
@@ -151,12 +165,52 @@ export default {
       };  
       reader.addEventListener("load", function () {
         img.src = reader.result;
-        that.upImgUrl = reader.result;
-        that.temporaryUpImgUrl = reader.result
+        _this.upImgUrl = reader.result;
+        _this.temporaryUpImgUrl = reader.result
       }, false);
       if (file) {
         reader.readAsDataURL(file);
       };
+    },
+
+    //拍照预览
+    previewFileTwo() {
+      let img = document.getElementById("preview1");
+      let file = document.getElementById("demo2").files[0];
+      let _this = this;
+      let reader = new FileReader();
+      let isLt2M = file.size/1024/1024 < 16;
+      if (!isLt2M) {
+        this.$dialog.alert({
+          message: '上传图片大小不能超过16MB!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };  
+      reader.addEventListener("load", function () {
+        img.src = reader.result;
+        _this.upImgUrl = reader.result;
+        _this.temporaryUpImgUrl = reader.result
+      }, false);
+      if (file) {
+        reader.readAsDataURL(file);
+      };
+    },
+
+    // 压缩回调
+    compressCallback(data) {
+      this.compressImgUrl = data;
+      this.uploadPhoto(
+        {
+          taskId: this.taskId,  //任务ID必填
+          proId: this.proId,  //项目ID必填
+          proName: this.proName,//项目名称必填项
+          type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
+          taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
+          photo: this.compressImgUrl //base64字符串必填
+        }
+      );
     },
     
     // 上传图片
@@ -199,16 +253,8 @@ export default {
         return
       };
       this.showLoadingHint = true;
-      this.uploadPhoto(
-        {
-          taskId: this.taskId,  //任务ID必填
-          proId: this.proId,  //项目ID必填
-          proName: this.proName,//项目名称必填项
-          type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
-          taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
-          photo: this.upImgUrl //base64字符串必填
-        }
-      );
+      // 压缩图片
+      compressImg(this.upImgUrl,this.compressCallback);
     },
 
     // 摄像头扫码后的回调
@@ -216,11 +262,11 @@ export default {
       if (code) {
         let codeData = code.split('|');
         if (codeData.length > 0) {
-          let departmentId = codeData[0];
+          this.departmentId = codeData[0];
           this.juddgeCurrentDepartment({
             id: this.dispatchTaskMessage.id,  //任务ID
             proId: this.proId,  //项目ID
-            departmentId: departmentId,  //科室ID
+            departmentId: this.departmentId,  //科室ID
             checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
           })
         }
@@ -254,7 +300,12 @@ export default {
     juddgeCurrentDepartment (data) {
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.changeisCompleteSweepCode(true);
+          // 存储扫码校验通过的科室id
+          let temporaryDepartmentIdListOne = [];
+          // 将本次校验通过的科室Id存入store
+          temporaryDepartmentIdListOne = this.isCompleteSweepCode;
+          temporaryDepartmentIdListOne.push(this.currentSiteId);
+          this.changeisCompleteSweepCode(repeArray(temporaryDepartmentIdListOne));
           if (this.isCoerceTakePhoto == 0) {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
@@ -298,8 +349,10 @@ export default {
             }).then(() => {
             });
           };
-          this.changeisCompleteSweepCode(false);
-          this.changeIsRefershDispatchTaskPage(true);
+          // 从store中删除本次更新过状态的科室id
+          let temporaryDepartmentIdListTwo = [];
+          temporaryDepartmentIdListTwo = this.isCompleteSweepCode;
+          this.changeisCompleteSweepCode(temporaryDepartmentIdListTwo.filter((item) => { return item != this.currentSiteId}));
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
           setStore('currentTitle','调度任务')
@@ -322,7 +375,6 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -330,16 +382,18 @@ export default {
 
      // 扫码确认事件
     sweepCodeSure () {
-      if (this.isCompleteSweepCode) {
+      if (this.isCompleteSweepCode.indexOf(this.currentSiteId) !== -1) {
         if (this.isCoerceTakePhoto == 1) {
           this.$dialog.alert({
-            message: '科室校验已验证通过,请拍照',
+            message: '该科室校验已验证通过,请拍照',
             closeOnPopstate: true
           }).then(() => {
           });
           this.photoAreaBoxShow = true;
           this.appointAreaShow = false
-        }
+        } else {
+          this.sweepAstoffice()
+        };
         return
       };
       this.sweepAstoffice()
@@ -347,7 +401,6 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.changeIsRefershDispatchTaskPage(false);
       this.$router.push({path:'/dispatchTask'});
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
@@ -414,10 +467,10 @@ export default {
       }
       .photo-area-box {
         .photo-preview {
-          width: 40%;
-          height: 120px;
+          width: 70%;
+          height: 250px;
           margin: 0 auto;
-          margin-top: 100px;
+          margin-top: 50px;
           box-shadow: 0px 0px 8px 6px rgba(231, 231, 231, 0.8);
           img {
             width: 100%;
@@ -481,7 +534,16 @@ export default {
     .btn-area {
       height: 80px;
       text-align: center;
-      line-height: 80px
+      line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

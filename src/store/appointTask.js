@@ -3,7 +3,6 @@ import { setStore, getStore, removeStore } from '@/common/js/utils'
 export default {
   state:{
     appointTaskMessage: null,
-    isRefershAppointTaskPage: false,
     appointTaskTransferIdList: [],
     appointTaskState: '',
     appointTaskDepartmentType: '',
@@ -14,7 +13,6 @@ export default {
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
-    isRefershAppointTaskPage : state => state.isRefershAppointTaskPage,
     appointTaskTransferIdList: state => state.appointTaskTransferIdList,
     appointTaskState: state => state.appointTaskState,
     appointTaskDepartmentType: state => state.appointTaskDepartmentType,
@@ -27,10 +25,6 @@ export default {
     // 改变预约任务信息状态
     changeAppointTaskMessage (state,payLoad) {
       state.appointTaskMessage = payLoad.DtMsg
-    },
-    // 改变是否刷新预约任务页面状态
-     changeIsRefershAppointTaskPage (state,payLoad) {
-      state.isRefershAppointTaskPage = payLoad
     },
     // 改变转移人员列表状态
     changeAppointTaskTransferIdList (state,payLoad) {

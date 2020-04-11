@@ -26,8 +26,12 @@
       </div>
     </div>
     <div class="btn-area">
-      <van-button type="info" @click="sweepCodeSure">扫描二维码</van-button>
-      <van-button type="default" @click="cancelSweepCode">取消</van-button>
+      <span>
+        <img :src="taskSweepCodePng" alt=""  @click="sweepCodeSure">
+      </span>
+      <span>
+        <img :src="taskCancelPng" alt="" @click="cancelSweepCode">
+      </span>
     </div>
   </div>
 </template>
@@ -38,7 +42,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {judgeDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, repeArray } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -46,7 +50,9 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      startPointList: []
+      startPointList: [],
+      taskCancelPng: require('@/components/images/task-cancel.png'),
+      taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     };
   },
 
@@ -57,7 +63,7 @@ export default {
   },
 
   mounted () {
-    console.log('id',this.stipulateOfficeList);
+    console.log('id',this.clickDepartmentId, this.isDispatchTaskCompleteSweepCodeOfficeList);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -84,7 +90,8 @@ export default {
       'isCollectEnterSweepCodePage',
       'circulationTaskId',
       'stipulateOfficeList',
-      'arriveDepartmentId'
+      'arriveDepartmentId',
+      'isDispatchTaskCompleteSweepCodeOfficeList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -94,6 +101,9 @@ export default {
     },
     officeNameList () {
       return this.stipulateOfficeList
+    },
+    clickDepartmentId () {
+      return this.circulationTaskMessage.officeId
     }
   },
 
@@ -101,7 +111,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeStoreArriveDeparnmentId',
-      'changeIsrefreshCirculationConnectPage'
+      'changeIsrefreshCirculationConnectPage',
+      'changeIsDispatchTaskCompleteSweepCodeOfficeList'
     ]),
 
      // 右边下拉框菜单点击
@@ -162,7 +173,7 @@ export default {
           }
         }
       } else {
-         this.$dialog.alert({
+        this.$dialog.alert({
           message: '当前没有扫描到任何信息,请重新扫描'
         }).then(() => {
           this.sweepAstoffice()
@@ -172,7 +183,17 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      this.sweepAstoffice();
+      if (this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.clickDepartmentId) !== -1) {
+        this.$dialog.alert({
+          message: '当前科室已扫码校验通过,请直接开始采集'
+        }).then(() => {
+        });
+        this.$router.push({path:'/circulationTaskCollectMessage'});
+        this.changeTitleTxt({tit:'循环信息采集'});
+        setStore('currentTitle','循环信息采集')
+      } else {
+        this.sweepAstoffice();
+      }
     },
 
     //判断扫码科室是否为当前要收集的科室
@@ -180,6 +201,11 @@ export default {
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
           if(this.isCollectEnterSweepCodePage) {
+            // 存储已经扫码验证通过的科室id
+            let temporaryOfficeList = [];
+            temporaryOfficeList = this.isDispatchTaskCompleteSweepCodeOfficeList;
+            temporaryOfficeList.push(this.clickDepartmentId);
+            this.changeIsDispatchTaskCompleteSweepCodeOfficeList(repeArray(temporaryOfficeList));
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')
@@ -270,7 +296,16 @@ export default {
     .btn-area {
       height: 80px;
       text-align: center;
-      line-height: 80px
+      line-height: 80px;
+      span {
+        .bottomButton;
+        display: inline-block;
+        margin-top: 15px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
     }
   }
 </style>

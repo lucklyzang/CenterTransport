@@ -11,12 +11,14 @@ export default {
     isCollectEnterSweepCodePage: false,
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
-    isrefreshCirculationTaskPage: false,
+    isDispatchTaskCompleteSweepCodeOfficeList: [],
     completeDeparnmentInfo: {
       "departmentIdList": [],
       "taskId": ''
     },
-    stipulateOfficeList: []
+    stipulateOfficeList: [],
+    storeAlreadyConnectSample: [],
+    storeNoConnectSample: []
   },
   getters:{
     circulationTaskId: state => state.circulationTaskId,
@@ -26,11 +28,13 @@ export default {
     isCollectEnterSweepCodePage: state => state.isCollectEnterSweepCodePage,
     circulationConnectMessageList: state => state.circulationConnectMessageList,
     isrefreshCirculationConnectPage: state => state.isrefreshCirculationConnectPage,
-    isrefreshCirculationTaskPage: state => state.isrefreshCirculationTaskPage,
     completeDeparnmentInfo: state => state.completeDeparnmentInfo,
     stipulateOfficeList: state => state.stipulateOfficeList,
     arriveDepartmentId: state => state.arriveDepartmentId,
-    storeArriveDeparnmentId: state => state.storeArriveDeparnmentId
+    storeArriveDeparnmentId: state => state.storeArriveDeparnmentId,
+    isDispatchTaskCompleteSweepCodeOfficeList: state => state.isDispatchTaskCompleteSweepCodeOfficeList,
+    storeAlreadyConnectSample: state => state.storeAlreadyConnectSample,
+    storeNoConnectSample: state => state.storeNoConnectSample
   },
   mutations:{
     // 改变循环任务ID状态
@@ -61,10 +65,6 @@ export default {
     changeIsrefreshCirculationConnectPage (state,payLoad) {
       state.isrefreshCirculationConnectPage = payLoad
     },
-    // 改变是否刷新循环任务页面
-    changeIsrefreshCirculationTaskPage (state,payLoad) {
-      state.isrefreshCirculationTaskPage = payLoad
-    },
     // 改变采集完成科室信息的状态
     changeCompleteDeparnmentInfo (state,payLoad) {
       state.completeDeparnmentInfo = deepClone(payLoad.DtMsg)
@@ -80,6 +80,18 @@ export default {
     // 改变送达科室id状态
     changeStoreArriveDeparnmentId (state,payLoad) {
       state.storeArriveDeparnmentId = payLoad
+    },
+    // 改变是否完成扫码科室列表状态
+    changeIsDispatchTaskCompleteSweepCodeOfficeList (state,payLoad) {
+      state.isDispatchTaskCompleteSweepCodeOfficeList = payLoad
+    },
+    // 改变已经交接的标本状态
+    changeIsstoreAlreadyConnectSample (state,payLoad) {
+      state.storeAlreadyConnectSample = deepClone(payLoad)
+    },
+    // 改变没有交接的标本状态
+    changeIsStoreNoConnectSample (state,payLoad) {
+      state.storeNoConnectSample = deepClone(payLoad)
     }
   },
   actions:{}
