@@ -109,7 +109,8 @@ export default {
       'changeTitleTxt',
       'changeRouterFlag',
       'changeLoginMethod',
-      'changeUserType'
+      'changeUserType',
+      'changeOverDueWay'
     ]),
 
     // 登录方式切换点击事件
@@ -201,6 +202,9 @@ export default {
       logIn(loginMessage).then((res)=>{
         if (res) {
           if (res.data.code == 200) {
+            // 重置过期方式
+            this.changeOverDueWay(false);
+            setStore('storeOverDueWay',false);
             if (this.showAccountLogin) {
               setStore('userName', this.username);
               setStore('userPassword', this.password);

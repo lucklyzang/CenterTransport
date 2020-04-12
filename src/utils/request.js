@@ -40,24 +40,19 @@ service.interceptors.response.use(
       store.commit('changeToken', response.headers['token']);
       setStore('questToken', response.headers['token']);
     };
-    // if (!response.headers.hasOwnProperty('token')) {
-    //   Dialog.alert({
-    //     message: 'token已经过期,3秒后将自动跳转到登录页面',
-    //     closeOnPopstate: true
-    //   }).then(() => {
-    //   });
-    //   // 登录状态置为false
-    //   removeStore('isLogin');
-    //   // 清除当前用户h5存储的医废收集流程信息
-    //   removeStore('currentCollectMsg');
-    //   removeStore('currentStep');
-    //   removeStore('weightMethods');
-    //   removeStore('continueCurrentCollect');
-    //   // 跳转到登录页面
-    //   setTimeout(() => {
-    //     router.push({path: '/'})
-    //   },3000);
-    // };
+    if (!response.headers.hasOwnProperty('token')) {
+      if (!store.getters.overDueWay) {
+        Dialog.alert({
+          message: 'token已经过期,3秒后将自动跳转到登录页面',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        window.localStorage.clear();
+        setTimeout(() => {
+          router.push({path: '/'})
+        },3000);
+      }
+    };
     return response
   },
   (err) => {

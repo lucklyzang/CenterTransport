@@ -268,7 +268,8 @@
     methods:{
       ...mapMutations([
         'changeTitleTxt',
-        'changetransportTypeMessage'
+        'changetransportTypeMessage',
+        'changeOverDueWay'
       ]),
 
       juddgeIspc () {
@@ -307,18 +308,25 @@
 
       // 用户签退
       userLoginOut (proId,workerId) {
+        this.changeOverDueWay(true);
+        setStore('storeOverDueWay',true);
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
+            localStorage.clear();
+            this.$router.push({path:'/'})
+          } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
             });
-            localStorage.clear();
-            this.$router.push({path:'/'})
+            this.changeOverDueWay(false);
+            setStore('storeOverDueWay',false);
           }
         }).
         catch((err) => {
+          this.changeOverDueWay(false);
+          setStore('storeOverDueWay',false);
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true

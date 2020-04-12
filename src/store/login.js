@@ -7,13 +7,16 @@ export default {
     loginSweepCode: false,
     // 用户身份
     userType: '',
+    // 过期方式
+    overDueWay: false
   },
   getters:{
     userInfo : state => state.userInfo,
     routerFlag : state => state.routerFlag,
     loginSweepCode : state => state.loginSweepCode,
     token : state => state.token,
-    userType: state => state.userType
+    userType: state => state.userType,
+    overDueWay: state => state.overDueWay
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -35,6 +38,10 @@ export default {
     changeUserType (state, playLoad) {
       state.userType = playLoad
     },
+    // 修改过期方式
+    changeOverDueWay (state, playLoad) {
+      state.overDueWay = playLoad
+    }
   },
   actions:{}
 }

@@ -85,6 +85,10 @@ if (getStore('completeDepartmentMessage')) {
 if (getStore('currentDepartmentId')) {
   store.commit('changeStoreArriveDeparnmentId',getStore('currentDepartmentId'));
 };
+// 页面刷新重新存入过期方式
+if (getStore('storeOverDueWay')) {
+  store.commit('changeOverDueWay',getStore('storeOverDueWay'));
+};
 if (IsPC()) {
   Vue.use(new VueSocketIO({
      debug: true,
