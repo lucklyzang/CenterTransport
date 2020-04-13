@@ -2,7 +2,7 @@ import { deepClone } from '@/common/js/utils'
 
 export default {
   state:{
-    circulationTaskId: '',
+    arriveCirculationTaskId: '',
     arriveDepartmentId: false,
     storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
@@ -18,7 +18,7 @@ export default {
     storeNoConnectSample: []
   },
   getters:{
-    circulationTaskId: state => state.circulationTaskId,
+    arriveCirculationTaskId: state => state.arriveCirculationTaskId,
     circulationTaskMessage: state => state.circulationTaskMessage,
     currentElectronicSignature: state => state.currentElectronicSignature,
     circulationCollectMessageList: state => state.circulationCollectMessageList,
@@ -36,7 +36,7 @@ export default {
   mutations:{
     // 改变循环任务ID状态
     changeCirculationTaskId (state,payLoad) {
-      state.circulationTaskId = payLoad
+      state.arriveCirculationTaskId = payLoad
     },
     // 改变循环任务信息状态
     changeCirculationTaskMessage (state,payLoad) {

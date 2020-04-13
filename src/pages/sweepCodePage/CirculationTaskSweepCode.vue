@@ -211,20 +211,30 @@ export default {
             let temporaryOfficeList = [];
             let temporaryDepartmentId = [];
             temporaryOfficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
-            let temporaryIndex = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
-            if (temporaryIndex != -1) {
-              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
-              temporaryDepartmentId.push(this.clickDepartmentId);
-              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
-            } else {
-              temporaryDepartmentId.push(this.clickDepartmentId);
-              temporaryOfficeList.push(
-                { 
-                  officeList: repeArray(temporaryDepartmentId),
-                  taskId: this.circulationTaskId
-                }
-              )
-            };
+            // if (this.isDispatchTaskCompleteSweepCodeOfficeList.length > 0 ) {
+              let temporaryIndex = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+                temporaryDepartmentId.push(this.clickDepartmentId);
+                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+              } else {
+                temporaryDepartmentId.push(this.clickDepartmentId);
+                temporaryOfficeList.push(
+                  { 
+                    officeList: repeArray(temporaryDepartmentId),
+                    taskId: this.circulationTaskId
+                  }
+                )
+              };
+            // } else {
+            //   temporaryDepartmentId.push(this.clickDepartmentId);
+            //   temporaryOfficeList.push(
+            //     { 
+            //       officeList: repeArray(temporaryDepartmentId),
+            //       taskId: this.circulationTaskId
+            //     }
+            //   )
+            // };
             this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporaryOfficeList);
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});

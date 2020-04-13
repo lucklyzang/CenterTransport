@@ -220,10 +220,20 @@ export default {
             let temporaryCompleteInfo = [];
             temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
             let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
-            if (temporaryIndex != -1) {
-              temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-              temporaryDepartmentId.push(this.departmentId);
-              temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+            if (this.completeDeparnmentInfo.length > 0) {
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+              } else {
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryCompleteInfo.push(
+                  { 
+                    departmentIdList: temporaryDepartmentId,
+                    taskId: this.circulationTaskId
+                  }
+                )
+              }
             } else {
               temporaryDepartmentId.push(this.departmentId);
               temporaryCompleteInfo.push(

@@ -115,7 +115,6 @@ export default {
   },
 
   mounted () {
-    console.log('交接信息', this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -148,14 +147,12 @@ export default {
       'storeArriveDeparnmentId',
       'storeAlreadyConnectSample',
       'storeNoConnectSample',
-      'completeDeparnmentInfo'
+      'completeDeparnmentInfo',
+      'arriveCirculationTaskId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
-    },
-     circulationTaskId () {
-      return this.circulationTaskMessage.currentMsg.id
-    },
+    }
   },
 
   methods:{
@@ -227,7 +224,7 @@ export default {
     connectCancel () {
       this.updateCirculationtaskState({
         proId: this.proId,		 //当前项目ID
-        id: this.circulationTaskId, //当前任务ID
+        id: this.arriveCirculationTaskId, //当前任务ID
         state: 7 //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'}
       });
     },
@@ -288,13 +285,10 @@ export default {
           this.changeCirculationConnectMessageList({DtMsg:[]});
           // 清空store已完成科室信息
           let temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
-          if (temporaryIndex != -1) {
-            temporaryCompleteInfo.splice(temporaryIndex,1);
-            this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
-            // 清空Localstorage的已完成科室信息
-            setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
-          };
+          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.arriveCirculationTaskId});
+          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+          // 清空Localstorage的已完成科室信息
+          setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
           // 清空store的没有完成交接的标本信息
           this.changeIsStoreNoConnectSample([]);
           // 清空store存储的已交接标本信息
