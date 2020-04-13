@@ -42,7 +42,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {judgeDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, repeArray } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -183,7 +183,13 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      if (this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.clickDepartmentId) !== -1) {
+      let isExistTaskId = '',
+          isExistOfficeId = '';
+      isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
+      if (isExistTaskId !== -1) {
+        isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
+      };
+      if (isExistTaskId == 0 && isExistOfficeId == 0) {
         this.$dialog.alert({
           message: '当前科室已扫码校验通过,请直接开始采集'
         }).then(() => {
@@ -203,9 +209,23 @@ export default {
           if(this.isCollectEnterSweepCodePage) {
             // 存储已经扫码验证通过的科室id
             let temporaryOfficeList = [];
-            temporaryOfficeList = this.isDispatchTaskCompleteSweepCodeOfficeList;
-            temporaryOfficeList.push(this.clickDepartmentId);
-            this.changeIsDispatchTaskCompleteSweepCodeOfficeList(repeArray(temporaryOfficeList));
+            let temporaryDepartmentId = [];
+            temporaryOfficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
+            let temporaryIndex = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+              temporaryDepartmentId.push(this.clickDepartmentId);
+              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+            } else {
+              temporaryDepartmentId.push(this.clickDepartmentId);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.circulationTaskId
+                }
+              )
+            };
+            this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporaryOfficeList);
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')

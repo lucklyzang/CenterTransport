@@ -218,8 +218,8 @@ export default {
             // 存储完成采集任务的科室信息
             let temporaryDepartmentId = [];
             let temporaryCompleteInfo = [];
-            temporaryCompleteInfo = this.completeDeparnmentInfo;
-            let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.indexOf.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+            temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+            let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
             if (temporaryIndex != -1) {
               temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
               temporaryDepartmentId.push(this.departmentId);

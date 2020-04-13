@@ -12,10 +12,6 @@ export default {
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
     isDispatchTaskCompleteSweepCodeOfficeList: [],
-    // completeDeparnmentInfo: {
-    //   "departmentIdList": [],
-    //   "taskId": ''
-    // },
     completeDeparnmentInfo: [],
     stipulateOfficeList: [],
     storeAlreadyConnectSample: [],
@@ -84,7 +80,7 @@ export default {
     },
     // 改变是否完成扫码科室列表状态
     changeIsDispatchTaskCompleteSweepCodeOfficeList (state,payLoad) {
-      state.isDispatchTaskCompleteSweepCodeOfficeList = payLoad
+      state.isDispatchTaskCompleteSweepCodeOfficeList = deepClone(payLoad)
     },
     // 改变已经交接的标本状态
     changeIsstoreAlreadyConnectSample (state,payLoad) {

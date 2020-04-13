@@ -278,7 +278,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'completeDeparnmentInfo'
+        'completeDeparnmentInfo',
+        'isDispatchTaskCompleteSweepCodeOfficeList'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -537,7 +538,7 @@
                 for (let w = 0, wLen = this.completeDeparnmentInfo.length; w < wLen; w++) {
                   if (this.circulationTaskList.length > 0) {
                      for (let n = 0, nLen = this.circulationTaskList.length; n < nLen; n++) {
-                      if (this.circulationTaskList[n]['id'] == this.completeDeparnmentInfo['taskId']) {
+                      if (this.circulationTaskList[n]['id'] == this.completeDeparnmentInfo[w]['taskId']) {
                         if (this.completeDeparnmentInfo[w]['departmentIdList'].length > 0) {
                           for (let i = 0, len1 = this.completeDeparnmentInfo[w]['departmentIdList'].length; i < len1; i++) {
                             if (this.circulationTaskList[n]['spaces'].length > 0) {
@@ -553,7 +554,10 @@
                     };
                     // 清空上个任务存储的已完成科室信息
                     if (this.circulationTaskList[n]['spaces'].every((item,index) => { return item.check == true})) {
-                      this.changeIsDispatchTaskCompleteSweepCodeOfficeList([])
+                      let temporaryTaskId = this.circulationTaskList[n]['id'];
+                      let temporarySweepCodeOficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
+                      temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != temporaryTaskId});
+                      this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporarySweepCodeOficeList)
                     }
                   }
                 }
