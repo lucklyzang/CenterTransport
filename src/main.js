@@ -85,7 +85,7 @@ if (getStore('completeDepartmentMessage')) {
 if (getStore('currentDepartmentId')) {
   store.commit('changeStoreArriveDeparnmentId',getStore('currentDepartmentId'));
 };
-// 页面刷新重新存入过期方式
+// 页面刷新重新存入过期方式测试1
 if (getStore('storeOverDueWay')) {
   store.commit('changeOverDueWay',getStore('storeOverDueWay'));
 };
