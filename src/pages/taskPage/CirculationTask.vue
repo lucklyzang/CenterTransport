@@ -532,7 +532,7 @@
                   }
                 }
               };
-              // 为完成采集的科室增加标记
+              // 界限
               let completeDepartmentList = repeArray(this.completeDeparnmentInfo['departmentIdList']);
               let completeCurrentTaskId = this.completeDeparnmentInfo['taskId'];
               let taskIndex = this.circulationTaskList.indexOf(this.circulationTaskList.filter((item) => item.id == completeCurrentTaskId)[0]);
