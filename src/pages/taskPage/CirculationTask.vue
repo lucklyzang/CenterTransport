@@ -533,20 +533,29 @@
                 }
               };
               // 为完成采集的科室增加标记
-              let completeDepartmentList = repeArray(this.completeDeparnmentInfo['departmentIdList']);
-              let completeCurrentTaskId = this.completeDeparnmentInfo['taskId'];
-              let taskIndex = this.circulationTaskList.indexOf(this.circulationTaskList.filter((item) => item.id == completeCurrentTaskId)[0]);
-              if (taskIndex !== -1) {
-                for (let i = 0, len1 = completeDepartmentList.length; i < len1; i++) {
-                  for (let j = 0, len2 = this.circulationTaskList[taskIndex]['spaces'].length; j < len2; j++) {
-                    if (this.circulationTaskList[taskIndex]['spaces'][j]['value'] == completeDepartmentList[i]) {
-                      this.circulationTaskList[taskIndex]['spaces'][j]['check'] = true
+              if (this.completeDeparnmentInfo.length > 0) {
+                for (let w = 0, wLen = this.completeDeparnmentInfo.length; w < wLen; w++) {
+                  if (this.circulationTaskList.length > 0) {
+                     for (let n = 0, nLen = this.circulationTaskList.length; n < nLen; n++) {
+                      if (this.circulationTaskList[n]['id'] == this.completeDeparnmentInfo['taskId']) {
+                        if (this.completeDeparnmentInfo[w]['departmentIdList'].length > 0) {
+                          for (let i = 0, len1 = this.completeDeparnmentInfo[w]['departmentIdList'].length; i < len1; i++) {
+                            if (this.circulationTaskList[n]['spaces'].length > 0) {
+                              for (let j = 0, len2 = this.circulationTaskList[n]['spaces'].length; j < len2; j++) {
+                                if (this.circulationTaskList[n]['spaces'][j]['value'] == this.completeDeparnmentInfo[w]['departmentIdList'][i]) {
+                                  this.circulationTaskList[n]['spaces'][j]['check'] = true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    };
+                    // 清空上个任务存储的已完成科室信息
+                    if (this.circulationTaskList[n]['spaces'].every((item,index) => { return item.check == true})) {
+                      this.changeIsDispatchTaskCompleteSweepCodeOfficeList([])
                     }
                   }
-                };
-                // 清空上个任务存储的已完成科室信息
-                if (this.circulationTaskList[taskIndex]['spaces'].every((item,index) => { return item.check == true})) {
-                  this.changeIsDispatchTaskCompleteSweepCodeOfficeList([])
                 }
               };
               console.log('任务信息',this.circulationTaskList)

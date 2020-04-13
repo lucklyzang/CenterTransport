@@ -12,10 +12,11 @@ export default {
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
     isDispatchTaskCompleteSweepCodeOfficeList: [],
-    completeDeparnmentInfo: {
-      "departmentIdList": [],
-      "taskId": ''
-    },
+    // completeDeparnmentInfo: {
+    //   "departmentIdList": [],
+    //   "taskId": ''
+    // },
+    completeDeparnmentInfo: [],
     stipulateOfficeList: [],
     storeAlreadyConnectSample: [],
     storeNoConnectSample: []

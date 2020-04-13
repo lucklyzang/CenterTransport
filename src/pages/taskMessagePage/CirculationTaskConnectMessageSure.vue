@@ -147,7 +147,8 @@ export default {
       'circulationTaskMessage',
       'storeArriveDeparnmentId',
       'storeAlreadyConnectSample',
-      'storeNoConnectSample'
+      'storeNoConnectSample',
+      'completeDeparnmentInfo'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -286,18 +287,21 @@ export default {
           // 清空上一页面store的标本选择信息
           this.changeCirculationConnectMessageList({DtMsg:[]});
           // 清空store已完成科室信息
-          this.changeCompleteDeparnmentInfo({DtMsg: {
-            departmentIdList: [],
-            taskId: ''
-          }});
+          let temporaryCompleteInfo = this.completeDeparnmentInfo;
+          let sureCompleteInfo = [];
+          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+          if (temporaryIndex != -1) {
+            sureCompleteInfo = temporaryCompleteInfo.splice(temporaryIndex,1);
+          };
+          this.changeCompleteDeparnmentInfo({DtMsg: sureCompleteInfo});
+          // 清空Localstorage的已完成科室信息
+          setStore('completeDepartmentMessage', {"sureInfo": sureCompleteInfo});
           // 清空store的没有完成交接的标本信息
           this.changeIsStoreNoConnectSample([]);
           // 清空store存储的已交接标本信息
           this.changeIsstoreAlreadyConnectSample([]);
           // 清空上一页面Localstorage标本选择信息
           removeStore('currentCirculationConnectMessage');
-          // 清空Localstorage的已完成科室信息
-          removeStore('completeDepartmentMessage');
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');

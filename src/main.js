@@ -79,7 +79,7 @@ if (getStore('currentTransportTypeMessage')) {
 };
 // 页面刷新重新存入循环任务完成采集科室信息
 if (getStore('completeDepartmentMessage')) {
-  store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))});
+  store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))['sureInfo']});
 };
 // 页面刷新重新存入送达的科室id
 if (getStore('currentDepartmentId')) {
@@ -87,7 +87,7 @@ if (getStore('currentDepartmentId')) {
 };
 // 页面刷新重新存入过期方式测试1
 if (getStore('storeOverDueWay')) {
-  store.commit('changeOverDueWay',getStore('storeOverDueWay'));
+  store.commit('changeOverDueWay',JSON.parse(getStore('storeOverDueWay')));
 };
 if (IsPC()) {
   Vue.use(new VueSocketIO({
