@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper">
     <div class="play-voive-box">
-      <!-- <audio ref="audio" src="/static/audios/task-info-voice.wav" preload="auto">
+      <!-- <audio ref="audio" src="/dist/static/audios/task-info-voice.wav" preload="auto">
         Your browser does not support the audio element.
       </audio> -->
     </div>
@@ -289,18 +289,14 @@
       queryNewWork (proId,workerId) {
         let audio = new Audio();
         audio.preloadc = "auto";
-        audio.src = "/static/audios/task-info-voice.wav";
+        audio.src = "/dist/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data == true) {
               this.queryAllTaskNumber(this.proId, this.workerId);
-              let audio = new Audio();
-              audio.src = "/static/audios/task-info-voice.wav";
               let playPromiser = audio.play();//进行播放
               audio.onended = () => {
               }
-            } else {
-              let playPromiser = audio.play();//进行播放
             }
           }
         })
