@@ -1,5 +1,8 @@
 <template>
   <div class="content-wrapper">
+    <div class="play-voice-box">
+      <audio ref="audio" src="/static/audios/task-info-voice.wav"></audio>
+    </div>
     <!-- 工作人员操作区域 -->
     <div class="worker-show" v-if="workerShow">
       <!-- 顶部导航栏 -->
@@ -195,7 +198,7 @@
         // 轮询是否有新任务
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 600000)
+        }, 3000)
       };
     },
     
@@ -276,16 +279,25 @@
         return IsPC()
       },
 
+      playMusic () {
+        let audioPLay = this.$refs.audio;
+        audioPLay.play()
+      },
+
       queryNewWork (proId,workerId) {
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data == true) {
               this.queryAllTaskNumber(this.proId, this.workerId);
-              let audio = new Audio();
-              audio.src = "/static/audios/task-info-voice.wav";
-              let playPromiser = audio.play();//进行播放
-              audio.onended = () => {
-              }
+              this.playMusic()
+              // let audio = new Audio();
+              // audio.src = "/static/audios/task-info-voice.wav";
+              // let playPromiser = audio.play();//进行播放
+              // audio.onended = () => {
+              // }
+            } else {
+              this.queryAllTaskNumber(this.proId, this.workerId);
+              this.playMusic()
             }
           }
         })
@@ -553,6 +565,12 @@
   @import "../common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    position: relative;
+    .play-voice-box {
+      position: absolute;
+      top: 50px;
+      left: 10px
+    }
     .worker-show {
       .content-wrapper();
       .content-top {

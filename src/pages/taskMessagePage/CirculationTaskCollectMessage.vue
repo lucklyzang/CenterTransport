@@ -178,6 +178,7 @@ export default {
           showCancelButton: true   
           }).then(() => {
             this.changeCirculationCollectMessageList({DtMsg:[]});
+            removeStore('currentCirculationCollectMessage');
             this.$router.push({'path':'/circulationTaskSweepCode'});
             this.changeTitleTxt({tit:'扫码'});
             setStore('currentTitle','扫码');}
@@ -193,19 +194,28 @@ export default {
   computed:{
     ...mapGetters([
       'navTopTitle',
-      'circulationCollectMessageList'
+      'circulationCollectMessageList',
+      'completeDeparnmentInfo',
+      'circulationTaskMessage',
+      'circulationCollectMessageList',
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
-    }
+    },
+    departmentId () {
+      return this.circulationTaskMessage.officeId
+    },
+    circulationTaskId () {
+      return this.circulationTaskMessage.currentMsg.id
+    },
   },
 
   methods:{
     ...mapMutations([
       'changeTitleTxt',
       'changeCirculationCollectMessageList',
-      'circulationCollectMessageList1',
-      'changeIsrefreshCirculationConnectPage'
+      'changeIsrefreshCirculationConnectPage',
+      'changeCompleteDeparnmentInfo'
     ]),
 
      // 右边下拉框菜单点击
@@ -300,6 +310,7 @@ export default {
           showCancelButton: true   
         }).then(() => {
           this.changeCirculationCollectMessageList({DtMsg:[]});
+          removeStore('currentCirculationCollectMessage');
           this.$router.push({'path':'/circulationTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
           setStore('currentTitle','扫码');}
@@ -310,6 +321,29 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
+      // 如果当前科室没有采集信息，则不签名和提交采集信息确认
+      if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
+        // 存储完成采集任务的科室信息
+        let temporaryDepartmentId = [];
+        temporaryDepartmentId = this.completeDeparnmentInfo['departmentIdList'];
+        temporaryDepartmentId.push(this.departmentId);
+        this.changeCompleteDeparnmentInfo({DtMsg: {
+          departmentIdList: temporaryDepartmentId,
+          taskId: this.circulationTaskId
+        }});
+        setStore('completeDepartmentMessage',{
+          departmentIdList: temporaryDepartmentId,
+          taskId: this.circulationTaskId
+        });
+        this.$router.push({path:'/circulationTask'});
+        this.changeTitleTxt({tit:'循环任务'});
+        setStore('currentTitle','循环任务');
+        this.$dialog.alert({
+          message: '当前科室没有需要采集的信息',
+          closeOnPopstate: true  
+        });
+        return
+      };
       this.collectMessaheSureShow = true;
     },
 
@@ -352,7 +386,6 @@ export default {
         patientName: this.patientName,
         sampleAmount: this.sampleAmount,
       });
-      console.log('传的数据',currentCollectAllMessageCancel,currentCollectAllMessageCancel);
       this.changeCirculationCollectMessageList({DtMsg:currentCollectAllMessageCancel});
       setStore('currentCirculationCollectMessage',{innerMessage:currentCollectAllMessageCancel});
       this.$router.push({path:'/circulationTaskCollectMessageSure'});
@@ -362,17 +395,28 @@ export default {
 
     // 采集信息取消事件
     collectMessageCancel () {
-      this.$dialog.alert({
-        message: '取消采集后,将丢失本科室采集数据!',
-        closeOnPopstate: true,
-        showCancelButton: true   
-      }).then(() => {
+      // 当前没有收集到任何数据时跳到扫码页面
+      if (this.circulationCollectMessageList.length == 0) {
         this.changeCirculationCollectMessageList({DtMsg:[]});
+        removeStore('currentCirculationCollectMessage');
         this.$router.push({'path':'/circulationTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码');}
-        )
-      .catch(() => {})
+        setStore('currentTitle','扫码')
+      } else {
+        // 有数据则回到该科室上个床位收集页面
+        // 回显上个床位收集信息
+        let temporaryBedCollectMsg = [];
+        temporaryBedCollectMsg.push(deepClone(this.circulationCollectMessageList[this.circulationCollectMessageList.length-1]));
+        this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
+        this.patientName = temporaryBedCollectMsg[0]['patientName'];
+        this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
+        this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList'];
+        // 删除存储的上个床位信息,点确定后会重新存储
+        let temporaryCollectInfo = deepClone(this.circulationCollectMessageList);
+        temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
+        this.changeCirculationCollectMessageList({DtMsg:temporaryCollectInfo});
+        setStore('currentCirculationCollectMessage',{innerMessage:temporaryCollectInfo});
+      }
     },
 
     // 新增标本采集框
