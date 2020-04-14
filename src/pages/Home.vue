@@ -1,9 +1,9 @@
 <template>
   <div class="content-wrapper">
     <div class="play-voive-box">
-      <audio ref="audio" src="/static/audios/task-info-voice.wav" preload="auto">
+      <!-- <audio ref="audio" src="/static/audios/task-info-voice.wav" preload="auto">
         Your browser does not support the audio element.
-      </audio>
+      </audio> -->
     </div>
     <!-- 工作人员操作区域 -->
     <div class="worker-show" v-if="workerShow">
@@ -200,7 +200,7 @@
         // 轮询是否有新任务
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 1000)
+        }, 3000)
       };
     },
     
@@ -287,6 +287,9 @@
       },
 
       queryNewWork (proId,workerId) {
+        let audio = new Audio();
+        audio.preloadc = "auto";
+        audio.src = "/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data == true) {
@@ -297,7 +300,7 @@
               audio.onended = () => {
               }
             } else {
-              this.playInfoVoice()
+              let playPromiser = audio.play();//进行播放
             }
           }
         })
