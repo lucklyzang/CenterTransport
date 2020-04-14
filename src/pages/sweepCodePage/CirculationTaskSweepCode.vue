@@ -63,7 +63,7 @@ export default {
   },
 
   mounted () {
-    console.log('id',this.clickDepartmentId, this.isDispatchTaskCompleteSweepCodeOfficeList);
+    console.log('id',this.clickDepartmentId, typeof this.clickDepartmentId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -88,10 +88,10 @@ export default {
       'navTopTitle',
       'circulationTaskMessage',
       'isCollectEnterSweepCodePage',
-      'circulationTaskId',
       'stipulateOfficeList',
       'arriveDepartmentId',
-      'isDispatchTaskCompleteSweepCodeOfficeList'
+      'isDispatchTaskCompleteSweepCodeOfficeList',
+      'isFirstSweepCode'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -112,7 +112,8 @@ export default {
       'changeTitleTxt',
       'changeStoreArriveDeparnmentId',
       'changeIsrefreshCirculationConnectPage',
-      'changeIsDispatchTaskCompleteSweepCodeOfficeList'
+      'changeIsDispatchTaskCompleteSweepCodeOfficeList',
+      'changeIsFirstSweepCode'
     ]),
 
      // 右边下拉框菜单点击
@@ -183,20 +184,31 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      let isExistTaskId = '',
+      if (!this.arriveDepartmentId) {
+        if (this.isFirstSweepCode) {
+          this.sweepAstoffice();
+        } else {
+          let isExistTaskId = '',
           isExistOfficeId = '';
-      isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
-      if (isExistTaskId !== -1) {
-        isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
-      };
-      if (isExistTaskId == 0 && isExistOfficeId == 0) {
-        this.$dialog.alert({
-          message: '当前科室已扫码校验通过,请直接开始采集'
-        }).then(() => {
-        });
-        this.$router.push({path:'/circulationTaskCollectMessage'});
-        this.changeTitleTxt({tit:'循环信息采集'});
-        setStore('currentTitle','循环信息采集')
+          isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
+          if (isExistTaskId != -1) {
+            isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
+          };
+          this.$dialog.alert({
+            message: `${isExistTaskId}-${isExistOfficeId}`
+          });
+          if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+            this.$dialog.alert({
+              message: '当前科室已扫码校验通过,请直接开始采集'
+            }).then(() => {
+            });
+            this.$router.push({path:'/circulationTaskCollectMessage'});
+            this.changeTitleTxt({tit:'循环信息采集'});
+            setStore('currentTitle','循环信息采集')
+          } else {
+            this.sweepAstoffice();
+          }
+        }
       } else {
         this.sweepAstoffice();
       }
@@ -206,12 +218,13 @@ export default {
     juddgeMedicalCorrect(data) {
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
+          this.changeIsFirstSweepCode(false);
           if(this.isCollectEnterSweepCodePage) {
             // 存储已经扫码验证通过的科室id
             let temporaryOfficeList = [];
             let temporaryDepartmentId = [];
             temporaryOfficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
-            // if (this.isDispatchTaskCompleteSweepCodeOfficeList.length > 0 ) {
+            if (this.isDispatchTaskCompleteSweepCodeOfficeList.length > 0 ) {
               let temporaryIndex = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
               if (temporaryIndex != -1) {
                 temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
@@ -222,19 +235,19 @@ export default {
                 temporaryOfficeList.push(
                   { 
                     officeList: repeArray(temporaryDepartmentId),
-                    taskId: this.circulationTaskId
+                    taskId: this.circulationId
                   }
                 )
               };
-            // } else {
-            //   temporaryDepartmentId.push(this.clickDepartmentId);
-            //   temporaryOfficeList.push(
-            //     { 
-            //       officeList: repeArray(temporaryDepartmentId),
-            //       taskId: this.circulationTaskId
-            //     }
-            //   )
-            // };
+            } else {
+              temporaryDepartmentId.push(this.clickDepartmentId);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.circulationId
+                }
+              )
+            };
             this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporaryOfficeList);
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});

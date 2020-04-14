@@ -210,7 +210,7 @@ export default {
           }).then(() => {
             // 清空当前页面回显数据
             this.allcirculationCollectMessageList = [];
-            this.changeCurrentElectronicSignature({DtMsg: null})
+            this.changeCurrentElectronicSignature({DtMsg: null});
             // 清空上一页面store科室采集数据
             this.changeCirculationCollectMessageList({DtMsg:[]});
             // 清空上一页面Localstorage的科室采集数据

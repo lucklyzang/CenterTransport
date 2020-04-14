@@ -4,6 +4,7 @@ export default {
   state:{
     arriveCirculationTaskId: '',
     arriveDepartmentId: false,
+    isFirstSweepCode: true,
     storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
     currentElectronicSignature: null,
@@ -31,7 +32,8 @@ export default {
     storeArriveDeparnmentId: state => state.storeArriveDeparnmentId,
     isDispatchTaskCompleteSweepCodeOfficeList: state => state.isDispatchTaskCompleteSweepCodeOfficeList,
     storeAlreadyConnectSample: state => state.storeAlreadyConnectSample,
-    storeNoConnectSample: state => state.storeNoConnectSample
+    storeNoConnectSample: state => state.storeNoConnectSample,
+    isFirstSweepCode: state => state.isFirstSweepCode
   },
   mutations:{
     // 改变循环任务ID状态
@@ -89,7 +91,11 @@ export default {
     // 改变没有交接的标本状态
     changeIsStoreNoConnectSample (state,payLoad) {
       state.storeNoConnectSample = deepClone(payLoad)
-    }
+    },
+    // 改变是否首次扫码状态
+    changeIsFirstSweepCode (state,payLoad) {
+      state.isFirstSweepCode = payLoad
+    },
   },
   actions:{}
 }
