@@ -1,7 +1,9 @@
 <template>
   <div class="content-wrapper">
     <div class="play-voive-box">
-      <audio ref="audio" src="/static/audios/task-info-voice.wav" preload="auto"></audio>
+      <audio ref="audio" src="/static/audios/task-info-voice.wav" preload="auto">
+        Your browser does not support the audio element.
+      </audio>
     </div>
     <!-- 工作人员操作区域 -->
     <div class="worker-show" v-if="workerShow">
