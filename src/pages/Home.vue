@@ -200,7 +200,7 @@
         // 轮询是否有新任务
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 3000)
+        }, 60000)
       };
     },
     
