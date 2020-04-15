@@ -194,9 +194,6 @@ export default {
           if (isExistTaskId != -1) {
             isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
           };
-          this.$dialog.alert({
-            message: `${isExistTaskId}-${isExistOfficeId}`
-          });
           if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
             this.$dialog.alert({
               message: '当前科室已扫码校验通过,请直接开始采集'

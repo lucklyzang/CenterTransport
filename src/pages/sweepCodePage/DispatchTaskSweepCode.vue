@@ -61,7 +61,7 @@ import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} fr
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, compressImg} from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -124,7 +124,8 @@ export default {
       'dispatchTaskState',
       'dispatchTaskDepartmentType',
       'isCoerceTakePhoto',
-      'isCompleteSweepCode'
+      'isCompleteSweepCode',
+      'isDispatchTaskFirstSweepCode'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -141,6 +142,7 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeisCompleteSweepCode',
+      'changeIsDispatchTaskFirstSweepCode'
     ]),
 
     // 扫描二维码方法
@@ -300,12 +302,36 @@ export default {
     juddgeCurrentDepartment (data) {
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 存储扫码校验通过的科室id
-          let temporaryDepartmentIdListOne = [];
-          // 将本次校验通过的科室Id存入store
-          temporaryDepartmentIdListOne = this.isCompleteSweepCode;
-          temporaryDepartmentIdListOne.push(this.currentSiteId);
-          this.changeisCompleteSweepCode(repeArray(temporaryDepartmentIdListOne));
+          this.changeIsDispatchTaskFirstSweepCode(false);
+          // 存储已经扫码验证通过的科室id
+          let temporaryOfficeList = [];
+          let temporaryDepartmentId = [];
+          temporaryOfficeList = deepClone(this.isCompleteSweepCode);
+          if (this.isCompleteSweepCode.length > 0 ) {
+            let temporaryIndex = this.isCompleteSweepCode.indexOf(this.isCompleteSweepCode.filter((item) => {return item.taskId == this.taskId})[0]);
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+              temporaryDepartmentId.push(this.currentSiteId);
+              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+            } else {
+              temporaryDepartmentId.push(this.currentSiteId);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.taskId
+                }
+              )
+            };
+          } else {
+            temporaryDepartmentId.push(this.currentSiteId);
+            temporaryOfficeList.push(
+              { 
+                officeList: repeArray(temporaryDepartmentId),
+                taskId: this.taskId
+              }
+            )
+          };
+          this.changeisCompleteSweepCode(temporaryOfficeList);
           if (this.isCoerceTakePhoto == 0) {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
@@ -348,11 +374,11 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
+            // 清空该完成任务存储的已扫过科室信息
+            let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
+            temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+            this.changeisCompleteSweepCode(temporarySweepCodeOficeList)
           };
-          // 从store中删除本次更新过状态的科室id
-          let temporaryDepartmentIdListTwo = [];
-          temporaryDepartmentIdListTwo = this.isCompleteSweepCode;
-          this.changeisCompleteSweepCode(temporaryDepartmentIdListTwo.filter((item) => { return item != this.currentSiteId}));
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
           setStore('currentTitle','调度任务')
@@ -382,21 +408,31 @@ export default {
 
      // 扫码确认事件
     sweepCodeSure () {
-      if (this.isCompleteSweepCode.indexOf(this.currentSiteId) !== -1) {
-        if (this.isCoerceTakePhoto == 1) {
-          this.$dialog.alert({
-            message: '该科室校验已验证通过,请拍照',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          this.photoAreaBoxShow = true;
-          this.appointAreaShow = false
+      if (this.isDispatchTaskFirstSweepCode) {
+        this.sweepAstoffice()
+      } else {
+        let isExistTaskId = '',
+        isExistOfficeId = '';
+        isExistTaskId = this.isCompleteSweepCode.indexOf(this.isCompleteSweepCode.filter((item) => {return item.taskId == this.taskId})[0]);
+        if (isExistTaskId != -1) {
+          isExistOfficeId = this.isCompleteSweepCode[isExistTaskId]['officeList'].indexOf(this.currentSiteId);
+        };
+        if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+          if (this.isCoerceTakePhoto == 1) {
+            this.$dialog.alert({
+              message: '该科室校验已验证通过,请拍照',
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.photoAreaBoxShow = true;
+            this.appointAreaShow = false
+          } else {
+            this.sweepAstoffice()
+          }
         } else {
           this.sweepAstoffice()
-        };
-        return
-      };
-      this.sweepAstoffice()
+        }
+      }
     },
 
     // 取消扫码事件
