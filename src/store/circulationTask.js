@@ -2,8 +2,9 @@ import { deepClone } from '@/common/js/utils'
 
 export default {
   state:{
-    circulationTaskId: '',
+    arriveCirculationTaskId: '',
     arriveDepartmentId: false,
+    isFirstSweepCode: true,
     storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
     currentElectronicSignature: null,
@@ -12,16 +13,13 @@ export default {
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
     isDispatchTaskCompleteSweepCodeOfficeList: [],
-    completeDeparnmentInfo: {
-      "departmentIdList": [],
-      "taskId": ''
-    },
+    completeDeparnmentInfo: [],
     stipulateOfficeList: [],
     storeAlreadyConnectSample: [],
     storeNoConnectSample: []
   },
   getters:{
-    circulationTaskId: state => state.circulationTaskId,
+    arriveCirculationTaskId: state => state.arriveCirculationTaskId,
     circulationTaskMessage: state => state.circulationTaskMessage,
     currentElectronicSignature: state => state.currentElectronicSignature,
     circulationCollectMessageList: state => state.circulationCollectMessageList,
@@ -34,12 +32,13 @@ export default {
     storeArriveDeparnmentId: state => state.storeArriveDeparnmentId,
     isDispatchTaskCompleteSweepCodeOfficeList: state => state.isDispatchTaskCompleteSweepCodeOfficeList,
     storeAlreadyConnectSample: state => state.storeAlreadyConnectSample,
-    storeNoConnectSample: state => state.storeNoConnectSample
+    storeNoConnectSample: state => state.storeNoConnectSample,
+    isFirstSweepCode: state => state.isFirstSweepCode
   },
   mutations:{
     // 改变循环任务ID状态
     changeCirculationTaskId (state,payLoad) {
-      state.circulationTaskId = payLoad
+      state.arriveCirculationTaskId = payLoad
     },
     // 改变循环任务信息状态
     changeCirculationTaskMessage (state,payLoad) {
@@ -83,7 +82,7 @@ export default {
     },
     // 改变是否完成扫码科室列表状态
     changeIsDispatchTaskCompleteSweepCodeOfficeList (state,payLoad) {
-      state.isDispatchTaskCompleteSweepCodeOfficeList = payLoad
+      state.isDispatchTaskCompleteSweepCodeOfficeList = deepClone(payLoad)
     },
     // 改变已经交接的标本状态
     changeIsstoreAlreadyConnectSample (state,payLoad) {
@@ -92,7 +91,11 @@ export default {
     // 改变没有交接的标本状态
     changeIsStoreNoConnectSample (state,payLoad) {
       state.storeNoConnectSample = deepClone(payLoad)
-    }
+    },
+    // 改变是否首次扫码状态
+    changeIsFirstSweepCode (state,payLoad) {
+      state.isFirstSweepCode = payLoad
+    },
   },
   actions:{}
 }

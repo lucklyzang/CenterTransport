@@ -121,7 +121,6 @@ export default {
   },
 
   mounted () {
-    console.log('获取id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -133,7 +132,7 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
-    this.getCollectSampleMessage(this.proId,this.circulationTaskId)
+    this.getCollectSampleMessage(this.proId,this.arriveCirculationTaskId)
   },
 
   activated () {
@@ -149,7 +148,7 @@ export default {
       })
     };
     if (this.isrefreshCirculationConnectPage) {
-      this.getCollectSampleMessage(this.proId,this.circulationTaskId)
+      this.getCollectSampleMessage(this.proId,this.arriveCirculationTaskId)
     }
   },
 
@@ -157,7 +156,7 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'isrefreshCirculationConnectPage',
-      'circulationTaskId',
+      'arriveCirculationTaskId',
       'storeNoConnectSample',
       'storeAlreadyConnectSample'
     ]),

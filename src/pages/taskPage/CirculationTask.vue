@@ -77,7 +77,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -124,7 +124,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -171,7 +171,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -218,7 +218,7 @@
         </div>
         <div class="wait-handle-office-list" v-show="item.show">
           <ul>
-            <li :class="{officeCheckStyle: completeDeparnmentInfo['taskId'] == item.id && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+            <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
           </ul>
         </div>
       </div>
@@ -262,6 +262,7 @@
         leftDownShow: false,
         liIndex: null,
         circulationTaskList: [],
+        drawCompleteTaskIdList: [],
         currentOfficeName: '',
         taskConditionPng: require('@/components/images/task-condition.png'),
         taskArrivedPng: require('@/components/images/task-arrived.png')
@@ -278,7 +279,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'completeDeparnmentInfo'
+        'completeDeparnmentInfo',
+        'isDispatchTaskCompleteSweepCodeOfficeList'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -314,7 +316,8 @@
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, this.stateIndex)
+        }, this.stateIndex);
+      this.drawTaskId()
     },
 
     methods: {
@@ -448,6 +451,20 @@
         }
       },
 
+      // 提取存储已完成采集任务科室所属任务id
+      drawTaskId () {
+        this.drawCompleteTaskIdList = [];
+        if (this.completeDeparnmentInfo.length > 0) {
+          for (let item of this.completeDeparnmentInfo) { 
+            for (let innerItem in item) {
+              if (innerItem == 'taskId') {
+                this.drawCompleteTaskIdList.push(item[innerItem])
+              }
+            }
+          }
+        }
+      },
+
       // 查询循环任务
       getCirculationTask (data,index) {
         this.showLoadingHint = true;
@@ -532,21 +549,33 @@
                   }
                 }
               };
-              // 界限
-              let completeDepartmentList = repeArray(this.completeDeparnmentInfo['departmentIdList']);
-              let completeCurrentTaskId = this.completeDeparnmentInfo['taskId'];
-              let taskIndex = this.circulationTaskList.indexOf(this.circulationTaskList.filter((item) => item.id == completeCurrentTaskId)[0]);
-              if (taskIndex !== -1) {
-                for (let i = 0, len1 = completeDepartmentList.length; i < len1; i++) {
-                  for (let j = 0, len2 = this.circulationTaskList[taskIndex]['spaces'].length; j < len2; j++) {
-                    if (this.circulationTaskList[taskIndex]['spaces'][j]['value'] == completeDepartmentList[i]) {
-                      this.circulationTaskList[taskIndex]['spaces'][j]['check'] = true
+              // 为完成采集的科室增加标记
+              if (this.completeDeparnmentInfo.length > 0) {
+                for (let w = 0, wLen = this.completeDeparnmentInfo.length; w < wLen; w++) {
+                  if (this.circulationTaskList.length > 0) {
+                     for (let n = 0, nLen = this.circulationTaskList.length; n < nLen; n++) {
+                      if (this.circulationTaskList[n]['id'] == this.completeDeparnmentInfo[w]['taskId']) {
+                        if (this.completeDeparnmentInfo[w]['departmentIdList'].length > 0) {
+                          for (let i = 0, len1 = this.completeDeparnmentInfo[w]['departmentIdList'].length; i < len1; i++) {
+                            if (this.circulationTaskList[n]['spaces'].length > 0) {
+                              for (let j = 0, len2 = this.circulationTaskList[n]['spaces'].length; j < len2; j++) {
+                                if (this.circulationTaskList[n]['spaces'][j]['value'] == this.completeDeparnmentInfo[w]['departmentIdList'][i]) {
+                                  this.circulationTaskList[n]['spaces'][j]['check'] = true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      };
+                      // 清空上个任务存储的已完成科室信息
+                      if (this.circulationTaskList[n]['spaces'].every((item,index) => { return item.check == true})) {
+                        let temporaryTaskId = this.circulationTaskList[n]['id'];
+                        let temporarySweepCodeOficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
+                        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != temporaryTaskId});
+                        this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporarySweepCodeOficeList)
+                      }
                     }
                   }
-                };
-                // 清空上个任务存储的已完成科室信息
-                if (this.circulationTaskList[taskIndex]['spaces'].every((item,index) => { return item.check == true})) {
-                  this.changeIsDispatchTaskCompleteSweepCodeOfficeList([])
                 }
               };
               console.log('任务信息',this.circulationTaskList)

@@ -210,23 +210,41 @@ export default {
           }).then(() => {
             // 清空当前页面回显数据
             this.allcirculationCollectMessageList = [];
-            this.changeCurrentElectronicSignature({DtMsg: null})
+            this.changeCurrentElectronicSignature({DtMsg: null});
             // 清空上一页面store科室采集数据
             this.changeCirculationCollectMessageList({DtMsg:[]});
             // 清空上一页面Localstorage的科室采集数据
             removeStore('currentCirculationCollectMessage');
             // 存储完成采集任务的科室信息
             let temporaryDepartmentId = [];
-            temporaryDepartmentId = this.completeDeparnmentInfo['departmentIdList'];
-            temporaryDepartmentId.push(this.departmentId);
-            this.changeCompleteDeparnmentInfo({DtMsg: {
-              departmentIdList: temporaryDepartmentId,
-              taskId: this.circulationTaskId
-            }});
-            setStore('completeDepartmentMessage',{
-              departmentIdList: temporaryDepartmentId,
-              taskId: this.circulationTaskId
-            });
+            let temporaryCompleteInfo = [];
+            temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+            let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+            if (this.completeDeparnmentInfo.length > 0) {
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+              } else {
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryCompleteInfo.push(
+                  { 
+                    departmentIdList: temporaryDepartmentId,
+                    taskId: this.circulationTaskId
+                  }
+                )
+              }
+            } else {
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo.push(
+                { 
+                  departmentIdList: temporaryDepartmentId,
+                  taskId: this.circulationTaskId
+                }
+              )
+            };
+            this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+            setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo})
             this.$router.push({path:'/circulationTask'});
             this.changeTitleTxt({tit:'循环任务'});
             setStore('currentTitle','循环任务');

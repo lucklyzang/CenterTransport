@@ -218,7 +218,7 @@ export default {
             this.storeUserInfo(JSON.parse(getStore('userInfo')));
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
-            window.location.reload()
+            window.location.reload();
           } else {
              this.$dialog.alert({
               message: `${res.data.msg}`,
