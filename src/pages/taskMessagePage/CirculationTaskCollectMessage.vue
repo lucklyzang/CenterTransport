@@ -323,18 +323,36 @@ export default {
     collectMessageSure () {
       // 如果当前科室没有采集信息，则不签名和提交采集信息确认
       if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
-        // 存储完成采集任务的科室信息
+       // 存储完成采集任务的科室信息
         let temporaryDepartmentId = [];
-        temporaryDepartmentId = this.completeDeparnmentInfo['departmentIdList'];
-        temporaryDepartmentId.push(this.departmentId);
-        this.changeCompleteDeparnmentInfo({DtMsg: {
-          departmentIdList: temporaryDepartmentId,
-          taskId: this.circulationTaskId
-        }});
-        setStore('completeDepartmentMessage',{
-          departmentIdList: temporaryDepartmentId,
-          taskId: this.circulationTaskId
-        });
+        let temporaryCompleteInfo = [];
+        temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+        let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+        if (this.completeDeparnmentInfo.length > 0) {
+          if (temporaryIndex != -1) {
+            temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+            temporaryDepartmentId.push(this.departmentId);
+            temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+          } else {
+            temporaryDepartmentId.push(this.departmentId);
+            temporaryCompleteInfo.push(
+              { 
+                departmentIdList: temporaryDepartmentId,
+                taskId: this.circulationTaskId
+              }
+            )
+          }
+        } else {
+          temporaryDepartmentId.push(this.departmentId);
+          temporaryCompleteInfo.push(
+            { 
+              departmentIdList: temporaryDepartmentId,
+              taskId: this.circulationTaskId
+            }
+          )
+        };
+        this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+        setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
         this.$router.push({path:'/circulationTask'});
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务');
