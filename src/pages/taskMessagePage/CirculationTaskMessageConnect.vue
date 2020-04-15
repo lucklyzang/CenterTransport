@@ -89,7 +89,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryCollectSampleMessage} from '@/api/workerPort.js'
+import {queryCollectSampleMessage, updateCirculationTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
@@ -158,7 +158,8 @@ export default {
       'isrefreshCirculationConnectPage',
       'arriveCirculationTaskId',
       'storeNoConnectSample',
-      'storeAlreadyConnectSample'
+      'storeAlreadyConnectSample',
+      'completeDeparnmentInfo'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -169,7 +170,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeCirculationConnectMessageList',
-      'changeIsStoreNoConnectSample'
+      'changeIsStoreNoConnectSample',
+      'changeCompleteDeparnmentInfo'
     ]),
 
      // 右边下拉框菜单点击
@@ -191,89 +193,136 @@ export default {
       setStore('currentTitle','循环任务')
     },
 
-    // 查询收集的标本信息 queryCollectSampleMessage
+    // 没有需要交接的标本操作
+    dealNoSampleMessage () {
+      updateCirculationTask({
+        proId: this.proId,
+        id: this.arriveCirculationTaskId,
+        state: 7
+      }).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$dialog.alert({
+            message: '该条循环任务已经完成',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          this.noDataShow = false;
+          // 清空store已完成科室信息
+          let temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.arriveCirculationTaskId});
+          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+          // 清空Localstorage的已完成科室信息
+          setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.data}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
+    // 查询收集的标本信息
     getCollectSampleMessage (proId, taskId) {
       this.showLoadingHint = true;
       queryCollectSampleMessage(proId, taskId).then((res) => {
          if (res && res.data.code == 200) {
-           if (res.data.data.length == 0) {
-              this.connectMessageArea = false;
-              this.noDataShow = true;
-              return
-           };
-            this.connectMessageArea = true;
-            this.originCollectSampleMessageList = res.data.data;
-            this.allSampleTypeList = [];
-            for (let item of this.originCollectSampleMessageList) {
-              for (let currentItem in item) {
-                if (currentItem === 'specimenName') {
-                  this.allSampleTypeList.push(item[currentItem])
-                }
-              }
-            };
-            this.manageSampleDataList = [];
-            let filterSampleMessage = [];
-            let sameSampleTypeNumber = '';
-            let sameSampleNumberList = [];
-            for (let i = 0, len = repeArray(this.allSampleTypeList).length; i < len; i++) {
-              sameSampleTypeNumber = '';
-              sameSampleNumberList = [];
-              // 过滤标本为同一类型的数据
-              filterSampleMessage =  this.originCollectSampleMessageList.filter((itemInfo) => {return itemInfo['specimenName'] == repeArray(this.allSampleTypeList)[i]});
-              // 提取同一类型标本里的数量字段
-              for (let numberFiel of filterSampleMessage) {
-                for (let currentNumberFiel in numberFiel) {
-                  if (currentNumberFiel === 'quantity') {
-                    sameSampleNumberList.push(numberFiel[currentNumberFiel])
-                  }
-                }
-              };
-              let temporaryManageSampleDataList = [],
-              // 对同一标本类型的数量进行求和
-              sameSampleTypeNumber = sameSampleNumberList.reduce((last, before, index, array) => last + before);
-              // 生成符合页面展示要求的数据结构
-              this.manageSampleDataList.push(
-                {
-                  sampleTypeName: repeArray(this.allSampleTypeList)[i],
-                  check: false,
-                  sampleTotal: sameSampleTypeNumber,
-                  sampleList: deepClone(filterSampleMessage)
-                }
-              );
-              let manageCheckArray = [];
-              let manageCheckArrayCheck = [];
-              // 格式换标本项里的检查项字段
-              for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
-                manageCheckArray = [];
-                manageCheckArrayCheck = [];
-                let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
-                for (let currentCheckEntry of removeBraceArray) {
-                  let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
-                  manageCheckArray.push({
-                    itemName: transferArray[1],
-                    id: transferArray[0]
-                  });
-                  manageCheckArrayCheck.push(JSON.stringify({
-                    itemName: transferArray[1],
-                    id: transferArray[0]
-                  }))
-                };
-                this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
-                this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
-              }
-            };
-            // 去除已经交接过的标本
-            this.manageSampleDataList = arrayDiff(this.manageSampleDataList, this.storeAlreadyConnectSample);
-            console.log('最终信息',this.manageSampleDataList)
-          } else {
+          if (res.data.data.length == 0) {
+            this.connectMessageArea = false;
+            this.noDataShow = true;
             this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-              this.connectMessageArea = false;
-              this.noDataShow = true;
-            });
-          }
+                message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
+                closeOnPopstate: true
+              }).then(() => {
+                this.dealNoSampleMessage()
+              });
+            return
+          };
+          this.connectMessageArea = true;
+          this.noDataShow = false;
+          this.originCollectSampleMessageList = res.data.data;
+          this.allSampleTypeList = [];
+          for (let item of this.originCollectSampleMessageList) {
+            for (let currentItem in item) {
+              if (currentItem === 'specimenName') {
+                this.allSampleTypeList.push(item[currentItem])
+              }
+            }
+          };
+          this.manageSampleDataList = [];
+          let filterSampleMessage = [];
+          let sameSampleTypeNumber = '';
+          let sameSampleNumberList = [];
+          for (let i = 0, len = repeArray(this.allSampleTypeList).length; i < len; i++) {
+            sameSampleTypeNumber = '';
+            sameSampleNumberList = [];
+            // 过滤标本为同一类型的数据
+            filterSampleMessage =  this.originCollectSampleMessageList.filter((itemInfo) => {return itemInfo['specimenName'] == repeArray(this.allSampleTypeList)[i]});
+            // 提取同一类型标本里的数量字段
+            for (let numberFiel of filterSampleMessage) {
+              for (let currentNumberFiel in numberFiel) {
+                if (currentNumberFiel === 'quantity') {
+                  sameSampleNumberList.push(numberFiel[currentNumberFiel])
+                }
+              }
+            };
+            let temporaryManageSampleDataList = [],
+            // 对同一标本类型的数量进行求和
+            sameSampleTypeNumber = sameSampleNumberList.reduce((last, before, index, array) => last + before);
+            // 生成符合页面展示要求的数据结构
+            this.manageSampleDataList.push(
+              {
+                sampleTypeName: repeArray(this.allSampleTypeList)[i],
+                check: false,
+                sampleTotal: sameSampleTypeNumber,
+                sampleList: deepClone(filterSampleMessage)
+              }
+            );
+            let manageCheckArray = [];
+            let manageCheckArrayCheck = [];
+            // 格式换标本项里的检查项字段
+            for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
+              manageCheckArray = [];
+              manageCheckArrayCheck = [];
+              let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
+              for (let currentCheckEntry of removeBraceArray) {
+                let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
+                manageCheckArray.push({
+                  itemName: transferArray[1],
+                  id: transferArray[0]
+                });
+                manageCheckArrayCheck.push(JSON.stringify({
+                  itemName: transferArray[1],
+                  id: transferArray[0]
+                }))
+              };
+              this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
+              this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
+            }
+          };
+          // 去除已经交接过的标本
+          this.manageSampleDataList = arrayDiff(this.manageSampleDataList, this.storeAlreadyConnectSample);
+          console.log('最终信息',this.manageSampleDataList)
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.connectMessageArea = false;
+            this.noDataShow = true;
+          });
+        }
       })
       .catch((err) => {
         this.$dialog.alert({
@@ -419,9 +468,13 @@ export default {
       }
     };
     .btn-area {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
       height: 80px;
       text-align: center;
       line-height: 80px;
+      width: 100%;
       span {
        .bottomButton;
         display: inline-block;
