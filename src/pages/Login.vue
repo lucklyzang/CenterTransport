@@ -88,14 +88,10 @@ export default {
       let resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
       if (resizeHeight < originalHeight) {
         return (()=>{
-          this.$refs['checkBox'].style.cssText='top:95%';
-          this.$refs['inputBox'].style.cssText='top:32%';
-          this.$refs['bgIconWrapper'].style.cssText='top:10px' 
+          this.$refs['bgIconWrapper'].style.cssText='flex:none;height:220px' 
         })()
       } else {
-        this.$refs['checkBox'].style.cssText='top:69%';
-        this.$refs['inputBox'].style.cssText='top:35%';
-        this.$refs['bgIconWrapper'].style.cssText='top:10%' 
+        this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0' 
       }
     };
 
