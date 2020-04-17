@@ -90,10 +90,10 @@ if (getStore('storeOverDueWay')) {
   store.commit('changeOverDueWay',JSON.parse(getStore('storeOverDueWay')));
 };
 if (IsPC()) {
-  Vue.use(new VueSocketIO({
-     debug: true,
-     connection: 'http://localhost:10001'
-  }))
+  // Vue.use(new VueSocketIO({
+  //    debug: true,
+  //    connection: 'http://localhost:10001'
+  // }))
 };
 
 new Vue({
