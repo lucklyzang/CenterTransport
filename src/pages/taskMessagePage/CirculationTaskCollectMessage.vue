@@ -102,6 +102,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      isDelete: false,
       bedNumber: '',
       patientName: '',
       sampleAmount: 0,
@@ -187,6 +188,8 @@ export default {
         }
       })
     };
+    // 回显收集过的科室信息
+    this.echoCollectedMessage();
     this.getSampleMessage();
     this.getCheckEntryMessage()
   },
@@ -229,6 +232,26 @@ export default {
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
       },
+
+    echoCollectedMessage () {
+      let echoIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
+      if (this.circulationCollectMessageList.length == 0 || echoIndex == -1) { return };
+      // 回显上次科室采集最后一个床位信息
+      let temporaryEchoList = [];
+      temporaryEchoList.push(deepClone(this.circulationCollectMessageList[echoIndex]['collectDepartmentList'][this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length-1]));
+      this.bedNumber = temporaryEchoList[0]['bedNumber'];
+      this.patientName = temporaryEchoList[0]['patientName'];
+      this.sampleAmount = temporaryEchoList[0]['sampleAmount'];
+      this.sampleMessageList =  temporaryEchoList[0]['sampleMessageList'];
+      // 删除存储的上个床位信息,点确定后会重新存储
+      let temporaryEchoCollectInfoList = deepClone(this.circulationCollectMessageList);
+      let temporaryEchoCollectInfo = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
+      temporaryEchoCollectInfo.splice(temporaryEchoCollectInfo.length-1,1);
+      temporaryEchoCollectInfoList[temporaryIndex]['collectDepartmentList'] = temporaryEchoCollectInfo;
+      this.changeCirculationCollectMessageList({DtMsg:temporaryEchoCollectInfoList});
+      setStore('currentCirculationCollectMessage',{innerMessage:temporaryEchoCollectInfoList});
+      this.isDelete = true
+    },
 
     // 查询标本信息
     getSampleMessage () {
@@ -488,7 +511,6 @@ export default {
         setStore('currentTitle','扫码')
       } else {
         // 有数据则回到该科室上个床位收集页面
-        // 回显上个床位收集信息
         let temporaryBedCollectMsg = [];
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
         if (temporaryIndex != -1) {
@@ -498,12 +520,15 @@ export default {
           this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
           this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList'];
           // 删除存储的上个床位信息,点确定后会重新存储
-          let temporaryCollectInfoList = deepClone(this.circulationCollectMessageList);
-          let temporaryCollectInfo = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
-          temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
-          temporaryCollectInfoList[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
-          this.changeCirculationCollectMessageList({DtMsg:temporaryCollectInfoList});
-          setStore('currentCirculationCollectMessage',{innerMessage:temporaryCollectInfoList});
+          if (!this.isDelete) {
+            let temporaryCollectInfoList = deepClone(this.circulationCollectMessageList);
+            let temporaryCollectInfo = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
+            temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
+            temporaryCollectInfoList[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
+            this.changeCirculationCollectMessageList({DtMsg:temporaryCollectInfoList});
+            setStore('currentCirculationCollectMessage',{innerMessage:temporaryCollectInfoList});
+            this.isDelete = false
+          }
         } else {
           removeStore('currentCirculationCollectMessage');
           this.$router.push({'path':'/circulationTaskSweepCode'});
