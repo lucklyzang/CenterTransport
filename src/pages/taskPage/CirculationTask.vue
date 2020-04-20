@@ -572,7 +572,8 @@
                         let temporaryTaskId = this.circulationTaskList[n]['id'];
                         let temporarySweepCodeOficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
                         temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != temporaryTaskId});
-                        this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporarySweepCodeOficeList)
+                        this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporarySweepCodeOficeList);
+                        setStore('completeCirculationSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
                       }
                     }
                   }

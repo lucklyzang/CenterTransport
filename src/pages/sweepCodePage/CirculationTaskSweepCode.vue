@@ -184,31 +184,34 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      if (!this.arriveDepartmentId) {
-        if (this.isFirstSweepCode) {
-          this.sweepAstoffice();
-        } else {
-          let isExistTaskId = '',
-          isExistOfficeId = '';
-          isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
-          if (isExistTaskId != -1) {
-            isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
-          };
-          if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
-            this.$dialog.alert({
-              message: '当前科室已扫码校验通过,请直接开始采集'
-            }).then(() => {
-            });
-            this.$router.push({path:'/circulationTaskCollectMessage'});
+       this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')
-          } else {
-            this.sweepAstoffice();
-          }
-        }
-      } else {
-        this.sweepAstoffice();
-      }
+      // if (!this.arriveDepartmentId) {
+      //   if (this.isFirstSweepCode) {
+      //     this.sweepAstoffice();
+      //   } else {
+      //     let isExistTaskId = '',
+      //     isExistOfficeId = '';
+      //     isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
+      //     if (isExistTaskId != -1) {
+      //       isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
+      //     };
+      //     if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+      //       this.$dialog.alert({
+      //         message: '当前科室已扫码校验通过,请直接开始采集'
+      //       }).then(() => {
+      //       });
+      //       this.$router.push({path:'/circulationTaskCollectMessage'});
+      //       this.changeTitleTxt({tit:'循环信息采集'});
+      //       setStore('currentTitle','循环信息采集')
+      //     } else {
+      //       this.sweepAstoffice();
+      //     }
+      //   }
+      // } else {
+      //   this.sweepAstoffice();
+      // }
     },
 
     //判断扫码科室是否为当前要收集的科室
@@ -246,6 +249,7 @@ export default {
               )
             };
             this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporaryOfficeList);
+            setStore('completeCirculationSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')

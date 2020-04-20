@@ -89,6 +89,14 @@ if (getStore('currentDepartmentId')) {
 if (getStore('storeOverDueWay')) {
   store.commit('changeOverDueWay',JSON.parse(getStore('storeOverDueWay')));
 };
+// 页面刷新重新存入调度任务完成扫码的科室信息
+if (getStore('completeDispatchSweepCodeInfo')) {
+  store.commit('changeisCompleteSweepCode', {DtMsg: JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']});
+};
+// 页面刷新重新存入循环任务完成扫码的科室信息
+if (getStore('completeCirculationSweepCodeInfo')) {
+  store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', {DtMsg: JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']});
+};
 if (IsPC()) {
   // Vue.use(new VueSocketIO({
   //    debug: true,

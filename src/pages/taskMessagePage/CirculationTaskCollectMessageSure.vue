@@ -104,6 +104,7 @@ export default {
           checkEntryList: []
         }
       ],
+      temporaryCollectInfo: [],
       taskSurePng: require('@/components/images/task-sure.png'),
       taskCancelPng: require('@/components/images/task-cancel.png')
     };
@@ -130,9 +131,11 @@ export default {
         closeOnPopstate: true,
         showCancelButton: true   
         }).then(() => {
+          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          // 清空本次签名信息
           this.changeCurrentElectronicSignature({DtMsg: null});
-          this.changeCirculationCollectMessageList({DtMsg:[]});
-          removeStore('currentCirculationCollectMessage');
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
           this.$router.push({path:'/circulationTaskCollectMessage'});
           this.changeTitleTxt({tit:'循环信息采集'});
           setStore('currentTitle','循环信息采集')})
@@ -197,7 +200,8 @@ export default {
     // 回显已经采集信息
     echoCollectMessage () {
       this.allcirculationCollectMessageList = [];
-      this.allcirculationCollectMessageList = deepClone(this.circulationCollectMessageList)
+      let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
+      this.allcirculationCollectMessageList = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'])
     },
 
      // 收集标本信息
@@ -210,11 +214,13 @@ export default {
           }).then(() => {
             // 清空当前页面回显数据
             this.allcirculationCollectMessageList = [];
+            this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+            // 清空本次签名信息
             this.changeCurrentElectronicSignature({DtMsg: null});
             // 清空上一页面store科室采集数据
-            this.changeCirculationCollectMessageList({DtMsg:[]});
+            this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
             // 清空上一页面Localstorage的科室采集数据
-            removeStore('currentCirculationCollectMessage');
+            setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
             // 存储完成采集任务的科室信息
             let temporaryDepartmentId = [];
             let temporaryCompleteInfo = [];
@@ -274,12 +280,16 @@ export default {
         showCancelButton: true   
         })
         .then(() => {
+          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          // 清空本次签名信息
           this.changeCurrentElectronicSignature({DtMsg: null});
-          this.changeCirculationCollectMessageList({DtMsg:[]});
-          removeStore('currentCirculationCollectMessage');
+          // 清空上一科室采集数据
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
           this.$router.push({path:'/circulationTaskCollectMessage'});
           this.changeTitleTxt({tit:'循环信息采集'});
-          setStore('currentTitle','循环信息采集')})
+          setStore('currentTitle','循环信息采集')
+        })
         .catch(() => {})
     },
 
@@ -300,30 +310,32 @@ export default {
         singImg: this.currentElectronicSignature, //签名照片
         specList: []
       };
-      if (this.circulationCollectMessageList.length > 0) {
-        for (let i = 0, len = this.circulationCollectMessageList.length; i < len; i++) {
+      let currentTemporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
+      let temporaryCollectInfoList = deepClone(this.circulationCollectMessageList[currentTemporaryIndex]['collectDepartmentList']);
+      if (temporaryCollectInfoList.length > 0) {
+        for (let i = 0, len = temporaryCollectInfoList.length; i < len; i++) {
           submitCollectMsg['specList'].push(
             {
-              patientName: this.circulationCollectMessageList[i].patientName,  //病人姓名
-              bedNumber: this.circulationCollectMessageList[i].bedNumber,  //病人床号
-              totalNum: this.circulationCollectMessageList[i].sampleAmount, //总数量
+              patientName: temporaryCollectInfoList[i].patientName,  //病人姓名
+              bedNumber: temporaryCollectInfoList[i].bedNumber,  //病人床号
+              totalNum: temporaryCollectInfoList[i].sampleAmount, //总数量
               specimen: [] //标本list
             }
           );
-          if (this.circulationCollectMessageList[i].sampleMessageList.length > 0) {
-            for (let j = 0, len = this.circulationCollectMessageList[i].sampleMessageList.length; j < len; j++) {
+          if (temporaryCollectInfoList[i].sampleMessageList.length > 0) {
+            for (let j = 0, len = temporaryCollectInfoList[i].sampleMessageList.length; j < len; j++) {
               submitCollectMsg['specList'][i]['specimen'].push(
                 {
-                  specimenId: this.circulationCollectMessageList[i].sampleMessageList[j].sampleType,    //标本ID
-                  specimenName: querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,this.circulationCollectMessageList[i].sampleMessageList[j].sampleType), //标本名称
-                  quantity: this.circulationCollectMessageList[i].sampleMessageList[j].innerSampleAmount,    //标本数量
+                  specimenId: temporaryCollectInfoList[i].sampleMessageList[j].sampleType,    //标本ID
+                  specimenName: querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,temporaryCollectInfoList[i].sampleMessageList[j].sampleType), //标本名称
+                  quantity: temporaryCollectInfoList[i].sampleMessageList[j].innerSampleAmount,    //标本数量
                   checkItems: {} //检查项
                 }
               );
-              if (this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList.length > 0)  {
+              if (temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList.length > 0)  {
                 let temporarySampleList = [];
-                for (let k = 0, len = this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList.length; k < len; k++) {
-                  let temporarySampleList = Object.values(JSON.parse(this.circulationCollectMessageList[i].sampleMessageList[j].checkEntryList[k]));
+                for (let k = 0, len = temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList.length; k < len; k++) {
+                  let temporarySampleList = Object.values(JSON.parse(temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList[k]));
                   submitCollectMsg['specList'][i]['specimen'][j]['checkItems'][temporarySampleList[0]] = temporarySampleList[1];
                 }
               }
@@ -345,11 +357,12 @@ export default {
         .then(() => {
           // 当前页面回显数据
           this.allcirculationCollectMessageList = [];
+          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
           this.changeCurrentElectronicSignature({DtMsg: null});
           // 上一页面store采集数据
-          this.changeCirculationCollectMessageList({DtMsg:[]});
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
           // 上一页面Localstorage采集数据
-          removeStore('currentCirculationCollectMessage');
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
           this.$router.push({path:'/circulationTaskCollectMessage'});
           this.changeTitleTxt({tit:'信息采集'});
           setStore('currentTitle','信息采集')})

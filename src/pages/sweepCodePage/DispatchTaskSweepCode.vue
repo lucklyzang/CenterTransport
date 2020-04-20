@@ -332,6 +332,7 @@ export default {
             )
           };
           this.changeisCompleteSweepCode(temporaryOfficeList);
+          setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
           if (this.isCoerceTakePhoto == 0) {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
@@ -377,7 +378,8 @@ export default {
             // 清空该完成任务存储的已扫过科室信息
             let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
             temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
-            this.changeisCompleteSweepCode(temporarySweepCodeOficeList)
+            this.changeisCompleteSweepCode(temporarySweepCodeOficeList);
+            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
           };
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});

@@ -289,7 +289,7 @@ export default {
           this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
           // 清空Localstorage的已完成科室信息
           setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
-          // 清空store的没有完成交接的标本信息
+          // 清空store没有完成交接的标本信息
           this.changeIsStoreNoConnectSample([]);
           // 清空store存储的已交接标本信息
           this.changeIsstoreAlreadyConnectSample([]);
