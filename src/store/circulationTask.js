@@ -16,7 +16,10 @@ export default {
     completeDeparnmentInfo: [],
     stipulateOfficeList: [],
     storeAlreadyConnectSample: [],
-    storeNoConnectSample: []
+    storeNoConnectSample: [],
+    isDeleteEcho: false,
+    isDeleteCancel: false,
+    isClickSure: false
   },
   getters:{
     arriveCirculationTaskId: state => state.arriveCirculationTaskId,
@@ -33,7 +36,10 @@ export default {
     isDispatchTaskCompleteSweepCodeOfficeList: state => state.isDispatchTaskCompleteSweepCodeOfficeList,
     storeAlreadyConnectSample: state => state.storeAlreadyConnectSample,
     storeNoConnectSample: state => state.storeNoConnectSample,
-    isFirstSweepCode: state => state.isFirstSweepCode
+    isFirstSweepCode: state => state.isFirstSweepCode,
+    isDeleteEcho: state => state.isDeleteEcho,
+    isDeleteCancel: state => state.isDeleteCancel,
+    isClickSure: state => state.isClickSure
   },
   mutations:{
     // 改变循环任务ID状态
@@ -96,6 +102,18 @@ export default {
     changeIsFirstSweepCode (state,payLoad) {
       state.isFirstSweepCode = payLoad
     },
+    // 改变采集页面是否按钮回显生效状态
+    changeIsDeleteCancel(state,payLoad) {
+      state.isDeleteCancel = payLoad
+    },
+    // 改变采集页面是否mounted周期回显生效状态
+     changeIsDeleteEcho(state,payLoad) {
+      state.isDeleteEcho = payLoad
+    },
+     // 改变采集页面是否点击弹框确定按钮状态
+     changeIsClickSure(state,payLoad) {
+      state.isClickSure = payLoad
+    }
   },
   actions:{}
 }

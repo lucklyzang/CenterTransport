@@ -85,9 +85,21 @@ if (getStore('completeDepartmentMessage')) {
 if (getStore('currentDepartmentId')) {
   store.commit('changeStoreArriveDeparnmentId',getStore('currentDepartmentId'));
 };
-// 页面刷新重新存入过期方式测试1
+// 页面刷新重新存入过期方式
 if (getStore('storeOverDueWay')) {
   store.commit('changeOverDueWay',JSON.parse(getStore('storeOverDueWay')));
+};
+// 页面刷新重新存入是否循环采集页面取消按钮回显生效
+if (getStore('isDeleteCancel')) {
+  store.commit('changeIsDeleteCancel',JSON.parse(getStore('isDeleteCancel')));
+};
+// 页面刷新重新存入是否循环采集页面生命周期回显生效
+if (getStore('isDeleteEcho')) {
+  store.commit('changeIsDeleteEcho',JSON.parse(getStore('isDeleteEcho')));
+};
+// 页面刷新重新存入是否循环采集页面弹框确定按钮确定按钮点击状态
+if (getStore('isClickSure')) {
+  store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
 };
 // 页面刷新重新存入调度任务完成扫码的科室信息
 if (getStore('completeDispatchSweepCodeInfo')) {
@@ -96,6 +108,10 @@ if (getStore('completeDispatchSweepCodeInfo')) {
 // 页面刷新重新存入循环任务完成扫码的科室信息
 if (getStore('completeCirculationSweepCodeInfo')) {
   store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', {DtMsg: JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']});
+};
+// 页面刷新重新存入预约任务完成扫码的科室信息
+if (getStore('completAppointTaskSweepCodeInfo')) {
+  store.commit('changeIsCompleteSweepCodeList', {DtMsg: JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']});
 };
 if (IsPC()) {
   // Vue.use(new VueSocketIO({

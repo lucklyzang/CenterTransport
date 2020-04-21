@@ -41,7 +41,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {getAlltTaskNumber,judgeAppointTaskDepartment,updateAppointTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
@@ -77,7 +77,14 @@ export default {
     window['scanQRcodeCallback'] = (code) => {
       me.scanQRcodeCallback(code);
     };
-    console.log('信息校验',this.appointTaskState,this.appointTaskDepartmentType,this.appointSweepCodeNumber,this.appointSweepCodeIntoPage);
+    if (this.appointTaskDepartmentType == 0) {
+      this.currentSiteId = this.appointTaskMessage.setOutPlaceId
+    } else if (this.appointTaskDepartmentType == 1) {
+      this.currentSiteId = this.appointTaskMessage.destinationId
+    } else if (this.appointTaskDepartmentType == 2) {
+      this.currentSiteId = this.appointTaskMessage.setOutPlaceId
+    }
+    console.log('信息校验',this.appointTaskMessage);
   },
 
   computed:{
@@ -87,16 +94,21 @@ export default {
       'appointTaskState',
       'appointTaskDepartmentType',
       'appointSweepCodeNumber',
-      'appointSweepCodeIntoPage'
+      'appointSweepCodeIntoPage',
+      'isCompleteSweepCodeList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
+     taskId () {
+      return this.appointTaskMessage.id
+    }
   },
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsCompleteSweepCodeList'
     ]),
 
     // 右边下拉框菜单点击
@@ -137,17 +149,52 @@ export default {
     juddgeCurrentDepartment (data) {
       judgeAppointTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
+          // 存储已经扫码验证通过的科室id
+          let temporaryOfficeList = [];
+          let temporaryDepartmentId = [];
+          temporaryOfficeList = deepClone(this.isCompleteSweepCodeList);
+          if (this.isCompleteSweepCodeList.length > 0 ) {
+            let temporaryIndex = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+              temporaryDepartmentId.push(this.currentSiteId);
+              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+            } else {
+              temporaryDepartmentId.push(this.currentSiteId);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.taskId
+                }
+              )
+            };
+          } else {
+            temporaryDepartmentId.push(this.currentSiteId);
+            temporaryOfficeList.push(
+              { 
+                officeList: repeArray(temporaryDepartmentId),
+                taskId: this.taskId
+              }
+            )
+          };
+          this.changeIsCompleteSweepCodeList(temporaryOfficeList);
+          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
           // 第二次扫码目的时不更新状态
-          if (!this.appointSweepCodeNumber) {
+          if (this.appointSweepCodeNumber) {
+            this.$router.push({path:'/appointTask'});
+            this.changeTitleTxt({tit:'预约任务'});
+            setStore('currentTitle','预约任务')
+            // 第一次扫码出发地后进入客户预约信息确认页面
+          } else if (this.appointSweepCodeIntoPage) {
+            this.$router.push({path:'/appointTaskCustomerInfo'});
+            this.changeTitleTxt({tit:'客户预约信息确认'});
+            setStore('currentTitle','客户预约信息确认')
+          } else {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
               id: this.appointTaskMessage.id, //当前任务ID
               state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             })
-          } else {
-            this.$router.push({path:'/appointTask'});
-            this.changeTitleTxt({tit:'预约任务'});
-            setStore('currentTitle','预约任务')
           }
         } else {
           this.$dialog.alert({
@@ -172,7 +219,6 @@ export default {
     updateTaskState (data) {
       updateAppointTaskMessage(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 第一次扫码出发地后进入客户预约信息确认页面
           if (!this.appointSweepCodeIntoPage) {
             if (this.appointTaskState == 7) {
                this.$dialog.alert({
@@ -181,13 +227,14 @@ export default {
               }).then(() => {
               });
             };
+            // 清空该完成任务存储的已扫过科室信息
+            let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
+            temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+            this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
+            setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务')
-          } else {
-            this.$router.push({path:'/appointTaskCustomerInfo'});
-            this.changeTitleTxt({tit:'客户预约信息确认'});
-            setStore('currentTitle','客户预约信息确认')
           }
         } else {
           this.$dialog.alert({
@@ -225,7 +272,28 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      this.sweepAstoffice()
+      let isExistTaskId = '',
+      isExistOfficeId = '';
+      isExistTaskId = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
+      if (isExistTaskId != -1) {
+        isExistOfficeId = this.isCompleteSweepCodeList[isExistTaskId]['officeList'].indexOf(this.currentSiteId);
+      };
+      if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+        if (this.appointTaskDepartmentType == 0) {
+          this.$dialog.alert({
+            message: '该科室校验已验证通过,请确认客户预约信息',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          this.$router.push({path:'/appointTaskCustomerInfo'});
+          this.changeTitleTxt({tit:'客户预约信息确认'});
+          setStore('currentTitle','客户预约信息确认')
+        } else {
+          this.sweepAstoffice()
+        }
+      } else {
+        this.sweepAstoffice()
+      }
     },
 
     // 取消扫码事件

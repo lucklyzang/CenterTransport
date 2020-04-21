@@ -102,7 +102,6 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      isDelete: false,
       bedNumber: '',
       patientName: '',
       sampleAmount: 0,
@@ -201,6 +200,9 @@ export default {
       'completeDeparnmentInfo',
       'circulationTaskMessage',
       'circulationCollectMessageList',
+      'isDeleteEcho',
+      'isDeleteCancel',
+      'isClickSure'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -218,7 +220,10 @@ export default {
       'changeTitleTxt',
       'changeCirculationCollectMessageList',
       'changeIsrefreshCirculationConnectPage',
-      'changeCompleteDeparnmentInfo'
+      'changeCompleteDeparnmentInfo',
+      'changeIsDeleteCancel',
+      'changeIsDeleteEcho',
+      'changeIsClickSure'
     ]),
 
      // 右边下拉框菜单点击
@@ -238,19 +243,13 @@ export default {
       if (this.circulationCollectMessageList.length == 0 || echoIndex == -1) { return };
       // 回显上次科室采集最后一个床位信息
       let temporaryEchoList = [];
-      temporaryEchoList.push(deepClone(this.circulationCollectMessageList[echoIndex]['collectDepartmentList'][this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length-1]));
+      temporaryEchoList.push(deepClone(this.circulationCollectMessageList[echoIndex]['collectDepartmentList'][this.circulationCollectMessageList[echoIndex]['collectDepartmentList'].length-1]));
       this.bedNumber = temporaryEchoList[0]['bedNumber'];
       this.patientName = temporaryEchoList[0]['patientName'];
       this.sampleAmount = temporaryEchoList[0]['sampleAmount'];
       this.sampleMessageList =  temporaryEchoList[0]['sampleMessageList'];
-      // 删除存储的上个床位信息,点确定后会重新存储
-      let temporaryEchoCollectInfoList = deepClone(this.circulationCollectMessageList);
-      let temporaryEchoCollectInfo = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
-      temporaryEchoCollectInfo.splice(temporaryEchoCollectInfo.length-1,1);
-      temporaryEchoCollectInfoList[temporaryIndex]['collectDepartmentList'] = temporaryEchoCollectInfo;
-      this.changeCirculationCollectMessageList({DtMsg:temporaryEchoCollectInfoList});
-      setStore('currentCirculationCollectMessage',{innerMessage:temporaryEchoCollectInfoList});
-      this.isDelete = true
+      this.changeIsDeleteEcho(true);
+      setStore('isDeleteEcho',true);
     },
 
     // 查询标本信息
@@ -390,6 +389,8 @@ export default {
 
     // 收集是否完成弹框确定事件
     collectSure () {
+      this.changeIsClickSure(true);
+      setStore('isClickSure',true);
       // store和localStorage同时存储采集的信息
       let temporaryDepartmentList = [];
       let currentCollectAllMessageSure = [];
@@ -397,13 +398,32 @@ export default {
       if (this.circulationCollectMessageList.length > 0) {
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
         if (temporaryIndex != -1) {
-          temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
-          temporaryDepartmentList.push({
-            sampleMessageList: this.sampleMessageList,
-            bedNumber: this.bedNumber,
-            patientName: this.patientName,
-            sampleAmount: this.sampleAmount
-          });
+          if (this.isDeleteCancel || this.isDeleteEcho) {
+            // 防止最后一条信息重复存入
+            let spliceInfo = [];
+            let temporaryCollectInfo = deepClone(currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList']);
+            spliceInfo = temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
+            currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
+            this.changeIsDeleteCancel(false);
+            this.changeIsDeleteEcho(false);
+            setStore('isDeleteCancel',false);
+            setStore('isDeleteEcho',false);
+            temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
+            temporaryDepartmentList.push({
+              sampleMessageList: spliceInfo[0]['sampleMessageList'],
+              bedNumber: spliceInfo[0]['bedNumber'],
+              patientName: spliceInfo[0]['patientName'],
+              sampleAmount: spliceInfo[0]['sampleAmount']
+            });
+          } else {
+            temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
+            temporaryDepartmentList.push({
+              sampleMessageList: this.sampleMessageList,
+              bedNumber: this.bedNumber,
+              patientName: this.patientName,
+              sampleAmount: this.sampleAmount
+            });
+          }
           currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'] = repeArray(temporaryDepartmentList)
         } else {
           temporaryDepartmentList.push({
@@ -459,13 +479,32 @@ export default {
       if (this.circulationCollectMessageList.length > 0) {
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
         if (temporaryIndex != -1) {
-          temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
-          temporaryDepartmentListTwo.push({
-            sampleMessageList: this.sampleMessageList,
-            bedNumber: this.bedNumber,
-            patientName: this.patientName,
-            sampleAmount: this.sampleAmount
-          });
+          if (this.isDeleteCancel || this.isDeleteEcho) {
+            // 防止最后一条信息重复存入
+            let spliceInfo = [];
+            let temporaryCollectInfo = deepClone(currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList']);
+            spliceInfo = temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
+            currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
+            this.changeIsDeleteCancel(false);
+            this.changeIsDeleteEcho(false);
+            setStore('isDeleteCancel',false);
+            setStore('isDeleteEcho',false);
+            temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
+            temporaryDepartmentListTwo.push({
+              sampleMessageList: spliceInfo[0]['sampleMessageList'],
+              bedNumber: spliceInfo[0]['bedNumber'],
+              patientName: spliceInfo[0]['patientName'],
+              sampleAmount: spliceInfo[0]['sampleAmount']
+            });
+          } else {
+            temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
+            temporaryDepartmentListTwo.push({
+              sampleMessageList: this.sampleMessageList,
+              bedNumber: this.bedNumber,
+              patientName: this.patientName,
+              sampleAmount: this.sampleAmount
+            });
+          }
           currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'] = repeArray(temporaryDepartmentListTwo)
         } else {
           temporaryDepartmentListTwo.push({
@@ -510,25 +549,68 @@ export default {
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码')
       } else {
-        // 有数据则回到该科室上个床位收集页面
+        // 有数据则回显该科室上个床位收集页面
         let temporaryBedCollectMsg = [];
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
+        // 判断有没有点击弹框确定按钮
         if (temporaryIndex != -1) {
-          temporaryBedCollectMsg.push(deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'][this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length-1]));
-          this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
-          this.patientName = temporaryBedCollectMsg[0]['patientName'];
-          this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
-          this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList'];
-          // 删除存储的上个床位信息,点确定后会重新存储
-          if (!this.isDelete) {
-            let temporaryCollectInfoList = deepClone(this.circulationCollectMessageList);
-            let temporaryCollectInfo = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
-            temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
-            temporaryCollectInfoList[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
-            this.changeCirculationCollectMessageList({DtMsg:temporaryCollectInfoList});
-            setStore('currentCirculationCollectMessage',{innerMessage:temporaryCollectInfoList});
-            this.isDelete = false
-          }
+          if (this.isClickSure) {
+            // 点过确定按钮
+            this.changeIsClickSure(false);
+            setStore('isClickSure',false);
+            temporaryBedCollectMsg.push(deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'][this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length-1]));
+            this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
+            this.patientName = temporaryBedCollectMsg[0]['patientName'];
+            this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
+            this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList'];
+          } else {
+            if (this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length == 1) {
+              this.bedNumber = '';
+              this.patientName = '';
+              this.sampleAmount = 0;
+              this.sampleMessageList = [
+                {
+                  sampleType: '',
+                  sampleTypeList: [],
+                  entryList: [],
+                  checkEntryList: [],
+                  innerSampleAmount: 0
+                }
+              ];
+              this.getSampleMessage();
+              this.getCheckEntryMessage();
+              let temporaryInnerInfo = deepClone(this.circulationCollectMessageList);
+              temporaryInnerInfo = temporaryInnerInfo.filter((item) => {return item.taskId != this.circulationTaskId});
+              this.changeCirculationCollectMessageList({DtMsg:temporaryInnerInfo});
+              setStore('currentCirculationCollectMessage',{innerMessage:temporaryInnerInfo})
+            } else {
+              if (this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length == 0) {
+                // 该科室没有任何床位信息时则删除该科室上的循环任务存储信息
+                let temporaryInnerInfo = deepClone(this.circulationCollectMessageList);
+                temporaryInnerInfo = temporaryInnerInfo.filter((item) => {return item.taskId != this.circulationTaskId});
+                this.changeCirculationCollectMessageList({DtMsg:temporaryInnerInfo});
+                setStore('currentCirculationCollectMessage',{innerMessage:temporaryInnerInfo});
+                this.$router.push({'path':'/circulationTaskSweepCode'});
+                this.changeTitleTxt({tit:'扫码'});
+                setStore('currentTitle','扫码')
+              } else {
+                // 没点过则删除当前采集页的数据
+                let currentCollectList = deepClone(this.circulationCollectMessageList);
+                let temporaryCollectInfo = deepClone(currentCollectList[temporaryIndex]['collectDepartmentList']);
+                temporaryCollectInfo.splice(temporaryCollectInfo.length-1,1);
+                currentCollectList[temporaryIndex]['collectDepartmentList'] = temporaryCollectInfo;
+                this.changeCirculationCollectMessageList({DtMsg:currentCollectList});
+                setStore('currentCirculationCollectMessage',{innerMessage:currentCollectList});
+                temporaryBedCollectMsg.push(deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'][this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length-1]));
+                this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
+                this.patientName = temporaryBedCollectMsg[0]['patientName'];
+                this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
+                this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList']
+              }
+            }
+          };
+          this.changeIsDeleteCancel(true);
+          setStore('isDeleteCancel',true);
         } else {
           removeStore('currentCirculationCollectMessage');
           this.$router.push({'path':'/circulationTaskSweepCode'});

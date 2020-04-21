@@ -47,7 +47,7 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-import {queryCustomerAppointInfo,sureCustomerAppointInfo} from '@/api/workerPort.js'
+import {queryCustomerAppointInfo,sureCustomerAppointInfo,updateAppointTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
@@ -81,8 +81,9 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'appointTaskMessage',
-      'appointTaskMessage',
-      'currentElectronicSignature'
+      'appointTaskState',
+      'currentElectronicSignature',
+      'isCompleteSweepCodeList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -112,7 +113,8 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeCurrentElectronicSignature'
+      'changeCurrentElectronicSignature',
+      'changeIsCompleteSweepCodeList'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {
@@ -170,9 +172,11 @@ export default {
             message: `${res.data.msg}`,
             closeOnPopstate: true   
           }).then(() => {
-            this.$router.push({path:'/appointTask'});
-            this.changeTitleTxt({tit:'预约任务'});
-            setStore('currentTitle','预约任务')
+            this.updateTaskState({
+              proId: this.proId, //当前项目ID
+              id: this.appointTaskMessage.id, //当前任务ID
+              state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+            })
           });
         } else {
           this.$dialog.alert({
@@ -191,6 +195,35 @@ export default {
       })
     },
 
+     // 更新任务状态
+    updateTaskState (data) {
+      updateAppointTaskMessage(data).then((res) => {
+        if (res && res.data.code == 200) {
+          // 清空该完成任务存储的已扫过科室信息
+          let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
+          temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+          this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
+          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+          this.$router.push({path:'/appointTask'});
+          this.changeTitleTxt({tit:'预约任务'});
+          setStore('currentTitle','预约任务')
+        } else {
+          this.$dialog.alert({
+            message: res.data.msg,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+    
     // 跳转到我的页
     skipMyInfo () {
       this.leftDownShow = !this.leftDownShow;

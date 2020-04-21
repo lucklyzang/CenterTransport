@@ -10,6 +10,7 @@ export default {
     appointSweepCodeIntoPage: false,
     cancelTaskIdList: [],
     originalSignature: null,
+    isCompleteSweepCodeList: [],
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
@@ -19,7 +20,8 @@ export default {
     appointSweepCodeNumber: state => state.appointSweepCodeNumber,
     appointSweepCodeIntoPage: state => state.appointSweepCodeIntoPage,
     cancelTaskIdList: state => state.cancelTaskIdList,
-    originalSignature: state => state.originalSignature
+    originalSignature: state => state.originalSignature,
+    isCompleteSweepCodeList: state => state.isCompleteSweepCodeList
   },
   mutations:{
     // 改变预约任务信息状态
@@ -53,6 +55,10 @@ export default {
     // 改变原始签名状态
     changeOriginalSignature (state,payLoad) {
       state.originalSignature = payLoad
+    },
+    // 改变科室是否完成扫码状态 isCompleteSweepCodeList
+    changeIsCompleteSweepCodeList (state,payLoad) {
+      state.isCompleteSweepCodeList = payLoad
     },
   },
   actions:{}
