@@ -67,10 +67,10 @@
               </p>
             </div>
             <div class="handle-message-line-wrapper">
-              <!-- <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
-              </p> -->
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
               <P>
                 <span class="message-tit">状态:</span>
                 <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
@@ -117,8 +117,8 @@
             </div>
             <div class="handle-message-line-wrapper">
               <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
               </p>
               <P>
                 <span class="message-tit">状态:</span>
@@ -165,10 +165,10 @@
               </p>
             </div>
             <div class="handle-message-line-wrapper">
-              <!-- <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
-              </p> -->
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
               <P>
                 <span class="message-tit">状态:</span>
                 <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
@@ -215,8 +215,8 @@
             </div>
             <div class="handle-message-line-wrapper">
               <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
               </p>
               <P>
                 <span class="message-tit">状态:</span>
@@ -263,10 +263,10 @@
               </p>
             </div>
             <div class="handle-message-line-wrapper">
-              <!-- <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
-              </p> -->
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
               <P>
                 <span class="message-tit">状态:</span>
                 <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
@@ -336,10 +336,10 @@
               </p>
             </div>
             <div class="handle-message-line-wrapper">
-              <!-- <p>
-                <span class="message-tit">转运工具:</span>
-                <span class="message-tit-real">{{item.toolName}}</span>
-              </p> -->
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
               <P>
                 <span class="message-tit">状态:</span>
                 <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
@@ -501,6 +501,24 @@
         this.$router.push({path:'/'})
       },
 
+      // 任务优先级转换
+      priorityTransfer (index) {
+        switch(index) {
+          case 1 :
+            return '正常'
+            break;
+          case 2 :
+            return '重要'
+            break;
+          case 3 :
+            return '紧急'
+            break;
+          case 4 :
+            return '紧急重要'
+            break;
+        }
+      },
+
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
@@ -587,6 +605,7 @@
                   age: item.age,
                   patientId: item.id,
                   number: item.number,
+                  priority: item.priority,
                   taskRemark: item.taskRemark
                 })
               };

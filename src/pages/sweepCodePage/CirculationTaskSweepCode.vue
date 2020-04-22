@@ -216,6 +216,7 @@ export default {
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
           this.changeIsFirstSweepCode(false);
+          setStore("isCirculationFirstSweepCode",false);
           if(this.isCollectEnterSweepCodePage) {
             // 存储已经扫码验证通过的科室id
             let temporaryOfficeList = [];

@@ -197,6 +197,7 @@
         this.getAllTaskMessage();
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送');
+        this.judgeTaskComplete()
         // 轮询是否有新任务
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
@@ -229,7 +230,8 @@
           this.queryAllTaskNumber(this.proId, this.workerId);
           this.getAllTaskMessage();
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送'); 
+          setStore('currentTitle','中央运送');
+          this.judgeTaskComplete() 
         }
       };
       document.addEventListener('click',(e) => {
@@ -448,6 +450,97 @@
           .catch(() => {
 
           })
+        }
+      },
+
+      // 判断每种任务是否收集完成
+      judgeTaskComplete () {
+        // 重新存入用户信息
+        if (getStore('userInfo')) {
+          this.$store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
+        };
+        if (getStore('userType')) {
+          this.$store.commit('changeUserType',getStore('userType'));
+        };
+        // 重新存入当前标题
+        if (getStore('currentTitle')) {
+          this.$store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
+        };
+        // 重新存入请求token
+        if (getStore('questToken')) {
+          this.$store.commit('changeToken', getStore('questToken'));
+        };
+        // 重新存入调度任务具体信息
+        if (getStore('currentDispatchTaskMessage')) {
+          this.$store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
+        };
+        // 重新存入预约任务具体信息
+        if (getStore('currentAppointTaskMessage')) {
+          this.$store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
+        };
+        // 重新存入循环任务具体信息
+        if (getStore('currentCirculationTaskMessage')) { 
+          this.$store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
+        };
+        // 重新存入循环任务科室采集信息
+        if (getStore('currentCirculationCollectMessage')) {
+          this.$store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})
+        };
+        // 重新存入循环任务是否第一次扫码
+        if (getStore('isCirculationFirstSweepCode')) {
+          this.$store.commit('changeIsFirstSweepCode', JSON.parse(getStore('isCirculationFirstSweepCode')));
+        };
+        // 重新存入循环任务科室交接信息
+        if (getStore('currentCirculationConnectMessage')) {
+          this.$store.commit('changeCirculationConnectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationConnectMessage'))['innerMessage'])})
+        };
+        // 重新存入医护人员生成运送类型信息
+        if (getStore('currentTransportTypeMessage')) {
+          this.$store.commit('changetransportTypeMessage', {DtMsg: getStore('currentTransportTypeMessage')});
+        };
+        // 重新存入循环任务完成采集科室信息
+        if (getStore('completeDepartmentMessage')) {
+          this.$store.commit('changeCompleteDeparnmentInfo', {DtMsg: JSON.parse(getStore('completeDepartmentMessage'))['sureInfo']});
+        };
+        // 重新存入送达的科室id
+        if (getStore('currentDepartmentId')) {
+          this.$store.commit('changeStoreArriveDeparnmentId',getStore('currentDepartmentId'));
+        };
+        // 重新存入过期方式
+        if (getStore('storeOverDueWay')) {
+          this.$store.commit('changeOverDueWay',JSON.parse(getStore('storeOverDueWay')));
+        };
+        // 重新存入是否循环采集页面取消按钮回显生效
+        if (getStore('isDeleteCancel')) {
+          this.$store.commit('changeIsDeleteCancel',JSON.parse(getStore('isDeleteCancel')));
+        };
+        // 重新存入是否循环采集页面生命周期回显生效
+        if (getStore('isDeleteEcho')) {
+          this.$store.commit('changeIsDeleteEcho',JSON.parse(getStore('isDeleteEcho')));
+        };
+        // 重新存入是否循环采集页面弹框确定按钮确定按钮点击状态
+        if (getStore('isClickSure')) {
+          this.$store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
+        };
+        // 重新存入调度任务完成扫码的科室信息
+        if (getStore('completeDispatchSweepCodeInfo')) {
+          this.$store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 重新存入调度任务是否第一次扫码
+        if (getStore('isDispatchFirstSweepCode')) {
+          this.$store.commit('changeIsDispatchTaskFirstSweepCode', JSON.parse(getStore('isDispatchFirstSweepCode')));
+        };
+        // 重新存入循环任务完成扫码的科室信息
+        if (getStore('completeCirculationSweepCodeInfo')) {
+          this.$store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 重新存入预约任务完成扫码的科室信息
+        if (getStore('completAppointTaskSweepCodeInfo')) {
+          this.$store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 重新存入预约任务是否第一次扫码
+        if (getStore('isAppointFirstSweepCode')) {
+          this.$store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));
         }
       },
 

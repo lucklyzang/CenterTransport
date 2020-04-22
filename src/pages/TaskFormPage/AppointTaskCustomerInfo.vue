@@ -114,7 +114,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeCurrentElectronicSignature',
-      'changeIsCompleteSweepCodeList'
+      'changeIsCompleteSweepCodeList',
+      'changeAppointSweepCodeIntoPage'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {
@@ -172,11 +173,11 @@ export default {
             message: `${res.data.msg}`,
             closeOnPopstate: true   
           }).then(() => {
-            this.updateTaskState({
-              proId: this.proId, //当前项目ID
-              id: this.appointTaskMessage.id, //当前任务ID
-              state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
-            })
+          });
+          this.updateTaskState({
+            proId: this.proId, //当前项目ID
+            id: this.appointTaskMessage.id, //当前任务ID
+            state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
           });
         } else {
           this.$dialog.alert({
@@ -203,7 +204,7 @@ export default {
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
           temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
           this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
-          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')

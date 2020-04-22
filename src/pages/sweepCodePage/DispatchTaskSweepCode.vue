@@ -303,6 +303,7 @@ export default {
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
           this.changeIsDispatchTaskFirstSweepCode(false);
+          setStore("isDispatchFirstSweepCode",false);
           // 存储已经扫码验证通过的科室id
           let temporaryOfficeList = [];
           let temporaryDepartmentId = [];
@@ -379,7 +380,7 @@ export default {
             let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
             temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
             this.changeisCompleteSweepCode(temporarySweepCodeOficeList);
-            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
           };
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
