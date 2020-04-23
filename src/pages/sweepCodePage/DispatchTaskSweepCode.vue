@@ -10,7 +10,7 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="上传中,请稍候····" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
     </div>
     <div class="sweep-code-title">
       <h3></h3>
@@ -67,6 +67,7 @@ export default {
   data () {
     return {
       temporaryUpImgUrl: '',
+      currentTextContent: '',
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showLoadingHint: false,
@@ -125,7 +126,8 @@ export default {
       'dispatchTaskDepartmentType',
       'isCoerceTakePhoto',
       'isCompleteSweepCode',
-      'isDispatchTaskFirstSweepCode'
+      'isDispatchTaskFirstSweepCode',
+      'isCompletePhotoList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -142,7 +144,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeisCompleteSweepCode',
-      'changeIsDispatchTaskFirstSweepCode'
+      'changeIsDispatchTaskFirstSweepCode',
+      'changeIsCompletePhotoList'
     ]),
 
     // 扫描二维码方法
@@ -168,7 +171,9 @@ export default {
       reader.addEventListener("load", function () {
         img.src = reader.result;
         _this.upImgUrl = reader.result;
-        _this.temporaryUpImgUrl = reader.result
+        _this.temporaryUpImgUrl = reader.result;
+        // 存储上传的照片
+        _this.storePhoto(reader.result)
       }, false);
       if (file) {
         reader.readAsDataURL(file);
@@ -193,7 +198,9 @@ export default {
       reader.addEventListener("load", function () {
         img.src = reader.result;
         _this.upImgUrl = reader.result;
-        _this.temporaryUpImgUrl = reader.result
+        _this.temporaryUpImgUrl = reader.result;
+        // 存储上传的照片
+        _this.storePhoto(reader.result)
       }, false);
       if (file) {
         reader.readAsDataURL(file);
@@ -214,12 +221,58 @@ export default {
         }
       );
     },
+
+    // 回显照片
+    echoPhoto () {
+      if (this.isCompletePhotoList.length == 0) { return };
+      let echoIndex = this.isCompletePhotoList.indexOf(this.isCompletePhotoList.filter((item) => {return item.taskId == this.taskId})[0]);
+      if (echoIndex == -1) { return };
+      this.upImgUrl = this.isCompletePhotoList[echoIndex]['phototList'][this.isCompletePhotoList[echoIndex]['phototList'].length-1];
+      this.temporaryUpImgUrl = this.isCompletePhotoList[echoIndex]['phototList'][this.isCompletePhotoList[echoIndex]['phototList'].length-1]
+    },
+
+    // 存储已经上传的照片
+    storePhoto (photoId) {
+      let temporaryPhotoList = [];
+      let temporaryPhotoId = [];
+      temporaryPhotoList = deepClone(this.isCompletePhotoList);
+      if (this.isCompletePhotoList.length > 0 ) {
+        let temporaryIndex = this.isCompletePhotoList.indexOf(this.isCompletePhotoList.filter((item) => {return item.taskId == this.taskId})[0]);
+        if (temporaryIndex != -1) {
+          temporaryPhotoId = temporaryPhotoList[temporaryIndex]['phototList'];
+          temporaryPhotoId.push(photoId);
+          temporaryPhotoList[temporaryIndex]['phototList'] = repeArray(temporaryPhotoId)
+        } else {
+          temporaryPhotoId.push(photoId);
+          temporaryPhotoList.push(
+            { 
+              phototList: repeArray(temporaryPhotoId),
+              taskId: this.taskId
+            }
+          )
+        };
+      } else {
+        temporaryPhotoId.push(photoId);
+        temporaryPhotoList.push(
+          { 
+            phototList: repeArray(temporaryPhotoId),
+            taskId: this.taskId
+          }
+        )
+      };
+      this.changeIsCompletePhotoList(temporaryPhotoList);
+      setStore('completPhotoInfo', {"photoInfo": temporaryPhotoList});
+    },
     
     // 上传图片
     uploadPhoto (data) {
       dispatchTaskUploadMsg(data).then((res) => {
         this.showLoadingHint = false;
         if (res && res.data.code == 200) {
+          // 上传成功后，清除存储的照片
+          let temporaryInfo = deepClone(this.isCompletePhotoList.filter((item) => {return item['taskId'] != this.taskId}));
+          this.changeIsCompletePhotoList(temporaryInfo);
+          setStore('completPhotoInfo', {"photoInfo": temporaryInfo});
           this.updateTaskState({
             proId: this.proId, //当前项目ID
             id: this.dispatchTaskMessage.id, //当前任务ID
@@ -254,6 +307,7 @@ export default {
         });
         return
       };
+      this.currentTextContent = '上传中,请稍候···'
       this.showLoadingHint = true;
       // 压缩图片
       compressImg(this.upImgUrl,this.compressCallback);
@@ -300,6 +354,8 @@ export default {
 
     // 判断扫码科室
     juddgeCurrentDepartment (data) {
+      this.currentTextContent = '校验中,请稍候···'
+      this.showLoadingHint = true;
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
           this.changeIsDispatchTaskFirstSweepCode(false);
@@ -354,9 +410,11 @@ export default {
           }).then(() => {
             this.againSweepCode()
           }).catch((err) =>{})
-        }
+        };
+        this.showLoadingHint = false
       })
       .catch((err) => {
+        this.showLoadingHint = false;
         this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
@@ -427,6 +485,8 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
+            // 回显拍照照片
+            this.echoPhoto();
             this.photoAreaBoxShow = true;
             this.appointAreaShow = false
           } else {

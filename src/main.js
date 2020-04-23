@@ -134,6 +134,10 @@ new Vue({
     if (getStore('completAppointTaskSweepCodeInfo')) {
       store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
     };
+    // 重新存入调度任务完成上传的照片
+    if (getStore('completPhotoInfo')) {
+      store.commit('changeIsCompletePhotoList', JSON.parse(getStore('completPhotoInfo'))['photoInfo']);
+    };
     // 页面刷新重新存入预约任务是否第一次扫码
     if (getStore('isAppointFirstSweepCode')) {
       store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));

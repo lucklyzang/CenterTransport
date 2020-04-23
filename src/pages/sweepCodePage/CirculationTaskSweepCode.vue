@@ -9,8 +9,8 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <div class="sweep-code-title">
-      <h3></h3>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="校验中,请稍候····" textColor="#2895ea"></loading>
     </div>
     <div class="sweep-code-area">
       <div class="point-area">
@@ -41,6 +41,7 @@ import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import {judgeDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
+import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
@@ -49,6 +50,7 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      showLoadingHint: false,
       liIndex: null,
       startPointList: [],
       taskCancelPng: require('@/components/images/task-cancel.png'),
@@ -59,6 +61,7 @@ export default {
   components:{
     HeaderTop,
     NoData,
+    Loading,
     FooterBottom
   },
 
@@ -213,6 +216,7 @@ export default {
 
     //判断扫码科室是否为当前要收集的科室
     juddgeMedicalCorrect(data) {
+      this.showLoadingHint = true;
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
           this.changeIsFirstSweepCode(false);
@@ -260,9 +264,11 @@ export default {
           }).then(() => {
             this.againSweepCode()
           }).catch((err) =>{})
-        }
+        };
+        this.showLoadingHint = false
       })
       .catch((err) => {
+        this.showLoadingHint = false
         this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
@@ -290,7 +296,15 @@ export default {
     .content-wrapper();
       .left-dropDown {
       .rightDropDown
-    }
+    };
+    .loading {
+      position: absolute;
+      top: 450px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
+    };
     font-size: 14px;
     .sweep-code-title {
       height: 30px;

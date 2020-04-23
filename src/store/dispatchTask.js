@@ -10,7 +10,8 @@ export default {
     dispatchTaskDepartmentType: '',
     isCoerceTakePhoto: false,
     isCompleteSweepCode: [],
-    isDispatchTaskFirstSweepCode: true
+    isDispatchTaskFirstSweepCode: true,
+    isCompletePhotoList: []
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -21,7 +22,8 @@ export default {
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
     isCompleteSweepCode: state => state.isCompleteSweepCode,
-    isDispatchTaskFirstSweepCode: state => state.isDispatchTaskFirstSweepCode
+    isDispatchTaskFirstSweepCode: state => state.isDispatchTaskFirstSweepCode,
+    isCompletePhotoList: state => state.isCompletePhotoList
   },
   mutations:{
     // 改变页面标题
@@ -58,9 +60,13 @@ export default {
     changeisCompleteSweepCode (state,payLoad) {
       state.isCompleteSweepCode = payLoad
     },
-    //改变是否首次扫码的状态
+    //改变是否首次扫码的状态 isCompletePhotoList
     changeIsDispatchTaskFirstSweepCode (state,payLoad) {
       state.isDispatchTaskFirstSweepCode = payLoad
+    },
+     //改变完成上传的照片 isCompletePhotoList
+     changeIsCompletePhotoList (state,payLoad) {
+      state.isCompletePhotoList = payLoad
     }
   },
   actions:{}

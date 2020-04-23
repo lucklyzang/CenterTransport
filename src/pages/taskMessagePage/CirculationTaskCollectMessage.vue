@@ -115,6 +115,7 @@ export default {
           innerSampleAmount: 0
         }
       ],
+      temporaryInfo: [],
       temporarySampleTypeList: [],
       temporarySampleType: '',
       temporaryCheckEntryList: [],
@@ -164,24 +165,25 @@ export default {
       that.gotoURL(() => {
         pushHistory();
         if (this.collectMessaheSureShow == true) {
-          this.$dialog.alert({
-            message: '请先处理是否收集该科室其它床位标本弹框',
-            closeOnPopstate: true,
-            showCancelButton: true   
-          }).then(() => {
-          })
-          .catch(() => {})
+          setTimeout(() => {
+            this.$dialog.alert({
+              message: '请先处理是否收集该科室其它床位标本弹框',
+              closeOnPopstate: true,
+              showCancelButton: true   
+            }).then(() => {
+              this.collectMessaheSureShow = true
+            })
+          },10)
         } else {
         this.$dialog.alert({
           message: '返回上页后,将丢失本科室采集数据!',
           closeOnPopstate: true,
           showCancelButton: true   
           }).then(() => {
-            this.changeCirculationCollectMessageList({DtMsg:[]});
-            removeStore('currentCirculationCollectMessage');
-            this.$router.push({'path':'/circulationTaskSweepCode'});
-            this.changeTitleTxt({tit:'扫码'});
-            setStore('currentTitle','扫码');}
+            this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+            this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
+            setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
+            this.skipSweepCode()}
           )
           .catch(() => {})
         }
@@ -189,7 +191,9 @@ export default {
     };
     // 回显收集过的科室信息
     this.echoCollectedMessage();
+    // 获取标本类型
     this.getSampleMessage();
+    // 获取检查项
     this.getCheckEntryMessage()
   },
 
@@ -239,8 +243,9 @@ export default {
       },
 
     echoCollectedMessage () {
+      if (this.circulationCollectMessageList.length == 0) { return };
       let echoIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
-      if (this.circulationCollectMessageList.length == 0 || echoIndex == -1) { return };
+      if (echoIndex == -1) { return };
       // 回显上次科室采集最后一个床位信息
       let temporaryEchoList = [];
       temporaryEchoList.push(deepClone(this.circulationCollectMessageList[echoIndex]['collectDepartmentList'][this.circulationCollectMessageList[echoIndex]['collectDepartmentList'].length-1]));
@@ -274,7 +279,7 @@ export default {
               this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList;
               this.temporarySampleType =  this.sampleMessageList[0].sampleType
             }
-           }
+          }
         })
         .catch((err) => {
           this.$dialog.alert({
@@ -317,44 +322,47 @@ export default {
 
     // 返回上一页
     backTo () {
-      if (this.collectMessaheSureShow == true) {
-        this.$dialog.alert({
-          message: '请先处理是否收集该科室其它床位标本弹框',
-          closeOnPopstate: true,
-          showCancelButton: true   
-        }).then(() => {
-        })
-        .catch(() => {})
-      } else {
-        this.$dialog.alert({
-          message: '返回上页后,将丢失本科室采集数据',
-          closeOnPopstate: true,
-          showCancelButton: true   
-        }).then(() => {
-          this.changeCirculationCollectMessageList({DtMsg:[]});
-          removeStore('currentCirculationCollectMessage');
-          this.$router.push({'path':'/circulationTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码');}
-          )
-        .catch(() => {})
-      }
+      this.$dialog.alert({
+        message: '返回上页后,将丢失本科室采集数据',
+        closeOnPopstate: true,
+        showCancelButton: true   
+      }).then(() => {
+        this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+        this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
+        setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
+        this.skipSweepCode();}
+        )
+      .catch(() => {})
     },
 
     // 采集信息确认事件
     collectMessageSure () {
       // 如果当前科室没有采集信息，则不签名和提交采集信息确认
       if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
-       // 存储完成采集任务的科室信息
-        let temporaryDepartmentId = [];
-        let temporaryCompleteInfo = [];
-        temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-        let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
-        if (this.completeDeparnmentInfo.length > 0) {
-          if (temporaryIndex != -1) {
-            temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-            temporaryDepartmentId.push(this.departmentId);
-            temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+        this.$dialog.alert({
+          message: '该科室没有需要采集的标本?',
+          closeOnPopstate: true,
+          showCancelButton: true   
+        }).then(() => {
+          // 存储完成采集任务的科室信息
+          let temporaryDepartmentId = [];
+          let temporaryCompleteInfo = [];
+          temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+          if (this.completeDeparnmentInfo.length > 0) {
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+            } else {
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo.push(
+                { 
+                  departmentIdList: temporaryDepartmentId,
+                  taskId: this.circulationTaskId
+                }
+              )
+            }
           } else {
             temporaryDepartmentId.push(this.departmentId);
             temporaryCompleteInfo.push(
@@ -363,24 +371,18 @@ export default {
                 taskId: this.circulationTaskId
               }
             )
-          }
-        } else {
-          temporaryDepartmentId.push(this.departmentId);
-          temporaryCompleteInfo.push(
-            { 
-              departmentIdList: temporaryDepartmentId,
-              taskId: this.circulationTaskId
-            }
-          )
-        };
-        this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
-        setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
-        this.$router.push({path:'/circulationTask'});
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务');
-        this.$dialog.alert({
-          message: '当前科室没有需要采集的信息',
-          closeOnPopstate: true  
+          };
+          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+          setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
+          this.$dialog.alert({
+            message: '当前科室没有需要采集的信息',
+            closeOnPopstate: true  
+          });
+        })
+        .catch(() => {
         });
         return
       };
@@ -410,10 +412,10 @@ export default {
             setStore('isDeleteEcho',false);
             temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentList.push({
-              sampleMessageList: spliceInfo[0]['sampleMessageList'],
-              bedNumber: spliceInfo[0]['bedNumber'],
-              patientName: spliceInfo[0]['patientName'],
-              sampleAmount: spliceInfo[0]['sampleAmount']
+              sampleMessageList: this.sampleMessageList,
+              bedNumber: this.bedNumber,
+              patientName: this.patientName,
+              sampleAmount: this.sampleAmount
             });
           } else {
             temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
@@ -491,10 +493,10 @@ export default {
             setStore('isDeleteEcho',false);
             temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentListTwo.push({
-              sampleMessageList: spliceInfo[0]['sampleMessageList'],
-              bedNumber: spliceInfo[0]['bedNumber'],
-              patientName: spliceInfo[0]['patientName'],
-              sampleAmount: spliceInfo[0]['sampleAmount']
+              sampleMessageList: this.sampleMessageList,
+              bedNumber: this.bedNumber,
+              patientName: this.patientName,
+              sampleAmount: this.sampleAmount
             });
           } else {
             temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
@@ -545,9 +547,7 @@ export default {
       if (this.circulationCollectMessageList.length == 0) {
         this.changeCirculationCollectMessageList({DtMsg:[]});
         removeStore('currentCirculationCollectMessage');
-        this.$router.push({'path':'/circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码')
+        this.skipSweepCode()
       } else {
         // 有数据则回显该科室上个床位收集页面
         let temporaryBedCollectMsg = [];
@@ -590,9 +590,7 @@ export default {
                 temporaryInnerInfo = temporaryInnerInfo.filter((item) => {return item.taskId != this.circulationTaskId});
                 this.changeCirculationCollectMessageList({DtMsg:temporaryInnerInfo});
                 setStore('currentCirculationCollectMessage',{innerMessage:temporaryInnerInfo});
-                this.$router.push({'path':'/circulationTaskSweepCode'});
-                this.changeTitleTxt({tit:'扫码'});
-                setStore('currentTitle','扫码')
+                this.skipSweepCode()
               } else {
                 // 没点过则删除当前采集页的数据
                 let currentCollectList = deepClone(this.circulationCollectMessageList);
@@ -612,12 +610,19 @@ export default {
           this.changeIsDeleteCancel(true);
           setStore('isDeleteCancel',true);
         } else {
-          removeStore('currentCirculationCollectMessage');
-          this.$router.push({'path':'/circulationTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码')
+          this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
+          this.skipSweepCode()
         }
       }
+    },
+
+    // 跳转到扫码页
+    skipSweepCode () {
+      this.$router.push({'path':'/circulationTaskSweepCode'});
+      this.changeTitleTxt({tit:'扫码'});
+      setStore('currentTitle','扫码')
     },
 
     // 新增标本采集框

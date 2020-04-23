@@ -538,6 +538,10 @@
         if (getStore('completAppointTaskSweepCodeInfo')) {
           this.$store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
         };
+        // 重新存入调度任务完成上传的照片
+        if (getStore('completPhotoInfo')) {
+          this.$store.commit('changeIsCompletePhotoList', JSON.parse(getStore('completPhotoInfo'))['photoInfo']);
+        };
         // 重新存入预约任务是否第一次扫码
         if (getStore('isAppointFirstSweepCode')) {
           this.$store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));
