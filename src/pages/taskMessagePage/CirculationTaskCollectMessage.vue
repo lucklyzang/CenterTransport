@@ -78,7 +78,7 @@
         show-cancel-button
         confirmButtonText="确定"
         cancelButtonText="取消"
-        :close-on-popstate="true"
+        :close-on-popstate="false"
         :close-on-click-overlay="true"
         @confirm="collectSure"
         @cancel="collectCancel"
@@ -106,6 +106,9 @@ export default {
       patientName: '',
       sampleAmount: 0,
       collectMessaheSureShow: false,
+      isDialogShow: false,
+      isNoSampleDialogShow: false,
+      isNoBedInfoShow: false,
       sampleMessageList: [
         {
           sampleType: '',
@@ -157,50 +160,59 @@ export default {
     }
   },
 
+  // beforeRouteLeave (to, from , next) {
+  //   if (!this.isDialogShow) { 
+  //     this.isDialogShow = false;
+  //     next(false);
+  //     return 
+  //   }; 
+  //   if (!this.isNoSampleDialogShow) { 
+  //     this.isNoSampleDialogShow = false;
+  //     next(false);
+  //     return 
+  //   }; 
+  //   if (this.collectMessaheSureShow)  {
+  //     this.collectMessaheSureShow = true;
+  //     next(false);
+  //     return 
+  //   };
+  //   next()
+  // },
+
   mounted () {
-    // 控制设备物理返回按键测试
-    if (!IsPC()) {
-      let that = this;
-      pushHistory();
-      that.gotoURL(() => {
-        pushHistory();
-        if (this.collectMessaheSureShow == true) {
-          setTimeout(() => {
-            this.$dialog.alert({
-              message: '请先处理是否收集该科室其它床位标本弹框',
-              closeOnPopstate: true,
-              showCancelButton: true   
-            }).then(() => {
-              this.collectMessaheSureShow = true
-            })
-          },10)
-        } else {
-        this.$dialog.alert({
-          message: '返回上页后,将丢失本科室采集数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-          }).then(() => {
-            this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
-            this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
-            setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
-            this.skipSweepCode()}
-          )
-          .catch(() => {})
-        }
-      })
-    };
-    // 回显收集过的科室信息
-    this.echoCollectedMessage();
     // 获取标本类型
     this.getSampleMessage();
     // 获取检查项
-    this.getCheckEntryMessage()
+    this.getCheckEntryMessage();
+    // 回显收集过的科室信息
+    this.echoCollectedMessage();
+    // 控制设备物理返回按键测试
+    if (!IsPC()) {
+      pushHistory();
+      this.gotoURL(() => {
+        pushHistory();
+        if (!this.isDialogShow) {
+          this.loseDataInfo();
+          return
+        };
+        if (!this.isNoSampleDialogShow) {
+          this.noSampleInfo();
+          return
+        };
+        if (!this.isNoBedInfoShow) {
+          this.noBedInfo();
+          return
+        };
+        if (this.collectMessaheSureShow)  {
+          this.collectMessaheSureShow = true
+        }
+      })
+    }
   },
 
   computed:{
     ...mapGetters([
       'navTopTitle',
-      'circulationCollectMessageList',
       'completeDeparnmentInfo',
       'circulationTaskMessage',
       'circulationCollectMessageList',
@@ -235,6 +247,110 @@ export default {
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})
+      },
+      
+      // 丢失数据提示
+      loseDataInfo () {
+        this.isDialogShow = false;
+        this.isNoBedInfoShow = true;
+        this.isNoSampleDialogShow = true;
+        this.$dialog.alert({
+          message: '返回上页后,将丢失本科室采集数据!',
+          closeOnPopstate: false,
+          showCancelButton: true   
+        }).then(() => {
+          this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryInfo});
+          this.isDialogShow = true;
+          this.isNoSampleDialogShow = true;
+          this.isNoBedInfoShow = true;
+          this.collectMessaheSureShow = false  
+          this.skipSweepCode();
+        })
+        .catch((err) => {
+          this.isDialogShow = false;
+          this.isNoBedInfoShow = true;
+          this.isNoSampleDialogShow = true;
+          this.collectMessaheSureShow = false  
+        })
+      },
+
+      // 没有标本采集提示
+      noSampleInfo () {
+        this.isDialogShow = true;
+        this.isNoBedInfoShow = true;
+        this.isNoSampleDialogShow = false;
+        this.$dialog.alert({
+          message: '该科室没有需要采集的标本?',
+          closeOnPopstate: false,
+          showCancelButton: true   
+        }).then(() => {
+          // 存储完成采集任务的科信息
+          let temporaryDepartmentId = [];
+          let temporaryCompleteInfo = [];
+          temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+          if (this.completeDeparnmentInfo.length > 0) {
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+            } else {
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo.push(
+                { 
+                  departmentIdList: temporaryDepartmentId,
+                  taskId: this.circulationTaskId
+                }
+              )
+            }
+          } else {
+            temporaryDepartmentId.push(this.departmentId);
+            temporaryCompleteInfo.push(
+              { 
+                departmentIdList: temporaryDepartmentId,
+                taskId: this.circulationTaskId
+              }
+            )
+          };
+          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+          setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
+          this.isNoSampleDialogShow = true;
+          this.isDialogShow = true;
+          this.isNoBedInfoShow = true;
+          this.collectMessaheSureShow = false;  
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
+          this.$dialog.alert({
+            message: '当前科室没有需要采集的信息',
+            closeOnPopstate: true  
+          });
+        })
+        .catch(() => {
+          this.isNoSampleDialogShow = true;
+          this.isNoBedInfoShow = true;
+          this.isDialogShow = false;
+          this.collectMessaheSureShow = false  
+        });
+      },
+
+      // 床位信息不能为空提示
+      noBedInfo () {
+        this.isNoBedInfoShow = false;
+        this.isDialogShow = true;
+        this.isNoSampleDialogShow = true;
+        this.$dialog.alert({
+          message: '标本信息不能为空',
+          closeOnPopstate: false
+        })
+        .then(() => {
+          this.isNoSampleDialogShow = true;
+          this.isDialogShow = false;
+          this.isNoBedInfoShow = true;
+          this.collectMessaheSureShow = false
+        })
       },
 
       // 跳转到我的页
@@ -322,71 +438,51 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$dialog.alert({
-        message: '返回上页后,将丢失本科室采集数据',
-        closeOnPopstate: true,
-        showCancelButton: true   
-      }).then(() => {
-        this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
-        this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
-        setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
-        this.skipSweepCode();}
-        )
-      .catch(() => {})
+      this.loseDataInfo()
+    },
+
+    // 重复赋值封装
+    repeatAssignment () {
+      this.isDialogShow = true;
+      this.isNoBedInfoShow = true;
+      this.isNoSampleDialogShow = true;
+      this.collectMessaheSureShow = true  
     },
 
     // 采集信息确认事件
     collectMessageSure () {
-      // 如果当前科室没有采集信息，则不签名和提交采集信息确认
-      if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
-        this.$dialog.alert({
-          message: '该科室没有需要采集的标本?',
-          closeOnPopstate: true,
-          showCancelButton: true   
-        }).then(() => {
-          // 存储完成采集任务的科室信息
-          let temporaryDepartmentId = [];
-          let temporaryCompleteInfo = [];
-          temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
-          if (this.completeDeparnmentInfo.length > 0) {
-            if (temporaryIndex != -1) {
-              temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-              temporaryDepartmentId.push(this.departmentId);
-              temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
+      // 如果当前任务当前科室没有采集信息，则不签名和提交采集信息确认
+      if (this.circulationCollectMessageList.length == 0) {
+        if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
+          this.noSampleInfo();
+        } else {
+          this.repeatAssignment()
+        }
+      } else {
+        let echoIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+        if (echoIndex == -1 ) {
+          if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
+            this.noSampleInfo()
+          } else {
+            this.repeatAssignment()
+          }
+        } else {
+          let currentList = this.circulationCollectMessageList[echoIndex]['collectDepartmentList'];
+          if (currentList.length == 0) {
+            if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
+              this.noSampleInfo()
             } else {
-              temporaryDepartmentId.push(this.departmentId);
-              temporaryCompleteInfo.push(
-                { 
-                  departmentIdList: temporaryDepartmentId,
-                  taskId: this.circulationTaskId
-                }
-              )
+              this.repeatAssignment()
             }
           } else {
-            temporaryDepartmentId.push(this.departmentId);
-            temporaryCompleteInfo.push(
-              { 
-                departmentIdList: temporaryDepartmentId,
-                taskId: this.circulationTaskId
-              }
-            )
-          };
-          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
-          setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
-          this.$router.push({path:'/circulationTask'});
-          this.changeTitleTxt({tit:'循环任务'});
-          setStore('currentTitle','循环任务');
-          this.$dialog.alert({
-            message: '当前科室没有需要采集的信息',
-            closeOnPopstate: true  
-          });
-        })
-        .catch(() => {
-        });
-        return
-      };
-      this.collectMessaheSureShow = true;
+            if (this.bedNumber == '' && this.patientName == '' && this.sampleAmount == 0) {
+              this.noBedInfo()
+            } else {
+              this.repeatAssignment()
+            }
+          }
+        }
+      }
     },
 
     // 收集是否完成弹框确定事件
@@ -468,6 +564,10 @@ export default {
           innerSampleAmount: 0
         }
       ];
+      this.isDialogShow = false;
+      this.isNoSampleDialogShow = true;
+      this.isNoBedInfoShow = true;
+      this.collectMessaheSureShow = false;
       this.getSampleMessage();
       this.getCheckEntryMessage()
     },
@@ -536,9 +636,13 @@ export default {
       };
       this.changeCirculationCollectMessageList({DtMsg:currentCollectAllMessageCancel});
       setStore('currentCirculationCollectMessage',{innerMessage:currentCollectAllMessageCancel});
+      this.isDialogShow = true;
+      this.isNoSampleDialogShow = true;
+      this.isNoBedInfoShow = true;
+      this.collectMessaheSureShow = false;
       this.$router.push({path:'/circulationTaskCollectMessageSure'});
       this.changeTitleTxt({tit:'采集信息确认'});
-      setStore('currentTitle','采集信息确认')
+      setStore('currentTitle','采集信息确认');
     },
 
     // 采集信息取消事件

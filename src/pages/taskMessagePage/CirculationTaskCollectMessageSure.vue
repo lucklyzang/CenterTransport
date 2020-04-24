@@ -90,6 +90,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      isDialogShow: false,
       showSignature: false,
       allcirculationCollectMessageList: [],
       bedNumber: '',
@@ -122,24 +123,12 @@ export default {
     console.log('id',this.circulationTaskId);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
-      let that = this;
       pushHistory();
-      that.gotoURL(() => {
+      this.gotoURL(() => {
         pushHistory();
-        this.$dialog.alert({
-        message: '返回上级后,将丢失本页及本科室的数据',
-        closeOnPopstate: true,
-        showCancelButton: true   
-        }).then(() => {
-          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
-          // 清空本次签名信息
-          this.changeCurrentElectronicSignature({DtMsg: null});
-          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
-          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
-          this.$router.push({path:'/circulationTaskCollectMessage'});
-          this.changeTitleTxt({tit:'循环信息采集'});
-          setStore('currentTitle','循环信息采集')})
-        .catch(() => {})
+        if (!this.isDialogShow) {
+          this.loseDataInfo()
+        }
       })
     };
     this.echoCollectMessage()
@@ -174,8 +163,31 @@ export default {
 
     // 我的页面
     skipMyInfo () {
-
     },
+    
+    // 丢失数据提示
+    loseDataInfo () {
+      this.isDialogShow = false;
+      this.$dialog.alert({
+        message: '返回上级后,将丢失本页及本科室的数据',
+        closeOnPopstate: false,
+        showCancelButton: true   
+        }).then(() => {
+          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          // 清空本次签名信息
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
+          this.$router.push({path:'/circulationTaskCollectMessage'});
+          this.changeTitleTxt({tit:'循环信息采集'});
+          setStore('currentTitle','循环信息采集');
+          this.isDialogShow = true
+        })
+        .catch(() => {
+          this.isDialogShow = false
+        })
+    },
+
     // 显示签名框点击
     controlSignatureEvent () {
       this.showSignature = !this.showSignature
@@ -274,23 +286,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$dialog.alert({
-        message: '返回上级后,将丢失本页及本科室的数据',
-        closeOnPopstate: true,
-        showCancelButton: true   
-        })
-        .then(() => {
-          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
-          // 清空本次签名信息
-          this.changeCurrentElectronicSignature({DtMsg: null});
-          // 清空上一科室采集数据
-          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
-          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
-          this.$router.push({path:'/circulationTaskCollectMessage'});
-          this.changeTitleTxt({tit:'循环信息采集'});
-          setStore('currentTitle','循环信息采集')
-        })
-        .catch(() => {})
+      this.loseDataInfo()
     },
 
     // 采集信息确认事件

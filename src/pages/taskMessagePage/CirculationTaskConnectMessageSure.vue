@@ -99,6 +99,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showSignature: false,
+      isDialogShow: false,
       liIndex: null,
       manageSampleDataList: [],
       taskSurePng: require('@/components/images/task-sure.png'),
@@ -117,22 +118,12 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
-      let that = this;
       pushHistory();
-      that.gotoURL(() => {
+      this.gotoURL(() => {
         pushHistory();
-        this.$dialog.alert({
-          message: '返回上级后,将丢失本页数据!',
-          closeOnPopstate: true,
-          showCancelButton: true   
-          }).then(() => {
-            this.changeCurrentElectronicSignature({DtMsg: null});
-            this.changeIsrefreshCirculationConnectPage(false);
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'信息交接'});
-            setStore('currentTitle','信息交接')}
-          )
-          .catch(() => {})
+        if (!this.isDialogShow) {
+          this.loseDataInfo()
+        }
       })
     };
     this.echoConectMessage()
@@ -166,11 +157,31 @@ export default {
       'changeIsStoreNoConnectSample'
     ]),
 
-     // 右边下拉框菜单点击
+      // 右边下拉框菜单点击
       leftLiCLick (index) {
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})
+      },
+
+      // 丢失数据提示
+      loseDataInfo () {
+        this.isDialogShow = false;
+        this.$dialog.alert({
+          message: '返回上级后,将丢失本页数据!',
+          closeOnPopstate: false,
+          showCancelButton: true   
+          }).then(() => {
+            this.changeCurrentElectronicSignature({DtMsg: null});
+            this.changeIsrefreshCirculationConnectPage(false);
+            this.$router.push({path:'/circulationTaskMessageConnect'});
+            this.changeTitleTxt({tit:'信息交接'});
+            setStore('currentTitle','信息交接');
+            this.isDialogShow = true
+          })
+          .catch(() => {
+            this.isDialogShow = false
+          })
       },
 
       // 跳转到我的页
@@ -190,19 +201,7 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$dialog.alert({
-        message: '返回上级后,将丢失本页数据!',
-        closeOnPopstate: true,
-        showCancelButton: true   
-        }).then(() => {
-          this.changeCurrentElectronicSignature({DtMsg: null});
-          this.changeCirculationConnectMessageList({DtMsg:[]});
-          this.changeIsrefreshCirculationConnectPage(false);
-          this.$router.push({path:'/circulationTaskMessageConnect'});
-          this.changeTitleTxt({tit:'信息交接'});
-          setStore('currentTitle','信息交接')}
-        )
-        .catch(() => {})
+      this.loseDataInfo()
     },
 
     // 还有要交接的标本

@@ -100,6 +100,7 @@ export default {
     return {
       showLoadingHint: false,
       noDataShow: false,
+      noConnectSampleShow: false,
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       connectMessageArea: false,
@@ -123,10 +124,13 @@ export default {
   mounted () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
-      let that = this;
       pushHistory();
-      that.gotoURL(() => {
+      this.gotoURL(() => {
         pushHistory();
+        if (!this.noConnectSampleShow) {
+          this.noConnectSampleInfo();
+          return
+        };
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -138,10 +142,13 @@ export default {
   activated () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
-      let that = this;
       pushHistory();
-      that.gotoURL(() => {
+      this.gotoURL(() => {
         pushHistory();
+        if (!this.noConnectSampleShow) {
+          this.noConnectSampleInfo();
+          return
+        };
         this.$router.push({path:'/circulationTask'})
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -174,17 +181,29 @@ export default {
       'changeCompleteDeparnmentInfo'
     ]),
 
-     // 右边下拉框菜单点击
-      leftLiCLick (index) {
-        this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
-      },
+    // 右边下拉框菜单点击
+    leftLiCLick (index) {
+      this.liIndex = index;
+      localStorage.clear();
+      this.$router.push({path:'/'})
+    },
 
-      // 跳转到我的页
-      skipMyInfo () {
-        this.leftDownShow = !this.leftDownShow;
-      },
+    // 跳转到我的页
+    skipMyInfo () {
+      this.leftDownShow = !this.leftDownShow;
+    },
+
+    // 没有交接标本提示提示
+    noConnectSampleInfo () {
+      this.noConnectSampleShow = false;
+      this.$dialog.alert({
+        message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
+        closeOnPopstate: false
+      }).then(() => {
+        this.noConnectSampleShow = true;
+        this.dealNoSampleMessage()
+      })
+    },
 
     // 返回上一页
     backTo () {
@@ -241,12 +260,7 @@ export default {
           if (res.data.data.length == 0) {
             this.connectMessageArea = false;
             this.noDataShow = true;
-            this.$dialog.alert({
-                message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
-                closeOnPopstate: true
-              }).then(() => {
-                this.dealNoSampleMessage()
-              });
+            this.noConnectSampleInfo();
             return
           };
           this.connectMessageArea = true;
