@@ -127,7 +127,7 @@ export default {
       pushHistory();
       this.gotoURL(() => {
         pushHistory();
-        if (!this.noConnectSampleShow) {
+        if (this.noConnectSampleShow) {
           this.noConnectSampleInfo();
           return
         };
@@ -145,7 +145,7 @@ export default {
       pushHistory();
       this.gotoURL(() => {
         pushHistory();
-        if (!this.noConnectSampleShow) {
+        if (this.noConnectSampleShow) {
           this.noConnectSampleInfo();
           return
         };
@@ -195,12 +195,11 @@ export default {
 
     // 没有交接标本提示提示
     noConnectSampleInfo () {
-      this.noConnectSampleShow = false;
+      this.noConnectSampleShow = true;
       this.$dialog.alert({
         message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
         closeOnPopstate: false
       }).then(() => {
-        this.noConnectSampleShow = true;
         this.dealNoSampleMessage()
       })
     },
@@ -225,6 +224,7 @@ export default {
             closeOnPopstate: true
           }).then(() => {
           });
+          this.noConnectSampleShow = false;
           this.noDataShow = false;
           // 清空store已完成科室信息
           let temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
@@ -327,7 +327,6 @@ export default {
           };
           // 去除已经交接过的标本
           this.manageSampleDataList = arrayDiff(this.manageSampleDataList, this.storeAlreadyConnectSample);
-          console.log('最终信息',this.manageSampleDataList)
         } else {
           this.$dialog.alert({
             message: `${res.data.msg}`,
