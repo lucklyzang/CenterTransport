@@ -820,6 +820,7 @@
             this.changeAppointTaskDepartmentType(1);
           } else if (item.state == 4) {
             this.changeAppointSweepCodeNumber(false);
+            this.changeAppointSweepCodeIntoPage(false);
             this.changeAppointTaskDepartmentType(2);
             this.changeAppointTaskState(7)
           };

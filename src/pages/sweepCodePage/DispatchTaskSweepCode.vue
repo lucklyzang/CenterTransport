@@ -481,7 +481,7 @@ export default {
         if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
           if (this.isCoerceTakePhoto == 1) {
             this.$dialog.alert({
-              message: '该科室校验已验证通过,请拍照',
+              message: '该科室校验已验证通过,请拍照或上传照片',
               closeOnPopstate: true
             }).then(() => {
             });
@@ -521,7 +521,7 @@ export default {
     }
     .loading {
       position: absolute;
-      top: 450px;
+      top: 470px;
       left: 0;
       width: 100%;
       height: 50px;
