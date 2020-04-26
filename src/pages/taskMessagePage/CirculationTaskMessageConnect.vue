@@ -238,7 +238,7 @@ export default {
         } else {
           this.$dialog.alert({
             message: `${res.data.data}`,
-            closeOnPopstate: true
+            closeOnPopstate: false
           }).then(() => {
           });
         }
@@ -246,7 +246,7 @@ export default {
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
         });
       })
@@ -330,7 +330,7 @@ export default {
         } else {
           this.$dialog.alert({
             message: `${res.data.msg}`,
-            closeOnPopstate: true
+            closeOnPopstate: false
           }).then(() => {
             this.connectMessageArea = false;
             this.noDataShow = true;
@@ -340,7 +340,7 @@ export default {
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
           this.connectMessageArea = false;
           this.noDataShow = true;
@@ -359,7 +359,6 @@ export default {
       let circulationMessageListSure = this.manageSampleDataList.filter((item) => { return item.check == true});
       // 存储没有交接的标本
       this.changeIsStoreNoConnectSample(this.manageSampleDataList.filter((item) => { return item.check == false}));
-      console.log('没有交接',this.storeNoConnectSample);
       if (circulationMessageListSure.length == 0) {
         this.$dialog.alert({
           message: '请选择要交接的标本',
@@ -482,7 +481,7 @@ export default {
     };
     .btn-area {
       position: absolute;
-      bottom: 10px;
+      bottom: 0;
       left: 0;
       height: 80px;
       text-align: center;

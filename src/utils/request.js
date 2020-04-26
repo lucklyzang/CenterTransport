@@ -43,14 +43,14 @@ service.interceptors.response.use(
     if (!response.headers.hasOwnProperty('token')) {
       if (!store.getters.overDueWay) {
         Dialog.alert({
-          message: 'token已经过期,3秒后将自动跳转到登录页面',
+          message: 'token已过期,请重新登录',
           closeOnPopstate: true
         }).then(() => {
         });
         window.localStorage.clear();
         setTimeout(() => {
           router.push({path: '/'})
-        },3000);
+        },2000);
       }
     };
     return response

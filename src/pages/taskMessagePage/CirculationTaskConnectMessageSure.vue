@@ -171,17 +171,17 @@ export default {
           message: '返回上级后,将丢失本页数据!',
           closeOnPopstate: false,
           showCancelButton: true   
-          }).then(() => {
-            this.changeCurrentElectronicSignature({DtMsg: null});
-            this.changeIsrefreshCirculationConnectPage(false);
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'信息交接'});
-            setStore('currentTitle','信息交接');
-            this.isDialogShow = true
-          })
-          .catch(() => {
-            this.isDialogShow = false
-          })
+        }).then(() => {
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          this.changeIsrefreshCirculationConnectPage(false);
+          this.$router.push({path:'/circulationTaskMessageConnect'});
+          this.changeTitleTxt({tit:'信息交接'});
+          setStore('currentTitle','信息交接');
+          this.isDialogShow = true
+        })
+        .catch(() => {
+          this.isDialogShow = false
+        })
       },
 
       // 跳转到我的页
@@ -253,17 +253,17 @@ export default {
         } else {
           this.$dialog.alert({
             message: res.data.msg,
-            closeOnPopstate: true
+            closeOnPopstate: false
           }).then(() => {
-          });
+          })
         }
       })
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
-        });
+        })
       })
     },
 
@@ -300,17 +300,17 @@ export default {
         } else {
           this.$dialog.alert({
             message: `${res.data.data}`,
-            closeOnPopstate: true
+            closeOnPopstate: false
           }).then(() => {
-          });
+          })
         }
       })
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
-        });
+        })
       })
     },
 
@@ -319,7 +319,7 @@ export default {
       if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
         });
         return;
@@ -352,7 +352,7 @@ export default {
     connectMessageCancel () {
       this.$dialog.alert({
         message: '返回上页后,将丢失本页数据!',
-        closeOnPopstate: true,
+        closeOnPopstate: false,
         showCancelButton: true   
         }).then(() => {
           this.changeCurrentElectronicSignature({DtMsg: null});

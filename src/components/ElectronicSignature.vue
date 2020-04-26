@@ -183,7 +183,7 @@ import { base64ImgtoFile } from '@/common/js/utils'
         if (this.originalSignature ==  this.$refs.board.toDataURL("image/png")) {
           this.$dialog.alert({
             message: '请签名',
-            closeOnPopstate: true   
+            closeOnPopstate: false
           }).then(() => {
           });
           return
@@ -195,7 +195,7 @@ import { base64ImgtoFile } from '@/common/js/utils'
         this.changeOriginalSignature(null);
         this.$dialog.alert({
           message: '签名已保存',
-          closeOnPopstate: true   
+          closeOnPopstate: false  
         }).then(() => {
         });
       }

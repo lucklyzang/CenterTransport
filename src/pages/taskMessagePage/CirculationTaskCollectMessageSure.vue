@@ -202,7 +202,7 @@ export default {
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
         });
       })
@@ -224,34 +224,26 @@ export default {
             message: res.data.msg,
             closeOnPopstate: true
           }).then(() => {
-            // 清空当前页面回显数据
-            this.allcirculationCollectMessageList = [];
-            this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
-            // 清空本次签名信息
-            this.changeCurrentElectronicSignature({DtMsg: null});
-            // 清空上一页面store科室采集数据
-            this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
-            // 清空上一页面Localstorage的科室采集数据
-            setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
-            // 存储完成采集任务的科室信息
-            let temporaryDepartmentId = [];
-            let temporaryCompleteInfo = [];
-            temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-            let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
-            if (this.completeDeparnmentInfo.length > 0) {
-              if (temporaryIndex != -1) {
-                temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-                temporaryDepartmentId.push(this.departmentId);
-                temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
-              } else {
-                temporaryDepartmentId.push(this.departmentId);
-                temporaryCompleteInfo.push(
-                  { 
-                    departmentIdList: temporaryDepartmentId,
-                    taskId: this.circulationTaskId
-                  }
-                )
-              }
+          });
+          // 清空当前页面回显数据
+          this.allcirculationCollectMessageList = [];
+          this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
+          // 清空本次签名信息
+          this.changeCurrentElectronicSignature({DtMsg: null});
+          // 清空上一页面store科室采集数据
+          this.changeCirculationCollectMessageList({DtMsg: this.temporaryCollectInfo});
+          // 清空上一页面Localstorage的科室采集数据
+          setStore('currentCirculationCollectMessage',{innerMessage: this.temporaryCollectInfo});
+          // 存储完成采集任务的科室信息
+          let temporaryDepartmentId = [];
+          let temporaryCompleteInfo = [];
+          temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
+          let temporaryIndex = this.completeDeparnmentInfo.indexOf(this.completeDeparnmentInfo.filter((item) => { return item.taskId == this.circulationTaskId})[0]);
+          if (this.completeDeparnmentInfo.length > 0) {
+            if (temporaryIndex != -1) {
+              temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
             } else {
               temporaryDepartmentId.push(this.departmentId);
               temporaryCompleteInfo.push(
@@ -260,17 +252,25 @@ export default {
                   taskId: this.circulationTaskId
                 }
               )
-            };
-            this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
-            setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
-            this.$router.push({path:'/circulationTask'});
-            this.changeTitleTxt({tit:'循环任务'});
-            setStore('currentTitle','循环任务');
-          });
+            }
+          } else {
+            temporaryDepartmentId.push(this.departmentId);
+            temporaryCompleteInfo.push(
+              { 
+                departmentIdList: temporaryDepartmentId,
+                taskId: this.circulationTaskId
+              }
+            )
+          };
+          this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
+          setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
+          this.$router.push({path:'/circulationTask'});
+          this.changeTitleTxt({tit:'循环任务'});
+          setStore('currentTitle','循环任务');
         } else {
           this.$dialog.alert({
             message: res.data.msg,
-            closeOnPopstate: true
+            closeOnPopstate: false
           }).then(() => {
           });
         }
@@ -278,7 +278,7 @@ export default {
       .catch((err) => {
         this.$dialog.alert({
           message: `${err.message}`,
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
         });
       })
@@ -294,7 +294,7 @@ export default {
       if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',
-          closeOnPopstate: true
+          closeOnPopstate: false
         }).then(() => {
         });
         return;
@@ -347,7 +347,7 @@ export default {
     collectMessageCancel () {
       this.$dialog.alert({
         message: '取消确认后,将丢失本页及本科室的采集数据',
-        closeOnPopstate: true,
+        closeOnPopstate: false,
         showCancelButton: true   
         })
         .then(() => {
