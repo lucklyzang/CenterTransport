@@ -1,8 +1,8 @@
 {
-  "name": "vueProMobileTemplate",
+  "name": "center-transport",
   "version": "1.0.0",
   "description": "Vue移动端项目",
-  "author": "xbrc_h5",
+  "author": "yong.zhang",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
