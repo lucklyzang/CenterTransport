@@ -518,6 +518,7 @@
 
     // 查询调度任务(状态筛选点击专用)  
       queryStateFilterDispatchTask (proID, workerId, index) {
+        this.noDataShow = false;
         this.showLoadingHint = true;
         getDispatchTaskMessage (proID, workerId)
         .then((res) => {
@@ -589,6 +590,7 @@
 
       // 查询调度任务(已完成)
       queryCompleteDispatchTask (data) {
+        this.noDataShow = false;
         this.showLoadingHint = true;
         getDispatchTaskComplete(data).then((res) => {
           this.showLoadingHint = false;

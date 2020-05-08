@@ -7,8 +7,6 @@ import 'vant/lib/index.css';
 import moment from 'moment'
 import {setStore, getStore, IsPC} from '@/common/js/utils.js'
 import echarts from 'echarts'
-// import SocketIO from 'socket.io-client';
-import VueSocketIO from 'vue-socket.io';
 
 Vue.prototype.$echarts = echarts
 // 全局挂载时间格式化方法
@@ -29,13 +27,10 @@ import './common/stylus/index.less'
 //移动端适配
 import 'lib-flexible/flexible.js'
 import App from './App'
-import preview from 'vue-photo-preview'
-import 'vue-photo-preview/dist/skin.css'
 let options = {
   fullscreenEl: false
 };
-Vue.use(preview, options);
-Vue.use(preview);
+
 Vue.use(Vant);
 Vue.config.productionTip = false;
 if (IsPC()) {

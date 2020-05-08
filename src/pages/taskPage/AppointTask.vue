@@ -578,6 +578,7 @@
 
       // 查询预约任务(状态筛选点击专用)  
       queryStateFilterDispatchTask (proID, workerId, index) {
+        this.noDataShow = false;
         this.showLoadingHint = true;
         queryAppointTaskMessage (proID, workerId)
         .then((res) => {
@@ -660,6 +661,7 @@
 
       // 查询调度任务(已完成)
       queryCompleteDispatchTask (data) {
+        this.noDataShow = false;
         this.showLoadingHint = true;
         getAppointTaskComplete(data).then((res) => {
           this.stateCompleteList = [];

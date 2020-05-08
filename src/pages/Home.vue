@@ -291,7 +291,7 @@
       queryNewWork (proId,workerId) {
         let audio = new Audio();
         audio.preloadc = "auto";
-        process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/dist/static/audios/task-info-voice.wav";
+        process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data == true) {

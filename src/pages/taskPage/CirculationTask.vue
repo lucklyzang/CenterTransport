@@ -467,6 +467,7 @@
 
       // 查询循环任务
       getCirculationTask (data,index) {
+        this.noDataShow = false;
         this.showLoadingHint = true;
         queryCirculationTask(data).then((res) => {
           this.showLoadingHint = false;
