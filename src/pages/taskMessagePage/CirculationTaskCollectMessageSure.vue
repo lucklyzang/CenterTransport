@@ -11,8 +11,8 @@
     </ul>
     <div class="sweep-code-title">
       <h3>科室信息采集确认</h3>
-      <span class="control-signature" @click="controlSignatureEvent">
-        {{showSignature == true ? '隐藏签名框' : '显示签名框'}}
+      <span v-show="showSignatureBox" class="control-signature" @click="controlSignatureEvent">
+        医生签字
       </span>
     </div>
       <div class="bed-number-list-outer">
@@ -89,6 +89,7 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      showSignatureBox: false,
       liIndex: null,
       isDialogShow: false,
       showSignature: false,
@@ -188,10 +189,11 @@ export default {
         })
     },
 
-    // 显示签名框点击
+    // // 显示签名框点击
     controlSignatureEvent () {
-      this.showSignature = !this.showSignature
+      this.showSignature = true
     },
+
     // 更新循环任务状态
     updateCirculationtaskState (data) {
       updateCirculationTask(data).then((res) => {
@@ -291,6 +293,10 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
+      if (!this.showSignatureBox) {
+        this.showSignatureBox = true;
+        return
+      };
       if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',
