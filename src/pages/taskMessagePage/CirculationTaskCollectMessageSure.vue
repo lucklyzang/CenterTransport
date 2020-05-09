@@ -11,9 +11,6 @@
     </ul>
     <div class="sweep-code-title">
       <h3>科室信息采集确认</h3>
-      <span v-show="showSignatureBox" class="control-signature" @click="controlSignatureEvent">
-        医生签字
-      </span>
     </div>
       <div class="bed-number-list-outer">
         <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
@@ -90,6 +87,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showSignatureBox: false,
+      isClickCCancelBtn: false,
       liIndex: null,
       isDialogShow: false,
       showSignature: false,
@@ -128,7 +126,11 @@ export default {
       this.gotoURL(() => {
         pushHistory();
         if (!this.isDialogShow) {
-          this.loseDataInfo()
+          this.loseDataInfo();
+          return
+        };
+        if (!this.showSignatureBox) {
+          this.signatureInfo()
         }
       })
     };
@@ -169,6 +171,7 @@ export default {
     // 丢失数据提示
     loseDataInfo () {
       this.isDialogShow = false;
+      this.showSignatureBox = true;
       this.$dialog.alert({
         message: '返回上级后,将丢失本页及本科室的数据',
         closeOnPopstate: false,
@@ -182,16 +185,34 @@ export default {
           this.$router.push({path:'/circulationTaskCollectMessage'});
           this.changeTitleTxt({tit:'循环信息采集'});
           setStore('currentTitle','循环信息采集');
-          this.isDialogShow = true
+          this.isDialogShow = true;
+          this.showSignatureBox = true;
         })
         .catch(() => {
-          this.isDialogShow = false
+          this.isDialogShow = false;
+          this.showSignatureBox = true;
         })
     },
 
-    // // 显示签名框点击
-    controlSignatureEvent () {
-      this.showSignature = true
+    // 医生签字提示
+    signatureInfo () {
+      this.isClickCCancelBtn = false;
+      this.isDialogShow = true;
+      this.showSignatureBox = false;
+      this.$dialog.alert({
+        message: '请医生签字',
+        closeOnPopstate: false,
+        showCancelButton: true   
+      }).then(() => {
+        this.showSignature = true;
+        this.isDialogShow = false;
+        this.showSignatureBox = true;
+      })
+      .catch(() => {
+        this.isDialogShow = false;
+        this.showSignatureBox = true;
+        this.isClickCCancelBtn = true
+      })
     },
 
     // 更新循环任务状态
@@ -293,8 +314,8 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      if (!this.showSignatureBox) {
-        this.showSignatureBox = true;
+      if (!this.showSignatureBox || this.isClickCCancelBtn) {
+        this.signatureInfo();
         return
       };
       if (!this.currentElectronicSignature) {
