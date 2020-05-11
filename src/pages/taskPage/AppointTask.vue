@@ -78,7 +78,7 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
@@ -127,7 +127,7 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
@@ -176,7 +176,7 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
@@ -225,7 +225,7 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
@@ -274,7 +274,7 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
@@ -347,11 +347,11 @@
             </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
-            <van-checkbox v-model="item.taskCheck"  @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
-              <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <img :src="taskGetPng" alt="" @click.stop.native="getTask(item.id)">
             </span>
           </p>
         </div>
@@ -674,6 +674,7 @@
                 this.stateCompleteList.push({
                   taskCheck: false,
                   createTime: item.createTime,
+
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,

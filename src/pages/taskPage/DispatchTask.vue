@@ -45,6 +45,12 @@
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
+              <p class="wait-handle-message-createTime">
+                计划开始时间：{{item.planStartTime}}
+              </p>
+              <p class="wait-handle-message-planUseTime">
+                计划用时：{{item.planUseTime}}分钟
+              </p>
               <div class="wait-handle-message">
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -87,7 +93,7 @@
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
                 <p class="get-wait-task">
                   <span v-show="item.state == '1'">
@@ -104,6 +110,12 @@
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
+              <p class="wait-handle-message-createTime">
+                计划开始时间：{{item.planStartTime}}
+              </p>
+              <p class="wait-handle-message-planUseTime">
+                计划用时：{{item.planUseTime}}分钟
+              </p>
               <div class="wait-handle-message">
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -146,7 +158,7 @@
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
                 <p class="get-wait-task">
                   <span v-show="item.state == '1'">
@@ -163,6 +175,12 @@
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
+              <p class="wait-handle-message-createTime">
+                计划开始时间：{{item.planStartTime}}
+              </p>
+              <p class="wait-handle-message-planUseTime">
+                计划用时：{{item.planUseTime}}分钟
+              </p>
               <div class="wait-handle-message">
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -205,7 +223,7 @@
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
               </div>
               <p class="get-wait-task">
@@ -222,6 +240,12 @@
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
+              <p class="wait-handle-message-createTime">
+                计划开始时间：{{item.planStartTime}}
+              </p>
+              <p class="wait-handle-message-planUseTime">
+                计划用时：{{item.planUseTime}}分钟
+              </p>
               <div class="wait-handle-message">
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -264,7 +288,7 @@
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
               </div>
               <p class="get-wait-task">
@@ -305,6 +329,12 @@
               <p class="wait-handle-message-createTime">
                 创建时间：{{item.createTime}}
               </p>
+              <p class="wait-handle-message-createTime">
+                计划开始时间：{{item.planStartTime}}
+              </p>
+              <p class="wait-handle-message-planUseTime">
+                计划用时：{{item.planUseTime}}分钟
+              </p>
               <div class="wait-handle-message">
                 <div class="handle-message-line-wrapper">
                   <p>
@@ -347,7 +377,7 @@
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                 </p>
               </div>
               <p class="get-wait-task">
@@ -531,6 +561,8 @@
               for (let item of res.data.data) {
                 temporaryTaskListFirst.push({
                   createTime: item.createTime,
+                  planUseTime: item.planUseTime,
+                  planStartTime: item.planStartTime,
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   setOutPlaceId: item.setOutPlaceId,
@@ -601,6 +633,8 @@
               for (let item of res.data.data) {
                 this.stateCompleteList.push({
                   createTime: item.createTime,
+                  planUseTime: item.planUseTime,
+                  planStartTime: item.planStartTime,
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,
@@ -707,7 +741,8 @@
       },
 
       // 阻止change事件冒泡
-      emptyHandle () {},
+      emptyHandle (event) {
+      },
 
       // 返回上一页
       backTo () {
@@ -1000,6 +1035,13 @@
           font-size: 12px;
           color: #7f7d7d
         };
+        .wait-handle-message-planUseTime {
+          position: absolute;
+          top: 6px;
+          right: 10px;
+          font-size: 12px;
+          color: #7f7d7d
+        };
         .wait-handle-message {
           font-size: 12px;
           padding-top: 15px;
@@ -1023,7 +1065,7 @@
         };
         .wait-handle-check {
           position: absolute;
-          top: 40px;
+          top: 60px;
           left: 6px
         };
         .get-wait-task {
@@ -1133,7 +1175,7 @@
         };
         .wait-handle-check {
           position: absolute;
-          top: 40px;
+          top: 60px;
           left: 6px
         };
         .get-wait-task {

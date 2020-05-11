@@ -11,9 +11,6 @@
     </ul>
     <div class="sweep-code-title">
       <h3>交接信息确认</h3>
-      <span class="control-signature" @click="controlSignatureEvent">
-        {{showSignature == true ? '隐藏签名框' : '显示签名框'}}
-      </span>
     </div>
      <div class="sweep-code-area">
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
@@ -100,6 +97,8 @@ export default {
       leftDownShow: false,
       showSignature: false,
       isDialogShow: false,
+      isClickCancelBtn: false,
+      showSignatureBox: false,
       liIndex: null,
       manageSampleDataList: [],
       taskSurePng: require('@/components/images/task-sure.png'),
@@ -122,7 +121,11 @@ export default {
       this.gotoURL(() => {
         pushHistory();
         if (!this.isDialogShow) {
-          this.loseDataInfo()
+          this.loseDataInfo();
+          return
+        };
+        if (!this.showSignatureBox) {
+          this.signatureInfo()
         }
       })
     };
@@ -167,6 +170,7 @@ export default {
       // 丢失数据提示
       loseDataInfo () {
         this.isDialogShow = false;
+        this.showSignatureBox = true;
         this.$dialog.alert({
           message: '返回上级后,将丢失本页数据!',
           closeOnPopstate: false,
@@ -177,10 +181,33 @@ export default {
           this.$router.push({path:'/circulationTaskMessageConnect'});
           this.changeTitleTxt({tit:'信息交接'});
           setStore('currentTitle','信息交接');
-          this.isDialogShow = true
+          this.isDialogShow = true;
+          this.showSignatureBox = true
         })
         .catch(() => {
-          this.isDialogShow = false
+          this.isDialogShow = false;
+          this.showSignatureBox = true;
+        })
+      },
+
+      // 医生签字提示
+      signatureInfo () {
+        this.isClickCancelBtn = false;
+        this.isDialogShow = true;
+        this.showSignatureBox = false;
+        this.$dialog.alert({
+          message: '请医生签字',
+          closeOnPopstate: false,
+          showCancelButton: true   
+        }).then(() => {
+          this.showSignature = true;
+          this.isDialogShow = false;
+          this.showSignatureBox = true;
+        })
+        .catch(() => {
+          this.isDialogShow = false;
+          this.showSignatureBox = true;
+          this.isClickCancelBtn = true
         })
       },
 
@@ -316,6 +343,10 @@ export default {
 
      // 交接信息确认事件
     connectMessageSure () {
+      if (!this.showSignatureBox || this.isClickCancelBtn) {
+        this.signatureInfo();
+        return
+      };
       if (!this.currentElectronicSignature) {
         this.$dialog.alert({
           message: '签名不能为空，请确认签名!',

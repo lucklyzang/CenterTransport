@@ -87,7 +87,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showSignatureBox: false,
-      isClickCCancelBtn: false,
+      isClickCancelBtn: false,
       liIndex: null,
       isDialogShow: false,
       showSignature: false,
@@ -190,13 +190,13 @@ export default {
         })
         .catch(() => {
           this.isDialogShow = false;
-          this.showSignatureBox = true;
+          this.showSignatureBox = true
         })
     },
 
     // 医生签字提示
     signatureInfo () {
-      this.isClickCCancelBtn = false;
+      this.isClickCancelBtn = false;
       this.isDialogShow = true;
       this.showSignatureBox = false;
       this.$dialog.alert({
@@ -211,7 +211,7 @@ export default {
       .catch(() => {
         this.isDialogShow = false;
         this.showSignatureBox = true;
-        this.isClickCCancelBtn = true
+        this.isClickCancelBtn = true
       })
     },
 
@@ -314,7 +314,7 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      if (!this.showSignatureBox || this.isClickCCancelBtn) {
+      if (!this.showSignatureBox || this.isClickCancelBtn) {
         this.signatureInfo();
         return
       };

@@ -41,7 +41,7 @@
   .no-wrap()
 }
 //循环情况标签数量提示框
-.status-sign (@width:44px, @height:44px, @backgroundColor:@color-theme) {
+.status-sign (@width:44px, @height:44px, @right:-20px,@backgroundColor:@color-theme) {
   transform: scale(.5);
   transform-origin: 0% top;
   background: @backgroundColor;
@@ -54,7 +54,7 @@
   font-size: 20px;
   line-height: @height;
   text-align: center;
-  right: -20px;
+  right: @right;
   top: 4px;
   .no-wrap()
 }

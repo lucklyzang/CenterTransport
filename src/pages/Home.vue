@@ -379,9 +379,8 @@
         .then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data) {
-              let needPersonMessage = res.data.data.filter((item) => {return item['workerId'] == this.workerId});
-              this.yesterdayNumber = needPersonMessage[0].totalCount;
-              this.yesterdayRank = needPersonMessage[0].rank
+              this.yesterdayNumber = res.data.data.totalCount;
+              this.yesterdayRank = res.data.data.rank
             }
           }
         })
@@ -707,7 +706,7 @@
               text-align: left;
               position: relative;
               .dask-list-sign {
-                .status-sign(50px,50px,orange)
+                .status-sign(50px,50px,-8px,orange)
               }
             }
           }

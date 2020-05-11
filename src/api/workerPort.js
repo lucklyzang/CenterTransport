@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
 // 查询总量和排序
-export function queryAllTaskMessage(proID,workerId) {
+export function queryAllTaskMessage(data) {
   return request({
-    url: 'worker/countRank',
-    method: 'get'
+    url: `worker/countRank`,
+    method: 'get',
+    params: data
   })
 };
 
