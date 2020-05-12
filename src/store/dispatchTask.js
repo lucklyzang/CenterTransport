@@ -11,7 +11,10 @@ export default {
     isCoerceTakePhoto: false,
     isCompleteSweepCode: [],
     isDispatchTaskFirstSweepCode: true,
-    isCompletePhotoList: []
+    isCompletePhotoList: [],
+    isBack: '',
+    isSign: '',
+    isSingleDestination: ''
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -23,7 +26,10 @@ export default {
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
     isCompleteSweepCode: state => state.isCompleteSweepCode,
     isDispatchTaskFirstSweepCode: state => state.isDispatchTaskFirstSweepCode,
-    isCompletePhotoList: state => state.isCompletePhotoList
+    isCompletePhotoList: state => state.isCompletePhotoList,
+    isBack: state => state.isBack,
+    isSign: state => state.isSign,
+    isSingleDestination:  state => state.isSingleDestination
   },
   mutations:{
     // 改变页面标题
@@ -60,14 +66,26 @@ export default {
     changeisCompleteSweepCode (state,payLoad) {
       state.isCompleteSweepCode = payLoad
     },
-    //改变是否首次扫码的状态 isCompletePhotoList
+    //改变是否首次扫码的状态
     changeIsDispatchTaskFirstSweepCode (state,payLoad) {
       state.isDispatchTaskFirstSweepCode = payLoad
     },
-     //改变完成上传的照片 isCompletePhotoList
+    //改变完成上传的照片
      changeIsCompletePhotoList (state,payLoad) {
       state.isCompletePhotoList = payLoad
-    }
+    },
+    //改变是否返回出发地的状态
+    changeIsBack (state,payLoad) {
+      state.isBack = payLoad
+    },
+    //改变是否签字的状态
+    changeIsSign (state,payLoad) {
+      state.isSign = payLoad
+    },
+    //改变是否是单一目的地状态
+    changeIsSingleDestination (state,payLoad) {
+      state.isSingleDestination = payLoad
+    },
   },
   actions:{}
 }

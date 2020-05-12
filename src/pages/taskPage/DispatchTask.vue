@@ -59,7 +59,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
+                    <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                   </p>
                   <p>
                     <span class="message-tit">转运工具:</span>
@@ -84,6 +84,16 @@
                   <p>
                     <span class="message-tit">目的地拍照:</span>
                     <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">签字:</span>
+                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">回到出发地:</span>
+                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -118,7 +128,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
+                    <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                   </p>
                   <p>
                     <span class="message-tit">转运工具:</span>
@@ -143,6 +153,16 @@
                   <p>
                     <span class="message-tit">目的地拍照:</span>
                     <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                 <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">签字:</span>
+                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">回到出发地:</span>
+                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -177,7 +197,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
+                    <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                   </p>
                   <p>
                     <span class="message-tit">转运工具:</span>
@@ -202,6 +222,16 @@
                   <p>
                     <span class="message-tit">目的地拍照:</span>
                     <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">签字:</span>
+                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">回到出发地:</span>
+                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -236,7 +266,7 @@
                 <div class="handle-message-line-wrapper">
                   <p>
                     <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
+                    <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                   </p>
                   <p>
                     <span class="message-tit">转运工具:</span>
@@ -261,6 +291,16 @@
                   <p>
                     <span class="message-tit">目的地拍照:</span>
                     <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">签字:</span>
+                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">回到出发地:</span>
+                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -344,6 +384,16 @@
                   <p>
                     <span class="message-tit">目的地拍照:</span>
                     <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                  </p>
+                </div>
+                <div class="handle-message-line-wrapper">
+                  <p>
+                    <span class="message-tit">签字:</span>
+                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                  </p>
+                  <p>
+                    <span class="message-tit">回到出发地:</span>
+                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                   </p>
                 </div>
                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -491,7 +541,10 @@
         'changedispatchTaskCancelIdList',
         'changeDispatchTaskDepartmentType',
         'changeDispatchTaskState',
-        'changeIsCoerceTakePhoto'
+        'changeIsCoerceTakePhoto',
+        'changeIsBack',
+        'changeIsSign',
+        'changeIsSingleDestination'
       ]),
 
       startTimeChange(e) { 
@@ -541,7 +594,9 @@
                   priority: item.priority,
                   id: item.id,
                   startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto
+                  endPhoto: item.endPhoto,
+                  isBack: item.isBack,
+                  isSign: item.isSign
                 })
               };
               if (index == 0) {
@@ -609,7 +664,9 @@
                   priority: item.priority,
                   id: item.id,
                   startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto
+                  endPhoto: item.endPhoto,
+                  isBack: item.isBack,
+                  isSign: item.isSign
                 })
               };
             } else {
@@ -801,17 +858,26 @@
       // 点击具体任务事件
       taskClickEvent (item) {
         if (item.state !== 1 && item.state !== 7) {
-          // 传给扫码界面科室类型和任务状态的值
+          //是否需要返回出发地
+          this.changeIsBack(item.isBack);
+          //是否需要签字
+          this.changeIsSign(item.isSign);
           if (item.state == 2) {
             // 判断出发地是否强制拍照
             this.changeIsCoerceTakePhoto(item.startPhoto);
             this.changeDispatchTaskDepartmentType(0);
             this.changeDispatchTaskState(3)
           } else if (item.state == 3) {
-            // 判断目的地地是否强制拍照
+            // 判断目的地是否强制拍照
             this.changeIsCoerceTakePhoto(item.endPhoto);
             this.changeDispatchTaskDepartmentType(1);
-            this.changeDispatchTaskState(7)
+            this.changeDispatchTaskState(7);
+            //判断是否为单一目的地
+            if (item.destinationName == "") {
+              this.changeIsSingleDestination(true)
+            } else {
+              this.changeIsSingleDestination(false)
+            }
           };
           this.$router.push({'path':'/dispatchTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});

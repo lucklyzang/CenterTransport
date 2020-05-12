@@ -39,9 +39,12 @@
           </div>
         </div>
       </div>
+      <div class="electronic-signature" v-if="showSignature">
+        <ElectronicSignature></ElectronicSignature>
+      </div>
     </div>
     <div class="btn-area">
-      <span v-show="photoAreaBoxShow == true">
+      <span v-show="photoAreaBoxShow == true || showSignature == true">
         <img :src="taskSurePng" alt=""  @click="submitPhoto">
       </span>
       <span v-show="photoAreaBoxShow == false">
@@ -57,6 +60,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import AfterSaleImage from '@/components/AfterSaleImage'
+import ElectronicSignature from '@/components/ElectronicSignature'
 import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
@@ -72,6 +76,7 @@ export default {
       leftDownShow: false,
       showLoadingHint: false,
       photoAreaBoxShow: false,
+      showSignature: false,
       appointAreaShow: true,
       srcUrl: '',
       headerImg: '',
@@ -90,7 +95,8 @@ export default {
     HeaderTop,
     NoData,
     Loading,
-    AfterSaleImage
+    AfterSaleImage,
+    ElectronicSignature
   },
 
   mounted () {
@@ -127,7 +133,11 @@ export default {
       'isCoerceTakePhoto',
       'isCompleteSweepCode',
       'isDispatchTaskFirstSweepCode',
-      'isCompletePhotoList'
+      'isCompletePhotoList',
+      'currentElectronicSignature',
+      'isBack',
+      'isSign',
+      'isSingleDestination'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -145,7 +155,8 @@ export default {
       'changeTitleTxt',
       'changeisCompleteSweepCode',
       'changeIsDispatchTaskFirstSweepCode',
-      'changeIsCompletePhotoList'
+      'changeIsCompletePhotoList',
+      'changeCurrentElectronicSignature'
     ]),
 
     // 扫描二维码方法
@@ -269,16 +280,18 @@ export default {
       dispatchTaskUploadMsg(data).then((res) => {
         this.showLoadingHint = false;
         if (res && res.data.code == 200) {
-          // 上传成功后，清除存储的照片
-          let temporaryInfo = deepClone(this.isCompletePhotoList.filter((item) => {return item['taskId'] != this.taskId}));
-          this.changeIsCompletePhotoList(temporaryInfo);
-          setStore('completPhotoInfo', {"photoInfo": temporaryInfo});
-          this.updateTaskState({
-            proId: this.proId, //当前项目ID
-            id: this.dispatchTaskMessage.id, //当前任务ID
-            state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
-          });
-          this.photoAreaBoxShow = false
+          // 上传成功后,清除存储的照片
+          if(this.photoAreaBoxShow) {
+            let temporaryInfo = deepClone(this.isCompletePhotoList.filter((item) => {return item['taskId'] != this.taskId}));
+            this.changeIsCompletePhotoList(temporaryInfo);
+            setStore('completPhotoInfo', {"photoInfo": temporaryInfo});
+            // 判断是否需要签字
+            this.judgeIsSignature();
+            this.photoAreaBoxShow = false
+          } else {
+            // 判断出发地或目的地子流程
+            this.judgeSubProcess()
+          }
         } else {
           this.$dialog.alert({
             message: `${res.data.msg}`,
@@ -299,18 +312,41 @@ export default {
 
     // 提交图片
     submitPhoto () {
-      if (this.temporaryUpImgUrl == '') {
-        this.$dialog.alert({
-          message: '请上传照片',
-          closeOnPopstate: true
-        }).then(() => {
-        });
-        return
-      };
-      this.currentTextContent = '上传中,请稍候···'
-      this.showLoadingHint = true;
-      // 压缩图片
-      compressImg(this.upImgUrl,this.compressCallback);
+      if (this.photoAreaBoxShow) {
+        if (this.temporaryUpImgUrl == '') {
+          this.$dialog.alert({
+            message: '请上传照片',
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          return
+        };
+        this.currentTextContent = '上传中,请稍候···'
+        this.showLoadingHint = true;
+        // 压缩图片
+        compressImg(this.upImgUrl,this.compressCallback)
+      } else {
+        if (!this.currentElectronicSignature) {
+          this.$dialog.alert({
+            message: '签名不能为空，请确认签名!',
+            closeOnPopstate: false
+          }).then(() => {
+          });
+          return
+        };
+        this.currentTextContent = '上传中,请稍候···'
+        this.showLoadingHint = true;
+        this.uploadPhoto(
+          {
+            taskId: this.taskId,  //任务ID必填
+            proId: this.proId,  //项目ID必填
+            proName: this.proName,//项目名称必填项
+            type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
+            taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
+            photo: this.currentElectronicSignature //base64字符串必填
+          }
+        );
+      }
     },
 
     // 摄像头扫码后的回调
@@ -390,17 +426,14 @@ export default {
           };
           this.changeisCompleteSweepCode(temporaryOfficeList);
           setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+          // 判断是否需要拍照0不拍照1拍照
           if (this.isCoerceTakePhoto == 0) {
-            this.updateTaskState({
-              proId: this.proId, //当前项目ID
-              id: this.dispatchTaskMessage.id, //当前任务ID
-              state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
-            });
-            this.photoAreaBoxShow = false;
-            this.appointAreaShow = true;
+            // 判断是否需要签字
+            this.judgeIsSignature()
           } else {
             this.photoAreaBoxShow = true;
             this.appointAreaShow = false;
+            this.showSignature = false
           }
         } else {
           this.$dialog.alert({
@@ -421,6 +454,52 @@ export default {
         }).then(() => {
         });
       })
+    },
+
+    // 判断出发地和目的地子流程方法
+    judgeSubProcess () {
+      // 判断是否是出发地0出发地1目的地
+      if (this.dispatchTaskDepartmentType == 0) {
+        this.updateTaskState({
+          proId: this.proId, //当前项目ID
+          id: this.dispatchTaskMessage.id, //当前任务ID
+          state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+        })
+      } else if (this.dispatchTaskDepartmentType == 1) {
+        // 判断是否为单一目的地
+        if (this.isSingleDestination) {
+          // 判断是否回到出发地
+          if (this.isBack) {
+            //重新执行扫码出发地的子流程
+            this.photoAreaBoxShow = false;
+            this.appointAreaShow = true;
+            this.showSignature = false
+          } else {
+            // 判断是否为单一目的地
+            if (this.isSingleDestination) {
+              // 结束派送
+            } else {
+              //手动结束
+            }
+          }
+        } else {
+          // 跳到判断是否还有其它目的地页面
+          this.$router.push({path:'/circulationJudge'});
+          this.changeTitleTxt({tit:''});
+          setStore('currentTitle','')
+        }
+      }
+    },
+
+    // 判断是否需要签字0不签1签字
+    judgeIsSignature () {
+      if (this.isSign == 0) {
+        this.judgeSubProcess()
+      } else if (this.isSign == 1) {
+        this.showSignature = true;
+        this.photoAreaBoxShow = false;
+        this.appointAreaShow = false;
+      }
     },
 
     // 更新任务状态
@@ -628,7 +707,10 @@ export default {
             }
           }
         }
-      }
+      };
+      .electronic-signature {
+      height: 250px
+    }
     };
     .btn-area {
       height: 80px;
