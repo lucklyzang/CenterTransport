@@ -47,7 +47,7 @@
       <span v-show="photoAreaBoxShow == true || showSignature == true">
         <img :src="taskSurePng" alt=""  @click="submitPhoto">
       </span>
-      <span v-show="photoAreaBoxShow == false">
+      <span v-show="photoAreaBoxShow == false && showSignature == false">
         <img :src="taskSweepCodePng" alt=""  @click="sweepCodeSure">
       </span>
       <span>
@@ -156,7 +156,8 @@ export default {
       'changeisCompleteSweepCode',
       'changeIsDispatchTaskFirstSweepCode',
       'changeIsCompletePhotoList',
-      'changeCurrentElectronicSignature'
+      'changeCurrentElectronicSignature',
+      'changeShowEndTaskBtn'
     ]),
 
     // 扫描二维码方法
@@ -289,6 +290,8 @@ export default {
             this.judgeIsSignature();
             this.photoAreaBoxShow = false
           } else {
+            // 清除本次签名
+            this.changeCurrentElectronicSignature({DtMsg: null});
             // 判断出发地或目的地子流程
             this.judgeSubProcess()
           }
@@ -343,7 +346,8 @@ export default {
             proName: this.proName,//项目名称必填项
             type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
             taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
-            photo: this.currentElectronicSignature //base64字符串必填
+            photo: this.currentElectronicSignature, //base64字符串必填
+            depId: this.departmentId //当前科室ID 必输
           }
         );
       }
@@ -396,16 +400,27 @@ export default {
         if (res && res.data.code == 200) {
           this.changeIsDispatchTaskFirstSweepCode(false);
           setStore("isDispatchFirstSweepCode",false);
-          // 存储已经扫码验证通过的科室id
-          let temporaryOfficeList = [];
-          let temporaryDepartmentId = [];
-          temporaryOfficeList = deepClone(this.isCompleteSweepCode);
-          if (this.isCompleteSweepCode.length > 0 ) {
-            let temporaryIndex = this.isCompleteSweepCode.indexOf(this.isCompleteSweepCode.filter((item) => {return item.taskId == this.taskId})[0]);
-            if (temporaryIndex != -1) {
-              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
-              temporaryDepartmentId.push(this.currentSiteId);
-              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+          // 只存储出发地和单一目的地科室
+          if (this.dispatchTaskDepartmentType == 0 || (this.isSingleDestination && this.dispatchTaskDepartmentType == 1)) {
+            // 存储已经扫码验证通过的科室id
+            let temporaryOfficeList = [];
+            let temporaryDepartmentId = [];
+            temporaryOfficeList = deepClone(this.isCompleteSweepCode);
+            if (this.isCompleteSweepCode.length > 0 ) {
+              let temporaryIndex = this.isCompleteSweepCode.indexOf(this.isCompleteSweepCode.filter((item) => {return item.taskId == this.taskId})[0]);
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+                temporaryDepartmentId.push(this.currentSiteId);
+                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+              } else {
+                temporaryDepartmentId.push(this.currentSiteId);
+                temporaryOfficeList.push(
+                  { 
+                    officeList: repeArray(temporaryDepartmentId),
+                    taskId: this.taskId
+                  }
+                )
+              };
             } else {
               temporaryDepartmentId.push(this.currentSiteId);
               temporaryOfficeList.push(
@@ -415,17 +430,9 @@ export default {
                 }
               )
             };
-          } else {
-            temporaryDepartmentId.push(this.currentSiteId);
-            temporaryOfficeList.push(
-              { 
-                officeList: repeArray(temporaryDepartmentId),
-                taskId: this.taskId
-              }
-            )
+            this.changeisCompleteSweepCode(temporaryOfficeList);
+            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList})
           };
-          this.changeisCompleteSweepCode(temporaryOfficeList);
-          setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
           // 判断是否需要拍照0不拍照1拍照
           if (this.isCoerceTakePhoto == 0) {
             // 判断是否需要签字
@@ -470,21 +477,34 @@ export default {
         if (this.isSingleDestination) {
           // 判断是否回到出发地
           if (this.isBack) {
-            //重新执行扫码出发地的子流程
-            this.photoAreaBoxShow = false;
-            this.appointAreaShow = true;
-            this.showSignature = false
+            //重新执行扫码出发地时更新任务状态为未结束
+            this.updateTaskState({
+              proId: this.proId, //当前项目ID
+              id: this.dispatchTaskMessage.id, //当前任务ID
+              state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+            })
           } else {
             // 判断是否为单一目的地
             if (this.isSingleDestination) {
               // 结束派送
+              this.updateTaskState({
+                proId: this.proId, //当前项目ID
+                id: this.dispatchTaskMessage.id, //当前任务ID
+                state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+              })
             } else {
               //手动结束
+              this.changeShowEndTaskBtn(true);
+              // 跳到判断是否还有其它目的地页面
+              this.$router.push({path:'/dispatchTaskJudge'});
+              this.changeTitleTxt({tit:''});
+              setStore('currentTitle','')
             }
           }
         } else {
           // 跳到判断是否还有其它目的地页面
-          this.$router.push({path:'/circulationJudge'});
+          this.changeShowEndTaskBtn(false);
+          this.$router.push({path:'/dispatchTaskJudge'});
           this.changeTitleTxt({tit:''});
           setStore('currentTitle','')
         }
@@ -498,7 +518,7 @@ export default {
       } else if (this.isSign == 1) {
         this.showSignature = true;
         this.photoAreaBoxShow = false;
-        this.appointAreaShow = false;
+        this.appointAreaShow = false
       }
     },
 
@@ -507,18 +527,19 @@ export default {
       updateDispatchTask(data).then((res) => {
         if (res && res.data.code == 200) {
           this.temporaryUpImgUrl = '';
-          if (this.dispatchTaskDepartmentType == 1) {
+          // 为单一类型目的地或第二次扫出发地时结束该任务
+          if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && data['state'] != 4) || this.dispatchTaskState == 7) {
             this.$dialog.alert({
               message: '该条任务已完成',
               closeOnPopstate: true
             }).then(() => {
             });
-            // 清空该完成任务存储的已扫过科室信息
-            let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
-            temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
-            this.changeisCompleteSweepCode(temporarySweepCodeOficeList);
-            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
           };
+          // 清空该完成任务存储的已扫过科室信息
+          let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
+          temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+          this.changeisCompleteSweepCode(temporarySweepCodeOficeList);
+          setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
           setStore('currentTitle','调度任务')
@@ -568,6 +589,15 @@ export default {
             this.echoPhoto();
             this.photoAreaBoxShow = true;
             this.appointAreaShow = false
+          } else if (this.isSign == 1) {
+            this.$dialog.alert({
+              message: '该科室校验已验证通过,请签字',
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.photoAreaBoxShow = false;
+            this.appointAreaShow = false;
+            this.showSignature = true
           } else {
             this.sweepAstoffice()
           }
@@ -600,7 +630,7 @@ export default {
     }
     .loading {
       position: absolute;
-      top: 470px;
+      bottom: 80px;
       left: 0;
       width: 100%;
       height: 50px;
@@ -709,7 +739,9 @@ export default {
         }
       };
       .electronic-signature {
-      height: 250px
+      height: 250px;
+      margin-top: 150px;
+      box-sizing: border-box
     }
     };
     .btn-area {

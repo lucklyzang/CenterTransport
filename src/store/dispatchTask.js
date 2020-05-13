@@ -14,7 +14,8 @@ export default {
     isCompletePhotoList: [],
     isBack: '',
     isSign: '',
-    isSingleDestination: ''
+    isSingleDestination: '',
+    showEndTaskBtn: false,
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -29,7 +30,8 @@ export default {
     isCompletePhotoList: state => state.isCompletePhotoList,
     isBack: state => state.isBack,
     isSign: state => state.isSign,
-    isSingleDestination:  state => state.isSingleDestination
+    isSingleDestination:  state => state.isSingleDestination,
+    showEndTaskBtn: state => state.showEndTaskBtn
   },
   mutations:{
     // 改变页面标题
@@ -86,6 +88,10 @@ export default {
     changeIsSingleDestination (state,payLoad) {
       state.isSingleDestination = payLoad
     },
+    // 改变是否显示结束任务按钮状态
+    changeShowEndTaskBtn (state,payLoad) {
+      state.showEndTaskBtn = payLoad
+    }
   },
   actions:{}
 }

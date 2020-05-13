@@ -22,7 +22,7 @@ const DispatchTaskCancelForm = () => import('../pages/taskFormPage/DispatchTaskC
 const AppointTaskForm = () => import('../pages/taskFormPage/AppointTaskForm')
 const AppointTaskCancelForm = () => import('../pages/taskFormPage/AppointTaskCancelForm')
 const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskCustomerInfo')
-const CirculationJudge = () => import('../pages/taskJudgePage/CirculationJudge')
+const DispatchTaskJudge = () => import('../pages/taskJudgePage/dispatchTaskJudge')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -133,9 +133,9 @@ let baseRoute  = [
     component: AppointTaskCustomerInfo
   },
   {
-    path: '/circulationJudge',
-    name: 'circulationJudge',
-    component: CirculationJudge
+    path: '/dispatchTaskJudge',
+    name: 'dispatchTaskJudge',
+    component: DispatchTaskJudge
   }  
 ];
 let router = new Router({

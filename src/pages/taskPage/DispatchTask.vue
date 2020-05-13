@@ -878,6 +878,10 @@
             } else {
               this.changeIsSingleDestination(false)
             }
+          } else if (item.state == 4) {
+            this.changeIsCoerceTakePhoto(item.startPhoto);
+            this.changeDispatchTaskDepartmentType(0);
+            this.changeDispatchTaskState(7)
           };
           this.$router.push({'path':'/dispatchTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
@@ -1055,7 +1059,6 @@
       .wait-handle-list {
         box-sizing: border-box;
         position: relative;
-        padding-bottom: 10px;
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
