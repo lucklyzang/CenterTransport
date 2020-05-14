@@ -862,6 +862,12 @@
           this.changeIsBack(item.isBack);
           //是否需要签字
           this.changeIsSign(item.isSign);
+          //判断是否为单一目的地
+          if (item.destinationName == "") {
+            this.changeIsSingleDestination(false)
+          } else {
+            this.changeIsSingleDestination(true)
+          };
           if (item.state == 2) {
             // 判断出发地是否强制拍照
             this.changeIsCoerceTakePhoto(item.startPhoto);
@@ -871,12 +877,11 @@
             // 判断目的地是否强制拍照
             this.changeIsCoerceTakePhoto(item.endPhoto);
             this.changeDispatchTaskDepartmentType(1);
-            this.changeDispatchTaskState(7);
-            //判断是否为单一目的地
-            if (item.destinationName == "") {
-              this.changeIsSingleDestination(true)
+            // 判断是否回到出发地0不回1回
+            if (item.isBack == 0) {
+              this.changeDispatchTaskState(7)
             } else {
-              this.changeIsSingleDestination(false)
+              this.changeDispatchTaskState(4)
             }
           } else if (item.state == 4) {
             this.changeIsCoerceTakePhoto(item.startPhoto);

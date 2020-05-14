@@ -88,8 +88,6 @@ export default {
         })
       } else {
         this.endTaskShow = true
-        // 手动结束任务
-        this.endTask()
       }
     },
 
@@ -122,9 +120,8 @@ export default {
           id: this.dispatchTaskMessage.id, //当前任务ID
           state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
         })
-      } else if (this.isBack == 0) {
+      } else {
         this.showIsGoOtherDestination = true;
-        // 判断通过何种方式弹出是否是单一目的地弹框
         this.judgeIsSingleDestination()
       }
     },
@@ -154,7 +151,7 @@ export default {
     updateTaskState (data) {
       updateDispatchTask(data).then((res) => {
         if (res && res.data.code == 200) {
-          if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && data['state'] != 4) || this.dispatchTaskState == 7) {
+          if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && this.dispatchTaskState != 4) || (this.dispatchTaskState == 7)) {
             this.$dialog.alert({
               message: '该条任务已完成',
               closeOnPopstate: true

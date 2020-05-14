@@ -476,12 +476,12 @@ export default {
         // 判断是否为单一目的地
         if (this.isSingleDestination) {
           // 判断是否回到出发地
-          if (this.isBack) {
+          if (this.isBack == 1) {
             //重新执行扫码出发地时更新任务状态为未结束
             this.updateTaskState({
               proId: this.proId, //当前项目ID
               id: this.dispatchTaskMessage.id, //当前任务ID
-              state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+              state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             })
           } else {
             // 判断是否为单一目的地
@@ -495,7 +495,7 @@ export default {
             } else {
               //手动结束
               this.changeShowEndTaskBtn(true);
-              // 跳到判断是否还有其它目的地页面
+              // 跳到手动结束页面
               this.$router.push({path:'/dispatchTaskJudge'});
               this.changeTitleTxt({tit:''});
               setStore('currentTitle','')
@@ -528,7 +528,7 @@ export default {
         if (res && res.data.code == 200) {
           this.temporaryUpImgUrl = '';
           // 为单一类型目的地或第二次扫出发地时结束该任务
-          if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && data['state'] != 4) || this.dispatchTaskState == 7) {
+          if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && this.dispatchTaskState != 4) || (this.dispatchTaskState == 7)) {
             this.$dialog.alert({
               message: '该条任务已完成',
               closeOnPopstate: true
