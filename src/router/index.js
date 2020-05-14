@@ -22,6 +22,7 @@ const DispatchTaskCancelForm = () => import('../pages/taskFormPage/DispatchTaskC
 const AppointTaskForm = () => import('../pages/taskFormPage/AppointTaskForm')
 const AppointTaskCancelForm = () => import('../pages/taskFormPage/AppointTaskCancelForm')
 const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskCustomerInfo')
+const DispatchTaskJudge = () => import('../pages/taskJudgePage/dispatchTaskJudge')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -130,7 +131,12 @@ let baseRoute  = [
     path: '/appointTaskCustomerInfo',
     name: 'appointTaskCustomerInfo',
     component: AppointTaskCustomerInfo
-  } 
+  },
+  {
+    path: '/dispatchTaskJudge',
+    name: 'dispatchTaskJudge',
+    component: DispatchTaskJudge
+  }  
 ];
 let router = new Router({
   routes: baseRoute
