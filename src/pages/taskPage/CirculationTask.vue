@@ -613,13 +613,23 @@
 
       // 下拉刷新
       onRefresh () {
-        this.getCirculationTask({
-          proId: this.proId,  //医院ID，必输
-          workerId: this.workerId,   //运送员ID
-          states: [], //查询状态
-          startDate: '',  //起始日期  YYYY-MM-dd
-          endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, this.stateIndex)
+        if (!this.taskQueryShow) {
+          this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          }, this.stateIndex)
+        } else {
+           this.getCirculationTask({
+            proId: this.proId,  //医院ID，必输
+            workerId: this.workerId,   //运送员ID
+            states: [], //查询状态
+            startDate: '',  //起始日期  YYYY-MM-dd
+            endDate: ''  //终止日期  格式 YYYY-MM-dd
+          }, 7)
+        }
       },
 
       // 返回上一页
