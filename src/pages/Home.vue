@@ -521,9 +521,13 @@
         if (getStore('isClickSure')) {
           this.$store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
         };
-        // 重新存入调度任务完成扫码的科室信息
+        // 重新存入调度任务完成扫码的出发地和单一目的地科室信息
         if (getStore('completeDispatchSweepCodeInfo')) {
           this.$store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 页面刷新重新存入调度任务完成扫码的非单一目的地科室信息
+        if (getStore('completeDispatchSweepCodeDestinationInfo')) {
+          this.$store.commit('changeIsCompleteSweepCodeDestinationList', JSON.parse(getStore('completeDispatchSweepCodeDestinationInfo'))['sweepCodeInfo']);
         };
         // 重新存入调度任务是否第一次扫码
         if (getStore('isDispatchFirstSweepCode')) {
@@ -544,6 +548,10 @@
         // 重新存入预约任务是否第一次扫码
         if (getStore('isAppointFirstSweepCode')) {
           this.$store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));
+        };
+        // 页面刷新重新存入科室信息
+        if (getStore('departmentInfo')) {
+          this.$store.commit('changeDepartmentInfoList', JSON.parse(getStore('departmentInfo')));
         }
       },
 

@@ -56,7 +56,8 @@ export default {
       'isCompleteSweepCode',
       'dispatchTaskMessage',
       'dispatchTaskState',
-      'showEndTaskBtn'
+      'showEndTaskBtn',
+      'isCompleteSweepCodeDestinationList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -73,7 +74,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeisCompleteSweepCode',
-      'changeShowEndTaskBtn'
+      'changeShowEndTaskBtn',
+      'changeIsCompleteSweepCodeDestinationList'
     ]),
 
     // 判断是否为单一目的地
@@ -157,6 +159,11 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
+            // 清空该完成任务存储的已扫过非单一目的地科室信息
+            let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeDestinationList);
+            temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+            this.changeIsCompleteSweepCodeDestinationList(temporarySweepCodeOficeList);
+            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
           };
           // 清空该完成任务存储的已扫过科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);

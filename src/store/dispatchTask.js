@@ -10,6 +10,7 @@ export default {
     dispatchTaskDepartmentType: '',
     isCoerceTakePhoto: false,
     isCompleteSweepCode: [],
+    isCompleteSweepCodeDestinationList: [],
     isDispatchTaskFirstSweepCode: true,
     isCompletePhotoList: [],
     isBack: '',
@@ -31,7 +32,8 @@ export default {
     isBack: state => state.isBack,
     isSign: state => state.isSign,
     isSingleDestination:  state => state.isSingleDestination,
-    showEndTaskBtn: state => state.showEndTaskBtn
+    showEndTaskBtn: state => state.showEndTaskBtn,
+    isCompleteSweepCodeDestinationList: state => state.isCompleteSweepCodeDestinationList
   },
   mutations:{
     // 改变页面标题
@@ -67,6 +69,10 @@ export default {
     //改变是否完成扫码的状态
     changeisCompleteSweepCode (state,payLoad) {
       state.isCompleteSweepCode = payLoad
+    },
+    //改变是否完成非单一目的地扫码的状态
+    changeIsCompleteSweepCodeDestinationList (state,payLoad) {
+      state.isCompleteSweepCodeDestinationList = payLoad
     },
     //改变是否首次扫码的状态
     changeIsDispatchTaskFirstSweepCode (state,payLoad) {

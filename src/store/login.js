@@ -8,7 +8,8 @@ export default {
     // 用户身份
     userType: '',
     // 过期方式
-    overDueWay: false
+    overDueWay: false,
+    departmentInfoList: {}
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -16,7 +17,8 @@ export default {
     loginSweepCode : state => state.loginSweepCode,
     token : state => state.token,
     userType: state => state.userType,
-    overDueWay: state => state.overDueWay
+    overDueWay: state => state.overDueWay,
+    departmentInfoList: state => state.departmentInfoList
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -41,7 +43,11 @@ export default {
     // 修改过期方式
     changeOverDueWay (state, playLoad) {
       state.overDueWay = playLoad
-    }
+    },
+    // 改变科室信息状态
+    changeDepartmentInfoList (state, playLoad) {
+      state.departmentInfoList = playLoad
+    },
   },
   actions:{}
 }

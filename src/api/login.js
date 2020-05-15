@@ -33,3 +33,11 @@ export function getWorkerMessage (data) {
     params: data
   })
 }
+
+// 获取科室字典值
+export function getdepartmentList (proId) {
+  return request({
+    url: `department/dict/${proId}`,
+    method: 'get'
+  })
+}

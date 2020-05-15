@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {logIn, getDictionaryData} from '@/api/login.js'
+import {logIn, getDictionaryData, getdepartmentList} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
 import passwordPng from '@/components/images/password.png'
 import userPng from '@/components/images/user.png'
@@ -214,7 +214,14 @@ export default {
             this.storeUserInfo(JSON.parse(getStore('userInfo')));
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
-            // window.location.reload();
+            getdepartmentList(res.data.data['proId']).then((res) => {
+              if (res.data.code == 200) {
+                setStore('departmentInfo', res.data.data);
+                window.location.reload();
+              }
+            })
+            .catch((err) => {
+            });
           } else {
              this.$dialog.alert({
               message: `${res.data.msg}`,

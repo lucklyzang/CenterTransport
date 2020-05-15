@@ -21,6 +21,10 @@
           <span>任务起点:</span>
           <span>{{dispatchTaskMessage.setOutPlaceName}}</span>
         </p>
+        <p class="task-end-point" style="line-height:20px">
+          <span>已扫任务目的地:</span>
+          <span style="margin-right:8px" v-for="(item,index) in sweepCodeDestinationList" :key="index">{{`${item}`}}</span>
+        </p>
         <p class="task-end-point">
           <span>任务终点:</span>
           <span>{{dispatchTaskMessage.destinationName}}</span>
@@ -65,13 +69,14 @@ import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} fr
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg} from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg, Dictionary} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   data () {
     return {
       temporaryUpImgUrl: '',
       currentTextContent: '',
+      sweepCodeDestinationList: [],
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showLoadingHint: false,
@@ -121,7 +126,8 @@ export default {
     } else if (this.dispatchTaskDepartmentType == 1) {
       this.currentSiteId = this.dispatchTaskMessage.destinationId
     };
-    console.log('调度任务状态' ,this.dispatchTaskMessage, this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
+    // this.getDepartmentName();
+    console.log('调度任务状态' ,this.departmentInfoList, this.dispatchTaskMessage, this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
   },
 
   computed:{
@@ -137,7 +143,9 @@ export default {
       'currentElectronicSignature',
       'isBack',
       'isSign',
-      'isSingleDestination'
+      'isSingleDestination',
+      'isCompleteSweepCodeDestinationList',
+      'departmentInfoList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -157,12 +165,26 @@ export default {
       'changeIsDispatchTaskFirstSweepCode',
       'changeIsCompletePhotoList',
       'changeCurrentElectronicSignature',
-      'changeShowEndTaskBtn'
+      'changeShowEndTaskBtn',
+      'changeIsCompleteSweepCodeDestinationList'
     ]),
 
     // 扫描二维码方法
     sweepAstoffice () {
       window.android.scanQRcode()
+    },
+
+    // 根据科室id获取科室名称
+    getDepartmentName () {
+      let temporarySweepCodeDestinationList = [];
+      let temporarySweepCodeOficeList = [];
+      let echoIndex = this.isCompleteSweepCodeDestinationList.indexOf(this.isCompleteSweepCodeDestinationList.filter((item) => {return item.taskId == this.taskId})[0]);
+      if (echoIndex == -1) {return};
+      temporarySweepCodeOficeList = this.isCompleteSweepCodeDestinationList.filter((item) => { return item.taskId == this.taskId})[0]['officeList'];
+      for (let item of temporarySweepCodeOficeList) {
+        temporarySweepCodeDestinationList.push(Dictionary(this.departmentInfoList,item))
+      };
+      this.sweepCodeDestinationList = temporarySweepCodeDestinationList
     },
 
     // 图片上传预览
@@ -364,7 +386,39 @@ export default {
             proId: this.proId,  //项目ID
             departmentId: this.departmentId,  //科室ID
             checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
-          })
+          });
+          // 存储扫过的非单一目的地
+          if (!this.isSingleDestination && this.dispatchTaskDepartmentType == 1) {
+            let temporaryOfficeList = [];
+            let temporaryDepartmentId = [];
+            temporaryOfficeList = deepClone(this.isCompleteSweepCodeDestinationList);
+            if (this.isCompleteSweepCodeDestinationList.length > 0 ) {
+              let temporaryIndex = this.isCompleteSweepCodeDestinationList.indexOf(this.isCompleteSweepCodeDestinationList.filter((item) => {return item.taskId == this.taskId})[0]);
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+              } else {
+                temporaryDepartmentId.push(this.departmentId);
+                temporaryOfficeList.push(
+                  { 
+                    officeList: repeArray(temporaryDepartmentId),
+                    taskId: this.taskId
+                  }
+                )
+              };
+            } else {
+              temporaryDepartmentId.push(this.departmentId);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.taskId
+                }
+              )
+            };
+            this.changeIsCompleteSweepCodeDestinationList(temporaryOfficeList);
+            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporaryOfficeList})
+          }
         }
       } else {
         this.$dialog.alert({
@@ -534,8 +588,13 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
+            // 清空该完成任务存储的已扫过非单一目的地科室信息
+            let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeDestinationList);
+            temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+            this.changeIsCompleteSweepCodeDestinationList(temporarySweepCodeOficeList);
+            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
           };
-          // 清空该完成任务存储的已扫过科室信息
+          // 清空该完成任务存储的已扫过出发地和单一目的地科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
           temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
           this.changeisCompleteSweepCode(temporarySweepCodeOficeList);
