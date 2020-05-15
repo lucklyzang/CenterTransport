@@ -126,7 +126,7 @@ export default {
     } else if (this.dispatchTaskDepartmentType == 1) {
       this.currentSiteId = this.dispatchTaskMessage.destinationId
     };
-    // this.getDepartmentName();
+    this.getDepartmentName();
     console.log('调度任务状态' ,this.departmentInfoList, this.dispatchTaskMessage, this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
   },
 
