@@ -201,7 +201,7 @@
         // 轮询是否有新任务
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 60000)
+        }, 5000)
       };
     },
     
@@ -298,6 +298,9 @@
               this.queryAllTaskNumber(this.proId, this.workerId);
               let playPromiser = audio.play();//进行播放
               audio.onended = () => {
+                // 更新任务数量和排名
+                this.queryAllTaskNumber(this.proId, this.workerId);
+                this.getAllTaskMessage();
               }
             }
           }
