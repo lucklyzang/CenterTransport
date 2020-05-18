@@ -160,14 +160,14 @@ export default {
         let codeData = code.split('|');
         if (codeData.length > 0) {
           let departmentId = codeData[0];
-          if (departmentId != this.clickDepartmentId) {
-            this.$dialog.alert({
-              message: '当前扫码科室与所选科室不一致,请重新扫码'
-            }).then(() => {
-            });
-            return
-          };
           if (!this.arriveDepartmentId) {
+            if (departmentId != this.clickDepartmentId) {
+              this.$dialog.alert({
+                message: '当前扫码科室与所选科室不一致,请重新扫码'
+              }).then(() => {
+              });
+              return
+            };
             this.juddgeMedicalCorrect({
               id: this.circulationId,// 循环任务ID 必输
               proId: this.proId, // 项目ID 必输
