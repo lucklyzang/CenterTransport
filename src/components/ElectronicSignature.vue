@@ -231,9 +231,9 @@ import { base64ImgtoFile } from '@/common/js/utils'
   > div {
     display: inline-block;
     border-radius: 4px;
-    height: 40px;
-    line-height: 40px;
-    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    width: 80px;
     font-size: 13px;
     color: #fff;
     &:first-child {
