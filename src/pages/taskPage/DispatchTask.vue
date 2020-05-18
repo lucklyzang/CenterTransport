@@ -108,7 +108,7 @@
                   </p>
                   <p class="get-wait-task">
                     <span v-show="item.state == '1'">
-                      <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                      <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
                     </span>
                   </p>
                 </div>
@@ -450,7 +450,7 @@
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, judgeOverTime } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
@@ -945,14 +945,15 @@
       },
 
       // 获取待处理任务事件
-      getTask (taskId) {
+      getTask (item) {
         updateDispatchTask({
           proId: this.proId,//当前项目ID
-          id: taskId, //当前任务ID
+          id: item.id, //当前任务ID
           state: 2 //更新后的状态
         })
         .then(res => {
           if (res && res.data.code == 200) {
+            judgeOverTime(item.planStartTime,item.planUseTime);
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
