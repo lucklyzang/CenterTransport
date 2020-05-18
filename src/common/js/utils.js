@@ -342,3 +342,18 @@ export const compressImg = (originSite,callback) => {
     callback(data)
   }
 }
+
+/*
+ * 将数组中符合条件的元素移到最前面
+*/
+export const changeArrIndex = (arr,key) => {
+  let deleteItem = [];
+  for (let i = 0; i < arr.length; i++) {
+		if (arr[i]['text'] === key) {
+			deleteItem = arr.splice(i, 1);
+			break;
+		}
+	}
+  arr.unshift(deleteItem[0]);
+  return arr
+}
