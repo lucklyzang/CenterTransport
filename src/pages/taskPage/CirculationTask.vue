@@ -35,7 +35,7 @@
         </p>
       </div>
     </div>
-    <van-pull-refresh class="circulation-task-list-box" v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
+    <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
       <div class="circulation-task-list" v-show="stateIndex == 0">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
           <div class="sample-type-check">
@@ -177,54 +177,54 @@
           </div>
         </div>
       </div>
-    </van-pull-refresh>
-    <div class="circulation-task-list-two" v-show="taskQueryShow">
-      <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-        <div class="sample-type-check">
-          <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-        </div>
-        <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-        <p class="wait-handle-message-createTime">
-          创建时间：{{item.createTime}}
-        </p>
-        <p class="wait-handle-message-createTime">
-          开始时间：{{item.startTime}}
-        </p>
-        <div class="wait-handle-message">
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">医院:</span>
-              <span class="message-tit-real">{{item.proName}}</span>
-            </p>
-            <p>
-              <span class="message-tit">优先级:</span>
-              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-            </p>
+      <div class="circulation-task-list-two" v-show="taskQueryShow">
+        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+          <div class="sample-type-check">
+            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
           </div>
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">任务名称:</span>
-              <span class="message-tit-real">{{item.taskTypeName}}</span>
-            </p>
-            <p>
-              <span class="message-tit">工作人员:</span>
-              <span class="message-tit-real">{{item.workerName}}</span>
-            </p>
+          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+          <p class="wait-handle-message-createTime">
+            创建时间：{{item.createTime}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">医院:</span>
+                <span class="message-tit-real">{{item.proName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">任务名称:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">工作人员:</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+              </p>
+            </div>
           </div>
-          <div class="handle-message-line-wrapper">
-            <p>
-              <span class="message-tit">状态:</span>
-              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-            </p>
+          <div class="wait-handle-office-list" v-show="item.show">
+            <ul>
+              <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+            </ul>
           </div>
-        </div>
-        <div class="wait-handle-office-list" v-show="item.show">
-          <ul>
-            <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-          </ul>
         </div>
       </div>
-    </div>
+    </van-pull-refresh>
     <div class="circultion-task-btn">
       <span>
         <img :src="taskArrivedPng" alt="" @click="circulationTaskArrived">
@@ -255,6 +255,7 @@
         noDataShow: false,
         stateIndex: 0,
         stateListShow: false,
+        taskListBoxShow: true,
         isRefresh: false,
         stateScreenVal: '全部',
         taskLlineOneIndex: '0',
