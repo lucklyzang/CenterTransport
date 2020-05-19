@@ -200,7 +200,7 @@ export default {
     updateTaskState (data) {
       updateAppointTaskMessage(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 清空该完成任务存储的已扫过科室信息
+          // 清空该完成任务存储的已扫过出发地科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
           temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
           this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);

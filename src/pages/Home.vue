@@ -577,9 +577,13 @@
         if (getStore('completeCirculationSweepCodeInfo')) {
           this.$store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']);
         };
-        // 重新存入预约任务完成扫码的科室信息
+        // 重新存入预约任务完成扫码的出发地科室信息
         if (getStore('completAppointTaskSweepCodeInfo')) {
           this.$store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 页面刷新重新存入预约任务完成扫码的目的地科室信息
+        if (getStore('completAppointTaskSweepCodeDestinationInfo')) {
+          this.$store.commit('changeCompleteSweepcodeDestinationInfo', JSON.parse(getStore('completAppointTaskSweepCodeDestinationInfo'))['sweepCodeInfo']);
         };
         // 重新存入调度任务完成上传的照片
         if (getStore('completPhotoInfo')) {

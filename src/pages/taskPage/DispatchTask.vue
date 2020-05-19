@@ -953,7 +953,6 @@
         })
         .then(res => {
           if (res && res.data.code == 200) {
-            judgeOverTime(item.planStartTime,item.planUseTime);
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true

@@ -372,7 +372,6 @@ export const judgeOverTime = (startTime,interVal) => {
   process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
   let interValModule = setInterval(() => {
     let realMillisecond = new Date().getTime();
-    console.log('实时时间',new Date().getTime());
     if (realMillisecond - startMillisecond >= interVal*60*1000) {
       isOverTime = true;
       // 播放预警提示

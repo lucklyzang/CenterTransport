@@ -11,7 +11,9 @@ export default {
     cancelTaskIdList: [],
     originalSignature: null,
     isCompleteSweepCodeList: [],
-    isAppointTaskFirstSweepCode: true
+    isAppointTaskFirstSweepCode: true,
+    completeSweepcodeDestinationInfo: [],
+    surplusDestinationList: []
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
@@ -23,7 +25,9 @@ export default {
     cancelTaskIdList: state => state.cancelTaskIdList,
     originalSignature: state => state.originalSignature,
     isCompleteSweepCodeList: state => state.isCompleteSweepCodeList,
-    isAppointTaskFirstSweepCode: state => state.isAppointTaskFirstSweepCode
+    isAppointTaskFirstSweepCode: state => state.isAppointTaskFirstSweepCode,
+    completeSweepcodeDestinationInfo: state => state.completeSweepcodeDestinationInfo,
+    surplusDestinationList: state => state.surplusDestinationList
   },
   mutations:{
     // 改变预约任务信息状态
@@ -65,6 +69,14 @@ export default {
     //改变是否首次扫码的状态
     changeIsAppointTaskFirstSweepCode (state,payLoad) {
       state.isAppointTaskFirstSweepCode = payLoad
+    },
+    //改变完成扫码目的地信息的状态
+    changeCompleteSweepcodeDestinationInfo (state,payLoad) {
+      state.completeSweepcodeDestinationInfo = payLoad
+    },
+    //改变没有扫码目的地状态
+    changeSurplusDestinationList (state,payLoad) {
+      state.surplusDestinationList = payLoad
     }
   },
   actions:{}
