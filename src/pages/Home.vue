@@ -27,7 +27,10 @@
         <div class="wait-dask-wrapper">
           <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
-            <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">{{item.text}} <span class="dask-list-sign">{{item.number}}</span></li>
+            <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">
+              {{item.text}} 
+              <span class="dask-list-sign" :class="{daskListSignStyle:index == 0 && isHaveTask != ''}">{{item.number}}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -190,8 +193,8 @@
       });
       // 查询任务数量
       if (this.userTypeId == 0) {
-        this.isHaveTask = '';
-        this.queryAllTaskNumber(this.proId, this.workerId,'');
+        this.isHaveTask = this.newTaskName;
+        this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
         this.getAllTaskMessage();
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送');
@@ -225,8 +228,8 @@
         if (this.userTypeId == 0) {
           // 查询任务数量
           this.leftDownShow = false;
-          this.isHaveTask = '';
-          this.queryAllTaskNumber(this.proId, this.workerId,'');
+          this.isHaveTask = this.newTaskName;
+          this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
           this.getAllTaskMessage();
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送');
@@ -253,7 +256,8 @@
         'isRefershHome',
         'isHomeJumpOtherPage',
         'userType',
-        'userInfo'
+        'userInfo',
+        'newTaskName'
       ]),
       userName () {
        return this.userInfo.extendData.userName
@@ -275,7 +279,8 @@
       ...mapMutations([
         'changeTitleTxt',
         'changetransportTypeMessage',
-        'changeOverDueWay'
+        'changeOverDueWay',
+        'changeNewTaskList'
       ]),
 
       juddgeIspc () {
@@ -287,17 +292,34 @@
         currentAudio.play()
       },
 
-      // 任务类型转换
+      // 任务类型转换文字
       taskTypeTransfer (type) {
         switch(type) {
-          case 'resTask' :
+          case 'book' :
             return '预约任务'
             break;
-          case 'transTask' :
+          case 'trans' :
             return '调度任务'
             break;
-          case 'circleTask' :
+          case 'circle' :
             return '循环任务'
+            break;
+            default:
+            ''
+        }
+      },
+
+      // 任务类型转换字母
+      taskTypeTransferLetter (type) {
+        switch(type) {
+          case '预约任务' :
+            return 'book'
+            break;
+          case '调度任务' :
+            return 'trans'
+            break;
+          case '循环任务' :
+            return 'circle'
             break
         }
       },
@@ -309,15 +331,22 @@
         process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
-            if (res.data.data == true) {
-              let playPromiser = audio.play();//进行播放
-              audio.onended = () => {
-                // 更新任务数量和排名
-                this.isHaveTask = this.taskTypeTransfer('circleTask');
-                this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer('circleTask'));
-                this.getAllTaskMessage();
+            let isBreak = false;
+            Object.keys(res.data.data).forEach((item) => {
+              if (isBreak) {return};
+              if (item != "all" && res.data.data[item] == true) {
+                isBreak = true;
+                // 新任务存入store中
+                this.changeNewTaskList(item);
+                let playPromiser = audio.play();//进行播放
+                audio.onended = () => {
+                  // 更新任务数量和排名
+                  this.isHaveTask = this.taskTypeTransfer(item);
+                  this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(item));
+                  this.getAllTaskMessage();
+                }
               }
-            }
+            });
           }
         })
         .catch((err) => {
@@ -383,9 +412,8 @@
                   this.taskTypeList.push({text: '循环任务',number: innerItem[item]})
                 }
               });
-              if (taskType != '') {
-                this.taskTypeList = changeArrIndex(this.taskTypeList,taskType)
-              } 
+              if (taskType == '' || taskType == undefined) {return};
+              this.taskTypeList = changeArrIndex(this.taskTypeList,taskType)
             }
           }
         })
@@ -444,10 +472,19 @@
       // 顶部任务点击事件
       taskEvent (item) {
         if (item.text == '循环任务') {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
           this.circulationEvent()
         } else if (item.text == '预约任务') {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
           this.appointEvent()
         } else {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
           this.dispatchEvent()
         }
       },
@@ -762,6 +799,9 @@
               position: relative;
               .dask-list-sign {
                 .status-sign(50px,50px,-8px,orange)
+              }
+              .daskListSignStyle {
+                .status-sign(50px,50px,-8px, #eb0000)
               }
             }
           }

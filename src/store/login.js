@@ -9,7 +9,8 @@ export default {
     userType: '',
     // 过期方式
     overDueWay: false,
-    departmentInfoList: {}
+    departmentInfoList: {},
+    newTaskName: ''
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -18,7 +19,8 @@ export default {
     token : state => state.token,
     userType: state => state.userType,
     overDueWay: state => state.overDueWay,
-    departmentInfoList: state => state.departmentInfoList
+    departmentInfoList: state => state.departmentInfoList,
+    newTaskName: state => state.newTaskName
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -48,6 +50,10 @@ export default {
     changeDepartmentInfoList (state, playLoad) {
       state.departmentInfoList = playLoad
     },
+    // 改变新任务列表状态
+    changeNewTaskList (state, playLoad) {
+      state.newTaskName = playLoad
+    }
   },
   actions:{}
 }

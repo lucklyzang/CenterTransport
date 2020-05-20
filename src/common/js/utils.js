@@ -350,11 +350,11 @@ export const changeArrIndex = (arr,key) => {
   let deleteItem = [];
   for (let i = 0; i < arr.length; i++) {
 		if (arr[i]['text'] === key) {
-			deleteItem = arr.splice(i, 1);
+      deleteItem = arr.splice(i, 1);
+      arr.unshift(deleteItem[0]);
 			break;
 		}
-	}
-  arr.unshift(deleteItem[0]);
+	};
   return arr
 }
 
