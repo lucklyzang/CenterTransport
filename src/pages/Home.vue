@@ -27,9 +27,10 @@
         <div class="wait-dask-wrapper">
           <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
-            <li v-show="dispatchTaskNumber !== 0" @click="dispatchEvent">调度任务 <span class="dask-list-sign">{{dispatchTaskNumber}}</span></li>
-            <li v-show="circulationTaskNumber !== 0" @click="circulationEvent">循环任务 <span class="dask-list-sign">{{circulationTaskNumber}}</span></li>
-            <li v-show="appointTaskNumber !== 0" @click="appointEvent">预约任务 <span class="dask-list-sign">{{appointTaskNumber}}</span></li>
+            <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">
+              {{item.text}} 
+              <span class="dask-list-sign" :class="{daskListSignStyle:index == 0 && isHaveTask != ''}">{{item.number}}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -119,7 +120,7 @@
   import {queryTransportType, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask} from '@/api/medicalPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, changeArrIndex } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   import dispatchTaskPng from '@/common/images/home/dispatch-task.png'
   import circulationTaskPng from '@/common/images/home/circulation-task.png'
@@ -144,15 +145,14 @@
     data() {
       return {
         leftDownShow: false,
-        dispatchTaskNumber: '',
-        circulationTaskNumber: '',
-        appointTaskNumber: '',
         workerShow: true,
         liIndex: null,
         operateListInnerIndex: '',
         yesterdayNumber: '',
         yesterdayRank: '',
+        isHaveTask: '',
         leftDropdownDataList: ['退出登录'],
+        taskTypeList: [],
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng}, 
           {tit:'循环任务',imgUrl: circulationTaskPng}, 
@@ -193,7 +193,8 @@
       });
       // 查询任务数量
       if (this.userTypeId == 0) {
-        this.queryAllTaskNumber(this.proId, this.workerId);
+        this.isHaveTask = this.newTaskName;
+        this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
         this.getAllTaskMessage();
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送');
@@ -227,7 +228,8 @@
         if (this.userTypeId == 0) {
           // 查询任务数量
           this.leftDownShow = false;
-          this.queryAllTaskNumber(this.proId, this.workerId);
+          this.isHaveTask = this.newTaskName;
+          this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
           this.getAllTaskMessage();
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送');
@@ -254,7 +256,8 @@
         'isRefershHome',
         'isHomeJumpOtherPage',
         'userType',
-        'userInfo'
+        'userInfo',
+        'newTaskName'
       ]),
       userName () {
        return this.userInfo.extendData.userName
@@ -276,7 +279,8 @@
       ...mapMutations([
         'changeTitleTxt',
         'changetransportTypeMessage',
-        'changeOverDueWay'
+        'changeOverDueWay',
+        'changeNewTaskList'
       ]),
 
       juddgeIspc () {
@@ -288,21 +292,61 @@
         currentAudio.play()
       },
 
+      // 任务类型转换文字
+      taskTypeTransfer (type) {
+        switch(type) {
+          case 'book' :
+            return '预约任务'
+            break;
+          case 'trans' :
+            return '调度任务'
+            break;
+          case 'circle' :
+            return '循环任务'
+            break;
+            default:
+            ''
+        }
+      },
+
+      // 任务类型转换字母
+      taskTypeTransferLetter (type) {
+        switch(type) {
+          case '预约任务' :
+            return 'book'
+            break;
+          case '调度任务' :
+            return 'trans'
+            break;
+          case '循环任务' :
+            return 'circle'
+            break
+        }
+      },
+
+      // 查询是否有新任务
       queryNewWork (proId,workerId) {
         let audio = new Audio();
         audio.preloadc = "auto";
         process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
-            if (res.data.data == true) {
-              this.queryAllTaskNumber(this.proId, this.workerId);
-              let playPromiser = audio.play();//进行播放
-              audio.onended = () => {
-                // 更新任务数量和排名
-                this.queryAllTaskNumber(this.proId, this.workerId);
-                this.getAllTaskMessage();
+            let isBreak = false;
+            Object.keys(res.data.data).forEach((item) => {
+              if (isBreak) {return};
+              if (item != "all" && res.data.data[item] == true) {
+                isBreak = true;
+                // 新任务存入store中
+                this.changeNewTaskList(item);
+                let playPromiser = audio.play();//进行播放
+                audio.onended = () => {
+                  // 更新任务数量和排名
+                  this.isHaveTask = this.taskTypeTransfer(item);
+                  this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(item));
+                  this.getAllTaskMessage();
+                }
               }
-            }
+            });
           }
         })
         .catch((err) => {
@@ -352,14 +396,24 @@
       },
 
       // 查询所有任务数量
-      queryAllTaskNumber (proID, workerId) {
+      queryAllTaskNumber (proID, workerId, taskType) {
         getAllTaskNumber(proID, workerId)
         .then(res => {
           if (res && res.data.code == 200) {
             if (res.data.data) {
-              this.dispatchTaskNumber = res.data.data.transTask,
-              this.circulationTaskNumber = res.data.data.circleTask,
-              this.appointTaskNumber = res.data.data.resTask
+              this.taskTypeList = [];
+              let innerItem = res.data.data;
+              Object.keys(innerItem).forEach((item) => {
+                if (item == 'resTask') {
+                  this.taskTypeList.push({text: '预约任务',number: innerItem[item]})
+                } else if (item == 'transTask') {
+                  this.taskTypeList.push({text: '调度任务',number: innerItem[item]})
+                } else if (item == 'circleTask') {
+                  this.taskTypeList.push({text: '循环任务',number: innerItem[item]})
+                }
+              });
+              if (taskType == '' || taskType == undefined) {return};
+              this.taskTypeList = changeArrIndex(this.taskTypeList,taskType)
             }
           }
         })
@@ -413,6 +467,26 @@
         this.$router.push({path:'/appointTask'});
         this.changeTitleTxt({tit:'预约任务'});
         setStore('currentTitle','预约任务')
+      },
+
+      // 顶部任务点击事件
+      taskEvent (item) {
+        if (item.text == '循环任务') {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
+          this.circulationEvent()
+        } else if (item.text == '预约任务') {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
+          this.appointEvent()
+        } else {
+          if (this.taskTypeTransferLetter(item.text) == this.newTaskName) {
+            this.changeNewTaskList('')
+          };
+          this.dispatchEvent()
+        }
       },
 
       // 右边下拉框菜单点击
@@ -540,9 +614,13 @@
         if (getStore('completeCirculationSweepCodeInfo')) {
           this.$store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']);
         };
-        // 重新存入预约任务完成扫码的科室信息
+        // 重新存入预约任务完成扫码的出发地科室信息
         if (getStore('completAppointTaskSweepCodeInfo')) {
           this.$store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
+        };
+        // 页面刷新重新存入预约任务完成扫码的目的地科室信息
+        if (getStore('completAppointTaskSweepCodeDestinationInfo')) {
+          this.$store.commit('changeCompleteSweepcodeDestinationInfo', JSON.parse(getStore('completAppointTaskSweepCodeDestinationInfo'))['sweepCodeInfo']);
         };
         // 重新存入调度任务完成上传的照片
         if (getStore('completPhotoInfo')) {
@@ -711,6 +789,9 @@
             height: 50px;
             line-height: 50px;
             font-size: 18px;
+            .listTaskStyle {
+              color: #eb0000
+            };
             li {
               display: inline-block;
               width: 32%;
@@ -718,6 +799,9 @@
               position: relative;
               .dask-list-sign {
                 .status-sign(50px,50px,-8px,orange)
+              }
+              .daskListSignStyle {
+                .status-sign(50px,50px,-8px, #eb0000)
               }
             }
           }

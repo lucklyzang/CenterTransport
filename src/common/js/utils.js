@@ -342,3 +342,42 @@ export const compressImg = (originSite,callback) => {
     callback(data)
   }
 }
+
+/*
+ * 将数组中符合条件的元素移到最前面
+*/
+export const changeArrIndex = (arr,key) => {
+  let deleteItem = [];
+  for (let i = 0; i < arr.length; i++) {
+		if (arr[i]['text'] === key) {
+      deleteItem = arr.splice(i, 1);
+      arr.unshift(deleteItem[0]);
+			break;
+		}
+	};
+  return arr
+}
+
+/*
+ * 判断时间是否超时
+ *@param{String} startTime YYYY-mm-dd HH:MM:ss 开始时间 
+ *@param{Number} interVal minute 计划用时
+ *@return {Boolean} 返回true或false
+*/
+export const judgeOverTime = (startTime,interVal) => {
+  let isOverTime = false
+  let startMillisecond = new Date(startTime).getTime();
+  let audio = new Audio();
+  audio.preloadc = "auto";
+  process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
+  let interValModule = setInterval(() => {
+    let realMillisecond = new Date().getTime();
+    if (realMillisecond - startMillisecond >= interVal*60*1000) {
+      isOverTime = true;
+      // 播放预警提示
+      audio.play();
+      clearInterval(interValModule)
+    }
+  },1000);
+  return isOverTime
+}

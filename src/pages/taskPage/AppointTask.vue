@@ -59,12 +59,12 @@
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
-                  <span class="message-tit">终点:</span>
-                  <span class="message-tit-real">{{item.destinationName}}</span>
+                  <span class="message-tit">任务目的地:</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -108,12 +108,12 @@
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
-                  <span class="message-tit">终点:</span>
-                  <span class="message-tit-real">{{item.destinationName}}</span>
+                  <span class="message-tit">任务目的地:</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -157,12 +157,12 @@
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
-                  <span class="message-tit">终点:</span>
-                  <span class="message-tit-real">{{item.destinationName}}</span>
+                  <span class="message-tit">任务目的地:</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -206,12 +206,12 @@
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
-                  <span class="message-tit">终点:</span>
-                  <span class="message-tit-real">{{item.destinationName}}</span>
+                  <span class="message-tit">任务目的地:</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -255,12 +255,12 @@
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
-                  <span class="message-tit">终点:</span>
-                  <span class="message-tit-real">{{item.destinationName}}</span>
+                  <span class="message-tit">任务目的地:</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -329,12 +329,12 @@
             </div>
             <div class="handle-message-line-wrapper">
               <p>
-                <span class="message-tit">终点:</span>
-                <span class="message-tit-real">{{item.destinationName}}</span>
+                <span class="message-tit">任务目的地:</span>
+                <span v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
               </p>
               <p>
                 <span class="message-tit">床号:</span>
-                <span class="message-tit-real">{{item.bedNumber}}</span>
+                <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -353,7 +353,7 @@
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
-              <img :src="taskGetPng" alt="" @click.stop.native="getTask(item.id)">
+              <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
             </span>
           </p>
         </div>
@@ -369,7 +369,7 @@
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
@@ -408,6 +408,7 @@
         screenTaskList: [],
         cancelTaskIdList: [],
         transferTaskIdList: [],
+        drawCompleteTaskIdList: [],
         taskGetPng: require('@/components/images/task-get.png'),
         taskSearchPng: require('@/components/images/task-search.png')
       };
@@ -423,7 +424,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'userInfo'
+        'userInfo',
+        'completeSweepcodeDestinationInfo'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -483,7 +485,8 @@
         }
       });
       // 查询预约任务(分配给自己的)
-      this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+      this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+      this.drawTaskId()
     },
 
     methods: {
@@ -495,7 +498,8 @@
         'changeAppointSweepCodeNumber',
         'changeAppointSweepCodeIntoPage',
         'changeAppointTaskDepartmentType',
-        'changeAppointTaskState'
+        'changeAppointTaskState',
+        'changeSurplusDestinationList'
       ]),
 
       // 右边下拉框菜单点击
@@ -612,33 +616,89 @@
                   patientId: item.id,
                   number: item.number,
                   priority: item.priority,
-                  taskRemark: item.taskRemark
+                  taskRemark: item.taskRemark,
+                  spaces: item.destinationName
                 })
               };
               if (index == 0) {
                 this.stateFilterList = temporaryTaskListFirst;
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
+                  return
                 }
               } else if (index == 1) {
                 this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 1});
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
+                  return
                 }
               } else if (index == 2) {
                 this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
+                  return
                 }
               } else if (index == 3) {
                 this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
+                  return
                 }
               } else if (index == 4) {
                 this.stateFilterList = temporaryTaskListFirst.filter((item) => { return item.state == 4});
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
+                  return
+                }
+              };
+              // 改变目的地科室列表数据结构
+              for (let item = 0, len = this.stateFilterList.length; item < len; item++) {
+                let temporaryArrayTwo = [];
+                for (let innerItem in this.stateFilterList[item]) {
+                  if (innerItem == 'spaces') {
+                    let temporaryArrayTwo = [];
+                    let temporaryItem = removeBlock(this.stateFilterList[item][innerItem]).split(",");
+                    let temporaryArrayOne = [];
+                    for (let kip of temporaryItem) {
+                      temporaryArrayOne = [];
+                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
+                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
+                    }
+                    this.stateFilterList[item]['spaces'] = temporaryArrayTwo;
+                  };
+                }
+              };
+              // 目的地科室列表增加字段
+              for (let item of this.stateFilterList) {
+                for (let innerItem in item) {
+                  if (innerItem == 'spaces') {
+                    for (let medicalItem of item[innerItem]) {
+                      medicalItem['check'] = false
+                    }
+                  }
+                }
+              };
+              console.log('改变',this.stateFilterList);
+              // 为完成扫码目的地科室增加标记
+              if (this.completeSweepcodeDestinationInfo.length > 0) {
+                for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
+                  if (this.stateFilterList.length > 0) {
+                     for (let n = 0, nLen = this.stateFilterList.length; n < nLen; n++) {
+                      if (this.stateFilterList[n]['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
+                        if (this.completeSweepcodeDestinationInfo[w]['officeList'].length > 0) {
+                          for (let i = 0, len1 = this.completeSweepcodeDestinationInfo[w]['officeList'].length; i < len1; i++) {
+                            if (this.stateFilterList[n]['spaces'].length > 0) {
+                              for (let j = 0, len2 = this.stateFilterList[n]['spaces'].length; j < len2; j++) {
+                                if (this.stateFilterList[n]['spaces'][j]['value'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
+                                  this.stateFilterList[n]['spaces'][j]['check'] = true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             } else {
@@ -664,11 +724,24 @@
         })
       },
 
-       // 下拉刷新
+      // 下拉刷新
       onRefresh () {
         this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
       },
 
+      // 提取存储已完成采集任务科室所属任务id
+      drawTaskId () {
+        this.drawCompleteTaskIdList = [];
+        if (this.completeSweepcodeDestinationInfo.length > 0) {
+          for (let item of this.completeSweepcodeDestinationInfo) { 
+            for (let innerItem in item) {
+              if (innerItem == 'taskId') {
+                this.drawCompleteTaskIdList.push(item[innerItem])
+              }
+            }
+          }
+        }
+      },
 
       // 查询调度任务(已完成)
       queryCompleteDispatchTask (data) {
@@ -685,7 +758,7 @@
                 this.stateCompleteList.push({
                   taskCheck: false,
                   createTime: item.createTime,
-
+                  spaces: item.destinationName,
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,
@@ -701,6 +774,23 @@
                   taskRemark: item.taskRemark
                 })
               };
+               // 改变目的地科室列表数据结构
+              for (let item = 0, len = this.stateCompleteList.length; item < len; item++) {
+                let temporaryArrayTwo = [];
+                for (let innerItem in this.stateCompleteList[item]) {
+                  if (innerItem == 'spaces') {
+                    let temporaryArrayTwo = [];
+                    let temporaryItem = removeBlock(this.stateCompleteList[item][innerItem]).split(",");
+                    let temporaryArrayOne = [];
+                    for (let kip of temporaryItem) {
+                      temporaryArrayOne = [];
+                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
+                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
+                    }
+                    this.stateCompleteList[item]['spaces'] = temporaryArrayTwo;
+                  }
+                }
+              }
             } else {
               this.noDataShow = true;
             }
@@ -829,16 +919,19 @@
             this.changeAppointSweepCodeNumber(false);
             this.changeAppointSweepCodeIntoPage(true);
             this.changeAppointTaskDepartmentType(0);
-            this.changeAppointTaskState(3)
+            this.changeAppointTaskState(3);
+            this.changeSurplusDestinationList(item.spaces)
           } else if (item.state == 3) {
             this.changeAppointSweepCodeIntoPage(false);
             this.changeAppointSweepCodeNumber(true);
             this.changeAppointTaskDepartmentType(1);
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
           } else if (item.state == 4) {
             this.changeAppointSweepCodeNumber(false);
             this.changeAppointSweepCodeIntoPage(false);
             this.changeAppointTaskDepartmentType(2);
-            this.changeAppointTaskState(7)
+            this.changeAppointTaskState(7);
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
           };
           this.$router.push({'path':'/appointTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
@@ -1041,6 +1134,18 @@
                 .message-tit-real {
                   color: black
                 }
+                .message-tit-real-bdeNumber {
+                  line-height: 24px
+                }
+                .message-tit-destination-real {
+                  padding: 4px;
+                  margin-right:2px;
+                  line-height: 24px
+                }
+                .destinationRealStyle {
+                  background: #2895ea;
+                  color: #fff
+                }
               }
             }
           };
@@ -1157,6 +1262,18 @@
               };
               .message-tit-real {
                 color: black
+              };
+              .message-tit-real-bdeNumber {
+                line-height: 24px
+              }
+              .message-tit-destination-real {
+                padding: 4px;
+                margin-right:2px;
+                line-height: 24px
+              };
+              .destinationRealStyle {
+                background: #2895ea;
+                color: #fff
               }
             }
           }
@@ -1213,6 +1330,18 @@
               };
               .message-tit-real {
                 color: black
+              };
+              .message-tit-real-bdeNumber {
+                line-height: 24px
+              }
+              .message-tit-destination-real {
+                padding: 4px;
+                margin-right:2px;
+                line-height: 24px;
+              };
+              .destinationRealStyle {
+                background: #2895ea;
+                color: #fff
               }
             }
           }

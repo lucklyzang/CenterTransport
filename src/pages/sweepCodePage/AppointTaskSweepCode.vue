@@ -18,9 +18,9 @@
           <span>任务起点:</span>
           <span>{{appointTaskMessage.setOutPlaceName}}</span>
         </p>
-        <p class="task-end-point">
-          <span>任务终点:</span>
-          <span>{{appointTaskMessage.destinationName}}</span>
+        <p class="task-end-point" style="line-height:20px">
+          <span>任务目的地:</span>
+          <span style="margin-right:8px" v-for="(item,index) in surplusDestinationList" :key="index">{{item.text}}</span>
         </p>
       </div>
     </div>
@@ -51,6 +51,7 @@ export default {
       leftDownShow: false,
       showLoadingHint: false,
       liIndex: null,
+      destinationList: [{name:'科室一',id:1},{name:'科室二',id:2},{name:'科室三',id:3}],
       taskCancelPng: require('@/components/images/task-cancel.png'),
       taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     };
@@ -82,8 +83,6 @@ export default {
     };
     if (this.appointTaskDepartmentType == 0) {
       this.currentSiteId = this.appointTaskMessage.setOutPlaceId
-    } else if (this.appointTaskDepartmentType == 1) {
-      this.currentSiteId = this.appointTaskMessage.destinationId
     } else if (this.appointTaskDepartmentType == 2) {
       this.currentSiteId = this.appointTaskMessage.setOutPlaceId
     }
@@ -99,7 +98,9 @@ export default {
       'appointSweepCodeNumber',
       'appointSweepCodeIntoPage',
       'isCompleteSweepCodeList',
-      'isAppointTaskFirstSweepCode'
+      'isAppointTaskFirstSweepCode',
+      'completeSweepcodeDestinationInfo',
+      'surplusDestinationList'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -113,7 +114,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeIsCompleteSweepCodeList',
-      'changeIsAppointTaskFirstSweepCode'
+      'changeIsAppointTaskFirstSweepCode',
+      'changeCompleteSweepcodeDestinationInfo'
     ]),
 
     // 右边下拉框菜单点击
@@ -134,6 +136,25 @@ export default {
         let codeData = code.split('|');
         if (codeData.length > 0) {
           let departmentId = codeData[0];
+          // 判断目的地是否已经扫过
+          if (this.appointSweepCodeNumber) {
+            let isExistTaskId = '',
+            isExistOfficeId = '';
+            isExistTaskId = this.completeSweepcodeDestinationInfo.indexOf(this.completeSweepcodeDestinationInfo.filter((item) => {return item.taskId == this.taskId})[0]);
+            if (isExistTaskId != -1) {
+              isExistOfficeId = this.completeSweepcodeDestinationInfo[isExistTaskId]['officeList'].indexOf(departmentId);
+            };
+            if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+              if (this.appointTaskDepartmentType == 1) {
+                this.$dialog.alert({
+                  message: '该目的地已经扫码校验通过,请扫码其它目的地',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+                return
+              }
+            }
+          };
           this.juddgeCurrentDepartment({
             id: this.taskId,  //任务ID
             proId: this.proId,  //项目ID
@@ -157,16 +178,26 @@ export default {
         if (res && res.data.code == 200) {
           this.changeIsAppointTaskFirstSweepCode(false);
           setStore("isAppointFirstSweepCode",false);
-          // 存储已经扫码验证通过的科室id
-          let temporaryOfficeList = [];
-          let temporaryDepartmentId = [];
-          temporaryOfficeList = deepClone(this.isCompleteSweepCodeList);
-          if (this.isCompleteSweepCodeList.length > 0 ) {
-            let temporaryIndex = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
-            if (temporaryIndex != -1) {
-              temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
-              temporaryDepartmentId.push(this.currentSiteId);
-              temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+          // 存储已经扫码验证通过的第一次出发地科室id
+          if (this.appointSweepCodeIntoPage && this.appointTaskDepartmentType == 0) {
+            let temporaryOfficeList = [];
+            let temporaryDepartmentId = [];
+            temporaryOfficeList = deepClone(this.isCompleteSweepCodeList);
+            if (this.isCompleteSweepCodeList.length > 0 ) {
+              let temporaryIndex = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+                temporaryDepartmentId.push(this.currentSiteId);
+                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+              } else {
+                temporaryDepartmentId.push(this.currentSiteId);
+                temporaryOfficeList.push(
+                  { 
+                    officeList: repeArray(temporaryDepartmentId),
+                    taskId: this.taskId
+                  }
+                )
+              };
             } else {
               temporaryDepartmentId.push(this.currentSiteId);
               temporaryOfficeList.push(
@@ -176,31 +207,49 @@ export default {
                 }
               )
             };
-          } else {
-            temporaryDepartmentId.push(this.currentSiteId);
-            temporaryOfficeList.push(
-              { 
-                officeList: repeArray(temporaryDepartmentId),
-                taskId: this.taskId
-              }
-            )
-          };
-          this.changeIsCompleteSweepCodeList(temporaryOfficeList);
-          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
-          // 第一次扫码出发地后进入客户预约信息确认页面 
-          if (this.appointSweepCodeIntoPage) {
+            this.changeIsCompleteSweepCodeList(temporaryOfficeList);
+            setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+            // 第一次扫码出发地后进入客户预约信息确认页面 
             this.$router.push({path:'/appointTaskCustomerInfo'});
             this.changeTitleTxt({tit:'客户预约信息确认'});
             setStore('currentTitle','客户预约信息确认');
             return
           };
-          // 第二次扫码目的时不更新状态
+          // 第二次扫码目的地(所有)时不更新状态
           if (this.appointSweepCodeNumber) {
             this.$router.push({path:'/appointTask'});
             this.changeTitleTxt({tit:'预约任务'});
             setStore('currentTitle','预约任务');
-            // 清空该完成任务存储的已扫过科室信息
-            this.emptyCompleteDepartment();
+            //储存已经扫码验证通过的目的地科室信息
+            let temporaryOfficeList = [];
+            let temporaryDepartmentId = [];
+            temporaryOfficeList = deepClone(this.completeSweepcodeDestinationInfo);
+            if (this.completeSweepcodeDestinationInfo.length > 0 ) {
+              let temporaryIndex = this.completeSweepcodeDestinationInfo.indexOf(this.completeSweepcodeDestinationInfo.filter((item) => {return item.taskId == this.taskId})[0]);
+              if (temporaryIndex != -1) {
+                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
+                temporaryDepartmentId.push(data['departmentId']);
+                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
+              } else {
+                temporaryDepartmentId.push(data['departmentId']);
+                temporaryOfficeList.push(
+                  { 
+                    officeList: repeArray(temporaryDepartmentId),
+                    taskId: this.taskId
+                  }
+                )
+              };
+            } else {
+              temporaryDepartmentId.push(data['departmentId']);
+              temporaryOfficeList.push(
+                { 
+                  officeList: repeArray(temporaryDepartmentId),
+                  taskId: this.taskId
+                }
+              )
+            };
+            this.changeCompleteSweepcodeDestinationInfo(temporaryOfficeList);
+            setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporaryOfficeList});
             return
           };
           this.updateTaskState({
@@ -215,7 +264,7 @@ export default {
             showCancelButton: true 
           }).then(() => {
             this.againSweepCode()
-          }).catch((err) =>{})
+          }).catch((err) => {})
         };
         this.showLoadingHint = false
       })
@@ -239,9 +288,9 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
+            // 清空该完成任务存储的已扫过目的地科室信息
+            this.emptyCompleteDestinationDepartment();
           };
-          // 清空该完成任务存储的已扫过科室信息
-          this.emptyCompleteDepartment();
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
@@ -262,12 +311,20 @@ export default {
       })
     },
 
-    // 清空该完成任务存储的已扫过科室信息
-    emptyCompleteDepartment () {
-      let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
+    // 清空该完成任务存储的已扫过出发地科室信息
+    // emptyCompleteDepartment () {
+    //   let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
+    //   temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
+    //   this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
+    //   setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+    // },
+
+    // 清空该完成任务存储的已扫过目的地科室信息
+    emptyCompleteDestinationDepartment () {
+      let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
       temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
-      this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
-      setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+      this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
+      setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
     },
 
     // 返回上一页
@@ -292,22 +349,27 @@ export default {
       if (this.isAppointTaskFirstSweepCode) {
         this.sweepAstoffice()
       } else {
-        let isExistTaskId = '',
-        isExistOfficeId = '';
-        isExistTaskId = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
-        if (isExistTaskId != -1) {
-          isExistOfficeId = this.isCompleteSweepCodeList[isExistTaskId]['officeList'].indexOf(this.currentSiteId);
-        };
-        if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
-          if (this.appointTaskDepartmentType == 0) {
-            this.$dialog.alert({
-              message: '该科室校验已验证通过,请确认客户预约信息',
-              closeOnPopstate: true
-            }).then(() => {
-            });
-            this.$router.push({path:'/appointTaskCustomerInfo'});
-            this.changeTitleTxt({tit:'客户预约信息确认'});
-            setStore('currentTitle','客户预约信息确认')
+        // 验证出发地是否扫过
+        if (this.appointSweepCodeIntoPage) {
+          let isExistTaskId = '',
+          isExistOfficeId = '';
+          isExistTaskId = this.isCompleteSweepCodeList.indexOf(this.isCompleteSweepCodeList.filter((item) => {return item.taskId == this.taskId})[0]);
+          if (isExistTaskId != -1) {
+            isExistOfficeId = this.isCompleteSweepCodeList[isExistTaskId]['officeList'].indexOf(this.currentSiteId);
+          };
+          if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
+            if (this.appointTaskDepartmentType == 0) {
+              this.$dialog.alert({
+                message: '该科室校验已验证通过,请确认客户预约信息',
+                closeOnPopstate: true
+              }).then(() => {
+              });
+              this.$router.push({path:'/appointTaskCustomerInfo'});
+              this.changeTitleTxt({tit:'客户预约信息确认'});
+              setStore('currentTitle','客户预约信息确认')
+            } else {
+              this.sweepAstoffice()
+            }
           } else {
             this.sweepAstoffice()
           }
