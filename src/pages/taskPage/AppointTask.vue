@@ -60,11 +60,11 @@
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -109,11 +109,11 @@
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -158,11 +158,11 @@
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -207,11 +207,11 @@
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -256,11 +256,11 @@
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -330,11 +330,11 @@
             <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">任务目的地:</span>
-                <span class="message-tit-real message-tit-destination-real">{{item.destinationName}}</span>
+                <span v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
               </p>
               <p>
                 <span class="message-tit">床号:</span>
-                <span class="message-tit-real">{{item.bedNumber}}</span>
+                <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -353,7 +353,7 @@
           </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
-              <img :src="taskGetPng" alt="" @click.stop.native="getTask(item.id)">
+              <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
             </span>
           </p>
         </div>
@@ -616,7 +616,8 @@
                   patientId: item.id,
                   number: item.number,
                   priority: item.priority,
-                  taskRemark: item.taskRemark
+                  taskRemark: item.taskRemark,
+                  spaces: item.destinationName
                 })
               };
               if (index == 0) {
@@ -677,6 +678,7 @@
                   }
                 }
               };
+              console.log('改变',this.stateFilterList);
               // 为完成扫码目的地科室增加标记
               if (this.completeSweepcodeDestinationInfo.length > 0) {
                 for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
@@ -698,7 +700,7 @@
                     }
                   }
                 }
-              };
+              }
             } else {
               this.noDataShow = true;
             }
@@ -756,7 +758,7 @@
                 this.stateCompleteList.push({
                   taskCheck: false,
                   createTime: item.createTime,
-
+                  spaces: item.destinationName,
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,
@@ -772,6 +774,23 @@
                   taskRemark: item.taskRemark
                 })
               };
+               // 改变目的地科室列表数据结构
+              for (let item = 0, len = this.stateCompleteList.length; item < len; item++) {
+                let temporaryArrayTwo = [];
+                for (let innerItem in this.stateCompleteList[item]) {
+                  if (innerItem == 'spaces') {
+                    let temporaryArrayTwo = [];
+                    let temporaryItem = removeBlock(this.stateCompleteList[item][innerItem]).split(",");
+                    let temporaryArrayOne = [];
+                    for (let kip of temporaryItem) {
+                      temporaryArrayOne = [];
+                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
+                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
+                    }
+                    this.stateCompleteList[item]['spaces'] = temporaryArrayTwo;
+                  }
+                }
+              }
             } else {
               this.noDataShow = true;
             }
@@ -901,18 +920,18 @@
             this.changeAppointSweepCodeIntoPage(true);
             this.changeAppointTaskDepartmentType(0);
             this.changeAppointTaskState(3);
-            // this.changeSurplusDestinationList(item.spaces)
+            this.changeSurplusDestinationList(item.spaces)
           } else if (item.state == 3) {
             this.changeAppointSweepCodeIntoPage(false);
             this.changeAppointSweepCodeNumber(true);
             this.changeAppointTaskDepartmentType(1);
-            // this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
           } else if (item.state == 4) {
             this.changeAppointSweepCodeNumber(false);
             this.changeAppointSweepCodeIntoPage(false);
             this.changeAppointTaskDepartmentType(2);
             this.changeAppointTaskState(7);
-            // this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
           };
           this.$router.push({'path':'/appointTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
@@ -1115,8 +1134,12 @@
                 .message-tit-real {
                   color: black
                 }
+                .message-tit-real-bdeNumber {
+                  line-height: 24px
+                }
                 .message-tit-destination-real {
                   padding: 4px;
+                  margin-right:2px;
                   line-height: 24px
                 }
                 .destinationRealStyle {
@@ -1240,8 +1263,12 @@
               .message-tit-real {
                 color: black
               };
+              .message-tit-real-bdeNumber {
+                line-height: 24px
+              }
               .message-tit-destination-real {
                 padding: 4px;
+                margin-right:2px;
                 line-height: 24px
               };
               .destinationRealStyle {
@@ -1304,8 +1331,12 @@
               .message-tit-real {
                 color: black
               };
+              .message-tit-real-bdeNumber {
+                line-height: 24px
+              }
               .message-tit-destination-real {
                 padding: 4px;
+                margin-right:2px;
                 line-height: 24px;
               };
               .destinationRealStyle {

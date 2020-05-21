@@ -18,9 +18,9 @@
           <span>任务起点:</span>
           <span>{{appointTaskMessage.setOutPlaceName}}</span>
         </p>
-        <p class="task-end-point">
+        <p class="task-end-point" style="line-height:20px">
           <span>任务目的地:</span>
-          <span>{{appointTaskMessage.destinationName}}</span>
+          <span style="margin-right:8px" v-for="(item,index) in surplusDestinationList" :key="index">{{item.text}}</span>
         </p>
       </div>
     </div>
@@ -373,6 +373,8 @@ export default {
           } else {
             this.sweepAstoffice()
           }
+        } else {
+          this.sweepAstoffice()
         }
       }
     },
