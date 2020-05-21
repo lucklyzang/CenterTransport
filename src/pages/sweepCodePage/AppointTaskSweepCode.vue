@@ -311,14 +311,6 @@ export default {
       })
     },
 
-    // 清空该完成任务存储的已扫过出发地科室信息
-    // emptyCompleteDepartment () {
-    //   let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
-    //   temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
-    //   this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
-    //   setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
-    // },
-
     // 清空该完成任务存储的已扫过目的地科室信息
     emptyCompleteDestinationDepartment () {
       let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
