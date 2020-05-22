@@ -214,7 +214,9 @@ export default {
             this.storeUserInfo(JSON.parse(getStore('userInfo')));
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
-            getdepartmentList(res.data.data['proId']).then((res) => {
+            // 获取科室字典数据
+            getdepartmentList(res.data.data['proId'])
+            .then((res) => {
               if (res.data.code == 200) {
                 setStore('departmentInfo', res.data.data);
                 window.location.reload();

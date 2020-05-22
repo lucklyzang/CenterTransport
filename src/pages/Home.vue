@@ -436,8 +436,9 @@
         .then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data) {
-              this.yesterdayNumber = res.data.data.totalCount;
-              this.yesterdayRank = res.data.data.rank
+              const {totalCount, rank} = res.data.data;
+              this.yesterdayNumber = totalCount;
+              this.yesterdayRank = rank
             }
           }
         })
