@@ -6,8 +6,10 @@ export const formatTime = (formatType) => {
   return moment(new Date().getTime()).format(formatType)
 }
 
-/**
+/*
  * 存储localStorage
+ * @param{String} name key值
+ * @param{String} content value值
 */
 export const setStore = (name, content) => {
   if (!name) return;
@@ -17,16 +19,18 @@ export const setStore = (name, content) => {
   window.localStorage.setItem(name, content);
 }
 
-/**
+/*
  * 获取localStorage
+ * @param{String} name key值
 */
 export const getStore = name => {
   if (!name) return;
   return window.localStorage.getItem(name);
 }
 
-/**
+/*
  * 删除localStorage
+ * @param{String} name key值
 */
 export const removeStore = name => {
   if (!name) return;
@@ -69,8 +73,9 @@ export const IsPC = () => {
   return flag
 }
 
-/** 
+/*
  * 扫码枪绑定方法
+ * @param{Function} callback 回调函数
 */
 export const scanCode = (callback) => {
   var code = '';
@@ -114,20 +119,23 @@ export const scanCode = (callback) => {
   }
 }
 
-/** 
+/*
  * 验证输入重量是否合法正则
 */
 export const testWeight = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/ 
 
-/** 
+/*
  * 扫码后从字典中取值
+ * @param{Object} data 字典数据
+ * @param{String} key key值
 */
 export const Dictionary = (data, key) => {
   return data[key] ? data[key] : undefined
 }
 
-/** 
+/*
  * 判断数据是否为JSON类型
+ * @param{Object} data
 */
 
 export const judgeDataType = (data) => {
@@ -140,8 +148,10 @@ export const judgeDataType = (data) => {
   return flag
 }
 
-/** 
+/*
  * 判断数组对象中每项某个key对应value是否相同
+ * @param{Array} data
+ * @param{String} key 
 */
 
 export const judgeKeyEquail = (data,key) => {
@@ -163,13 +173,12 @@ export const judgeKeyEquail = (data,key) => {
   return flag
 }
 
-/** 
+/*
  * 合并医废类型、重量、医废收集时间
+ * @param{Array} typeArr 医废类型
+ * @param{Array} weightArr 医废重量
+ * @param{Array} timeArr 收集时间
 */
-
-/* 医废类型 [] typeArr*/ 
-/* 医废重量 [] weightArr*/ 
-/* 收集时间 [] timeArr*/
 
 export const dealMedicalWaste = (typeArr, weightArr, timeArr) => {
   const typeTarget = [];
@@ -195,11 +204,11 @@ export const dealMedicalWaste = (typeArr, weightArr, timeArr) => {
   return [typeTarget, weightTarget, timeTarget]
 }
 
-/** 
- * 合并医废类型、重量
+/* 
+  * 合并医废类型、重量
+  * @param{Array} wasteType 医废类型
+  * @param{Array} wasteWeight 医废重量
 */
-/* 医废类型 [] wasteType*/ 
-/* 医废重量 [] wasteWeight*/
 export const dealMedicalWast = (wasteType,wasteWeight) => {
   let map = {};
   wasteType.forEach((value, index) => {
@@ -209,7 +218,10 @@ export const dealMedicalWast = (wasteType,wasteWeight) => {
   return map
 }
 
-// 数组去重
+/* 
+  * 数组去重
+  * @param{Array} currentArr
+*/
 export const checkEmptyArray = (currentArr) => {
   var arr = [];
   currentArr.map(function(val, index) {
@@ -221,7 +233,11 @@ export const checkEmptyArray = (currentArr) => {
   return arr;
 }
 
-// Base64编码转换图片
+/* 
+  * Base64编码转换图片
+  * @param{String} dataurl base编码字符串
+  * @param{String} filename 文件名称
+*/
 export const base64ImgtoFile = (dataurl, filename = 'file') => {
   let arr = dataurl.split(',')
   let mime = arr[0].match(/:(.*?);/)[1]
@@ -237,7 +253,10 @@ export const base64ImgtoFile = (dataurl, filename = 'file') => {
   })
 }
 
-// 引用类型数据深度克隆
+/* 
+  * 引用类型数据深度克隆
+  * @param{Array || Object} obj
+*/
 export const deepClone = (obj) => {
   let newObj=Array.isArray(obj)?[]:{}
   if(obj&&typeof obj ==="object"){
@@ -250,7 +269,11 @@ export const deepClone = (obj) => {
   return newObj
 }
 
-// 根据标本id查询标本名称
+/* 
+  * 根据标本id查询标本名称
+  * @param{Array} sampleArray 标本信息对象数组
+  * @param{String} sampleId 标本ID值
+*/
 export const querySampleName = (sampleArray,sampleId) => {
   if (!Array.isArray(sampleArray)) {return};
   let targetSmple = sampleArray.filter((item) => {
@@ -259,7 +282,10 @@ export const querySampleName = (sampleArray,sampleId) => {
   return targetSmple[0].text
 }
 
-// 数组去重方法
+/* 
+  * 数组去重方法
+  * @param{Array} targetArray
+*/
 export const repeArray = (targetArray) => {
   if (!Array.isArray(targetArray)) {return};
   var result = [],
@@ -273,9 +299,10 @@ export const repeArray = (targetArray) => {
   return result;
 }
 
- /**
- * 去除包裹的大括号
- */
+/* 
+  * 去除包裹的大括号
+  * @param{String} str
+*/
 export const removeBlock = (str) => {
   if (str) {
     let reg = /^\{/gi;
@@ -288,10 +315,9 @@ export const removeBlock = (str) => {
   }
 }
 
-/*
- * 生成UUID
- */
-
+/* 
+  * 生成UUID
+*/
 export const UUID = () => {
   var d = new Date().getTime()
   var uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -302,9 +328,11 @@ export const UUID = () => {
   return uuid
 }
 
-/*
- * 去除两个数组的相同值
- */
+/* 
+  * 去除两个数组的相同值
+  * @param{Array} a
+  * @param{Array} b
+*/
 export const arrayDiff = (a, b) => { 
   for(let i=0; i<b.length; i++) { 
     for(let j=0; j<a.length; j++) { 
@@ -314,12 +342,14 @@ export const arrayDiff = (a, b) => {
       } 
     } 
   } 
-    return a; 
-  }
+  return a; 
+}
 
-/*
- * 压缩图片方法
- */
+/* 
+  * 压缩图片
+  * @param{Array} originSite base64字符串
+  * @param{Function} callback 压缩成功后的回调函数
+*/
 export const compressImg = (originSite,callback) => {
   let image = new Image(); //新建一个img标签（还没嵌入DOM节点)
   image.src = originSite;
@@ -343,8 +373,10 @@ export const compressImg = (originSite,callback) => {
   }
 }
 
-/*
- * 将数组中符合条件的元素移到最前面
+/* 
+  * 将数组中符合条件的元素移到最前面
+  * @param{Array} arr
+  * @param{String} key 
 */
 export const changeArrIndex = (arr,key) => {
   let deleteItem = [];
@@ -360,9 +392,9 @@ export const changeArrIndex = (arr,key) => {
 
 /*
  * 判断时间是否超时
- *@param{String} startTime YYYY-mm-dd HH:MM:ss 开始时间 
- *@param{Number} interVal minute 计划用时
- *@return {Boolean} 返回true或false
+ * @param{String} startTime YYYY-mm-dd HH:MM:ss 开始时间 
+ * @param{Number} interVal minute 计划用时
+ * @return {Boolean} 返回true或false
 */
 export const judgeOverTime = (startTime,interVal) => {
   let isOverTime = false
