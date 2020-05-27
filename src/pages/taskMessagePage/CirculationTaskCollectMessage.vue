@@ -180,10 +180,6 @@ export default {
   // },
 
   mounted () {
-    // 获取标本类型
-    // this.getSampleMessage();
-    // 获取检查项
-    // this.getCheckEntryMessage();
     this.parallelFunction();
     // 回显收集过的科室信息
     this.echoCollectedMessage();
@@ -589,8 +585,6 @@ export default {
       this.isNoSampleDialogShow = true;
       this.isNoBedInfoShow = true;
       this.collectMessaheSureShow = false;
-      // this.getSampleMessage();
-      // this.getCheckEntryMessage()
       this.parallelFunction();
     },
 
@@ -703,8 +697,6 @@ export default {
                   innerSampleAmount: 0
                 }
               ];
-              // this.getSampleMessage();
-              // this.getCheckEntryMessage();
               this.parallelFunction();
               let temporaryInnerInfo = deepClone(this.circulationCollectMessageList);
               temporaryInnerInfo = temporaryInnerInfo.filter((item) => {return item.taskId != this.circulationTaskId});
