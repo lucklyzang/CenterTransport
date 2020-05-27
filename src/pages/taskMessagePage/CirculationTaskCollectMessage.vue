@@ -181,9 +181,10 @@ export default {
 
   mounted () {
     // 获取标本类型
-    this.getSampleMessage();
+    // this.getSampleMessage();
     // 获取检查项
-    this.getCheckEntryMessage();
+    // this.getCheckEntryMessage();
+    this.parallelFunction();
     // 回显收集过的科室信息
     this.echoCollectedMessage();
     // 控制设备物理返回按键测试
@@ -373,50 +374,28 @@ export default {
       setStore('isDeleteEcho',true);
     },
 
-    // 查询标本信息
-    getSampleMessage () {
-      querySampleMessage(
-        { proId: this.proId, // 项目ID 必输
-         state: 0  //查询状态，0-启用，1-禁用，固定传 0
-        }).then((res) => {
-           this.sampleMessageList[0].sampleTypeList = [];
-           this.sampleMessageList[0].sampleType = '';
-           if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              for (let item of res.data.data) {
+      // 并行查询标本信息和检查项信息
+      parallelFunction () {
+        Promise.all([this.getSampleMessage(),this.getCheckEntryMessage()])
+        .then((res) => {
+          if (res && res.length > 0) {
+            let [item1,item2] = res;
+            if (item1) {
+              for (let item of item1) {
                 this.sampleMessageList[0].sampleType = item.id;
                 this.sampleMessageList[0].sampleTypeList.push({
                   text: item.specimenName,
                   value: item.id,
-                });
+                })
               };
               // 标本信息存入locaStorage
               setStore('sampleInfo',{sampleKey:this.sampleMessageList[0].sampleTypeList});
               this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList;
               this.temporarySampleType =  this.sampleMessageList[0].sampleType
-            }
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        })
-    },
-
-    // 查询检查项信息
-    getCheckEntryMessage () {
-      queryCheckEntry(
-        { proId: this.proId, // 项目ID 必输
-         state: 0  //查询状态，0-启用，1-禁用，固定传 0
-        }).then((res) => {
-          this.sampleMessageList[0].entryList = [];
-          if (res && res.data.code == 200) {
-            let temporaryCheckList = [];
-            if (res.data.data.length > 0) {
-              for (let item of res.data.data) {
+            };
+            if (item2) {
+              let temporaryCheckList = [];
+              for (let item of item2) {
                 temporaryCheckList.push({
                   id: item.id,
                   itemName: item.itemName
@@ -429,11 +408,53 @@ export default {
         })
         .catch((err) => {
           this.$dialog.alert({
-            message: `${err.message}`,
+            message: `${err}`,
             closeOnPopstate: true
-          }).then(() => {
-          });
+          }).then(() => {})
         })
+      },
+
+    // 查询标本信息
+    getSampleMessage () {
+      return new Promise((resolve,reject) => {
+        querySampleMessage(
+          { proId: this.proId, // 项目ID 必输
+            state: 0  //查询状态，0-启用，1-禁用，固定传 0
+          })
+          .then((res) => {
+            this.sampleMessageList[0].sampleTypeList = [];
+            this.sampleMessageList[0].sampleType = '';
+            if (res && res.data.code == 200) {
+              if (res.data.data.length > 0) {
+                resolve(res.data.data)
+              }
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+      })
+    },
+
+    // 查询检查项信息
+    getCheckEntryMessage () {
+      return new Promise((resolve,reject) => {
+        queryCheckEntry(
+          { proId: this.proId, // 项目ID 必输
+          state: 0  //查询状态，0-启用，1-禁用，固定传 0
+          })
+          .then((res) => {
+            this.sampleMessageList[0].entryList = [];
+            if (res && res.data.code == 200) {
+              if (res.data.data.length > 0) {
+                resolve(res.data.data)
+              }
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+      })
     },
 
     // 返回上一页
@@ -568,8 +589,9 @@ export default {
       this.isNoSampleDialogShow = true;
       this.isNoBedInfoShow = true;
       this.collectMessaheSureShow = false;
-      this.getSampleMessage();
-      this.getCheckEntryMessage()
+      // this.getSampleMessage();
+      // this.getCheckEntryMessage()
+      this.parallelFunction();
     },
 
     // 收集是否完成弹框取消事件
@@ -681,8 +703,9 @@ export default {
                   innerSampleAmount: 0
                 }
               ];
-              this.getSampleMessage();
-              this.getCheckEntryMessage();
+              // this.getSampleMessage();
+              // this.getCheckEntryMessage();
+              this.parallelFunction();
               let temporaryInnerInfo = deepClone(this.circulationCollectMessageList);
               temporaryInnerInfo = temporaryInnerInfo.filter((item) => {return item.taskId != this.circulationTaskId});
               this.changeCirculationCollectMessageList({DtMsg:temporaryInnerInfo});

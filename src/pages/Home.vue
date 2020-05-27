@@ -194,8 +194,7 @@
       // 查询任务数量
       if (this.userTypeId == 0) {
         this.isHaveTask = this.newTaskName;
-        this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
-        this.getAllTaskMessage();
+        this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送');
         this.judgeTaskComplete()
@@ -229,8 +228,7 @@
           // 查询任务数量
           this.leftDownShow = false;
           this.isHaveTask = this.newTaskName;
-          this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(this.newTaskName));
-          this.getAllTaskMessage();
+          this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
           this.changeTitleTxt({tit:'中央运送'});
           setStore('currentTitle','中央运送');
           this.judgeTaskComplete() 
@@ -292,6 +290,42 @@
         currentAudio.play()
       },
 
+      // 并行查询任务数量和排名
+      parallelFunction (type) {
+        Promise.all([this.queryAllTaskNumber(this.proId, this.workerId,type),this.getAllTaskMessage()])
+        .then((res) => {
+          if (res && res.length > 0) {
+            let [item1,item2] = res;
+            if (item2) {
+              const {totalCount, rank} = item2;
+              this.yesterdayNumber = totalCount;
+              this.yesterdayRank = rank
+            };
+            if (item1) {
+              this.taskTypeList = [];
+              let innerItem = item1;
+              Object.keys(innerItem).forEach((item) => {
+                if (item == 'resTask') {
+                  this.taskTypeList.push({text: '预约任务',number: innerItem[item]})
+                } else if (item == 'transTask') {
+                  this.taskTypeList.push({text: '调度任务',number: innerItem[item]})
+                } else if (item == 'circleTask') {
+                  this.taskTypeList.push({text: '循环任务',number: innerItem[item]})
+                }
+              });
+              if (type == '' || type == undefined) {return};
+              this.taskTypeList = changeArrIndex(this.taskTypeList,type)
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
       // 任务类型转换文字
       taskTypeTransfer (type) {
         switch(type) {
@@ -342,8 +376,7 @@
                 audio.onended = () => {
                   // 更新任务数量和排名
                   this.isHaveTask = this.taskTypeTransfer(item);
-                  this.queryAllTaskNumber(this.proId, this.workerId,this.taskTypeTransfer(item));
-                  this.getAllTaskMessage();
+                  this.parallelFunction(this.taskTypeTransfer(item))
                 }
               }
             });
@@ -397,57 +430,35 @@
 
       // 查询所有任务数量
       queryAllTaskNumber (proID, workerId, taskType) {
-        getAllTaskNumber(proID, workerId)
-        .then(res => {
-          if (res && res.data.code == 200) {
-            if (res.data.data) {
-              this.taskTypeList = [];
-              let innerItem = res.data.data;
-              Object.keys(innerItem).forEach((item) => {
-                if (item == 'resTask') {
-                  this.taskTypeList.push({text: '预约任务',number: innerItem[item]})
-                } else if (item == 'transTask') {
-                  this.taskTypeList.push({text: '调度任务',number: innerItem[item]})
-                } else if (item == 'circleTask') {
-                  this.taskTypeList.push({text: '循环任务',number: innerItem[item]})
-                }
-              });
-              if (taskType == '' || taskType == undefined) {return};
-              this.taskTypeList = changeArrIndex(this.taskTypeList,taskType)
+        return new Promise((resolve,reject) => {
+          getAllTaskNumber(proID, workerId)
+          .then(res => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
             }
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-          message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
         })
       },
 
       //查询完成任务数量和排名
       getAllTaskMessage () {
-        queryAllTaskMessage({
-          proId: this.proId, // 项目ID 必输
-          workerId: this.workerId, //运送员ID   非必输
-          date: ''  
-        })
-        .then((res) => {
-          if (res && res.data.code == 200) {
-            if (res.data.data) {
-              const {totalCount, rank} = res.data.data;
-              this.yesterdayNumber = totalCount;
-              this.yesterdayRank = rank
+        return new Promise((resolve,reject) => {
+          queryAllTaskMessage({
+            proId: this.proId, // 项目ID 必输
+            workerId: this.workerId, //运送员ID   非必输
+            date: ''  
+          })
+          .then((res) => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
             }
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
         })
       },
 
