@@ -94,8 +94,10 @@
             </div>
             <div class="medical-worker-operate-right-callOut" v-show="operateCallOut == 2">
               <p class="medical-worker-transport-type">运送类型</p>
-              <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
-                {{item}}
+              <div class="medical-worker-task-list-box">
+                <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
+                  {{item.typeName}}
+                </div>
               </div>
             </div>
             <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
@@ -166,7 +168,7 @@
           {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
           {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
-        medicalTransportTypeList: ['药品运送','标本运送','血液采集'],
+        medicalTransportTypeList: [],
         operateMessage: 1,
         operateCallOut: '',
         operateTaskTrace: '',
@@ -202,7 +204,7 @@
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
         }, 5000)
-      };
+      }
     },
     
     watch: {
@@ -263,15 +265,12 @@
       userTypeId () {
         return this.userInfo.extendData.user_type_id
       },
-
       proId () {
         return this.userInfo.extendData.proId
       },
-
       workerId () {
         return this.userInfo.extendData.userId
       }
-    
     },
     methods:{
       ...mapMutations([
@@ -666,7 +665,9 @@
           this.operateCallOut = 2;
           this.operateTaskTrace = '';
           this.operateHistoryTask = '';
-          this.operateTaskCollect = ''
+          this.operateTaskCollect = '';
+          // 查询运送类型
+          this.getTransportsType({proId: this.proId, state: 0})
         } else if (index == 2) {
           this.operateMessage = '';
           this.operateCallOut = '';
@@ -691,7 +692,19 @@
       // 查询运送类型
       getTransportsType (data) {
         queryTransportType(data).then((res) => {
-          if (res && res.data.code == 200) {}
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.medicalTransportTypeList = [];
+              for (let item of res.data.data) {
+                this.medicalTransportTypeList.push({
+                  id: item.id, // 类型ID
+                  typeName: item.typeName, //类型名称    
+                  defaultDest: item.defaultDest, //默认目的地ID
+                  defaultDestName: item.defaultDestName  //默认目的地 名称
+                })
+              }
+            }
+          }
         })
         .catch((err) => {
           this.$dialog.alert({
@@ -731,7 +744,7 @@
       },
 
       // 收藏任务(经常发起的调度任务)
-       getCollectTask (data) {
+      getCollectTask (data) {
         collectDispatchTask(data).then((res) => {
           if (res && res.data.code == 200) {}
         })
@@ -747,8 +760,8 @@
       // 运送类型点击
       transportTypeEvent (item) {
         this.$router.push({path:'/transportTypeMessage'});
-        this.changeTitleTxt({tit:'运送类型详情'});
-        setStore('currentTitle','运送类型详情');
+        this.changeTitleTxt({tit:'创建调度任务'});
+        setStore('currentTitle','创建调度任务');
         this.changetransportTypeMessage({DtMsg: item});
         setStore('currentTransportTypeMessage',item);
       }
@@ -999,19 +1012,26 @@
             height: 100%;
             background: #fff;
             > div {
+              display: flex;
+              height: 100%;
+              flex-direction: column;
               > p {
                 height: 30px;
                 font-size: 15px;
-                line-height: 30px;
-                margin-bottom: 10px;
+                line-height: 30px
               }
-              .medical-worker-task-list {
-                line-height: 30px;
-                background: #15c4f9;
-                margin-bottom: 4px;
-                color: #fff;
-                padding-left: 5px;
-                box-sizing: border-box
+              .medical-worker-task-list-box {
+                flex:1;
+                overflow: auto;
+                .medical-worker-task-list {
+                  line-height: 30px;
+                  background: #15c4f9;
+                  margin-bottom: 4px;
+                  text-align: center;
+                  color: #fff;
+                  padding-left: 5px;
+                  box-sizing: border-box
+                }
               }
             }
           }
