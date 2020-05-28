@@ -23,6 +23,14 @@ export function queryTransportTools(data) {
     params: data
   })
 };
+//查询设备信息
+export function quereDeviceMessage(data) {
+  return request({
+    url: 'device/queryOne',
+    method: 'get',
+    params: data
+  })
+};
 // 生成调度任务
 export function generateDispatchTask(data) {
   return request({

@@ -48,7 +48,8 @@
           </van-dropdown-menu>
         </div>
       </div>
-      <van-field v-model="taskDescribe"  label="任务描述" placeholder="请输入任务描述"/>
+      <van-field v-model="taskDescribe"   type="textarea" rows="1"
+        autosize label="任务描述" placeholder="请输入任务描述"/>
       <van-field v-model="actualData"  type="number" label="实际数量" placeholder="请输入实际数量"/>
     </div>
     <div class="btn-area">
@@ -66,7 +67,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryAllDestination, queryTransportTools, generateDispatchTask} from '@/api/medicalPort.js'
+import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
@@ -144,7 +145,11 @@ export default {
         setStore('currentTitle','首页') 
       })
     };
-    this.parallelFunction()
+    this.parallelFunction();
+    let me = this;
+    window['setDeviceInfo'] = (val) => {
+      me.setDeviceInfo(val);
+    }
   },
 
   methods: {
@@ -176,12 +181,83 @@ export default {
         this.leftDownShow = !this.leftDownShow;
       },
 
+      
+      // 获取设备信息
+      getDeviceMessage () {
+        window.android.getDeviceInfo()
+      },
+
+      // 获取设备信息回调函数
+      setDeviceInfo (val) {
+        if (val) {
+          try {
+            this.searchDeviceMessage({ proId: this.proId, deviceNumber: val['IMEI']})
+          } catch (err) {
+            this.$dialog.alert({
+              message: `${err}`,
+              closeOnPopstate: true
+            }).then(() => {})
+          }
+        }
+      },
+
+      // 查询设备信息
+      searchDeviceMessage (data) {
+        quereDeviceMessage(data)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            if (this.destinationAddress !== '') {
+              var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
+              if (this.destinationAddress == 0) {
+                destinationName = ''
+              }
+            };
+            if (this.vehicleOperation !== '') {
+              var toolName = this.vehicleOperationList.filter((item) => { return item.value == this.vehicleOperation})[0]['text']
+            } else {
+              toolName = ''
+            };
+            let taskMessage = {
+              setOutPlaceId: res.data.data[0]['spaceId'],  //出发地ID
+              setOutPlaceName: res.data.data[0]['spaceName'],  //出发地名称
+              destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress,   //目的地ID
+              destinationName: destinationName,  //目的地名称
+              taskTypeId: this.transportantTaskMessage['id'],  //运送类型 ID
+              taskTypeName: this.transportantTaskMessage['typeName'],  //运送类型 名 称
+              priority: this.priorityOperation,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+              toolId: this.vehicleOperation,   //运送工具ID
+              toolName: toolName,  //运送工具名称
+              actualCount: this.actualData,   //实际数量
+              patientName: this.patientName,  //病人姓名
+              sex: 0,    //病人性别  0-未指定,1-男, 2-女
+              age: "",   //年龄
+              number: this.patientNumber,   //住院号
+              bedNumber: this.bedNumber,  //床号
+              taskRemark: this.taskDescribe,   //备注
+              createId: this.workerId,   //创建者ID  当前登录者
+              createName: this.userName,   //创建者名称  当前登陆者
+              proId: this.proId,   //项目ID
+              proName: this.proName,   //项目名称
+              isBack: this.returnDepartureOperation,  //是否返回出发地  0-不返回，1-返回
+              createType: 1   //创建类型   0-调度员，1-医务人员 固定传 1
+            };
+            // 创建调度任务
+            this.postGenerateDispatchTask(taskMessage)
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
       // 并行查询目的地和转运工具
       parallelFunction (type) {
         Promise.all([this.getAllDestination(),this.getTransportTools()])
         .then((res) => {
           if (res && res.length > 0) {
-            console.log(res);
             this.destinationList = [];
             this.vehicleOperationList = [];
             this.destinationList.push({text: '无', value: 0});
@@ -268,42 +344,14 @@ export default {
 
       // 运送类型信息确认事件
       dispatchTaskSure () {
-        if (this.destinationAddress !== '') {
-          var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
-          if (this.destinationAddress == 0) {
-            destinationName = ''
-          }
-        };
-        if (this.vehicleOperation !== '') {
-          var toolName = this.vehicleOperationList.filter((item) => { return item.value == this.vehicleOperation})[0]['text']
-        } else {
-          toolName = ''
-        };
-        let taskMessage = {
-          setOutPlaceId: "688",         //出发地ID
-          setOutPlaceName: "急诊一科",  //出发地名称
-          destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress ,         //目的地ID
-          destinationName: destinationName,     //目的地名称
-          taskTypeId: this.transportantTaskMessage['id'],             //运送类型 ID
-          taskTypeName: this.transportantTaskMessage['typeName'],     //运送类型 名 称
-          priority: this.priorityOperation,                //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-          toolId: this.vehicleOperation,                 //运送工具ID
-          toolName: toolName,             //运送工具名称
-          actualCount: this.actualData,             //实际数量
-          patientName: this.patientName,              //病人姓名
-          sex: 0,                     //病人性别  0-未指定,1-男, 2-女
-          age: "",                      //年龄
-          number: this.patientNumber,                   //住院号
-          bedNumber: this.bedNumber,                //床号
-          taskRemark: this.taskDescribe,               //备注
-          createId: this.workerId,              //创建者ID  当前登录者
-          createName: this.userName,       //创建者名称  当前登陆者
-          proId: this.proId,                  //项目ID
-          proName: this.proName,          //项目名称
-          isBack: this.returnDepartureOperation,                  //是否返回出发地  0-不返回，1-返回
-          createType: 1                 //创建类型   0-调度员，1-医务人员 固定传 1
-        };
-        this.postGenerateDispatchTask(taskMessage)
+        try {
+          this.getDeviceMessage();
+        } catch (err) {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        }
       },
 
       // 运送类型信息取消事件

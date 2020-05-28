@@ -368,77 +368,77 @@
       </p>
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
-              <p class="wait-handle-message-createTime">
-                创建时间：{{item.createTime}}
+          <p class="wait-handle-message-createTime">
+            创建时间：{{item.createTime}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            计划开始时间：{{item.planStartTime}}
+          </p>
+          <p class="wait-handle-message-planUseTime">
+            计划用时：{{item.planUseTime}}分钟
+          </p>
+          <div class="wait-handle-message">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">状态:</span>
+                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
               </p>
-              <p class="wait-handle-message-createTime">
-                计划开始时间：{{item.planStartTime}}
+              <P>
+                <span class="message-tit">起点:</span>
+                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">终点:</span>
+                <span class="message-tit-real">{{item.destinationName}}</span>
               </p>
-              <p class="wait-handle-message-planUseTime">
-                计划用时：{{item.planUseTime}}分钟
-              </p>
-              <div class="wait-handle-message">
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">状态:</span>
-                    <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                  </p>
-                  <P>
-                    <span class="message-tit">起点:</span>
-                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                  </P>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">终点:</span>
-                    <span class="message-tit-real">{{item.destinationName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">转运工具:</span>
-                    <span class="message-tit-real">{{item.toolName}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">运送类型:</span>
-                    <span class="message-tit-real">{{item.taskTypeName}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">优先级:</span>
-                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">出发地拍照:</span>
-                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">目的地拍照:</span>
-                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
-                  </p>
-                </div>
-                <div class="handle-message-line-wrapper">
-                  <p>
-                    <span class="message-tit">签字:</span>
-                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
-                  </p>
-                  <p>
-                    <span class="message-tit">回到出发地:</span>
-                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
-                  </p>
-                </div>
-                <p class="wait-handle-check" v-show="item.state == 2 ">
-                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-                </p>
-              </div>
-              <p class="get-wait-task">
-                <span v-show="item.state == '1'">
-                  <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
-                </span>
+              <p>
+                <span class="message-tit">转运工具:</span>
+                <span class="message-tit-real">{{item.toolName}}</span>
               </p>
             </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">运送类型:</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">优先级:</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">出发地拍照:</span>
+                <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+              </p>
+              <p>
+                <span class="message-tit">目的地拍照:</span>
+                <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">签字:</span>
+                <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+              </p>
+              <p>
+                <span class="message-tit">回到出发地:</span>
+                <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+              </p>
+            </div>
+            <p class="wait-handle-check" v-show="item.state == 2 ">
+              <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            </p>
+          </div>
+          <p class="get-wait-task">
+            <span v-show="item.state == '1'">
+              <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+            </span>
+          </p>
         </div>
+      </div>
     </div>
   </div>
 </template>

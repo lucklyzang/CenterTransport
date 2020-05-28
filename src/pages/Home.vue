@@ -96,7 +96,12 @@
               <p class="medical-worker-transport-type">运送类型</p>
               <div class="medical-worker-task-list-box">
                 <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
-                  {{item.typeName}}
+                  <p class="list-content">
+                    {{item.typeName}}
+                  </p>
+                  <p class="list-icon">
+                    <van-icon name="arrow"/>
+                  </p> 
                 </div>
               </div>
             </div>
@@ -105,6 +110,105 @@
             </div>
             <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
               <p>历史任务</p>
+              <div class="historyTask-list-box">
+                <div class="time-search">
+                  <span class="time-between">至</span>
+                  <div class="content-middle-top-content">
+                    <div style="left:0">
+                      <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+                    </div>
+                    <div style="right:0">
+                      <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
+                    </div>
+                  </div>
+                  <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+                    <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
+                    @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+                  </van-popup>
+                  <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true"> 
+                    <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
+                    @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
+                  </van-popup>
+                </div>
+                <p class="middle-top-search">
+                  <span>
+                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
+                  </span>
+                </p>
+                <div class="historyTask-list">
+                  <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}` ">
+                    <p class="wait-handle-message-createTime">
+                      创建时间：{{item.createTime}}
+                    </p>
+                    <p class="wait-handle-message-createTime">
+                      计划开始时间：{{item.planStartTime}}
+                    </p>
+                    <p class="wait-handle-message-planUseTime">
+                      计划用时：{{item.planUseTime}}分钟
+                    </p>
+                    <div class="wait-handle-message">
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">状态:</span>
+                          <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                        </p>
+                        <P>
+                          <span class="message-tit">起点:</span>
+                          <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                        </P>
+                      </div>
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">终点:</span>
+                          <span class="message-tit-real">{{item.destinationName}}</span>
+                        </p>
+                        <p>
+                          <span class="message-tit">转运工具:</span>
+                          <span class="message-tit-real">{{item.toolName}}</span>
+                        </p>
+                      </div>
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">运送类型:</span>
+                          <span class="message-tit-real">{{item.taskTypeName}}</span>
+                        </p>
+                        <p>
+                          <span class="message-tit">优先级:</span>
+                          <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                        </p>
+                      </div>
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">出发地拍照:</span>
+                          <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                        </p>
+                        <p>
+                          <span class="message-tit">目的地拍照:</span>
+                          <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                        </p>
+                      </div>
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">签字:</span>
+                          <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                        </p>
+                        <p>
+                          <span class="message-tit">回到出发地:</span>
+                          <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                        </p>
+                      </div>
+                      <p class="wait-handle-check" v-show="item.state == 2 ">
+                        <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                      </p>
+                    </div>
+                    <p class="get-wait-task">
+                      <span v-show="item.state == '1'">
+                        <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
               <p>收藏</p>
@@ -155,6 +259,14 @@
         isHaveTask: '',
         leftDropdownDataList: ['退出登录'],
         taskTypeList: [],
+        startTime: '',
+        endTime: '',
+        startTimePop: false,
+        endTimePop: false,
+        currentDateStart: new Date(),
+        currentDateEnd: new Date(),
+        minDateStart: new Date(2020, 0, 1),
+        minDateEnd: new Date(2020, 0, 1),
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng}, 
           {tit:'循环任务',imgUrl: circulationTaskPng}, 
@@ -174,14 +286,34 @@
         operateTaskTrace: '',
         operateHistoryTask: '',
         operateTaskCollect: '',
+        stateCompleteList: [{
+          createTime: '2021-3-21',
+          planUseTime: '2021-3-21',
+          planStartTime: '2021-3-21',
+          state: 7,
+          setOutPlaceName: '飒飒',
+          destinationName: '飒飒',
+          taskTypeName: '人发队服',
+          toolName: '电子车',
+          priority: 1,
+          id: 1,
+          startPhoto: 0,
+          endPhoto: 1,
+          isBack: 0,
+          isSign: 1
+          }
+        ],
         defaultPersonPng: require('@/common/images/home/default-person.png'),
         homeBannerPng: require('@/common/images/home/home-banner.png'),
-        btnTaskWrapperPng: require('@/common/images/home/btn-background.png')
+        btnTaskWrapperPng: require('@/common/images/home/btn-background.png'),
+        taskSearchPng: require('@/components/images/task-search.png'),
+        taskGetPng: require('@/components/images/task-get.png')
       }
     },
     
     mounted() {
-      console.log('用户信息',this.userInfo);
+      this.changeTitleTxt({tit:'中央运送'});
+      setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
@@ -197,8 +329,6 @@
       if (this.userTypeId == 0) {
         this.isHaveTask = this.newTaskName;
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-        this.changeTitleTxt({tit:'中央运送'});
-        setStore('currentTitle','中央运送');
         this.judgeTaskComplete()
         // 轮询是否有新任务
         window.setInterval(() => {
@@ -221,6 +351,8 @@
       }
     },
     activated () {
+      this.changeTitleTxt({tit:'中央运送'});
+      setStore('currentTitle','中央运送');
       if (this.isHomeJumpOtherPage) {
         if (!this.isRefershHome) {
           window.location.reload()
@@ -231,8 +363,6 @@
           this.leftDownShow = false;
           this.isHaveTask = this.newTaskName;
           this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-          this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送');
           this.judgeTaskComplete() 
         }
       };
@@ -354,6 +484,54 @@
           case '循环任务' :
             return 'circle'
             break
+        }
+      },
+
+      // 任务优先级转换
+      priorityTransfer (index) {
+        switch(index) {
+          case 1 :
+            return '正常'
+            break;
+          case 2 :
+            return '重要'
+            break;
+          case 3 :
+            return '紧急'
+            break;
+          case 4 :
+            return '紧急重要'
+            break;
+        }
+      },
+
+      // 任务状态转换
+      stateTransfer (index) {
+        switch(index) {
+          case 0 :
+            return '未分配'
+            break;
+          case 1 :
+            return '未查阅'
+            break;
+          case 2 :
+            return '未开始'
+            break;
+          case 3 :
+            return '进行中'
+            break;
+          case 4 :
+            return '未结束'
+            break;
+          case 5 :
+            return '已延迟'
+            break;
+          case 6 :
+            return '已取消'
+            break;
+          case 7 :
+            return '已完成'
+            break;
         }
       },
 
@@ -651,6 +829,27 @@
        * 医务人员代码
       */
 
+      startTimeChange(e) { 
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
+      },
+
+      endTimeChange(e) {
+        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
+      },
+
+      // 初始化时间显示框
+      initDate () {
+        let currentDateList = formatTime('YYYY-MM-DD').split('-');
+        this.startTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`;
+        this.endTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
+      },
+
+      // 搜索完成的任务
+      searchCompleteTask () {
+      },
+
       // 左边列表点击
       operateListEvent (item,index) {
         this.operateListInnerIndex = index;
@@ -679,7 +878,8 @@
           this.operateCallOut = '';
           this.operateTaskTrace = '';
           this.operateHistoryTask = 4;
-          this.operateTaskCollect = ''
+          this.operateTaskCollect = '';
+          this.initDate()
         } else if (index == 4) {
           this.operateMessage = '';
           this.operateCallOut = '';
@@ -1005,32 +1205,167 @@
         };
         .medical-worker-operate-right {
           flex: 76%;
-          padding: 6px;
+          padding: 6px 0;
           background: #f2f2f2;
           .medical-worker-operate-right-inner {
             width: 100%;
             height: 100%;
-            background: #fff;
             > div {
               display: flex;
               height: 100%;
               flex-direction: column;
               > p {
                 height: 30px;
-                font-size: 15px;
-                line-height: 30px
+                font-size: 14px;
+                line-height: 30px;
+                margin-bottom: 8px;
+                background: #fff;
+                padding-left: 8px;
+                color: black;
               }
               .medical-worker-task-list-box {
                 flex:1;
                 overflow: auto;
+                overflow-x: hidden;
                 .medical-worker-task-list {
+                  height: 40px;
+                  position: relative;
+                  background: #fff;
+                  box-sizing: border-box;
+                  .list-content {
+                    position: absolute;
+                    top: 0;
+                    left: 8px;
+                    color: black;
+                    height: 40px;
+                    line-height: 40px;
+                    .bottom-border-1px(#dcdcdc);
+                  }
+                  .list-icon {
+                    position: absolute;
+                    top: 12px;
+                    right: 4px;
+                    color: #b4b4b4;
+                  }
+                }
+              }
+            }
+            .medical-worker-operate-right-callOut {
+              .medical-worker-transport-type {
+              }
+            }
+            .medical-worker-operate-right-historyTask {
+              .historyTask-list-box {
+                display: flex;
+                height: 100%;
+                flex-direction: column;
+                .time-search {
+                  background: #fff;
+                  height: 52px;
+                  position: relative;
+                  /deep/ .van-cell {
+                    width: 100%;
+                    display: inline-block;
+                    padding: 10px 10px;
+                    border: 1px solid #d8d5d5;
+                    border-radius: 4px;
+                    line-height: 0;
+                  }
+                  .time-between {
+                    color: black;
+                    position: absolute;
+                  }
+                  .content-middle-top-content {
+                    position: relative;
+                    height: 100%;
+                    width: 100%;
+                    margin: 0 auto;
+                    > div {
+                      width: 44%;
+                      position: absolute;
+                      top: 14%;
+                    }
+                  }
+                };
+                .middle-top-search {
+                  width: auto;
+                  margin: 0 auto;
                   line-height: 30px;
-                  background: #15c4f9;
-                  margin-bottom: 4px;
-                  text-align: center;
-                  color: #fff;
-                  padding-left: 5px;
-                  box-sizing: border-box
+                  height: 40px;
+                  span {
+                    display: inline-block;
+                    width: 90px;
+                    height: 40px;
+                    img {
+                      width: 100%;
+                      height: 100%
+                    }
+                  }
+                }
+                .historyTask-list {
+                  flex:1;
+                  overflow: auto;
+                  overflow-x: hidden;
+                  .wait-handle-list {
+                    box-sizing: border-box;
+                    position: relative;
+                    box-sizing: border-box;
+                    .wait-handle-message-createTime {
+                      border-top: 1px solid #e3ece9;
+                      padding-left: 10px;
+                      background: #ececec;
+                      height: 24px;
+                      line-height: 24px;
+                      font-size: 12px;
+                      color: #7f7d7d
+                    };
+                    .wait-handle-message-planUseTime {
+                      position: absolute;
+                      top: 6px;
+                      right: 10px;
+                      font-size: 12px;
+                      color: #7f7d7d
+                    };
+                    .wait-handle-message {
+                      font-size: 12px;
+                      padding-top: 15px;
+                      padding-bottom: 15px;
+                      box-sizing: border-box;
+                      .handle-message-line-wrapper {
+                        margin-left: 30px;
+                        p {
+                          margin-bottom: 10px;
+                          width: 47%;
+                          display: inline-block;
+                          vertical-align: top;
+                          .message-tit {
+                            color: #7f7d7d
+                          };
+                          .message-tit-real {
+                            color: black
+                          }
+                        }
+                      }
+                    };
+                    .wait-handle-check {
+                      position: absolute;
+                      top: 60px;
+                      left: 6px
+                    };
+                    .get-wait-task {
+                      width: 100%;
+                      text-align: center;
+                      span {
+                        display: inline-block;
+                        width: 90px;
+                        height: 40px;
+                        img {
+                          width: 100%;
+                          height: 100%
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
