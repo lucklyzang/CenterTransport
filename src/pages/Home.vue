@@ -1,9 +1,10 @@
 <template>
   <div class="content-wrapper">
-    <div class="play-voive-box">
-      <!-- <audio ref="audio" src="/dist/static/audios/task-info-voice.wav" preload="auto">
-        Your browser does not support the audio element.
-      </audio> -->
+   <div class="no-data" v-show="noDataShow">
+      <NoData></NoData>
+    </div>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
     </div>
     <!-- 工作人员操作区域 -->
     <div class="worker-show" v-if="workerShow">
@@ -93,17 +94,64 @@
               <p>消息</p>
             </div>
             <div class="medical-worker-operate-right-callOut" v-show="operateCallOut == 2">
-              <p class="medical-worker-transport-type">运送类型</p>
-              <div class="medical-worker-task-list-box">
-                <div class="medical-worker-task-list" v-for="(item,index) in medicalTransportTypeList" :key="index" @click="transportTypeEvent(item,index)">
-                  <p class="list-content">
-                    {{item.typeName}}
-                  </p>
-                  <p class="list-icon">
-                    <van-icon name="arrow"/>
-                  </p> 
+              <p class="medical-worker-transport-type">创建调度任务</p>
+                 <div class="transport-type-area">
+                  <div class="destination-box">
+                    <div class="destination-title">目的地</div>
+                    <div class="destination-content">
+                      <van-dropdown-menu>
+                        <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>
+                      </van-dropdown-menu>
+                    </div>
+                  </div>
+                  <van-field v-model="bedNumber" label="床号" placeholder="请输入床号"/>
+                  <van-field v-model="patientName"  label="病人姓名" placeholder="请输入病人姓名"/>
+                  <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
+                  <div class="destination-box">
+                    <div class="destination-title">运送类型</div>
+                    <div class="destination-content">
+                      <van-dropdown-menu>
+                        <van-dropdown-item v-model="transPortType" :options="transPortTypeList"/>
+                      </van-dropdown-menu>
+                    </div>
+                  </div>
+                  <div class="destination-box">
+                    <div class="destination-title">转运工具</div>
+                    <div class="destination-content">
+                      <van-dropdown-menu>
+                        <van-dropdown-item v-model="vehicleOperation" :options="vehicleOperationList"/>
+                      </van-dropdown-menu>
+                    </div>
+                  </div>
+                  <div class="destination-box">
+                    <div class="destination-title">优先级</div>
+                    <div class="destination-content">
+                      <van-dropdown-menu>
+                        <van-dropdown-item v-model="priorityOperation" :options="priorityOperationList"/>
+                      </van-dropdown-menu>
+                    </div>
+                  </div>
+                  <div class="destination-box">
+                    <div class="destination-title">返回出发地</div>
+                    <div class="destination-content">
+                      <van-dropdown-menu>
+                        <van-dropdown-item v-model="returnDepartureOperation" :options="returnDepartureOperationList"/>
+                      </van-dropdown-menu>
+                    </div>
+                  </div>
+                  <van-field v-model="taskDescribe"   type="textarea" rows="1"
+                    autosize label="任务描述" placeholder="请输入任务描述"/>
+                  <van-field v-model="actualData"  type="number" label="实际数量" placeholder="请输入实际数量"/>
                 </div>
-              </div>
+                <div class="btn-area">
+                  <span>
+                    <img :src="taskSurePng" alt=""  @click="dispatchTaskSure">
+                  </span>
+                  <span>
+                    <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">
+                  </span>
+                </div>
+              <!-- </div> -->
             </div>
             <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
               <p>任务跟踪</p>
@@ -222,9 +270,11 @@
 <script>
   import HeaderTop from '../components/HeaderTop'
   import FooterBottom from '../components/FooterBottom'
-  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork} from '@/api/workerPort.js'
-  import {queryTransportType, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask} from '@/api/medicalPort.js'
   import NoData from '@/components/NoData'
+  import Loading from '@/components/Loading'
+  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete} from '@/api/workerPort.js'
+  import {queryTransportType, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask, queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
+  import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, changeArrIndex } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
@@ -246,13 +296,17 @@
     components:{
       HeaderTop,
       NoData,
-      FooterBottom
+      Loading,
+      FooterBottom,
+      VanFieldSelectPicker
     },
     data() {
       return {
         leftDownShow: false,
         workerShow: true,
         liIndex: null,
+        showLoadingHint: false,
+        noDataShow: false,
         operateListInnerIndex: '',
         yesterdayNumber: '',
         yesterdayRank: '',
@@ -286,23 +340,32 @@
         operateTaskTrace: '',
         operateHistoryTask: '',
         operateTaskCollect: '',
-        stateCompleteList: [{
-          createTime: '2021-3-21',
-          planUseTime: '2021-3-21',
-          planStartTime: '2021-3-21',
-          state: 7,
-          setOutPlaceName: '飒飒',
-          destinationName: '飒飒',
-          taskTypeName: '人发队服',
-          toolName: '电子车',
-          priority: 1,
-          id: 1,
-          startPhoto: 0,
-          endPhoto: 1,
-          isBack: 0,
-          isSign: 1
-          }
+        stateCompleteList: [],
+        destinationAddress: 0,
+        destinationList: [],
+        vehicleOperation: '',
+        vehicleOperationList: [],
+        priorityOperation: 0,
+        transPortType: '',
+        transPortTypeList: [],
+        priorityOperationList: [
+          { text: '正常', value: 0 },
+          { text: '重要', value: 1 },
+          { text: '紧急', value: 2 },
+          { text: '紧急重要', value: 3 }
         ],
+        returnDepartureOperation: 0,
+        returnDepartureOperationList: [
+          { text: '是', value: 1 },
+          { text: '否', value: 0 },
+        ],
+        bedNumber: '',
+        patientName: '',
+        patientNumber: '',
+        taskDescribe: '',
+        actualData: '',
+        taskSurePng: require('@/components/images/task-sure.png'),
+        taskCancelPng: require('@/components/images/task-cancel.png'),
         defaultPersonPng: require('@/common/images/home/default-person.png'),
         homeBannerPng: require('@/common/images/home/home-banner.png'),
         btnTaskWrapperPng: require('@/common/images/home/btn-background.png'),
@@ -334,6 +397,12 @@
         window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
         }, 5000)
+      } else {
+        this.parallelFunction();
+        let me = this;
+        window['setDeviceInfo'] = (val) => {
+          me.setDeviceInfo(val);
+        }
       }
     },
     
@@ -364,6 +433,12 @@
           this.isHaveTask = this.newTaskName;
           this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
           this.judgeTaskComplete() 
+        } else {
+          this.parallelFunction();
+          let me = this;
+          window['setDeviceInfo'] = (val) => {
+            me.setDeviceInfo(val);
+          }
         }
       };
       document.addEventListener('click',(e) => {
@@ -397,6 +472,9 @@
       },
       proId () {
         return this.userInfo.extendData.proId
+      },
+      proName () {
+        return this.userInfo.extendData.proName
       },
       workerId () {
         return this.userInfo.extendData.userId
@@ -848,6 +926,14 @@
 
       // 搜索完成的任务
       searchCompleteTask () {
+        this.queryCompleteDispatchTask(
+          {
+            proId:this.proId, workerId:'',state:7,
+            startDate: this.startTime, endDate: this.endTime,
+            createId: this.workerId,
+            createType: 1 
+          }
+        )
       },
 
       // 左边列表点击
@@ -866,7 +952,7 @@
           this.operateHistoryTask = '';
           this.operateTaskCollect = '';
           // 查询运送类型
-          this.getTransportsType({proId: this.proId, state: 0})
+          this.parallelFunctionTwo();
         } else if (index == 2) {
           this.operateMessage = '';
           this.operateCallOut = '';
@@ -879,7 +965,15 @@
           this.operateTaskTrace = '';
           this.operateHistoryTask = 4;
           this.operateTaskCollect = '';
-          this.initDate()
+          this.initDate();
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state:7,
+              startDate: this.startTime, endDate: this.endTime,
+              createId: this.workerId,
+              createType: 1 
+            }
+          )
         } else if (index == 4) {
           this.operateMessage = '';
           this.operateCallOut = '';
@@ -887,32 +981,6 @@
           this.operateHistoryTask = '';
           this.operateTaskCollect = 5
         }
-      },
-
-      // 查询运送类型
-      getTransportsType (data) {
-        queryTransportType(data).then((res) => {
-          if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
-              this.medicalTransportTypeList = [];
-              for (let item of res.data.data) {
-                this.medicalTransportTypeList.push({
-                  id: item.id, // 类型ID
-                  typeName: item.typeName, //类型名称    
-                  defaultDest: item.defaultDest, //默认目的地ID
-                  defaultDestName: item.defaultDestName  //默认目的地 名称
-                })
-              }
-            }
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        })
       },
 
       // 跟踪任务(当天发起的任务)
@@ -957,13 +1025,265 @@
         })
       },
 
-      // 运送类型点击
-      transportTypeEvent (item) {
-        this.$router.push({path:'/transportTypeMessage'});
-        this.changeTitleTxt({tit:'创建调度任务'});
-        setStore('currentTitle','创建调度任务');
-        this.changetransportTypeMessage({DtMsg: item});
-        setStore('currentTransportTypeMessage',item);
+      // 获取设备信息
+      getDeviceMessage () {
+        window.android.getDeviceInfo()
+      },
+
+      // 获取设备信息回调函数
+      setDeviceInfo (val) {
+        if (val) {
+          try {
+            this.searchDeviceMessage({ proId: this.proId, deviceNumber: val['IMEI']})
+          } catch (err) {
+            this.$dialog.alert({
+              message: `${err}`,
+              closeOnPopstate: true
+            }).then(() => {})
+          }
+        }
+      },
+
+      // 查询设备信息
+      searchDeviceMessage (data) {
+        quereDeviceMessage(data)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            if (this.destinationAddress !== '') {
+              var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
+              if (this.destinationAddress == 0) {
+                destinationName = ''
+              }
+            };
+            if (this.vehicleOperation !== '') {
+              var toolName = this.vehicleOperationList.filter((item) => { return item.value == this.vehicleOperation})[0]['text']
+            } else {
+              toolName = ''
+            };
+            if (this.transPortType !== '') {
+              var taskTypeName = this.transPortTypeList.filter((item) => { return item.value == this.transPortType})[0]['text']
+            } else {
+              taskTypeName = ''
+            };
+            let taskMessage = {
+              setOutPlaceId: res.data.data[0]['spaceId'],  //出发地ID
+              setOutPlaceName: res.data.data[0]['spaceName'],  //出发地名称
+              destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress,   //目的地ID
+              destinationName: destinationName,  //目的地名称
+              taskTypeId: this.transPortType,  //运送类型 ID
+              taskTypeName: taskTypeName,  //运送类型名称
+              priority: this.priorityOperation,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+              toolId: this.vehicleOperation,   //运送工具ID
+              toolName: toolName,  //运送工具名称
+              actualCount: this.actualData,   //实际数量
+              patientName: this.patientName,  //病人姓名
+              sex: 0,    //病人性别  0-未指定,1-男, 2-女
+              age: "",   //年龄
+              number: this.patientNumber,   //住院号
+              bedNumber: this.bedNumber,  //床号
+              taskRemark: this.taskDescribe,   //备注
+              createId: this.workerId,   //创建者ID  当前登录者
+              createName: this.userName,   //创建者名称  当前登陆者
+              proId: this.proId,   //项目ID
+              proName: this.proName,   //项目名称
+              isBack: this.returnDepartureOperation,  //是否返回出发地  0-不返回，1-返回
+              createType: 1   //创建类型   0-调度员，1-医务人员 固定传 1
+            };
+            // 创建调度任务
+            this.postGenerateDispatchTask(taskMessage)
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
+      // 并行查询目的地、转运工具、运送类型
+      parallelFunctionTwo (type) {
+        Promise.all([this.getAllDestination(),this.getTransportTools(),this.getTransportsType()])
+        .then((res) => {
+          if (res && res.length > 0) {
+            this.destinationList = [];
+            this.vehicleOperationList = [];
+            this.destinationList.push({text: '无', value: 0});
+            let [item1,item2,item3] = res;
+            if (item1) {
+              Object.keys(item1).forEach((item) => {
+                this.destinationList.push({
+                  text: item1[item],
+                  value: item
+                })
+              })
+            };
+            if (item2) {
+              for (let item of item2) {
+                this.vehicleOperationList.push({
+                  text: item.toolName,
+                  value: item.id
+                })
+              }
+            };
+            if (item3) {
+              this.transPortTypeList = [];
+              for (let item of item3) {
+                this.transPortTypeList.push({
+                  value: item.id, // 类型ID
+                  text: item.typeName, //类型名称    
+                  defaultDest: item.defaultDest, //默认目的地ID
+                  defaultDestName: item.defaultDestName  //默认目的地 名称
+                })
+              }
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
+      // 查询目的地
+      getAllDestination () {
+        return new Promise((resolve,reject) => {
+          queryAllDestination(this.proId).then((res) => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+        })
+      },
+
+      // 查询转运工具
+      getTransportTools () {
+        return new Promise((resolve,reject) => {
+          queryTransportTools({proId: this.proId, state: 0})
+          .then((res) => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+        })
+      },
+
+      // 查询运送类型
+      getTransportsType () {
+        return new Promise((resolve,reject) => {
+          queryTransportType({proId: this.proId, state: 0}).then((res) => {
+            if (res && res.data.code == 200) {
+              if (res.data.data.length > 0) {
+                resolve(res.data.data)
+              }
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+        })
+      },
+
+      // 生成调度任务
+      postGenerateDispatchTask (data) {
+        generateDispatchTask(data).then((res) => {
+          if (res && res.data.code == 200) {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.initData()
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 运送类型信息确认事件
+      dispatchTaskSure () {
+        try {
+          this.getDeviceMessage();
+        } catch (err) {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        }
+      },
+
+      // 运送类型信息取消事件
+      dispatchTaskCancel () {
+        this.initData()
+      },
+
+      // 查询历史调度任务(已完成)
+      queryCompleteDispatchTask (data) {
+        this.noDataShow = false;
+        this.showLoadingHint = true;
+        getDispatchTaskComplete(data).then((res) => {
+          this.showLoadingHint = false;
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              this.stateCompleteList = [];
+              this.stateCompleteList.push({
+                createTime: item.createTime,
+                planUseTime: item.planUseTime,
+                planStartTime: item.planStartTime,
+                state: item.state,
+                setOutPlaceName: item.setOutPlaceName,
+                destinationName: item.destinationName,
+                taskTypeName: item.taskTypeName,
+                toolName: item.toolName,
+                priority: item.priority,
+                id: item.id,
+                startPhoto: item.startPhoto,
+                endPhoto: item.endPhoto,
+                isBack: item.isBack,
+                isSign: item.isSign
+              })
+            } else {
+              this.noDataShow = true;
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
+      },
+
+      // 清空数据
+      initData () {
+        this.destinationAddress = 0;
+        this.vehicleOperation = '';
+        this.priorityOperation = '';
+        this.transPortType = '';
+        this.returnDepartureOperation = 0;
+        this.bedNumber = '';
+        this.patientName = '';
+        this.patientNumber = '';
+        this.taskDescribe = '';
+        this.actualData = ''
       }
     }
   }
@@ -975,6 +1295,21 @@
   .content-wrapper {
     .content-wrapper();
     position: relative;
+     .no-data {
+      position: absolute;
+      top: 200px;
+      left: 13%;
+      width: 100%;
+      text-align: center;
+    }
+    .loading {
+      position: absolute;
+      top: 260px;
+      left: 13%;
+      width: 100%;
+      height: 100px;
+      text-align: center;
+    };
     .play-voive-box {
       position: absolute;
       top: 60px;
@@ -1206,7 +1541,7 @@
         .medical-worker-operate-right {
           flex: 76%;
           padding: 6px 0;
-          background: #f2f2f2;
+          background: #fff;
           .medical-worker-operate-right-inner {
             width: 100%;
             height: 100%;
@@ -1223,6 +1558,62 @@
                 padding-left: 8px;
                 color: black;
               }
+              .transport-type-area {
+                  flex:1;
+                  overflow: auto;
+                  margin: 0 auto;
+                  margin: 10px 0;
+                  width: 100%;
+                  .destination-box {
+                    padding-left: 15px;
+                    > div {
+                        display: inline-block
+                      };
+                      .destination-title {
+                        width: 24%;
+                        color: #323233;
+                      }
+                    .destination-content {
+                      width: 66%;
+                      /deep/ .van-dropdown-menu {
+                        .van-dropdown-menu__item {
+                          .van-dropdown-menu__title {
+                              width: 100%;
+                              padding: 0;
+                              color: #323233;
+                              font-size: 14px;
+                          }
+                        }
+                        .van-dropdown-menu__bar {
+                          box-shadow: none
+                        }
+                        .van-dropdown-item {
+                          left: 24%
+                        }
+                      }
+                    }
+                  }
+                  /deep/ .van-cell {
+                    .van-field__label {
+                      width: 24%;
+                      margin-right: 8px
+                    }
+                  }
+                }
+                .btn-area {
+                  height: 80px;
+                  text-align: center;
+                  line-height: 80px;
+                  span {
+                    .bottomButton;
+                    display: inline-block;
+                    margin-top: 15px;
+                    img {
+                      width: 100%;
+                      height: 100%
+                    }
+                  }
+                }
               .medical-worker-task-list-box {
                 flex:1;
                 overflow: auto;

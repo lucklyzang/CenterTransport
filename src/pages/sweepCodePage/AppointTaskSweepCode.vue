@@ -135,7 +135,8 @@ export default {
       if (code) {
         let codeData = code.split('|');
         if (codeData.length > 0) {
-          let departmentId = codeData[0];
+          let departmentId = codeData[0],
+              departmentNo = codeData[1];
           // 判断目的地是否已经扫过
           if (this.appointSweepCodeNumber) {
             let isExistTaskId = '',
@@ -159,6 +160,7 @@ export default {
             id: this.taskId,  //任务ID
             proId: this.proId,  //项目ID
             departmentId: departmentId,  //科室ID
+            departmentNo: departmentNo, //科室编号
             checkType: this.appointTaskDepartmentType   //校验类型  0-出发地，1-目的地，2-出发地(当任务状态为4时)
           })
         }
@@ -172,7 +174,7 @@ export default {
     },
 
     // 判断扫码科室
-    juddgeCurrentDepartment (data) {
+    juddgeCurrentDepartment(data) {
       this.showLoadingHint = true;
       judgeAppointTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {

@@ -15,7 +15,7 @@
     <div class="sweep-code-area">
       <div class="point-area">
         <div class="task-start-point" v-show="arriveDepartmentId == false">
-          <p>任务起点:(扫码科室必须为下列其中一个)</p>
+          <p>任务起点:</p>
           <ul>
             <li v-for="(item,index) in startPointList" :key="index">{{item.text}}</li>
           </ul>
@@ -159,18 +159,20 @@ export default {
       if (code) {
         let codeData = code.split('|');
         if (codeData.length > 0) {
-          let departmentId = codeData[0];
+          let departmentId = codeData[0],
+              departmentNo = codeData[1];
           if (!this.arriveDepartmentId) {
-            if (departmentId != this.clickDepartmentId) {
-              this.$dialog.alert({
-                message: '当前扫码科室与所选科室不一致,请重新扫码'
-              }).then(() => {
-              });
-              return
-            };
+            // if (departmentId != this.clickDepartmentId) {
+            //   this.$dialog.alert({
+            //     message: '当前扫码科室与所选科室不一致,请重新扫码'
+            //   }).then(() => {
+            //   });
+            //   return
+            // };
             this.juddgeMedicalCorrect({
               id: this.circulationId,// 循环任务ID 必输
               proId: this.proId, // 项目ID 必输
+              departmentNo: departmentNo, //项目编号
               departmentId: departmentId //扫描科室ID 必输
             })
           } else {

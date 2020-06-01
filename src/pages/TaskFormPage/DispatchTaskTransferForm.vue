@@ -93,7 +93,7 @@ export default {
 
     // 获取在线工作人员
     queryOnlineWorker (data) {
-      getWorkerMessage().then((res) => {
+      getWorkerMessage(data).then((res) => {
         if (res && res.data.code == 200) {
           this.onlinePersonLlist = [];
           for (let item of res.data.data) {
