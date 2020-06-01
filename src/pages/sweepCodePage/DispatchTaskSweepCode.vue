@@ -381,9 +381,11 @@ export default {
         let codeData = code.split('|');
         if (codeData.length > 0) {
           this.departmentId = codeData[0];
+          let departmentNo = codeData[1];
           this.juddgeCurrentDepartment({
             id: this.dispatchTaskMessage.id,  //任务ID
             proId: this.proId,  //项目ID
+            departmentNo: departmentNo, //项目编号
             departmentId: this.departmentId,  //科室ID
             checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
           });
