@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {logIn, getDictionaryData, getdepartmentList} from '@/api/login.js'
+import {logIn, getDictionaryData, getdepartmentList, getdepartmentListNo} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
 import passwordPng from '@/components/images/password.png'
 import userPng from '@/components/images/user.png'
@@ -40,6 +40,7 @@ export default {
       showLoadingHint: false,
       sweepMsg: null,
       currentIndex: 0,
+      proId: '',
       barCodeScannerShow: false,
       logoTopPng: require('@/components/images/logo-top.png'),
       loginBtnPng: require('@/components/images/login-btn.png'),
@@ -179,6 +180,60 @@ export default {
       this.barCodeScannerShow = false
     },
 
+    // 并行获取科室字典值(编号和字典)
+     parallelFunction () {
+        Promise.all([this.queryDepartmentList(),this.queryDepartmentListNo()])
+        .then((res) => {
+          if (res && res.length > 0) {
+            this.destinationList = [];
+            this.vehicleOperationList = [];
+            this.destinationList.push({text: '无', value: 0});
+            let [item1,item2] = res;
+            if (item1) {
+             setStore('departmentInfo', item1);
+            };
+            if (item2) {
+             setStore('departmentInfoNo', item2);
+             window.location.reload()
+            };
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
+    // 获取科室字典id
+    queryDepartmentList () {
+      return new Promise((resolve,reject) => {
+        getdepartmentList(this.proId).then((res) => {
+          if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+      })
+    },
+
+    // 获取科室字典编号
+    queryDepartmentListNo () {
+      return new Promise((resolve,reject) => {
+        getdepartmentListNo(this.proId).then((res) => {
+          if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+      })
+    },
+
     // 账号密码登录方法
     login () {
       let loginMessage;
@@ -214,16 +269,9 @@ export default {
             this.storeUserInfo(JSON.parse(getStore('userInfo')));
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
+            this.proId = res.data.data['proId'];
             // 获取科室字典数据
-            getdepartmentList(res.data.data['proId'])
-            .then((res) => {
-              if (res.data.code == 200) {
-                setStore('departmentInfo', res.data.data);
-                window.location.reload();
-              }
-            })
-            .catch((err) => {
-            });
+            this.parallelFunction()
           } else {
              this.$dialog.alert({
               message: `${res.data.msg}`,

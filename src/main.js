@@ -149,6 +149,10 @@ new Vue({
     if (getStore('departmentInfo')) {
       store.commit('changeDepartmentInfoList', JSON.parse(getStore('departmentInfo')));
     };
+    // 页面刷新重新存入科室信息编号
+    if (getStore('departmentInfoNo')) {
+      store.commit('changeDepartmentInfoListNo', JSON.parse(getStore('departmentInfoNo')));
+    }
   },
   template: '<App/>'
 })

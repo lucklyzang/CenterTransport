@@ -87,6 +87,7 @@ export default {
       headerImg: '',
       liIndex: null,
       departmentId: '',
+      departmentNo: '',
       currentSiteId: '',
       compressImgUrl: '',
       upImgUrl: require('@/common/images/home/no-data-default.png'),
@@ -145,7 +146,8 @@ export default {
       'isSign',
       'isSingleDestination',
       'isCompleteSweepCodeDestinationList',
-      'departmentInfoList'
+      'departmentInfoList',
+      'departmentInfoListNo'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -182,9 +184,9 @@ export default {
       if (echoIndex == -1) {return};
       temporarySweepCodeOficeList = this.isCompleteSweepCodeDestinationList.filter((item) => { return item.taskId == this.taskId})[0]['officeList'];
       for (let item of temporarySweepCodeOficeList) {
-        temporarySweepCodeDestinationList.push(Dictionary(this.departmentInfoList,item))
+        temporarySweepCodeDestinationList.push(Dictionary(this.departmentInfoListNo,item.toString()))
       };
-      this.sweepCodeDestinationList = temporarySweepCodeDestinationList
+      this.sweepCodeDestinationList = temporarySweepCodeDestinationList;
     },
 
     // 图片上传预览
@@ -249,6 +251,8 @@ export default {
           taskId: this.taskId,  //任务ID必填
           proId: this.proId,  //项目ID必填
           proName: this.proName,//项目名称必填项
+          depId: this.departmentId, //当前科室ID 必输
+          depNo: this.departmentNo, //当前科室编号 必输
           type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
           taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
           photo: this.compressImgUrl //base64字符串必填
@@ -369,7 +373,8 @@ export default {
             type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
             taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
             photo: this.currentElectronicSignature, //base64字符串必填
-            depId: this.departmentId //当前科室ID 必输
+            depId: this.departmentId, //当前科室ID 必输
+            depNo: this.departmentNo //当前科室编号 必输
           }
         );
       }
@@ -381,6 +386,7 @@ export default {
         let codeData = code.split('|');
         if (codeData.length > 0) {
           this.departmentId = codeData[0];
+          this.departmentNo = codeData[1];
           let departmentNo = codeData[1];
           this.juddgeCurrentDepartment({
             id: this.dispatchTaskMessage.id,  //任务ID
@@ -398,10 +404,10 @@ export default {
               let temporaryIndex = this.isCompleteSweepCodeDestinationList.indexOf(this.isCompleteSweepCodeDestinationList.filter((item) => {return item.taskId == this.taskId})[0]);
               if (temporaryIndex != -1) {
                 temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
-                temporaryDepartmentId.push(this.departmentId);
+                temporaryDepartmentId.push(this.departmentNo);
                 temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
               } else {
-                temporaryDepartmentId.push(this.departmentId);
+                temporaryDepartmentId.push(this.departmentNo);
                 temporaryOfficeList.push(
                   { 
                     officeList: repeArray(temporaryDepartmentId),
@@ -410,7 +416,7 @@ export default {
                 )
               };
             } else {
-              temporaryDepartmentId.push(this.departmentId);
+              temporaryDepartmentId.push(this.departmentNo);
               temporaryOfficeList.push(
                 { 
                   officeList: repeArray(temporaryDepartmentId),

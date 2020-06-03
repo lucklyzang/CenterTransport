@@ -34,10 +34,18 @@ export function getWorkerMessage (data) {
   })
 }
 
-// 获取科室字典值
+// 获取科室字典值ID
 export function getdepartmentList (proId) {
   return request({
     url: `department/dict/${proId}`,
+    method: 'get'
+  })
+}
+
+// 获取科室字典值编号
+export function getdepartmentListNo (proId) {
+  return request({
+    url: `department/dictNo/${proId}`,
     method: 'get'
   })
 }

@@ -51,7 +51,7 @@ export default {
       leftDownShow: false,
       showLoadingHint: false,
       liIndex: null,
-      destinationList: [{name:'科室一',id:1},{name:'科室二',id:2},{name:'科室三',id:3}],
+      destinationList: [],
       taskCancelPng: require('@/components/images/task-cancel.png'),
       taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     };
