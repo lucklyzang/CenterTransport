@@ -183,8 +183,8 @@
                     <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
                   </span>
                 </p>
-                <div class="historyTask-list">
-                  <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}` ">
+                <div class="historyTask-list" v-show="historyTaskListShow">
+                  <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
                     <p class="wait-handle-message-createTime">
                       创建时间：{{item.createTime}}
                     </p>
@@ -317,6 +317,7 @@
         endTime: '',
         startTimePop: false,
         endTimePop: false,
+        historyTaskListShow: false,
         currentDateStart: new Date(),
         currentDateEnd: new Date(),
         minDateStart: new Date(2020, 0, 1),
@@ -345,14 +346,14 @@
         destinationList: [],
         vehicleOperation: '',
         vehicleOperationList: [],
-        priorityOperation: 0,
+        priorityOperation: 1,
         transPortType: '',
         transPortTypeList: [],
         priorityOperationList: [
-          { text: '正常', value: 0 },
-          { text: '重要', value: 1 },
-          { text: '紧急', value: 2 },
-          { text: '紧急重要', value: 3 }
+          { text: '正常', value: 1 },
+          { text: '重要', value: 2 },
+          { text: '紧急', value: 3 },
+          { text: '紧急重要', value: 4 }
         ],
         returnDepartureOperation: 0,
         returnDepartureOperationList: [
@@ -897,9 +898,13 @@
         if (getStore('isAppointFirstSweepCode')) {
           this.$store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));
         };
-        // 页面刷新重新存入科室信息
+        // 页面刷新重新存入科室信息id
         if (getStore('departmentInfo')) {
           this.$store.commit('changeDepartmentInfoList', JSON.parse(getStore('departmentInfo')));
+        };
+        // 页面刷新重新存入科室信息编号
+        if (getStore('departmentInfoNo')) {
+          this.$store.commit('changeDepartmentInfoListNo', JSON.parse(getStore('departmentInfoNo')));
         }
       },
 
@@ -1066,13 +1071,13 @@
               taskTypeName = ''
             };
             let taskMessage = {
-              setOutPlaceId: res.data.data[0]['spaceId'],  //出发地ID
-              setOutPlaceName: res.data.data[0]['spaceName'],  //出发地名称
+              setOutPlaceId: res.data.data['spaceId'],  //出发地ID
+              setOutPlaceName: res.data.data['spaceName'],  //出发地名称
               destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress,   //目的地ID
               destinationName: destinationName,  //目的地名称
               taskTypeId: this.transPortType,  //运送类型 ID
               taskTypeName: taskTypeName,  //运送类型名称
-              priority: this.priorityOperation,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+              priority: this.priorityOperation,   //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
               toolId: this.vehicleOperation,   //运送工具ID
               toolName: toolName,  //运送工具名称
               actualCount: this.actualData,   //实际数量
@@ -1238,26 +1243,30 @@
           this.showLoadingHint = false;
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.historyTaskListShow = true;
               this.noDataShow = false;
               this.stateCompleteList = [];
-              this.stateCompleteList.push({
-                createTime: item.createTime,
-                planUseTime: item.planUseTime,
-                planStartTime: item.planStartTime,
-                state: item.state,
-                setOutPlaceName: item.setOutPlaceName,
-                destinationName: item.destinationName,
-                taskTypeName: item.taskTypeName,
-                toolName: item.toolName,
-                priority: item.priority,
-                id: item.id,
-                startPhoto: item.startPhoto,
-                endPhoto: item.endPhoto,
-                isBack: item.isBack,
-                isSign: item.isSign
-              })
+              for (let item of res.data.data) {
+                this.stateCompleteList.push({
+                  createTime: item.createTime,
+                  planUseTime: item.planUseTime,
+                  planStartTime: item.planStartTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  destinationName: item.destinationName,
+                  taskTypeName: item.taskTypeName,
+                  toolName: item.toolName,
+                  priority: item.priority,
+                  id: item.id,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto,
+                  isBack: item.isBack,
+                  isSign: item.isSign
+                })
+              }
             } else {
-              this.noDataShow = true;
+              this.historyTaskListShow = false;
+              this.noDataShow = true
             }
           }
         })
@@ -1652,7 +1661,7 @@
                 flex-direction: column;
                 .time-search {
                   background: #fff;
-                  height: 52px;
+                  height: 44px;
                   position: relative;
                   /deep/ .van-cell {
                     width: 100%;
@@ -1679,14 +1688,13 @@
                   }
                 };
                 .middle-top-search {
-                  width: auto;
-                  margin: 0 auto;
-                  line-height: 30px;
-                  height: 40px;
+                  width: 100%;
+                  margin: 4px 0;
+                  text-align: center;
                   span {
                     display: inline-block;
-                    width: 90px;
-                    height: 40px;
+                    width: 70px;
+                    height: 30px;
                     img {
                       width: 100%;
                       height: 100%

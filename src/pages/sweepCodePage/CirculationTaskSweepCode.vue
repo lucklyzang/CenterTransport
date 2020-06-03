@@ -162,13 +162,13 @@ export default {
           let departmentId = codeData[0],
               departmentNo = codeData[1];
           if (!this.arriveDepartmentId) {
-            // if (departmentId != this.clickDepartmentId) {
-            //   this.$dialog.alert({
-            //     message: '当前扫码科室与所选科室不一致,请重新扫码'
-            //   }).then(() => {
-            //   });
-            //   return
-            // };
+            if (departmentNo != this.clickDepartmentId) {
+              this.$dialog.alert({
+                message: '当前扫码科室与所选科室不一致,请重新扫码'
+              }).then(() => {
+              });
+              return
+            };
             this.juddgeMedicalCorrect({
               id: this.circulationId,// 循环任务ID 必输
               proId: this.proId, // 项目ID 必输
@@ -176,9 +176,9 @@ export default {
               departmentId: departmentId //扫描科室ID 必输
             })
           } else {
-            // 存储送达的科室id
-            this.changeStoreArriveDeparnmentId(departmentId);
-            setStore('currentDepartmentId', departmentId);
+            // 存储送达的科室编号
+            this.changeStoreArriveDeparnmentId(departmentNo);
+            setStore('currentDepartmentId', departmentNo);
             this.changeIsrefreshCirculationConnectPage(true);
             this.$router.push({path:'/circulationTaskMessageConnect'});
             this.changeTitleTxt({tit:'循环信息交接'});

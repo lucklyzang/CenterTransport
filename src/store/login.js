@@ -10,6 +10,7 @@ export default {
     // 过期方式
     overDueWay: false,
     departmentInfoList: {},
+    departmentInfoListNo: {},
     newTaskName: ''
   },
   getters:{
@@ -20,6 +21,7 @@ export default {
     userType: state => state.userType,
     overDueWay: state => state.overDueWay,
     departmentInfoList: state => state.departmentInfoList,
+    departmentInfoListNo: state => state.departmentInfoListNo,
     newTaskName: state => state.newTaskName
   },
   mutations:{
@@ -46,9 +48,13 @@ export default {
     changeOverDueWay (state, playLoad) {
       state.overDueWay = playLoad
     },
-    // 改变科室信息状态
+    // 改变科室信息状态id
     changeDepartmentInfoList (state, playLoad) {
       state.departmentInfoList = playLoad
+    },
+    // 改变科室信息状态编号
+    changeDepartmentInfoListNo (state, playLoad) {
+      state.departmentInfoListNo = playLoad
     },
     // 改变新任务列表状态
     changeNewTaskList (state, playLoad) {

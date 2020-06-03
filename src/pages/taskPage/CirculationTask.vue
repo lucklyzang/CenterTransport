@@ -646,6 +646,7 @@
 
       // 科室任务列表点击
       officeTaskEvent (item, val, key, check, index, indexWrapper) {
+        console.log(key);
         if (check == true) {
           this.$dialog.alert({
             message: '该科室已完成标本收集',
@@ -923,8 +924,7 @@
             top: 48px;
             left: 0;
             width: 100%;
-            max-height: 160px;
-            overflow: auto;
+            height: auto;
             z-index: 100;
             ul {
               li {
@@ -953,9 +953,8 @@
       }
     };
     .circulation-task-list-two {
-      flex:1;
+      height: 100%;
       overflow: auto;
-      margin: 0 auto;
       width: 100%;
       .wait-handle-list {
         box-sizing: border-box;
@@ -1013,8 +1012,7 @@
           top: 48px;
           left: 0;
           width: 100%;
-          max-height: 160px;
-          overflow: auto;
+          height: auto;
           z-index: 100;
           ul {
             li {
