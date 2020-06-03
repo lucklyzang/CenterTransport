@@ -292,6 +292,7 @@
   import taskTailCheckedPng from '@/common/images/home/task-tail-checked.png'
   import historyTaskCheckedPng from '@/common/images/home/history-task-checked.png'
   import medicalCollectCheckedPng from '@/common/images/home/medical-collect-checked.png'
+  let windowTimer
   export default {
     components:{
       HeaderTop,
@@ -393,9 +394,9 @@
       if (this.userTypeId == 0) {
         this.isHaveTask = this.newTaskName;
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-        this.judgeTaskComplete()
+        this.judgeTaskComplete();
         // 轮询是否有新任务
-        window.setInterval(() => {
+        windowTimer = window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
         }, 5000)
       } else {
@@ -620,6 +621,10 @@
         audio.preloadc = "auto";
         process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
+          // token过期,清除定时器
+          if (!res['headers']['token']) {
+            if(windowTimer) {window.clearInterval(windowTimer)}
+          };
           if (res && res.data.code == 200) {
             let isBreak = false;
             Object.keys(res.data.data).forEach((item) => {
