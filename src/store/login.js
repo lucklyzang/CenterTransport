@@ -11,7 +11,9 @@ export default {
     overDueWay: false,
     departmentInfoList: {},
     departmentInfoListNo: {},
-    newTaskName: ''
+    newTaskName: '',
+    taskDetailsMessage: {},
+    taskType: ''
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -22,7 +24,9 @@ export default {
     overDueWay: state => state.overDueWay,
     departmentInfoList: state => state.departmentInfoList,
     departmentInfoListNo: state => state.departmentInfoListNo,
-    newTaskName: state => state.newTaskName
+    newTaskName: state => state.newTaskName,
+    taskDetailsMessage: state => state.taskDetailsMessage,
+    taskType: state => state.taskType
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -59,6 +63,14 @@ export default {
     // 改变新任务列表状态
     changeNewTaskList (state, playLoad) {
       state.newTaskName = playLoad
+    },
+    // 改变历史任务详情
+    changeTaskDetailsMessage (state, playLoad) {
+      state.taskDetailsMessage = playLoad
+    },
+    // 改变任务类型状态
+    changeTaskType (state, playLoad) {
+      state.taskType = playLoad
     }
   },
   actions:{}

@@ -49,3 +49,12 @@ export function getdepartmentListNo (proId) {
     method: 'get'
   })
 }
+
+// 注册channel
+export function registerChannel (data) {
+  return request({
+    url: 'cloud/register',
+    method: 'post',
+    data
+  })
+}

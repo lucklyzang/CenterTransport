@@ -69,6 +69,12 @@ export default {
     this.getDispatchTaskCancelReason({proId: this.proId, state: 0})
   },
 
+  beforeRouteLeave(to, from, next) {
+    // 设置下一个路由的 meta
+    to.meta.keepAlive = false;
+    next();
+  },
+
   computed:{
     ...mapGetters([
       'dispatchTaskTransferIdList',

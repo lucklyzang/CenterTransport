@@ -348,6 +348,12 @@ export default {
     },0)
   },
 
+   beforeRouteLeave(to, from, next) {
+    // 设置下一个路由的 meta
+    to.meta.keepAlive = false;
+    next();
+  },
+
   computed:{
     ...mapGetters([
       'navTopTitle'
@@ -740,16 +746,16 @@ export default {
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
-          padding-left: 30px;
+          padding-left: 10px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
-          margin-left: 30px;
-          font-size: 12px;
+          margin-left: 10px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;

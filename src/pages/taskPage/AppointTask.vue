@@ -54,28 +54,38 @@
                 </p>
                 <P>
                   <span class="message-tit">起点:</span>
-                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                 </P>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P>
                   <span class="message-tit">状态:</span>
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">病人姓名:</span>
+                  <span class="message-tit-real">{{item.patientName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">床号:</span>
+                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                </p>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
@@ -103,29 +113,39 @@
                 </p>
                 <P>
                   <span class="message-tit">起点:</span>
-                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                 </P>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P>
                   <span class="message-tit">状态:</span>
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">病人姓名:</span>
+                <span class="message-tit-real">{{item.patientName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -152,29 +172,39 @@
                 </p>
                 <P>
                   <span class="message-tit">起点:</span>
-                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                 </P>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P>
                   <span class="message-tit">状态:</span>
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">病人姓名:</span>
+                <span class="message-tit-real">{{item.patientName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -201,29 +231,39 @@
                 </p>
                 <P>
                   <span class="message-tit">起点:</span>
-                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                 </P>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P>
                   <span class="message-tit">状态:</span>
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">病人姓名:</span>
+                <span class="message-tit-real">{{item.patientName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -250,28 +290,38 @@
                 </p>
                 <P>
                   <span class="message-tit">起点:</span>
-                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                 </P>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">任务目的地:</span>
-                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                  <span :class="{destinationRealStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
                 </p>
                 <p>
                   <span class="message-tit">床号:</span>
-                  <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                  <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
                 <p>
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P>
                   <span class="message-tit">状态:</span>
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">病人姓名:</span>
+                  <span class="message-tit-real">{{item.patientName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">床号:</span>
+                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                </p>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
@@ -324,29 +374,39 @@
               </p>
               <P>
                 <span class="message-tit">起点:</span>
-                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
               </P>
             </div>
             <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">任务目的地:</span>
-                <span v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real">{{innerItem.text}}</span>
+                <span v-for="(innerItem, index) in item.spaces" :key="index" class="message-tit-real message-tit-destination-real message-tit-real-style">{{innerItem.text}}</span>
               </p>
               <p>
                 <span class="message-tit">床号:</span>
-                <span class="message-tit-real message-tit-real-bdeNumber">{{item.bedNumber}}</span>
+                <span class="message-tit-real message-tit-real-bdeNumber message-tit-real-style">{{item.bedNumber}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
               <P>
                 <span class="message-tit">状态:</span>
                 <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
               </P>
             </div>
+            <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">病人姓名:</span>
+                  <span class="message-tit-real">{{item.patientName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">床号:</span>
+                  <span class="message-tit-real">{{item.bedNumber}}</span>
+                </p>
+              </div>
           </div>
           <p class="wait-handle-check" v-show="item.state == 2">
             <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -489,6 +549,31 @@
       this.drawTaskId()
     },
 
+    // activated () {
+    //  // 控制设备物理返回按键测试
+    //   if (!IsPC()) {
+    //     let that = this;
+    //     pushHistory();
+    //     that.gotoURL(() => {
+    //       pushHistory();
+    //       this.$router.push({path: 'home'});
+    //       this.changeTitleTxt({tit:'中央运送'});
+    //       setStore('currentTitle','中央运送') 
+    //     })
+    //   };
+    //   document.addEventListener('click',(e) => {
+    //     if(e.target.className!='status-name'){
+    //       this.stateListShow = false;
+    //     };
+    //     if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+    //       this.leftDownShow = false;
+    //     }
+    //   });
+    //   // 查询预约任务(分配给自己的)
+    //   this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+    //   this.drawTaskId()
+    // },
+
     methods: {
       ...mapMutations([
         'changeTitleTxt',
@@ -499,7 +584,9 @@
         'changeAppointSweepCodeIntoPage',
         'changeAppointTaskDepartmentType',
         'changeAppointTaskState',
-        'changeSurplusDestinationList'
+        'changeSurplusDestinationList',
+        'changeTaskDetailsMessage',
+        'changeTaskType'
       ]),
 
       // 右边下拉框菜单点击
@@ -760,6 +847,7 @@
                   createTime: item.createTime,
                   spaces: item.destinationName,
                   state: item.state,
+                  finishTime: item.finishTime,
                   setOutPlaceName: item.setOutPlaceName,
                   destinationName: item.destinationName,
                   taskTypeName: item.taskName,
@@ -913,6 +1001,13 @@
 
       // 点击具体任务事件
       taskClickEvent (item) {
+        if (item.state == 7) {
+          this.$router.push({'path':'/taskDetailsMessage'});
+          this.changeTitleTxt({tit:'历史任务详情'});
+          setStore('currentTitle','历史任务详情');
+          this.changeTaskDetailsMessage(item);
+          this.changeTaskType('预约任务')
+        };
         if (item.state !== 1 && item.state !== 7) {
           // 传给扫码界面科室类型和任务状态的值
           if (item.state == 2) {
@@ -1109,22 +1204,22 @@
           box-sizing: border-box;
           .wait-handle-message-createTime {
             border-top: 1px solid #e3ece9;
-            padding-left: 30px;
+            padding-left: 10px;
             background: #ececec;
-            height: 24px;
-            line-height: 24px;
-            font-size: 12px;
+            height: 26px;
+            line-height: 26px;
+            font-size: 16px;
             color: #7f7d7d
           };
           .wait-handle-message {
             margin-left: 30px;
-            font-size: 12px;
+            font-size: 17px;
             padding-top: 15px;
             padding-bottom: 15px;
             box-sizing: border-box;
             .handle-message-line-wrapper {
               p {
-                margin-bottom: 10px;
+                margin-bottom: 12px;
                 width: 47%;
                 display: inline-block;
                 vertical-align: top;
@@ -1133,6 +1228,9 @@
                 };
                 .message-tit-real {
                   color: black
+                }
+                .message-tit-real-style {
+                  color: #2895ea
                 }
                 .message-tit-real-bdeNumber {
                   line-height: 24px
@@ -1238,22 +1336,22 @@
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
-          padding-left: 30px;
+          padding-left: 10px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 12px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               width: 47%;
               display: inline-block;
               vertical-align: top;
@@ -1263,6 +1361,9 @@
               .message-tit-real {
                 color: black
               };
+              .message-tit-real-style {
+                color: #2895ea
+              }
               .message-tit-real-bdeNumber {
                 line-height: 24px
               }
@@ -1306,22 +1407,22 @@
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
-          padding-left: 30px;
+          padding-left: 10px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 12px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               width: 47%;
               display: inline-block;
               vertical-align: top;
@@ -1331,6 +1432,9 @@
               .message-tit-real {
                 color: black
               };
+              .message-tit-real-style {
+                color: #2895ea
+              }
               .message-tit-real-bdeNumber {
                 line-height: 24px
               }

@@ -407,6 +407,12 @@
         }
       }
     },
+
+    beforeRouteLeave(to, from, next) {
+      // 设置下一个路由的 meta
+      to.meta.keepAlive = false;
+      next();
+    },
     
     watch: {
       userTypeId: {
@@ -451,10 +457,6 @@
           this.leftDownShow = false;
         }
       })  
-    },
-
-    beforeRouteLeave(to, from, next) {
-      next()
     },
     
     computed:{

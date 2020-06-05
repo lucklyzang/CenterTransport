@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {logIn, getDictionaryData, getdepartmentList, getdepartmentListNo} from '@/api/login.js'
+import {logIn, getDictionaryData, getdepartmentList, getdepartmentListNo,registerChannel} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
 import passwordPng from '@/components/images/password.png'
 import userPng from '@/components/images/user.png'
@@ -234,6 +234,19 @@ export default {
       })
     },
 
+    // 注册channel
+    getChannel (data) {
+      registerChannel(data)
+      .then((res) => {
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err}`,
+          closeOnPopstate: true
+        }).then(() => {})
+      })
+    },
+
     // 账号密码登录方法
     login () {
       let loginMessage;
@@ -270,6 +283,8 @@ export default {
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
             this.proId = res.data.data['proId'];
+            // 注册channel
+            this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,channelId:window.android.getChannelId()});
             // 获取科室字典数据
             this.parallelFunction()
           } else {

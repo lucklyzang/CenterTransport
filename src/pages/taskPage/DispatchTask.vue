@@ -49,7 +49,7 @@
                 <p class="wait-handle-message-createTime">
                   计划开始时间：{{item.planStartTime}}
                 </p>
-                <p class="wait-handle-message-planUseTime">
+                <p class="wait-handle-message-createTime">
                   计划用时：{{item.planUseTime}}分钟
                 </p>
                 <div class="wait-handle-message">
@@ -60,13 +60,13 @@
                     </p>
                     <P>
                       <span class="message-tit">起点:</span>
-                      <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                     </P>
                   </div>
                   <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">终点:</span>
-                      <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                     </p>
                     <p>
                       <span class="message-tit">转运工具:</span>
@@ -80,10 +80,10 @@
                     </p>
                     <p>
                       <span class="message-tit">优先级:</span>
-                      <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                     </p>
                   </div>
-                  <div class="handle-message-line-wrapper">
+                  <!-- <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">出发地拍照:</span>
                       <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
@@ -101,6 +101,16 @@
                     <p>
                       <span class="message-tit">回到出发地:</span>
                       <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                    </p>
+                  </div> -->
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">病人姓名:</span>
+                      <span class="message-tit-real">{{item.patientName}}</span>
+                    </p>
+                    <p>
+                      <span class="message-tit">床号:</span>
+                      <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -124,7 +134,7 @@
                 <p class="wait-handle-message-createTime">
                   计划开始时间：{{item.planStartTime}}
                 </p>
-                <p class="wait-handle-message-planUseTime">
+                <p class="wait-handle-message-createTime">
                   计划用时：{{item.planUseTime}}分钟
                 </p>
                 <div class="wait-handle-message">
@@ -135,13 +145,13 @@
                     </p>
                     <P>
                       <span class="message-tit">起点:</span>
-                      <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                     </P>
                   </div>
                   <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">终点:</span>
-                      <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                     </p>
                     <p>
                       <span class="message-tit">转运工具:</span>
@@ -155,10 +165,10 @@
                     </p>
                     <p>
                       <span class="message-tit">优先级:</span>
-                      <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                     </p>
                   </div>
-                  <div class="handle-message-line-wrapper">
+                  <!-- <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">出发地拍照:</span>
                       <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
@@ -176,6 +186,16 @@
                     <p>
                       <span class="message-tit">回到出发地:</span>
                       <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                    </p>
+                  </div> -->
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">病人姓名:</span>
+                      <span class="message-tit-real">{{item.patientName}}</span>
+                    </p>
+                    <p>
+                      <span class="message-tit">床号:</span>
+                      <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -199,7 +219,7 @@
                 <p class="wait-handle-message-createTime">
                   计划开始时间：{{item.planStartTime}}
                 </p>
-                <p class="wait-handle-message-planUseTime">
+                <p class="wait-handle-message-createTime">
                   计划用时：{{item.planUseTime}}分钟
                 </p>
                 <div class="wait-handle-message">
@@ -210,13 +230,13 @@
                     </p>
                     <P>
                       <span class="message-tit">起点:</span>
-                      <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                     </P>
                   </div>
                   <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">终点:</span>
-                      <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                     </p>
                     <p>
                       <span class="message-tit">转运工具:</span>
@@ -230,10 +250,10 @@
                     </p>
                     <p>
                       <span class="message-tit">优先级:</span>
-                      <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                     </p>
                   </div>
-                  <div class="handle-message-line-wrapper">
+                  <!-- <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">出发地拍照:</span>
                       <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
@@ -251,6 +271,16 @@
                     <p>
                       <span class="message-tit">回到出发地:</span>
                       <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                    </p>
+                  </div> -->
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">病人姓名:</span>
+                      <span class="message-tit-real">{{item.patientName}}</span>
+                    </p>
+                    <p>
+                      <span class="message-tit">床号:</span>
+                      <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -274,7 +304,7 @@
                 <p class="wait-handle-message-createTime">
                   计划开始时间：{{item.planStartTime}}
                 </p>
-                <p class="wait-handle-message-planUseTime">
+                <p class="wait-handle-message-createTime">
                   计划用时：{{item.planUseTime}}分钟
                 </p>
                 <div class="wait-handle-message">
@@ -285,13 +315,13 @@
                     </p>
                     <P>
                       <span class="message-tit">起点:</span>
-                      <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                     </P>
                   </div>
                   <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">终点:</span>
-                      <span class="message-tit-real">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{item.destinationName == "" ? '无' : item.destinationName}}</span>
                     </p>
                     <p>
                       <span class="message-tit">转运工具:</span>
@@ -305,10 +335,10 @@
                     </p>
                     <p>
                       <span class="message-tit">优先级:</span>
-                      <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                      <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
                     </p>
                   </div>
-                  <div class="handle-message-line-wrapper">
+                  <!-- <div class="handle-message-line-wrapper">
                     <p>
                       <span class="message-tit">出发地拍照:</span>
                       <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
@@ -326,6 +356,16 @@
                     <p>
                       <span class="message-tit">回到出发地:</span>
                       <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                    </p>
+                  </div> -->
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">病人姓名:</span>
+                      <span class="message-tit-real">{{item.patientName}}</span>
+                    </p>
+                    <p>
+                      <span class="message-tit">床号:</span>
+                      <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -374,7 +414,7 @@
           <p class="wait-handle-message-createTime">
             计划开始时间：{{item.planStartTime}}
           </p>
-          <p class="wait-handle-message-planUseTime">
+          <p class="wait-handle-message-createTime">
             计划用时：{{item.planUseTime}}分钟
           </p>
           <div class="wait-handle-message">
@@ -385,13 +425,13 @@
               </p>
               <P>
                 <span class="message-tit">起点:</span>
-                <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
               </P>
             </div>
             <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">终点:</span>
-                <span class="message-tit-real">{{item.destinationName}}</span>
+                <span class="message-tit-real message-tit-real-style">{{item.destinationName}}</span>
               </p>
               <p>
                 <span class="message-tit">转运工具:</span>
@@ -405,10 +445,10 @@
               </p>
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
             </div>
-            <div class="handle-message-line-wrapper">
+            <!-- <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">出发地拍照:</span>
                 <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
@@ -426,6 +466,16 @@
               <p>
                 <span class="message-tit">回到出发地:</span>
                 <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+              </p>
+            </div> -->
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">病人姓名:</span>
+                <span class="message-tit-real">{{item.patientName}}</span>
+              </p>
+              <p>
+                <span class="message-tit">床号:</span>
+                <span class="message-tit-real">{{item.bedNumber}}</span>
               </p>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -578,7 +628,9 @@
         'changeIsCoerceTakePhoto',
         'changeIsBack',
         'changeIsSign',
-        'changeIsSingleDestination'
+        'changeIsSingleDestination',
+        'changeTaskDetailsMessage',
+        'changeTaskType'
       ]),
 
       startTimeChange(e) { 
@@ -630,6 +682,8 @@
                   toolName: item.toolName,
                   priority: item.priority,
                   id: item.id,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
@@ -707,6 +761,9 @@
                   toolName: item.toolName,
                   priority: item.priority,
                   id: item.id,
+                  finishTime: item.finishTime,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
@@ -904,6 +961,13 @@
 
       // 点击具体任务事件
       taskClickEvent (item) {
+        if (item.state == 7) {
+          this.$router.push({'path':'/taskDetailsMessage'});
+          this.changeTitleTxt({tit:'历史任务详情'});
+          setStore('currentTitle','历史任务详情');
+          this.changeTaskDetailsMessage(item);
+          this.changeTaskType('调度任务')
+        };
         if (item.state !== 1 && item.state !== 7) {
           //是否需要返回出发地
           this.changeIsBack(item.isBack);
@@ -1113,29 +1177,22 @@
           box-sizing: border-box;
           .wait-handle-message-createTime {
             border-top: 1px solid #e3ece9;
-            padding-left: 30px;
+            padding-left: 10px;
             background: #ececec;
-            height: 24px;
-            line-height: 24px;
-            font-size: 12px;
-            color: #7f7d7d
-          };
-          .wait-handle-message-planUseTime {
-            position: absolute;
-            top: 6px;
-            right: 10px;
-            font-size: 12px;
+            height: 26px;
+            line-height: 26px;
+            font-size: 16px;
             color: #7f7d7d
           };
           .wait-handle-message {
-            font-size: 12px;
+            font-size: 17px;
             padding-top: 15px;
             padding-bottom: 15px;
             box-sizing: border-box;
             .handle-message-line-wrapper {
               margin-left: 30px;
               p {
-                margin-bottom: 10px;
+                margin-bottom: 12px;
                 width: 47%;
                 display: inline-block;
                 vertical-align: top;
@@ -1144,13 +1201,16 @@
                 };
                 .message-tit-real {
                   color: black
+                };
+                .message-tit-real-style {
+                  color: #2895ea
                 }
               }
             }
           };
           .wait-handle-check {
             position: absolute;
-            top: 60px;
+            top: 95px;
             left: 6px
           };
           .get-wait-task {
@@ -1182,29 +1242,22 @@
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
-          padding-left: 30px;
+          padding-left: 10px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
-          color: #7f7d7d
-        };
-        .wait-handle-message-planUseTime {
-          position: absolute;
-          top: 6px;
-          right: 10px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
-          font-size: 12px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             margin-left: 30px;
             p {
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               width: 47%;
               display: inline-block;
               vertical-align: top;
@@ -1214,12 +1267,15 @@
               .message-tit-real {
                 color: black
               }
+              .message-tit-real-style {
+                color: #2895ea
+              }
             }
           }
         };
         .wait-handle-check {
           position: absolute;
-          top: 60px;
+          top: 95px;
           left: 6px
         };
         .get-wait-task {
@@ -1299,22 +1355,22 @@
         box-sizing: border-box;
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
-          padding-left: 30px;
+          padding-left: 10px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 12px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               width: 47%;
               display: inline-block;
               vertical-align: top;
@@ -1324,12 +1380,15 @@
               .message-tit-real {
                 color: black
               }
+              .message-tit-real-style {
+                color: #2895ea
+              }
             }
           }
         };
         .wait-handle-check {
           position: absolute;
-          top: 60px;
+          top: 95px;
           left: 6px
         };
         .get-wait-task {

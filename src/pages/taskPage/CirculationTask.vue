@@ -56,7 +56,7 @@
               </p>
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -103,7 +103,7 @@
               </p>
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -150,7 +150,7 @@
               </p>
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -189,7 +189,7 @@
           <p class="wait-handle-message-createTime">
             开始时间：{{item.startTime}}
           </p>
-          <div class="wait-handle-message">
+          <div class="wait-handle-message" @click.stop="itemClick(item)">
             <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">医院:</span>
@@ -197,7 +197,7 @@
               </p>
               <p>
                 <span class="message-tit">优先级:</span>
-                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
               </p>
             </div>
             <div class="handle-message-line-wrapper">
@@ -243,7 +243,7 @@
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     data () {
@@ -332,7 +332,9 @@
         'changeCirculationTaskId',
         'changeStipulateOfficeList',
         'changeArriveDepartmentId',
-        'changeIsDispatchTaskCompleteSweepCodeOfficeList'
+        'changeIsDispatchTaskCompleteSweepCodeOfficeList',
+        'changeTaskDetailsMessage',
+        'changeTaskType'
       ]),
 
       // 右边下拉框菜单点击
@@ -400,6 +402,15 @@
             return '已完成'
             break;
         }
+      },
+
+      // 历史任务点击事件
+      itemClick (item) {
+        this.$router.push({'path':'/taskDetailsMessage'});
+        this.changeTitleTxt({tit:'历史任务详情'});
+        setStore('currentTitle','历史任务详情');
+        this.changeTaskDetailsMessage(item);
+        this.changeTaskType('循环任务')
       },
 
       // 循环任务第一行按钮点击
@@ -493,6 +504,7 @@
                   state: item.state,
                   priority: item.priority,
                   taskNumber: item.taskNumber,
+                  finishTime: item.finishTime,
                   spaces: item.spaces,
                   id: item.id,
                   show: false,
@@ -646,7 +658,7 @@
 
       // 科室任务列表点击
       officeTaskEvent (item, val, key, check, index, indexWrapper) {
-        console.log(key);
+        console.log(item);
         if (check == true) {
           this.$dialog.alert({
             message: '该科室已完成标本收集',
@@ -662,6 +674,40 @@
           }).then(() => {
           });
           return
+        };
+        // 判断上个任务是否完成或超时
+        let currentItemIndex = this.circulationTaskList.indexOf(item);
+        if (currentItemIndex != 0) {
+          let innerIndex = currentItemIndex - 1,
+              conditionOne = !this.circulationTaskList[innerIndex]['spaces'].every((item) => {return item.check == true}),
+              conditionTwo = compareDateTime(`${new Date().getHours()}:${new Date().getMinutes()}`,item.startTime),
+              conditionFour = compareDateTime(this.circulationTaskList[innerIndex]['startTime'],item.startTime);
+              let timeOne = new Date(item.createTime).getTime(),
+                  timeTwo = new Date(this.circulationTaskList[innerIndex]['createTime']).getTime(),
+                  conditionThree = timeOne == timeTwo;
+          if (conditionThree) {
+            if (conditionOne) {
+              if (conditionTwo) {
+                this.$dialog.alert({
+                  message: '请先完成该循环任务上一时间段的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+                return
+              }
+            }
+          } else {
+            if (conditionOne) {
+              if (conditionFour) {
+                this.$dialog.alert({
+                  message: '请先完成该循环任务上一时间段的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+                return
+              }
+            }
+          }
         };
         this.changeArriveDepartmentId(false);
         this.currentOfficeName = indexWrapper;
@@ -875,27 +921,27 @@
           box-sizing: border-box;
           .sample-type-check {
             position: absolute;
-            top: 10px;
+            top: 4px;
             left: 5px
           };
           .wait-handle-message-createTime {
             border-top: 1px solid #e3ece9;
             padding-left: 30px;
             background: #ececec;
-            height: 24px;
-            line-height: 24px;
-            font-size: 12px;
+            height: 26px;
+            line-height: 26px;
+            font-size: 16px;
             color: #7f7d7d
           };
           .wait-handle-message {
             margin-left: 30px;
-            font-size: 12px;
+            font-size: 17px;
             padding-top: 15px;
             padding-bottom: 15px;
             box-sizing: border-box;
             .handle-message-line-wrapper {
               p {
-                margin-bottom: 10px;
+                margin-bottom: 12px;
                 width: 47%;
                 display: inline-block;
                 .message-tit {
@@ -903,6 +949,9 @@
                 };
                 .message-tit-real {
                   color: black
+                }
+                .message-tit-real-style {
+                  color: #2895ea
                 }
               }
             }
@@ -921,7 +970,7 @@
           }
           .wait-handle-office-list {
             position: absolute;
-            top: 48px;
+            top: 54px;
             left: 0;
             width: 100%;
             height: auto;
@@ -929,7 +978,7 @@
             ul {
               li {
                 line-height: 50px;
-                font-size: 13px;
+                font-size: 15px;
                 text-align: center;
                 background:#fff;
                 border-bottom: 1px solid #fff
@@ -942,7 +991,7 @@
           }
           .wait-handle-check {
             position: absolute;
-            top: 40px;
+            top: 30px;
             left: 6px
           };
           .get-wait-task {
@@ -963,27 +1012,27 @@
         box-sizing: border-box;
         .sample-type-check {
           position: absolute;
-          top: 10px;
+          top: 4px;
           left: 5px
         };
         .wait-handle-message-createTime {
           border-top: 1px solid #e3ece9;
           padding-left: 30px;
           background: #ececec;
-          height: 24px;
-          line-height: 24px;
-          font-size: 12px;
+          height: 26px;
+          line-height: 26px;
+          font-size: 16px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 12px;
+          font-size: 17px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               width: 47%;
               display: inline-block;
               .message-tit {
@@ -991,6 +1040,9 @@
               };
               .message-tit-real {
                 color: black
+              }
+              .message-tit-real-style {
+                color: #2895ea
               }
             }
           }
@@ -1009,7 +1061,7 @@
         }
         .wait-handle-office-list {
           position: absolute;
-          top: 48px;
+          top: 54px;
           left: 0;
           width: 100%;
           height: auto;
@@ -1017,7 +1069,7 @@
           ul {
             li {
               line-height: 50px;
-              font-size: 13px;
+              font-size: 15px;
               text-align: center;
               background:#fff;
               border-bottom: 1px solid #fff
@@ -1030,7 +1082,7 @@
         }
         .wait-handle-check {
           position: absolute;
-          top: 40px;
+          top: 30px;
           left: 6px
         };
         .get-wait-task {

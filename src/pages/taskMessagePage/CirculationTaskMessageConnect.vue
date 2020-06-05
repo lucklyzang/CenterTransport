@@ -139,6 +139,12 @@ export default {
     this.getCollectSampleMessage(this.proId,this.arriveCirculationTaskId)
   },
 
+  beforeRouteLeave(to, from, next) {
+    // 设置下一个路由的 meta
+    to.meta.keepAlive = false;
+    next();
+  },
+
   activated () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {

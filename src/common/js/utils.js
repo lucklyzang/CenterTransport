@@ -413,3 +413,17 @@ export const judgeOverTime = (startTime,interVal) => {
   },1000);
   return isOverTime
 }
+
+/*
+ * 判断时间大小
+ * @param{String} t1 HH:MM 时间1 
+ * @param{String} t2 HH:MM 时间2
+ * @return {Boolean} 返回true或false
+*/
+
+export const compareDateTime = (t1,t2) => {
+  let date = new Date();
+  let a = t1.split(":");
+  let b = t2.split(":");
+  return date.setHours(a[0],a[1]) <= date.setHours(b[0],b[1]);
+}

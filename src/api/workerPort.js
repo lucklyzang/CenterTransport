@@ -136,6 +136,14 @@ export function dispatchTaskUploadMsg(data) {
   })
 };
 
+// 根据ID查询调度任务详情
+export function queryDispatchTaskMessage(taskId) {
+  return request({
+    url: `task/query/${taskId}`,
+    method: 'get'
+  })
+};
+
 /**
  * 循环任务
 */
