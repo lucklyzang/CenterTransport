@@ -8,6 +8,16 @@ export function queryTransportType(data) {
     params: data
   })
 };
+
+// 查询运送类型分类
+export function queryTransportTypeClass(data) {
+  return request({
+    url: 'taskTypeClass/queryAll',
+    method: 'get',
+    params: data
+  })
+};
+
 // 查询目的地(科室)
 export function queryAllDestination(proId) {
   return request({

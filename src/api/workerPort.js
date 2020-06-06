@@ -237,6 +237,14 @@ export function getCirculationCondition(data) {
   })
 };
 
+// 获取循环任务详情
+export function queryCirculationTaskMessage(id, date) {
+  return request({
+    url: `circleTask/circleTaskDetial/${id}/${date}`,
+    method: 'get'
+  })
+};
+
 /**
  * 预约任务
 */

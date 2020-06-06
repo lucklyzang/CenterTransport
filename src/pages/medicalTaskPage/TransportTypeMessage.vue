@@ -10,7 +10,7 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="transport-type-title">
-      <h3>{{transportantTaskMessage.typeName}}</h3>
+      <h3>{{transportantTaskMessage.value}}</h3>
     </div>
     <div class="transport-type-area">
       <div class="destination-box">
@@ -18,6 +18,14 @@
         <div class="destination-content">
           <van-dropdown-menu>
             <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>
+          </van-dropdown-menu>
+        </div>
+      </div>
+      <div class="destination-box">
+        <div class="destination-title">运送类型</div>
+        <div class="destination-content">
+          <van-dropdown-menu>
+            <van-dropdown-item v-model="typeOperation" :options="typeOperationList"/>
           </van-dropdown-menu>
         </div>
       </div>
@@ -67,7 +75,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
+import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType} from '@/api/medicalPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
@@ -83,6 +91,9 @@ export default {
       vehicleOperation: '',
       vehicleOperationList: [],
       priorityOperation: 0,
+      typeOperationList: [],
+      typeOperation: '',
+      typeList: [],
       priorityOperationList: [
         { text: '正常', value: 0 },
         { text: '重要', value: 1 },
@@ -132,7 +143,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.transportantTaskMessage, this.userInfo);
+    console.log(this.transportantTaskMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -146,6 +157,11 @@ export default {
       })
     };
     this.parallelFunction();
+    this.getTransPorttype({
+      proId: this.proId,
+      state: 0,
+      parentId: this.transportantTaskMessage.id
+    });
     let me = this;
     window['setDeviceInfo'] = (val) => {
       me.setDeviceInfo(val);
@@ -181,6 +197,31 @@ export default {
         this.leftDownShow = !this.leftDownShow;
       },
 
+      // 查询运送类型
+      getTransPorttype (data) {
+        queryTransportType(data)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            this.typeOperationList = [];
+             if (res.data.data.length > 0) {
+               for(let item of res.data.data) {
+                this.typeOperationList.push({
+                  text: item.typeName, 
+                  value: item.id
+                })
+              }
+              console.log(this.typeList);
+             }
+          }
+        })
+        .catch((err) => {
+           this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        })
+      },
       
       // 获取设备信息
       getDeviceMessage () {
@@ -217,13 +258,18 @@ export default {
             } else {
               toolName = ''
             };
+            if (this.typeOperation !== '') {
+              var typeName = this.typeOperationList.filter((item) => { return item.value == this.typeOperation})[0]['text']
+            } else {
+              typeName = ''
+            };
             let taskMessage = {
-              setOutPlaceId: res.data.data[0]['spaceId'],  //出发地ID
-              setOutPlaceName: res.data.data[0]['spaceName'],  //出发地名称
+              setOutPlaceId: res.data.data['spaceId'],  //出发地ID
+              setOutPlaceName: res.data.data['spaceName'],  //出发地名称
               destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress,   //目的地ID
               destinationName: destinationName,  //目的地名称
-              taskTypeId: this.transportantTaskMessage['id'],  //运送类型 ID
-              taskTypeName: this.transportantTaskMessage['typeName'],  //运送类型 名 称
+              taskTypeId: this.typeOperation,  //运送类型 ID
+              taskTypeName: typeName,  //运送类型 名 称
               priority: this.priorityOperation,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
               toolId: this.vehicleOperation,   //运送工具ID
               toolName: toolName,  //运送工具名称

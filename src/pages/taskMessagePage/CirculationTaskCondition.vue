@@ -79,7 +79,7 @@
             </div>
             <div class="wait-handle-office-list" v-show="item.show">
               <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem}}</li>
+                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem.name}}</li>
               </ul>
             </div>
           </div>
@@ -223,7 +223,7 @@
             </div>
             <div class="wait-handle-office-list" v-show="item.show">
               <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem}}</li>
+                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem.name}}</li>
               </ul>
             </div>
           </div>
@@ -788,7 +788,7 @@ export default {
         }
         .wait-handle-office-list {
           position: absolute;
-          top: 48px;
+          top: 54px;
           left: 0;
           width: 100%;
           max-height: 160px;

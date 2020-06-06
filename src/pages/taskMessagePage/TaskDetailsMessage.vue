@@ -24,22 +24,26 @@
             目的地:
             <span v-for="(item,index) in taskDetailsMessage.spaces" :key="`${item}-${index}`" v-show="taskType == '预约任务'">{{item.text}}</span>
             <span v-for="(item,index) in dispatchMsg.distName" :key="`${item}-${index}`" v-show="taskType == '调度任务'">{{item}}</span>
-            <span v-show="taskType == '循环任务'">无</span>
+            <span v-show="taskType == '循环任务'" v-for="(item,index) in circulationMsg.arriveSpaceNameList" :key="`${item}-${index}`">{{item}}</span>
           </p>
         </div>
         <div class="office-name">访问时间</div>
         <div class="office-name-specific">
-          <p v-show="taskType !== '调度任务'">
+          <p v-show="taskType == '预约任务'">
             开始时间: {{taskDetailsMessage.createTime}}
           </p>
           <p v-show="taskType == '调度任务'">
             开始时间: {{dispatchMsg.planStartTime}}
           </p>
-          <p v-show="taskType !== '调度任务'">
+          <p v-show="taskType !== '循环任务'">
             结束时间: {{taskDetailsMessage.finishTime}}
           </p>
-          <p v-show="taskType == '调度任务'">
-            结束时间: {{dispatchMsg.finishTime}}
+          <p v-show="taskType == '循环任务'" :key="`${value}-${index}`" v-for="(value, key, index) in officeList">
+            科室: {{value.name}} <br>
+            开始时间: {{value.time}}
+          </p>
+          <p v-show="taskType == '循环任务'">
+            结束时间: {{circulationMsg.finishTime}}
           </p>
         </div>
         <div class="office-name">任务内容</div>
@@ -79,7 +83,7 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
 import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
-import {queryDispatchTaskMessage} from '@/api/workerPort.js'
+import {queryDispatchTaskMessage, queryCirculationTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
@@ -90,7 +94,9 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      dispatchMsg: ''
+      dispatchMsg: '',
+      circulationMsg: '',
+      officeList: {}
     }
   },
 
@@ -125,7 +131,6 @@ export default {
   },
 
   mounted () {
-    console.log('121',this.taskDetailsMessage);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -149,6 +154,8 @@ export default {
     };
     if (this.taskType == '调度任务') {
       this.getDispatchTaskMessage(this.taskDetailsMessage.id)
+    } else if (this.taskType == '循环任务') {
+      this.getCirculationTaskMessage(this.taskDetailsMessage.id,this.taskDetailsMessage.createTime)
     }
   },
 
@@ -224,6 +231,24 @@ export default {
           if (res && res.data.code == 200) {
             this.dispatchMsg = res.data.data;
             console.log('结果',this.dispatchMsg);
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      //查询循环任务详情
+      getCirculationTaskMessage (id,date) {
+        queryCirculationTaskMessage(id,date)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            this.circulationMsg = res.data.data;
+            this.officeList = JSON.parse(this.circulationMsg.hasAccess)
           }
         })
         .catch((err) => {

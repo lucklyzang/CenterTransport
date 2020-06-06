@@ -37,192 +37,216 @@
     </div>
     <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
       <div class="circulation-task-list" v-show="stateIndex == 0">
-        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-          <div class="sample-type-check">
-            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-          </div>
-          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-          <p class="wait-handle-message-createTime">
-            创建时间：{{item.createTime}}
-          </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <div class="wait-handle-message">
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">医院:</span>
-                <span class="message-tit-real">{{item.proName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">优先级:</span>
-                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-              </p>
+        <van-collapse v-model="activeNames">
+          <van-collapse-item  v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <template #title>
+              <div class="wait-handle-list">
+                <div class="sample-type-check">
+                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+                </div>
+                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+                <p class="wait-handle-message-createTime">
+                  创建时间：{{item.createTime}}
+                </p>
+                <p class="wait-handle-message-createTime">
+                  开始时间：{{item.startTime}}
+                </p>
+              </div>
+            </template>
+            <div class="wait-handle-message">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">任务名称:</span>
-                <span class="message-tit-real">{{item.taskTypeName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">工作人员:</span>
-                <span class="message-tit-real">{{item.workerName}}</span>
-              </p>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">状态:</span>
-                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-              </p>
-            </div>
-          </div>
-          <div class="wait-handle-office-list" v-show="item.show">
-            <ul>
-              <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-            </ul>
-          </div>
-        </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 1">
-        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-          <div class="sample-type-check">
-            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-          </div>
-          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-          <p class="wait-handle-message-createTime">
-            创建时间：{{item.createTime}}
-          </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <div class="wait-handle-message">
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">医院:</span>
-                <span class="message-tit-real">{{item.proName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">优先级:</span>
-                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-              </p>
+        <van-collapse v-model="activeNames">
+          <van-collapse-item v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <template #title>
+              <div class="wait-handle-list">
+                <div class="sample-type-check">
+                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+                </div>
+                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+                <p class="wait-handle-message-createTime">
+                  创建时间：{{item.createTime}}
+                </p>
+                <p class="wait-handle-message-createTime">
+                  开始时间：{{item.startTime}}
+                </p>
+              </div>
+            </template>
+            <div class="wait-handle-message">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">任务名称:</span>
-                <span class="message-tit-real">{{item.taskTypeName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">工作人员:</span>
-                <span class="message-tit-real">{{item.workerName}}</span>
-              </p>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">状态:</span>
-                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-              </p>
-            </div>
-          </div>
-          <div class="wait-handle-office-list" v-show="item.show">
-            <ul>
-              <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-            </ul>
-          </div>
-        </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 2">
-        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-          <div class="sample-type-check">
-            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-          </div>
-          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-          <p class="wait-handle-message-createTime">
-            创建时间：{{item.createTime}}
-          </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <div class="wait-handle-message">
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">医院:</span>
-                <span class="message-tit-real">{{item.proName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">优先级:</span>
-                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-              </p>
+        <van-collapse v-model="activeNames">
+          <van-collapse-item name="indexWrapper" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <template #title>
+              <div class="wait-handle-list">
+                <div class="sample-type-check">
+                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+                </div>
+                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+                <p class="wait-handle-message-createTime">
+                  创建时间：{{item.createTime}}
+                </p>
+                <p class="wait-handle-message-createTime">
+                  开始时间：{{item.startTime}}
+                </p>
+              </div>
+            </template>
+            <div class="wait-handle-message">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">任务名称:</span>
-                <span class="message-tit-real">{{item.taskTypeName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">工作人员:</span>
-                <span class="message-tit-real">{{item.workerName}}</span>
-              </p>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">状态:</span>
-                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-              </p>
-            </div>
-          </div>
-          <div class="wait-handle-office-list" v-show="item.show">
-            <ul>
-              <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-            </ul>
-          </div>
-        </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
       <div class="circulation-task-list-two" v-show="taskQueryShow">
-        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-          <div class="sample-type-check">
-            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-          </div>
-          <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-          <p class="wait-handle-message-createTime">
-            创建时间：{{item.createTime}}
-          </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <div class="wait-handle-message" @click.stop="itemClick(item)">
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">医院:</span>
-                <span class="message-tit-real">{{item.proName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">优先级:</span>
-                <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-              </p>
+         <van-collapse v-model="activeNames">
+          <van-collapse-item v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
+            <template #title>
+              <div class="wait-handle-list">
+                <div class="sample-type-check">
+                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+                </div>
+                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
+                <p class="wait-handle-message-createTime">
+                  创建时间：{{item.createTime}}
+                </p>
+                <p class="wait-handle-message-createTime">
+                  开始时间：{{item.startTime}}
+                </p>
+              </div>
+            </template>
+            <div class="wait-handle-message" @click.stop="itemClick(item)">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">医院:</span>
+                  <span class="message-tit-real">{{item.proName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">优先级:</span>
+                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务名称:</span>
+                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                </p>
+                <p>
+                  <span class="message-tit">工作人员:</span>
+                  <span class="message-tit-real">{{item.workerName}}</span>
+                </p>
+              </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">状态:</span>
+                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                </p>
+              </div>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">任务名称:</span>
-                <span class="message-tit-real">{{item.taskTypeName}}</span>
-              </p>
-              <p>
-                <span class="message-tit">工作人员:</span>
-                <span class="message-tit-real">{{item.workerName}}</span>
-              </p>
+            <div class="wait-handle-office-list" v-show="item.show">
+              <ul>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+              </ul>
             </div>
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">状态:</span>
-                <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-              </p>
-            </div>
-          </div>
-          <div class="wait-handle-office-list" v-show="item.show">
-            <ul>
-              <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-            </ul>
-          </div>
-        </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
     </van-pull-refresh>
     <div class="circultion-task-btn">
@@ -259,6 +283,7 @@
         isRefresh: false,
         stateScreenVal: '全部',
         taskLlineOneIndex: '0',
+        activeNames: [],
         taskOneList: ['待处理', '任务查询'],
         stateList: ['全部','未开始','进行中'],
         circulationTaskListShow: false,
@@ -914,89 +939,108 @@
       margin: 0 auto;
       width: 100%;
       .circulation-task-list {
-        .wait-handle-list {
-          box-sizing: border-box;
-          position: relative;
-          padding-bottom: 10px;
-          box-sizing: border-box;
-          .sample-type-check {
-            position: absolute;
-            top: 4px;
-            left: 5px
-          };
-          .wait-handle-message-createTime {
-            border-top: 1px solid #e3ece9;
-            padding-left: 30px;
-            background: #ececec;
-            height: 26px;
-            line-height: 26px;
-            font-size: 16px;
-            color: #7f7d7d
-          };
-          .wait-handle-message {
-            margin-left: 30px;
-            font-size: 17px;
-            padding-top: 15px;
-            padding-bottom: 15px;
-            box-sizing: border-box;
-            .handle-message-line-wrapper {
-              p {
-                margin-bottom: 12px;
-                width: 47%;
-                display: inline-block;
-                .message-tit {
+        /deep/ .van-collapse {
+          .van-collapse-item {
+            .van-cell {
+              padding: 0;
+              padding-top: 8px;
+              border-bottom: 1px solid #d3d3d3;
+              box-sizing: border-box;
+              background: #f8f8f8;
+              .wait-handle-list {
+                box-sizing: border-box;
+                position: relative;
+                padding-bottom: 10px;
+                box-sizing: border-box;
+                .sample-type-check {
+                  position: absolute;
+                  top: 4px;
+                  left: 5px
+                };
+                .wait-handle-message-createTime {
+                  padding-left: 30px;
+                  height: 26px;
+                  line-height: 26px;
+                  font-size: 16px;
                   color: #7f7d7d
                 };
-                .message-tit-real {
-                  color: black
+                .wait-handle-check {
+                  position: absolute;
+                  top: 30px;
+                  left: 6px
+                };
+                .get-wait-task {
+                  width: 100%;
+                  text-align: center
                 }
-                .message-tit-real-style {
-                  color: #2895ea
+              }
+              .van-cell__right-icon {
+                margin-top: 16px;
+                margin-right: 10px;
+                font-size: 18px
+              }
+            }
+          }
+          .van-collapse-item__wrapper {
+            .van-collapse-item__content {
+              padding: 0;
+              .wait-handle-message {
+                margin-left: 30px;
+                font-size: 17px;
+                padding-top: 15px;
+                padding-bottom: 2px;
+                box-sizing: border-box;
+                .handle-message-line-wrapper {
+                  p {
+                    margin-bottom: 12px;
+                    width: 47%;
+                    display: inline-block;
+                    .message-tit {
+                      color: #7f7d7d
+                    };
+                    .message-tit-real {
+                      color: black
+                    }
+                    .message-tit-real-style {
+                      color: #2895ea
+                    }
+                  }
+                }
+              };
+              .wait-handle-office-list {
+                position: absolute;
+                top: 72px;
+                left: 0;
+                width: 100%;
+                height: auto;
+                z-index: 100;
+                ul {
+                  li {
+                    line-height: 50px;
+                    font-size: 15px;
+                    text-align: center;
+                    background:#fff;
+                    border-bottom: 1px solid #fff
+                  }
+                  .officeCheckStyle {
+                    color: #fff;
+                    background: #2895ea
+                  }
                 }
               }
             }
-          };
+          }
           .view-office {
             position: absolute;
-            top: 10px;
+            top: 14px;
             right: 10px;
-            padding: 8px 6px;
+            padding: 6px 4px;
             line-height: 14px;
             background: #2895ea;
-            font-size: 14px;
+            font-size: 13px;
             color: #fff;
             border-radius: 3px;
             box-sizing: border-box
-          }
-          .wait-handle-office-list {
-            position: absolute;
-            top: 54px;
-            left: 0;
-            width: 100%;
-            height: auto;
-            z-index: 100;
-            ul {
-              li {
-                line-height: 50px;
-                font-size: 15px;
-                text-align: center;
-                background:#fff;
-                border-bottom: 1px solid #fff
-              }
-              .officeCheckStyle {
-                color: #fff;
-                background: #2895ea
-              }
-            }
-          }
-          .wait-handle-check {
-            position: absolute;
-            top: 30px;
-            left: 6px
-          };
-          .get-wait-task {
-            width: 100%;
-            text-align: center
           }
         }
       }
@@ -1005,91 +1049,110 @@
       height: 100%;
       overflow: auto;
       width: 100%;
-      .wait-handle-list {
-        box-sizing: border-box;
-        position: relative;
-        padding-bottom: 10px;
-        box-sizing: border-box;
-        .sample-type-check {
-          position: absolute;
-          top: 4px;
-          left: 5px
-        };
-        .wait-handle-message-createTime {
-          border-top: 1px solid #e3ece9;
-          padding-left: 30px;
-          background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
-          color: #7f7d7d
-        };
-        .wait-handle-message {
-          margin-left: 30px;
-          font-size: 17px;
-          padding-top: 15px;
-          padding-bottom: 15px;
-          box-sizing: border-box;
-          .handle-message-line-wrapper {
-            p {
-              margin-bottom: 12px;
-              width: 47%;
-              display: inline-block;
-              .message-tit {
-                color: #7f7d7d
+      /deep/ .van-collapse {
+          .van-collapse-item {
+            .van-cell {
+              padding: 0;
+              padding-top: 8px;
+              border-bottom: 1px solid #d3d3d3;
+              box-sizing: border-box;
+              background: #f8f8f8;
+              .wait-handle-list {
+                box-sizing: border-box;
+                position: relative;
+                padding-bottom: 10px;
+                box-sizing: border-box;
+                .sample-type-check {
+                  position: absolute;
+                  top: 4px;
+                  left: 5px
+                };
+                .wait-handle-message-createTime {
+                  padding-left: 30px;
+                  height: 26px;
+                  line-height: 26px;
+                  font-size: 16px;
+                  color: #7f7d7d
+                };
+                .wait-handle-check {
+                  position: absolute;
+                  top: 30px;
+                  left: 6px
+                };
+                .get-wait-task {
+                  width: 100%;
+                  text-align: center
+                }
+              }
+              .van-cell__right-icon {
+                margin-top: 16px;
+                margin-right: 10px;
+                font-size: 18px
+              }
+            }
+          }
+          .van-collapse-item__wrapper {
+            .van-collapse-item__content {
+              padding: 0;
+              .wait-handle-message {
+                margin-left: 30px;
+                font-size: 17px;
+                padding-top: 15px;
+                padding-bottom: 2px;
+                box-sizing: border-box;
+                .handle-message-line-wrapper {
+                  p {
+                    margin-bottom: 12px;
+                    width: 47%;
+                    display: inline-block;
+                    .message-tit {
+                      color: #7f7d7d
+                    };
+                    .message-tit-real {
+                      color: black
+                    }
+                    .message-tit-real-style {
+                      color: #2895ea
+                    }
+                  }
+                }
               };
-              .message-tit-real {
-                color: black
-              }
-              .message-tit-real-style {
-                color: #2895ea
+              .wait-handle-office-list {
+                position: absolute;
+                top: 72px;
+                left: 0;
+                width: 100%;
+                height: auto;
+                z-index: 100;
+                ul {
+                  li {
+                    line-height: 50px;
+                    font-size: 15px;
+                    text-align: center;
+                    background:#fff;
+                    border-bottom: 1px solid #fff
+                  }
+                  .officeCheckStyle {
+                    color: #fff;
+                    background: #2895ea
+                  }
+                }
               }
             }
           }
-        };
-        .view-office {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          padding: 8px 6px;
-          line-height: 14px;
-          background: #2895ea;
-          font-size: 14px;
-          color: #fff;
-          border-radius: 3px;
-          box-sizing: border-box
-        }
-        .wait-handle-office-list {
-          position: absolute;
-          top: 54px;
-          left: 0;
-          width: 100%;
-          height: auto;
-          z-index: 100;
-          ul {
-            li {
-              line-height: 50px;
-              font-size: 15px;
-              text-align: center;
-              background:#fff;
-              border-bottom: 1px solid #fff
-            }
-            .officeCheckStyle {
-              color: #fff;
-              background: #2895ea
-            }
+          .view-office {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            padding: 8px 6px;
+            line-height: 14px;
+            background: #2895ea;
+            font-size: 14px;
+            color: #fff;
+            border-radius: 3px;
+            box-sizing: border-box
           }
         }
-        .wait-handle-check {
-          position: absolute;
-          top: 30px;
-          left: 6px
-        };
-        .get-wait-task {
-          width: 100%;
-          text-align: center
-        }
-      }
     };
     .circultion-task-btn {
       height: 80px;
