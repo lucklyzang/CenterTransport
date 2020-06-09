@@ -10,7 +10,7 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="loading">
-      <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" textContent="校验中,请稍候····" textColor="#2895ea"></loading>
     </div>
     <div class="sweep-code-title">
       <h3></h3>
@@ -724,11 +724,11 @@ export default {
       margin: 0 auto;
       width: 100%;
       .point-area {
-        height: auto;
+        height: 75%;
         width: 80%;
         background: #fff;
         margin-left: 4%;
-        margin-top: 140px;
+        margin-top: 10px;
         padding: 20px 10px 20px 20px;
         box-shadow: 0 2.5px 12px 4px #d1d1d1;
         border-radius: 8px;
@@ -736,9 +736,9 @@ export default {
         font-weight: bold;
         letter-spacing: 2px;
         p {
-          margin-bottom: 20px;
+          margin-bottom: 40px;
           padding-left: 10px;
-          font-size: 16px;
+          font-size: 20px;
           span {
             &:first-child {
               color: #585858;

@@ -704,13 +704,13 @@ export default {
           top: 17px;
           left: 4px;
           color: #3893e4;
-          font-size: 15px
+          font-size: 18px
         }
         .date-wrapper {
           position: absolute;
           top: 7px;
           width: 44%;
-          left: 80px;
+          left: 90px;
         }
         .search-btn {
           position: absolute;
@@ -737,6 +737,11 @@ export default {
       /deep/ .van-tabs {
         .right-sign {
           .status-sign
+        };
+        .van-tabs__nav {
+          .van-tab {
+            font-size: 18px
+          }
         }
       };
       .wait-handle-list {
@@ -748,14 +753,14 @@ export default {
           border-top: 1px solid #e3ece9;
           padding-left: 10px;
           background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 10px;
-          font-size: 17px;
+          font-size: 18px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
@@ -797,7 +802,7 @@ export default {
           ul {
             li {
               line-height: 30px;
-              font-size: 13px;
+              font-size: 18px;
               text-align: center;
               background: #fafafa;
               border-bottom: 1px solid #e9e9e9;

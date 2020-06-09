@@ -24,6 +24,7 @@ const AppointTaskCancelForm = () => import('../pages/taskFormPage/AppointTaskCan
 const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskCustomerInfo')
 const DispatchTaskJudge = () => import('../pages/taskJudgePage/dispatchTaskJudge')
 const TaskDetailsMessage = () => import('../pages/taskMessagePage/TaskDetailsMessage')
+const PadDispatchTaskCancelForm = () => import('../pages/medicalTaskPage/PadDispatchTaskCancelForm')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -142,6 +143,11 @@ let baseRoute  = [
     path: '/dispatchTaskJudge',
     name: 'dispatchTaskJudge',
     component: DispatchTaskJudge
+  },
+  {
+    path: '/padDispatchTaskCancelForm',
+    name: 'padDispatchTaskCancelForm',
+    component: PadDispatchTaskCancelForm
   }
 ];
 let router = new Router({
@@ -150,7 +156,7 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   if (getStore('isLogin')) {
     if (to.name === 'login') {
-      // 判断登录方式(用户名密码登录或扫码登录)
+      // 判断登录方式(用户名密码登录或扫码登录)PadDispatchTaskCancelForm
       if (getStore('userName') && getStore('userPassword')) {
         next({path: '/home'})
       } else {

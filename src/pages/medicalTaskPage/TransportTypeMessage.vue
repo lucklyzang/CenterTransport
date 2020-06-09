@@ -24,6 +24,7 @@
       <div class="destination-box">
         <div class="destination-title">运送类型</div>
         <div class="destination-content">
+          <span class="destination-content-tag">*</span>
           <van-dropdown-menu>
             <van-dropdown-item v-model="typeOperation" :options="typeOperationList"/>
           </van-dropdown-menu>
@@ -32,6 +33,9 @@
       <van-field v-model="bedNumber" label="床号" placeholder="请输入床号"/>
       <van-field v-model="patientName"  label="病人姓名" placeholder="请输入病人姓名"/>
       <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
+      <van-field v-model="taskDescribe"   type="textarea" rows="1"
+        autosize label="任务描述" placeholder="请输入任务描述"/>
+      <van-field v-model="actualData"  type="number" label="实际数量" placeholder="请输入实际数量"/>
       <div class="destination-box">
         <div class="destination-title">转运工具</div>
         <div class="destination-content">
@@ -43,9 +47,15 @@
       <div class="destination-box">
         <div class="destination-title">优先级</div>
         <div class="destination-content">
-          <van-dropdown-menu>
+          <!-- <van-dropdown-menu>
             <van-dropdown-item v-model="priorityOperation" :options="priorityOperationList"/>
-          </van-dropdown-menu>
+          </van-dropdown-menu> -->
+          <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#2895ea">
+            <van-radio name="0">正常</van-radio>
+            <van-radio name="1">重要</van-radio>
+            <van-radio name="2">紧急</van-radio>
+            <van-radio name="3">紧急重要</van-radio>
+          </van-radio-group>
         </div>
       </div>
       <div class="destination-box">
@@ -56,9 +66,6 @@
           </van-dropdown-menu>
         </div>
       </div>
-      <van-field v-model="taskDescribe"   type="textarea" rows="1"
-        autosize label="任务描述" placeholder="请输入任务描述"/>
-      <van-field v-model="actualData"  type="number" label="实际数量" placeholder="请输入实际数量"/>
     </div>
     <div class="btn-area">
       <span>
@@ -86,6 +93,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      checkResult: '',
       destinationAddress: 0,
       destinationList: [],
       vehicleOperation: '',
@@ -157,11 +165,6 @@ export default {
       })
     };
     this.parallelFunction();
-    this.getTransPorttype({
-      proId: this.proId,
-      state: 0,
-      parentId: this.transportantTaskMessage.id
-    });
     let me = this;
     window['setDeviceInfo'] = (val) => {
       me.setDeviceInfo(val);
@@ -199,26 +202,15 @@ export default {
 
       // 查询运送类型
       getTransPorttype (data) {
-        queryTransportType(data)
-        .then((res) => {
-          if (res && res.data.code == 200) {
-            this.typeOperationList = [];
-             if (res.data.data.length > 0) {
-               for(let item of res.data.data) {
-                this.typeOperationList.push({
-                  text: item.typeName, 
-                  value: item.id
-                })
-              }
-              console.log(this.typeList);
-             }
-          }
-        })
-        .catch((err) => {
-           this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
+        return new Promise((resolve,reject) => {
+          queryTransportType(data)
+          .then((res) => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
           })
         })
       },
@@ -270,7 +262,7 @@ export default {
               destinationName: destinationName,  //目的地名称
               taskTypeId: this.typeOperation,  //运送类型 ID
               taskTypeName: typeName,  //运送类型 名 称
-              priority: this.priorityOperation,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+              priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
               toolId: this.vehicleOperation,   //运送工具ID
               toolName: toolName,  //运送工具名称
               actualCount: this.actualData,   //实际数量
@@ -299,15 +291,20 @@ export default {
         })
       },
 
-      // 并行查询目的地和转运工具
+      // 并行查询目的地、转运工具、运送类型
       parallelFunction (type) {
-        Promise.all([this.getAllDestination(),this.getTransportTools()])
+        Promise.all([this.getAllDestination(),this.getTransportTools(), this.getTransPorttype({
+          proId: this.proId,
+          state: 0,
+          parentId: this.transportantTaskMessage.id
+        })])
         .then((res) => {
           if (res && res.length > 0) {
             this.destinationList = [];
             this.vehicleOperationList = [];
+            this.typeOperationList = [];
             this.destinationList.push({text: '无', value: 0});
-            let [item1,item2] = res;
+            let [item1,item2,item3] = res;
             if (item1) {
               Object.keys(item1).forEach((item) => {
                 this.destinationList.push({
@@ -324,6 +321,14 @@ export default {
                 })
               }
             };
+            if (item3) {
+              for(let item of item3) {
+                this.typeOperationList.push({
+                  text: item.typeName, 
+                  value: item.id
+                })
+              }
+            }
           }
         })
         .catch((err) => {
@@ -448,7 +453,18 @@ export default {
             color: #323233;
           }
         .destination-content {
-          width: 66%;
+          width: 74%;
+          position: relative;
+          .destination-content-tag {
+            position: absolute;
+            top: 16px;
+            color: red;
+            right: 16px;
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            z-index: 100;
+          }
           /deep/ .van-dropdown-menu {
             .van-dropdown-menu__item {
               .van-dropdown-menu__title {
@@ -462,6 +478,34 @@ export default {
               box-shadow: none
             }
           }
+          /deep/ .van-radio-group {
+            .van-radio--horizontal {
+              margin-right: 5%;
+              &:last-child {
+                margin-right: 0
+              };
+              &:nth-child(1) {
+                .van-radio__label {
+                  color: #0ac30a
+                }
+              }
+              &:nth-child(2) {
+                .van-radio__label {
+                  color: #fdc050
+                }
+              }
+              &:nth-child(3) {
+                .van-radio__label {
+                  color: #ff4141
+                }
+              }
+              &:nth-child(4) {
+                .van-radio__label {
+                  color: #cc0000
+                }
+              }
+            }
+          } 
         }
       }
       /deep/ .van-cell {

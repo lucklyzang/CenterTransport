@@ -100,9 +100,59 @@
                 <van-icon name="arrow"/>
               </p>
             </div>
-            <div class="medical-worker-operate-right-taskTrace" v-show="operateTaskTrace == 3">
-              <p>任务跟踪</p>
-            </div>
+            <van-pull-refresh class="wait-handle-box"  v-show="operateTaskTrace == 3" v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
+              <div class="medical-worker-operate-right-taskTrace">
+                <p>任务跟踪</p>
+                <div class="task-list-trace">
+                  <div class="task-list-inner" v-for="(item,index) in taskTraceList" :key="`${item}-${index}`">
+                    <div class="wait-handle-message">
+                      <div class="handle-message-line-wrapper">
+                        <p>
+                          <span class="message-tit">出发地:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
+                        </p>
+                        <P>
+                          <span class="message-tit">目的地:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item.destinationName}}</span>
+                        </P>
+                        <p>
+                          <span class="message-tit">运送类型:</span>
+                          <span class="message-tit-real">{{item.taskTypeName}}</span>
+                        </p>
+                        <P>
+                          <span class="message-tit">状态:</span>
+                          <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                        </P>
+                        <p>
+                          <span class="message-tit">运送人:</span>
+                          <span class="message-tit-real">{{item.workerName}}</span>
+                        </p>
+                        <P>
+                          <span class="message-tit">床号:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                        </P>
+                        <p>
+                          <span class="message-tit">病人:</span>
+                          <span class="message-tit-real">{{item.patientName}}</span>
+                        </p>
+                        <P>
+                          <span class="message-tit">转运工具:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item.toolName}}</span>
+                        </P>
+                      </div>
+                    </div>
+                    <div class="btn-area-trace">
+                      <span @click="reminderTask(item)">
+                        催单
+                      </span>
+                      <span @click="taskCancel(item)">
+                        取消
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </van-pull-refresh>
             <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
               <p>历史任务</p>
               <div class="historyTask-list-box">
@@ -219,8 +269,8 @@
   import FooterBottom from '../components/FooterBottom'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
-  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete} from '@/api/workerPort.js'
-  import {queryTransportTypeClass, queryGenerateDispatchTask, queryhistoryDispatchTask, collectDispatchTask, queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
+  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, cancelDispatchTaskBatch} from '@/api/workerPort.js'
+  import {queryTransportTypeClass, collectDispatchTask, queryAllDestination, generateDispatchTask, quereDeviceMessage, taskReminder} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, changeArrIndex } from '@/common/js/utils'
@@ -252,6 +302,7 @@
       return {
         leftDownShow: false,
         workerShow: true,
+        cancelShow: true,
         liIndex: null,
         showLoadingHint: false,
         noDataShow: false,
@@ -285,11 +336,14 @@
         ],
         operateMessage: 1,
         operateCallOut: '',
+        isRefresh: false,
         operateTaskTrace: '',
         operateHistoryTask: '',
         operateTaskCollect: '',
         stateCompleteList: [],
         transPortTypeList: [],
+        taskTraceList: [],
+        taskCancelReason: '',
         taskSurePng: require('@/components/images/task-sure.png'),
         taskCancelPng: require('@/components/images/task-cancel.png'),
         defaultPersonPng: require('@/common/images/home/default-person.png'),
@@ -322,7 +376,7 @@
         // 轮询是否有新任务
         windowTimer = window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 5000)
+        }, 3000)
       } else {
         this.parallelFunction();
         let me = this;
@@ -413,7 +467,8 @@
         'changeTitleTxt',
         'changetransportTypeMessage',
         'changeOverDueWay',
-        'changeNewTaskList'
+        'changeNewTaskList',
+        'changeTaskTranceMsg'
       ]),
 
       juddgeIspc () {
@@ -868,7 +923,7 @@
             startDate: this.startTime, endDate: this.endTime,
             createId: this.workerId,
             createType: 1 
-          }
+          },"历史任务"
         )
       },
 
@@ -895,6 +950,13 @@
           this.operateTaskTrace = 3;
           this.operateHistoryTask = '';
           this.operateTaskCollect = ''
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state: -1,
+              createId: this.workerId,
+              createType: 1 
+            },"任务跟踪"
+          )
         } else if (index == 3) {
           this.operateMessage = '';
           this.operateCallOut = '';
@@ -908,7 +970,7 @@
               startDate: this.startTime, endDate: this.endTime,
               createId: this.workerId,
               createType: 1 
-            }
+            },"历史任务"
           )
         } else if (index == 4) {
           this.operateMessage = '';
@@ -919,10 +981,16 @@
         }
       },
 
-      // 跟踪任务(当天发起的任务)
-      tailAfterTask (data) {
-        queryGenerateDispatchTask(data).then((res) => {
-          if (res && res.data.code == 200) {}
+      // 调度任务催单
+      reminderTask(item) {
+        taskReminder(this.proId,item.id).then((res) => {
+          if (res && res.data.code == 200) {
+            this.$dialog.alert({
+              message: `${res.data.data}`,
+              closeOnPopstate: true
+            }).then(() => {
+            })
+          }
         })
         .catch((err) => {
           this.$dialog.alert({
@@ -933,18 +1001,23 @@
         })
       },
 
-      // 历史任务(已完成状态)
-      getHistoryTask (data) {
-        queryhistoryDispatchTask(data).then((res) => {
-          if (res && res.data.code == 200) {}
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        })
+      // 调度任务取消
+      taskCancel(item) {
+        this.$router.push({path:'/padDispatchTaskCancelForm'});
+        this.changeTitleTxt({tit:'取消原因选择'});
+        setStore('currentTitle','取消原因选择');
+        this.changeTaskTranceMsg(item)
+      },
+
+      // 调度任务下拉刷新
+      onRefresh () {
+        this.queryCompleteDispatchTask(
+          {
+            proId:this.proId, workerId:'',state: -1,
+            createId: this.workerId,
+            createType: 1 
+          },"任务跟踪"
+        )
       },
 
       // 收藏任务(经常发起的调度任务)
@@ -1013,33 +1086,52 @@
       },
 
       // 查询历史调度任务(已完成)
-      queryCompleteDispatchTask (data) {
+      queryCompleteDispatchTask (data, type) {
         this.noDataShow = false;
         this.showLoadingHint = true;
         getDispatchTaskComplete(data).then((res) => {
           this.showLoadingHint = false;
           if (res && res.data.code == 200) {
+            this.isRefresh = false;
+            this.stateCompleteList = [];
+            this.taskTraceList = [];
             if (res.data.data.length > 0) {
               this.historyTaskListShow = true;
               this.noDataShow = false;
-              this.stateCompleteList = [];
               for (let item of res.data.data) {
-                this.stateCompleteList.push({
-                  createTime: item.createTime,
-                  planUseTime: item.planUseTime,
-                  planStartTime: item.planStartTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  id: item.id,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto,
-                  isBack: item.isBack,
-                  isSign: item.isSign
-                })
+                if (type == "历史任务") {
+                  this.stateCompleteList.push({
+                    createTime: item.createTime,
+                    planUseTime: item.planUseTime,
+                    planStartTime: item.planStartTime,
+                    state: item.state,
+                    setOutPlaceName: item.setOutPlaceName,
+                    destinationName: item.destinationName,
+                    taskTypeName: item.taskTypeName,
+                    toolName: item.toolName,
+                    priority: item.priority,
+                    id: item.id,
+                    patientName: item.patientName,
+                    bedNumber: item.bedNumber,
+                    startPhoto: item.startPhoto,
+                    endPhoto: item.endPhoto,
+                    isBack: item.isBack,
+                    isSign: item.isSign
+                  })
+                } else if (type == "任务跟踪") {
+                  this.taskTraceList.push({
+                    state: item.state,
+                    setOutPlaceName: item.setOutPlaceName,
+                    destinationName: item.destinationName,
+                    taskTypeName: item.taskTypeName,
+                    toolName: item.toolName,
+                    priority: item.priority,
+                    id: item.id,
+                    patientName: item.patientName,
+                    bedNumber: item.bedNumber,
+                    workerName: item.workerName
+                  })
+                }
               }
             } else {
               this.historyTaskListShow = false;
@@ -1281,7 +1373,7 @@
           display: inline-block
         }
         .medical-worker-operate-left {
-          flex: 24%;
+          flex: 20%;
           background: #3a4862;
           .medical-worker-operate-list {
             height: 100%;
@@ -1313,7 +1405,7 @@
           }
         };
         .medical-worker-operate-right {
-          flex: 76%;
+          flex: 80%;
           background: #fff;
           .medical-worker-operate-right-inner {
             width: 100%;
@@ -1414,6 +1506,26 @@
                 }
               }
             }
+            .medical-worker-operate-right-message {
+              p {
+                color: #2895ea;
+                font-size: 16px;
+                position: relative;
+                height: 40px !important;
+                line-height: 40px !important;
+                .bottom-border-1px(#d0d0d0);
+              }
+            }
+            .medical-worker-operate-right-taskCollect {
+              p {
+                color: #2895ea;
+                font-size: 16px;
+                position: relative;
+                height: 40px !important;
+                line-height: 40px !important;
+                .bottom-border-1px(#d0d0d0);
+              }
+            }
             .medical-worker-operate-right-callOut {
               .medical-worker-transport-type {
                 color: #2895ea;
@@ -1433,6 +1545,16 @@
               }
             }
             .medical-worker-operate-right-historyTask {
+              > p {
+                color: #2895ea;
+                font-size: 16px;
+                background: #fff;
+                padding-left: 10px;
+                position: relative;
+                height: 40px !important;
+                line-height: 40px !important;
+                .bottom-border-1px(#d0d0d0);
+              }
               .historyTask-list-box {
                 display: flex;
                 height: 100%;
@@ -1539,6 +1661,86 @@
                         img {
                           width: 100%;
                           height: 100%
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            .wait-handle-box {
+              overflow: auto;
+              .medical-worker-operate-right-taskTrace {
+                > p {
+                  color: #2895ea;
+                  font-size: 16px;
+                  background: #fff;
+                  padding-left: 10px;
+                  position: relative;
+                  height: 40px !important;
+                  line-height: 40px !important;
+                  .bottom-border-1px(#d0d0d0);
+                  /deep/ .van-icon  {
+                    position: absolute;
+                    top: 11px;
+                    right: 6px
+                  }
+                }
+                .task-list-trace {
+                  box-sizing: border-box;
+                  position: relative;
+                  height: 100%;
+                  overflow: auto;
+                  .task-list-inner {
+                    background: #eee;
+                    padding-bottom: 10px;
+                    margin-bottom: 6px;
+                    .wait-handle-message {
+                      font-size: 14px;
+                      padding-top: 6px;
+                      box-sizing: border-box;
+                      .handle-message-line-wrapper {
+                        padding-left: 10px;
+                        p {
+                          margin-bottom: 10px;
+                          width: 24%;
+                          display: inline-block;
+                          text-align: left;
+                          vertical-align: top;
+                          span {
+                            &:last-child {
+                              line-height: 24px;
+                            }
+                          }
+                          .message-tit {
+                            color: #7f7d7d
+                          };
+                          .message-tit-real {
+                            color: black
+                          }
+                          .message-tit-real-style {
+                            color: #2895ea
+                          }
+                        }
+                      }
+                    }
+                    .btn-area-trace {
+                      text-align: center;
+                      height: 25px;
+                      > span {
+                        width: 60px;
+                        height: 25px;
+                        line-height: 25px;
+                        border-radius: 4px;
+                        color: #fff;
+                        display: inline-block;
+                        &:first-child {
+                          margin-right: 12px;
+                          background: #2895ea
+                        }
+                        &:last-child {
+                          margin-right: 12px;
+                          background: orange
                         }
                       }
                     }

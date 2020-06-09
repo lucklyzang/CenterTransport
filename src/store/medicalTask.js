@@ -4,12 +4,14 @@ export default {
   state:{
     transportantTaskMessage: null,
     isRefershHome: false,
-    isHomeJumpOtherPage: false
+    isHomeJumpOtherPage: false,
+    taskTranceMsg: ''
   },
   getters:{
     transportantTaskMessage: state => state.transportantTaskMessage,
     isRefershHome: state => state.isRefershHome,
-    isHomeJumpOtherPage: state => state.isHomeJumpOtherPage
+    isHomeJumpOtherPage: state => state.isHomeJumpOtherPage,
+    taskTranceMsg: state => state.taskTranceMsg
   },
   mutations:{
     // 改变运送任务信息状态
@@ -20,10 +22,14 @@ export default {
     changeIsRefershHome (state,payLoad) {
       state.isRefershHome = payLoad
     },
-     // 改变是否首页跳到其它页面状态
-     changeIsHomeJumpOtherPage (state,payLoad) {
+    // 改变是否首页跳到其它页面状态
+    changeIsHomeJumpOtherPage (state,payLoad) {
       state.isHomeJumpOtherPage = payLoad
     },
+    // 改变任务跟踪信息的状态
+    changeTaskTranceMsg (state,payLoad) {
+      state.taskTranceMsg = payLoad
+    }
   },
   actions:{}
 }

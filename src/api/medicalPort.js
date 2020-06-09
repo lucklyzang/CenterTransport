@@ -49,24 +49,17 @@ export function generateDispatchTask(data) {
     data
   })
 };
-// 查询生成的调度任务
-export function queryGenerateDispatchTask() {
-  return request({
-    url: '',
-    method: 'post'
-  })
-};
-// 查询历史调度任务(已完成)
-export function queryhistoryDispatchTask() {
+// 收藏调度任务(经常发起)
+export function collectDispatchTask() {
   return request({
     url: '',
     method: 'get'
   })
 };
-// 收藏调度任务(经常发起)
-export function collectDispatchTask() {
+// 调度任务催单
+export function taskReminder(proId,taskId) {
   return request({
-    url: '',
+    url: `task/reminder/${proId}/${taskId}`,
     method: 'get'
   })
 };

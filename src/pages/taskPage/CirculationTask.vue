@@ -83,7 +83,7 @@
             </div>
             <div class="wait-handle-office-list" v-show="item.show">
               <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
               </ul>
             </div>
           </van-collapse-item>
@@ -136,7 +136,7 @@
             </div>
             <div class="wait-handle-office-list" v-show="item.show">
               <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
               </ul>
             </div>
           </van-collapse-item>
@@ -189,7 +189,7 @@
             </div>
             <div class="wait-handle-office-list" v-show="item.show">
               <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
+                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
               </ul>
             </div>
           </van-collapse-item>
@@ -269,6 +269,7 @@
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
+  let windowTimer
   export default {
     data () {
       return {
@@ -339,6 +340,17 @@
           this.leftDownShow = false;
         }
       });
+      // 轮询是否有新任务
+      windowTimer = window.setInterval(() => {
+        setTimeout(
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.stateIndex), 0)
+        }, 600000);
       this.getCirculationTask({
         proId: this.proId,  //医院ID，必输
         workerId: this.workerId,   //运送员ID
@@ -347,6 +359,10 @@
         endDate: ''  //终止日期  格式 YYYY-MM-dd
       }, this.stateIndex);
       this.drawTaskId()
+    },
+
+    beforeDestroy() {
+      if(windowTimer) {window.clearInterval(windowTimer)}
     },
 
     methods: {
@@ -460,7 +476,7 @@
             this.getCirculationTask({
             proId: this.proId,  //医院ID，必输
             workerId: this.workerId,   //运送员ID
-            states: [], //查询状态
+            state: 7, //查询状态
             startDate: '',  //起始日期  YYYY-MM-dd
             endDate: ''  //终止日期  格式 YYYY-MM-dd
           },7)
@@ -663,7 +679,7 @@
            this.getCirculationTask({
             proId: this.proId,  //医院ID，必输
             workerId: this.workerId,   //运送员ID
-            states: [], //查询状态
+            state: 7, //查询状态
             startDate: '',  //起始日期  YYYY-MM-dd
             endDate: ''  //终止日期  格式 YYYY-MM-dd
           }, 7)
@@ -839,8 +855,9 @@
     }
     .circultion-task-title {
       .task-line-one-wrapper {
-          height: 36px;
-          background-image: linear-gradient(to bottom, #2895ea, #5173f8);
+        font-size: 17px;
+        height: 36px;
+        background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .task-line-one {
           width: 70%;
           margin: 0 auto;
@@ -879,7 +896,7 @@
             color: #2895ea
           }
           span {
-            font-size: 15px;
+            font-size: 18px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -895,7 +912,7 @@
           width: 100px;
           top: 0;
           right: 10px;
-          font-size: 15px;
+          font-size: 18px;
           .status-name-title {
             width: 100%;
             color: #3996f3;
@@ -959,9 +976,9 @@
                 };
                 .wait-handle-message-createTime {
                   padding-left: 30px;
-                  height: 26px;
-                  line-height: 26px;
-                  font-size: 16px;
+                  height: 27px;
+                  line-height: 27px;
+                  font-size: 18px;
                   color: #7f7d7d
                 };
                 .wait-handle-check {
@@ -986,7 +1003,7 @@
               padding: 0;
               .wait-handle-message {
                 margin-left: 30px;
-                font-size: 17px;
+                font-size: 18px;
                 padding-top: 15px;
                 padding-bottom: 2px;
                 box-sizing: border-box;
@@ -1009,18 +1026,26 @@
               };
               .wait-handle-office-list {
                 position: absolute;
-                top: 72px;
+                top: 70px;
                 left: 0;
                 width: 100%;
-                height: auto;
+                min-height: 160px;
                 z-index: 100;
+                background: #f8f8f8;
                 ul {
+                  text-align: center;
                   li {
                     line-height: 50px;
-                    font-size: 15px;
+                    display: inline-block;
+                    font-size: 18px;
                     text-align: center;
                     background:#fff;
-                    border-bottom: 1px solid #fff
+                    border-bottom: 1px solid #fff;
+                    width: 95%;
+                    margin-bottom: 6px;
+                    &:first-child {
+                      margin-top: 6px;
+                    }
                   }
                   .officeCheckStyle {
                     color: #fff;
@@ -1032,7 +1057,7 @@
           }
           .view-office {
             position: absolute;
-            top: 14px;
+            top: 24px;
             right: 10px;
             padding: 6px 4px;
             line-height: 14px;
@@ -1069,9 +1094,9 @@
                 };
                 .wait-handle-message-createTime {
                   padding-left: 30px;
-                  height: 26px;
-                  line-height: 26px;
-                  font-size: 16px;
+                  height: 27px;
+                  line-height: 27px;
+                  font-size: 18px;
                   color: #7f7d7d
                 };
                 .wait-handle-check {
@@ -1096,7 +1121,7 @@
               padding: 0;
               .wait-handle-message {
                 margin-left: 30px;
-                font-size: 17px;
+                font-size: 18px;
                 padding-top: 15px;
                 padding-bottom: 2px;
                 box-sizing: border-box;
@@ -1119,18 +1144,26 @@
               };
               .wait-handle-office-list {
                 position: absolute;
-                top: 72px;
+                top: 70px;
                 left: 0;
                 width: 100%;
-                height: auto;
+                min-height: 160px;
                 z-index: 100;
+                background: #f8f8f8;
                 ul {
+                  text-align: center;
                   li {
                     line-height: 50px;
-                    font-size: 15px;
+                    display: inline-block;
+                    font-size: 18px;
                     text-align: center;
                     background:#fff;
-                    border-bottom: 1px solid #fff
+                    border-bottom: 1px solid #fff;
+                    width: 95%;
+                    margin-bottom: 6px;
+                    &:first-child {
+                      margin-top: 6px;
+                    }
                   }
                   .officeCheckStyle {
                     color: #fff;
@@ -1142,12 +1175,12 @@
           }
           .view-office {
             position: absolute;
-            top: 14px;
+            top: 24px;
             right: 20px;
-            padding: 8px 6px;
+            padding: 6px 4px;
             line-height: 14px;
             background: #2895ea;
-            font-size: 14px;
+            font-size: 13px;
             color: #fff;
             border-radius: 3px;
             box-sizing: border-box

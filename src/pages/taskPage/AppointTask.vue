@@ -1089,6 +1089,7 @@
     .dispatch-task-title {
       .task-line-one-wrapper {
           height: 36px;
+          font-size: 17px;
           background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .task-line-one {
           width: 70%;
@@ -1128,7 +1129,7 @@
             color: #2895ea
           }
           span {
-            font-size: 15px;
+            font-size: 18px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -1144,7 +1145,7 @@
           width: 100px;
           top: 0;
           right: 10px;
-          font-size: 15px;
+          font-size: 18px;
           .status-name-title {
             width: 100%;
             color: #3996f3;
@@ -1206,16 +1207,16 @@
             border-top: 1px solid #e3ece9;
             padding-left: 10px;
             background: #ececec;
-            height: 26px;
-            line-height: 26px;
-            font-size: 16px;
+            height: 27px;
+            line-height: 27px;
+            font-size: 18px;
             color: #7f7d7d
           };
           .wait-handle-message {
             margin-left: 30px;
-            font-size: 17px;
+            font-size: 18px;
             padding-top: 15px;
-            padding-bottom: 15px;
+            padding-bottom: 8px;
             box-sizing: border-box;
             .handle-message-line-wrapper {
               p {
@@ -1338,16 +1339,16 @@
           border-top: 1px solid #e3ece9;
           padding-left: 10px;
           background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 17px;
+          font-size: 18px;
           padding-top: 15px;
-          padding-bottom: 15px;
+          padding-bottom: 8px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {
@@ -1409,16 +1410,16 @@
           border-top: 1px solid #e3ece9;
           padding-left: 10px;
           background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
           color: #7f7d7d
         };
         .wait-handle-message {
           margin-left: 30px;
-          font-size: 17px;
+          font-size: 18px;
           padding-top: 15px;
-          padding-bottom: 15px;
+          padding-bottom: 8px;
           box-sizing: border-box;
           .handle-message-line-wrapper {
             p {

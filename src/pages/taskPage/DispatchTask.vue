@@ -113,6 +113,12 @@
                       <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">数量:</span>
+                      <span class="message-tit-real">{{item.number}}</span>
+                    </p>
+                  </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
                     <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                   </p>
@@ -196,6 +202,12 @@
                     <p>
                       <span class="message-tit">床号:</span>
                       <span class="message-tit-real">{{item.bedNumber}}</span>
+                    </p>
+                  </div>
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">数量:</span>
+                      <span class="message-tit-real">{{item.number}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -283,6 +295,12 @@
                       <span class="message-tit-real">{{item.bedNumber}}</span>
                     </p>
                   </div>
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">数量:</span>
+                      <span class="message-tit-real">{{item.number}}</span>
+                    </p>
+                  </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
                     <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                   </p>
@@ -366,6 +384,12 @@
                     <p>
                       <span class="message-tit">床号:</span>
                       <span class="message-tit-real">{{item.bedNumber}}</span>
+                    </p>
+                  </div>
+                  <div class="handle-message-line-wrapper">
+                    <p>
+                      <span class="message-tit">数量:</span>
+                      <span class="message-tit-real">{{item.number}}</span>
                     </p>
                   </div>
                   <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -476,6 +500,12 @@
               <p>
                 <span class="message-tit">床号:</span>
                 <span class="message-tit-real">{{item.bedNumber}}</span>
+              </p>
+            </div>
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">数量:</span>
+                <span class="message-tit-real">{{item.number}}</span>
               </p>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -687,7 +717,8 @@
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
-                  isSign: item.isSign
+                  isSign: item.isSign,
+                  number: item.number
                 })
               };
               if (index == 0) {
@@ -767,7 +798,8 @@
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
-                  isSign: item.isSign
+                  isSign: item.isSign,
+                  number: item.number
                 })
               };
             } else {
@@ -1065,6 +1097,7 @@
     }
     .dispatch-task-title {
         .task-line-one-wrapper {
+          font-size: 17px;
           height: 36px;
           background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .task-line-one {
@@ -1102,7 +1135,7 @@
           top: 0;
           left: 10px;
           span {
-            font-size: 15px;
+            font-size: 18px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -1118,7 +1151,7 @@
           width: 100px;
           top: 0;
           right: 10px;
-          font-size: 15px;
+          font-size: 18px;
           .status-name-title {
             width: 100%;
             color: #3996f3;
@@ -1174,18 +1207,17 @@
         .wait-handle-list {
           box-sizing: border-box;
           position: relative;
-          box-sizing: border-box;
           .wait-handle-message-createTime {
             border-top: 1px solid #e3ece9;
             padding-left: 10px;
             background: #ececec;
-            height: 26px;
-            line-height: 26px;
-            font-size: 16px;
+            height: 27px;
+            line-height: 27px;
+            font-size: 18px;
             color: #7f7d7d
           };
           .wait-handle-message {
-            font-size: 17px;
+            font-size: 18px;
             padding-top: 15px;
             padding-bottom: 15px;
             box-sizing: border-box;
@@ -1244,13 +1276,13 @@
           border-top: 1px solid #e3ece9;
           padding-left: 10px;
           background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
           color: #7f7d7d
         };
         .wait-handle-message {
-          font-size: 17px;
+          font-size: 18px;
           padding-top: 15px;
           padding-bottom: 15px;
           box-sizing: border-box;
@@ -1357,9 +1389,9 @@
           border-top: 1px solid #e3ece9;
           padding-left: 10px;
           background: #ececec;
-          height: 26px;
-          line-height: 26px;
-          font-size: 16px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
           color: #7f7d7d
         };
         .wait-handle-message {

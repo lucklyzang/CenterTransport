@@ -401,7 +401,7 @@ export default {
     };
      .loading {
       position: absolute;
-      top: 450px;
+      top: 520px;
       left: 0;
       width: 100%;
       height: 50px;
@@ -422,11 +422,11 @@ export default {
       margin: 0 auto;
       width: 100%;
       .point-area {
-        height: auto;
+        height: 75%;
         width: 80%;
         background: #fff;
         margin-left: 4%;
-        margin-top: 140px;
+        margin-top: 10px;
         padding: 20px 10px 20px 20px;
         box-shadow: 0 2.5px 12px 4px #d1d1d1;
         border-radius: 8px;
@@ -434,9 +434,9 @@ export default {
         font-weight: bold;
         letter-spacing: 2px;
         p {
-          margin-bottom: 20px;
+          margin-bottom: 45px;
           padding-left: 10px;
-          font-size: 16px;
+          font-size: 20px;
           span {
             &:first-child {
               color: #585858;
