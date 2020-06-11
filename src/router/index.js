@@ -25,6 +25,7 @@ const AppointTaskCustomerInfo = () => import('../pages/taskFormPage/AppointTaskC
 const DispatchTaskJudge = () => import('../pages/taskJudgePage/dispatchTaskJudge')
 const TaskDetailsMessage = () => import('../pages/taskMessagePage/TaskDetailsMessage')
 const PadDispatchTaskCancelForm = () => import('../pages/medicalTaskPage/PadDispatchTaskCancelForm')
+const CirculationDetails = () => import('../pages/taskDetailsPage/CirculationDetails')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -38,7 +39,7 @@ let baseRoute  = [
     name: 'home',
     component: Home,
     meta: {
-      keepAlive: true
+      keepAlive: false
     }
   },
   {
@@ -148,6 +149,11 @@ let baseRoute  = [
     path: '/padDispatchTaskCancelForm',
     name: 'padDispatchTaskCancelForm',
     component: PadDispatchTaskCancelForm
+  },
+  {
+    path: '/circulationDetails',
+    name: 'circulationDetails',
+    component: CirculationDetails
   }
 ];
 let router = new Router({

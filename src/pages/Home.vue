@@ -378,7 +378,6 @@
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
         }, 3000)
       } else {
-        this.parallelFunction();
         let me = this;
         window['setDeviceInfo'] = (val) => {
           me.setDeviceInfo(val);
@@ -408,23 +407,17 @@
     activated () {
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
-      if (this.isHomeJumpOtherPage) {
-        if (!this.isRefershHome) {
-          window.location.reload()
-        }
+      this.noDataShow = false;
+      if (this.userTypeId == 0) {
+        // 查询任务数量
+        this.leftDownShow = false;
+        this.isHaveTask = this.newTaskName;
+        this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
+        this.judgeTaskComplete() 
       } else {
-        if (this.userTypeId == 0) {
-          // 查询任务数量
-          this.leftDownShow = false;
-          this.isHaveTask = this.newTaskName;
-          this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-          this.judgeTaskComplete() 
-        } else {
-          this.parallelFunction();
-          let me = this;
-          window['setDeviceInfo'] = (val) => {
-            me.setDeviceInfo(val);
-          }
+        let me = this;
+        window['setDeviceInfo'] = (val) => {
+          me.setDeviceInfo(val);
         }
       };
       document.addEventListener('click',(e) => {
@@ -440,8 +433,6 @@
     computed:{
       ...mapGetters([
         'navTopTitle',
-        'isRefershHome',
-        'isHomeJumpOtherPage',
         'userType',
         'userInfo',
         'newTaskName'
@@ -808,17 +799,9 @@
         if (getStore('currentAppointTaskMessage')) {
           this.$store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
         };
-        // 重新存入循环任务具体信息
-        if (getStore('currentCirculationTaskMessage')) { 
-          this.$store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
-        };
         // 重新存入循环任务科室采集信息
         if (getStore('currentCirculationCollectMessage')) {
           this.$store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})
-        };
-        // 重新存入循环任务是否第一次扫码
-        if (getStore('isCirculationFirstSweepCode')) {
-          this.$store.commit('changeIsFirstSweepCode', JSON.parse(getStore('isCirculationFirstSweepCode')));
         };
         // 重新存入循环任务科室交接信息
         if (getStore('currentCirculationConnectMessage')) {
@@ -863,10 +846,6 @@
         // 重新存入调度任务是否第一次扫码
         if (getStore('isDispatchFirstSweepCode')) {
           this.$store.commit('changeIsDispatchTaskFirstSweepCode', JSON.parse(getStore('isDispatchFirstSweepCode')));
-        };
-        // 重新存入循环任务完成扫码的科室信息
-        if (getStore('completeCirculationSweepCodeInfo')) {
-          this.$store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']);
         };
         // 重新存入预约任务完成扫码的出发地科室信息
         if (getStore('completAppointTaskSweepCodeInfo')) {

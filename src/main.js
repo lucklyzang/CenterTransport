@@ -69,17 +69,9 @@ new Vue({
     if (getStore('currentAppointTaskMessage')) {
       store.commit('changeAppointTaskMessage', {DtMsg: getStore('currentAppointTaskMessage')});
     };
-    // 页面刷新重新存入循环任务具体信息
-    if (getStore('currentCirculationTaskMessage')) { 
-      store.commit('changeCirculationTaskMessage', {DtMsg: JSON.parse(getStore('currentCirculationTaskMessage'))});
-    };
     // 页面刷新重新存入循环任务科室采集信息
     if (getStore('currentCirculationCollectMessage')) {
       store.commit('changeCirculationCollectMessageList', {DtMsg: (JSON.parse(getStore('currentCirculationCollectMessage'))['innerMessage'])})
-    };
-    // 页面刷新重新存入循环任务是否第一次扫码
-    if (getStore('isCirculationFirstSweepCode')) {
-      store.commit('changeIsFirstSweepCode', JSON.parse(getStore('isCirculationFirstSweepCode')));
     };
     // 页面刷新重新存入循环任务科室交接信息
     if (getStore('currentCirculationConnectMessage')) {
@@ -124,10 +116,6 @@ new Vue({
     // 页面刷新重新存入调度任务是否第一次扫码
      if (getStore('isDispatchFirstSweepCode')) {
       store.commit('changeIsDispatchTaskFirstSweepCode', JSON.parse(getStore('isDispatchFirstSweepCode')));
-    };
-    // 页面刷新重新存入循环任务完成扫码的科室信息
-    if (getStore('completeCirculationSweepCodeInfo')) {
-      store.commit('changeIsDispatchTaskCompleteSweepCodeOfficeList', JSON.parse(getStore('completeCirculationSweepCodeInfo'))['sweepCodeInfo']);
     };
     // 页面刷新重新存入预约任务完成扫码的出发地科室信息
     if (getStore('completAppointTaskSweepCodeInfo')) {

@@ -14,57 +14,68 @@
     </div>
     <div class="transport-type-area">
       <div class="destination-box">
+        <div class="destination-title">优先级</div>
+          <div class="destination-content">
+            <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">
+              <van-radio name="0">正常</van-radio>
+              <van-radio name="1">重要</van-radio>
+              <van-radio name="2">紧急</van-radio>
+              <van-radio name="3">紧急重要</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
+      <!-- <div class="destination-box">
         <div class="destination-title">目的地</div>
         <div class="destination-content">
           <van-dropdown-menu>
             <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>
           </van-dropdown-menu>
         </div>
-      </div>
-      <div class="destination-box">
-        <div class="destination-title">运送类型</div>
-        <div class="destination-content">
-          <span class="destination-content-tag">*</span>
-          <van-dropdown-menu>
-            <van-dropdown-item v-model="typeOperation" :options="typeOperationList"/>
-          </van-dropdown-menu>
+      </div> -->
+      <div class="transport-type-box">
+        <div class="transport-type-title-innner">运送类型:</div>
+        <div class="transport-type-list">
+          <span :class="{spanStyle:typeIndex === index}" v-for="(item,index) in typeOperationList" :key="`${item}-${index}`" @click="typeEvent(item,index)">
+            {{item.text}}
+          </span>
         </div>
       </div>
-      <van-field v-model="bedNumber" label="床号" placeholder="请输入床号"/>
-      <van-field v-model="patientName"  label="病人姓名" placeholder="请输入病人姓名"/>
-      <van-field v-model="patientNumber"  label="病人编号" placeholder="请输入病人编号"/>
-      <van-field v-model="taskDescribe"   type="textarea" rows="1"
-        autosize label="任务描述" placeholder="请输入任务描述"/>
-      <van-field v-model="actualData"  type="number" label="实际数量" placeholder="请输入实际数量"/>
-      <div class="destination-box">
-        <div class="destination-title">转运工具</div>
-        <div class="destination-content">
-          <van-dropdown-menu>
-            <van-dropdown-item v-model="vehicleOperation" :options="vehicleOperationList"/>
-          </van-dropdown-menu>
+      <div class="field-box">
+        <p>
+          <van-field v-model="bedNumber" label="床号" placeholder=""/>
+        </p>
+        <p>
+          <van-field v-model="patientName"  label="姓名" placeholder=""/>
+        </p>
+        <p>
+          <van-field v-model="patientNumber"  label="住院号" placeholder=""/>
+        </p>
+        <p>
+          <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>
+        </p>
+      </div>
+      <div class="tool-box" @click="toolEvent">
+        <div class="tool-title">
+          转运工具
+          <span>{{toolName}}</span>
+          </div>
+        <div class="tool-sign">
+          <van-icon name="arrow"/>
         </div>
+        <!-- 运送工具弹框 -->
       </div>
       <div class="destination-box">
-        <div class="destination-title">优先级</div>
-        <div class="destination-content">
-          <!-- <van-dropdown-menu>
-            <van-dropdown-item v-model="priorityOperation" :options="priorityOperationList"/>
-          </van-dropdown-menu> -->
-          <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#2895ea">
-            <van-radio name="0">正常</van-radio>
-            <van-radio name="1">重要</van-radio>
-            <van-radio name="2">紧急</van-radio>
-            <van-radio name="3">紧急重要</van-radio>
+        <div class="destination-title destination-title-inner">运送员是否返回</div>
+        <div class="destination-content destination-content-inner">
+          <van-radio-group v-model="judgeResult" direction="horizontal" checked-color="#afe897">
+            <van-radio name="0">否</van-radio>
+            <van-radio name="1">是</van-radio>
           </van-radio-group>
         </div>
       </div>
-      <div class="destination-box">
-        <div class="destination-title">返回出发地</div>
-        <div class="destination-content">
-          <van-dropdown-menu>
-            <van-dropdown-item v-model="returnDepartureOperation" :options="returnDepartureOperationList"/>
-          </van-dropdown-menu>
-        </div>
+      <div class="describle-box">
+        <van-field v-model="taskDescribe"   type="textarea" rows="1"
+        autosize label="任务描述:" placeholder="请输入任务描述"/>
       </div>
     </div>
     <div class="btn-area">
@@ -75,6 +86,18 @@
         <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">
       </span>
     </div>
+    <van-dialog v-model="toolShow" title="请选择运送工具" show-cancel-button width="92%"
+          @confirm="toolSure" @cancel="toolCancel"
+        >
+          <div class="tool-name-list">
+            <div class="tool-name-list-title-innner">转运工具:</div>
+            <div class="tool-name-list-content">
+              <span :class="{spanStyle:toolIndex === index}" v-for="(item,index) in vehicleOperationList" :key="`${item}-${index}`" @click="toolCheck(item,index)">
+                {{item.text}}
+              </span>
+            </div>
+          </div>
+    </van-dialog>
   </div>
 </template>
 
@@ -93,22 +116,22 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      toolShow: false,
+      typeIndex: '',
+      typeText: '',
+      toolName: '',
+      toolIndex: '',
+      toolText: '',
+      toolValue: '',
+      typeValue: '',
       checkResult: '',
       destinationAddress: 0,
       destinationList: [],
-      vehicleOperation: '',
       vehicleOperationList: [],
-      priorityOperation: 0,
       typeOperationList: [],
-      typeOperation: '',
       typeList: [],
-      priorityOperationList: [
-        { text: '正常', value: 0 },
-        { text: '重要', value: 1 },
-        { text: '紧急', value: 2 },
-        { text: '紧急重要', value: 3 }
-      ],
       returnDepartureOperation: 0,
+      judgeResult: '',
       returnDepartureOperationList: [
         { text: '是', value: 1 },
         { text: '否', value: 0 },
@@ -158,7 +181,6 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeIsRefershHome({DtMsg: false});
         this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'首页'});
         setStore('currentTitle','首页') 
@@ -171,21 +193,23 @@ export default {
     }
   },
 
+  beforeRouteLeave(to, from, next) {
+    // 设置下一个路由的 meta
+    to.meta.keepAlive = true;
+    next();
+  },
+
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeDispatchTaskMessage',
-      'changeIsRefershHome',
-      'changeIsHomeJumpOtherPage'
+      'changeDispatchTaskMessage'
     ]),
 
     // 返回上一页
     backTo () {
       this.$router.push({path: 'home'});
       this.changeTitleTxt({tit:'中央运送'});
-      setStore('currentTitle','中央运送');
-      this.changeIsRefershHome({DtMsg: false});
-      this.changeIsHomeJumpOtherPage({DtMsg: true})
+      setStore('currentTitle','中央运送')
     },
 
     // 右边下拉框菜单点击
@@ -239,32 +263,22 @@ export default {
         quereDeviceMessage(data)
         .then((res) => {
           if (res && res.data.code == 200) {
-            if (this.destinationAddress !== '') {
-              var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
-              if (this.destinationAddress == 0) {
-                destinationName = ''
-              }
-            };
-            if (this.vehicleOperation !== '') {
-              var toolName = this.vehicleOperationList.filter((item) => { return item.value == this.vehicleOperation})[0]['text']
-            } else {
-              toolName = ''
-            };
-            if (this.typeOperation !== '') {
-              var typeName = this.typeOperationList.filter((item) => { return item.value == this.typeOperation})[0]['text']
-            } else {
-              typeName = ''
-            };
+            // if (this.destinationAddress !== '') {
+            //   var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
+            //   if (this.destinationAddress == 0) {
+            //     destinationName = ''
+            //   }
+            // };
             let taskMessage = {
               setOutPlaceId: res.data.data['spaceId'],  //出发地ID
               setOutPlaceName: res.data.data['spaceName'],  //出发地名称
-              destinationId: this.destinationAddress == 0 ? '' : this.destinationAddress,   //目的地ID
-              destinationName: destinationName,  //目的地名称
-              taskTypeId: this.typeOperation,  //运送类型 ID
-              taskTypeName: typeName,  //运送类型 名 称
+              destinationId: '',   //目的地ID
+              destinationName: '',  //目的地名称
+              taskTypeId: this.typeValue,  //运送类型 ID
+              taskTypeName: this.typeText,  //运送类型 名 称
               priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-              toolId: this.vehicleOperation,   //运送工具ID
-              toolName: toolName,  //运送工具名称
+              toolId: this.toolValue,   //运送工具ID
+              toolName: this.toolName,  //运送工具名称
               actualCount: this.actualData,   //实际数量
               patientName: this.patientName,  //病人姓名
               sex: 0,    //病人性别  0-未指定,1-男, 2-女
@@ -276,7 +290,7 @@ export default {
               createName: this.userName,   //创建者名称  当前登陆者
               proId: this.proId,   //项目ID
               proName: this.proName,   //项目名称
-              isBack: this.returnDepartureOperation,  //是否返回出发地  0-不返回，1-返回
+              isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
               createType: 1   //创建类型   0-调度员，1-医务人员 固定传 1
             };
             // 创建调度任务
@@ -289,6 +303,37 @@ export default {
             closeOnPopstate: true
           }).then(() => {})
         })
+      },
+
+      // 运送类型点击事件
+      typeEvent (item,index) {
+        this.typeIndex = index;
+        this.typeText = item.text;
+        this.typeValue = item.value
+      },
+
+      // 转运工具点击事件
+      toolCheck (item, index) {
+        this.toolIndex = index;
+        this.toolText = item.text;
+        this.toolName = item.text
+        this.toolValue = item.value
+      },
+
+      // 转运工具弹框确认事件
+      toolSure () {
+        this.toolShow = false
+      },
+
+      // 转运工具弹框取消事件
+      toolCancel () {
+        this.toolName = '';
+        this.toolShow = false
+      },
+
+      // 转运工具点击事件
+      toolEvent () {
+        this.toolShow = true;
       },
 
       // 并行查询目的地、转运工具、运送类型
@@ -380,8 +425,6 @@ export default {
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
             setStore('currentTitle','中央运送');
-            this.changeIsRefershHome({DtMsg: true});
-            this.changeIsHomeJumpOtherPage({DtMsg: true})
           }
         })
         .catch((err) => {
@@ -409,9 +452,7 @@ export default {
       dispatchTaskCancel () {
         this.$router.push({path:'/home'});
         this.changeTitleTxt({tit:'中央运送'});
-        setStore('currentTitle','中央运送');
-        this.changeIsRefershHome({DtMsg: false});
-        this.changeIsHomeJumpOtherPage({DtMsg: true})
+        setStore('currentTitle','中央运送')
       }
   }
 }
@@ -422,6 +463,44 @@ export default {
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+     /deep/ .van-dialog {
+        .van-dialog__content {
+          margin-bottom: 6px;
+          height: 300px;
+          margin: 10px 0;
+          .tool-name-list {
+            width: 94%;
+            height: 100%;
+            overflow: auto;
+            margin: 0 auto;
+            padding: 0;
+            border: 1px solid #b2b2b2;
+            .tool-name-list-title-innner {
+              padding: 10px;
+            }
+            .tool-name-list-content {
+              padding: 6px;
+              .spanStyle {
+                color: #fff;
+                background: #2895ea
+              }
+              span {
+                display: inline-block;
+                width: 45%;
+                height: 40px;
+                text-align: center;
+                margin-bottom: 8px;
+                line-height: 40px;
+                background: #f3f3f3;
+                margin-right: 10%;
+                &:nth-child(even) {
+                  margin-right: 0
+                }
+              }
+            }
+          }
+        }
+      }
     .content-wrapper();
     font-size: 14px;
       .left-dropDown {
@@ -444,13 +523,23 @@ export default {
       margin: 10px 0;
       width: 100%;
       .destination-box {
-        padding-left: 15px;
+        width: 96%;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        border: 1px solid #b2b2b2;
         > div {
             display: inline-block
           };
           .destination-title {
             width: 24%;
-            color: #323233;
+            color: black;
+            vertical-align: top;
+            margin-top: 4px;
+          }
+          .destination-title-inner {
+            width: 27%
           }
         .destination-content {
           width: 74%;
@@ -480,7 +569,7 @@ export default {
           }
           /deep/ .van-radio-group {
             .van-radio--horizontal {
-              margin-right: 5%;
+              margin-right: 3%;
               &:last-child {
                 margin-right: 0
               };
@@ -507,22 +596,119 @@ export default {
             }
           } 
         }
+        .destination-content-inner {
+          width: 71%
+        }
+        &:last-child {
+          margin-bottom: 0
+        }
       }
-      /deep/ .van-cell {
-        .van-field__label {
-          width: 24%;
-          margin-right: 8px
+      .tool-box {
+        width: 96%;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #b2b2b2;
+        position: relative;
+        margin-bottom: 8px;
+        .tool-title {
+
+        }
+        .tool-sign {
+          position: absolute;
+          right: 6px;
+          top: 10px
+        }
+      }
+      .transport-type-box {
+        width: 96%;
+        margin: 0 auto;
+        max-height:320px;
+        overflow: auto;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        border: 1px solid #b2b2b2;
+        .transport-type-title-inner {
+          
+        }
+        .transport-type-list {
+          padding: 6px;
+          margin-top: 10px;
+          .spanStyle {
+            color: #fff;
+            background: #2895ea
+          }
+          span {
+            display: inline-block;
+            width: 45%;
+            height: 40px;
+            text-align: center;
+            margin-bottom: 8px;
+            line-height: 40px;
+            background: #f3f3f3;
+            margin-right: 10%;
+            &:nth-child(even) {
+              margin-right: 0
+            }
+          }
+        }
+      }
+      .field-box {
+        width: 96%;
+        margin: 0 auto;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        border: 1px solid #b2b2b2;
+        > p {
+          display: inline-block;
+          width: 49%;
+          /deep/ .van-cell {
+            .van-field__label {
+              width: 60px;
+              text-align: left
+            }
+            .van-field__value {
+              border: 1px solid #bcbcbc;
+              height: 30px;
+              line-height: 30px;
+              padding-left: 4px;
+              font-size: 16px;
+            }
+          }
+        }
+      }
+      .describle-box {
+        width: 96%;
+        box-sizing: border-box;
+        margin: 0 auto;
+        padding: 0 10px 0 0;
+        margin-bottom: 2px;
+        border: 1px solid #b2b2b2;
+        /deep/ .van-cell {
+          .van-field__label {
+            width: 80px;
+            text-align: left
+          }
+          .van-field__value {
+            .van-field__control {
+              border: 1px solid #bcbcbc;
+              height: 30px;
+              line-height: 30px;
+              padding-left: 4px
+            }
+          }
         }
       }
     }
     .btn-area {
-      height: 80px;
+      height: 58px;
       text-align: center;
-      line-height: 80px;
+      line-height: 58px;
       span {
         .bottomButton;
         display: inline-block;
-        margin-top: 15px;
         img {
           width: 100%;
           height: 100%

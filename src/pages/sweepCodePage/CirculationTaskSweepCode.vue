@@ -66,16 +66,16 @@ export default {
   },
 
   mounted () {
-    console.log('id',this.clickDepartmentId, typeof this.clickDepartmentId);
+    console.log('id');
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
       pushHistory();
       that.gotoURL(() => {
         this.changeIsrefreshCirculationConnectPage(false);
-        this.$router.push({path:'/circulationTask'});
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({'path':'/circulationDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情');
       })
     };
     this.echoOfficeList();
@@ -99,20 +99,13 @@ export default {
       'isCollectEnterSweepCodePage',
       'stipulateOfficeList',
       'arriveDepartmentId',
-      'isDispatchTaskCompleteSweepCodeOfficeList',
-      'isFirstSweepCode'
+      'circulationDetails'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
     circulationId () {
-      return this.circulationTaskMessage.currentMsg.id
-    },
-    officeNameList () {
-      return this.stipulateOfficeList
-    },
-    clickDepartmentId () {
-      return this.circulationTaskMessage.officeId
+      return this.circulationDetails.id
     }
   },
 
@@ -121,8 +114,7 @@ export default {
       'changeTitleTxt',
       'changeStoreArriveDeparnmentId',
       'changeIsrefreshCirculationConnectPage',
-      'changeIsDispatchTaskCompleteSweepCodeOfficeList',
-      'changeIsFirstSweepCode'
+      'changeVerifyCirculationOfficeId'
     ]),
 
      // 右边下拉框菜单点击
@@ -149,15 +141,15 @@ export default {
 
     // 回显要扫码的科室列表
     echoOfficeList () {
-      this.startPointList = this.officeNameList
+      this.startPointList = this.circulationDetails.spaces
     },
 
     // 返回上一页
     backTo () {
       this.changeIsrefreshCirculationConnectPage(false);
-      this.$router.push({path:'/circulationTask'});
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     },
 
     // 摄像头扫码后的回调
@@ -168,13 +160,6 @@ export default {
           let departmentId = codeData[0],
               departmentNo = codeData[1];
           if (!this.arriveDepartmentId) {
-            if (departmentNo != this.clickDepartmentId) {
-              this.$dialog.alert({
-                message: '当前扫码科室与所选科室不一致,请重新扫码'
-              }).then(() => {
-              });
-              return
-            };
             this.juddgeMedicalCorrect({
               id: this.circulationId,// 循环任务ID 必输
               proId: this.proId, // 项目ID 必输
@@ -202,31 +187,7 @@ export default {
 
     // 扫码确认事件
     sweepCodeSure () {
-      if (!this.arriveDepartmentId) {
-        if (this.isFirstSweepCode) {
-          this.sweepAstoffice();
-        } else {
-          let isExistTaskId = '',
-          isExistOfficeId = '';
-          isExistTaskId = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
-          if (isExistTaskId != -1) {
-            isExistOfficeId = this.isDispatchTaskCompleteSweepCodeOfficeList[isExistTaskId]['officeList'].indexOf(this.clickDepartmentId);
-          };
-          if (isExistTaskId !== -1 && isExistOfficeId !== -1 && isExistOfficeId !== '') {
-            this.$dialog.alert({
-              message: '当前科室已扫码校验通过,请直接开始采集'
-            }).then(() => {
-            });
-            this.$router.push({path:'/circulationTaskCollectMessage'});
-            this.changeTitleTxt({tit:'循环信息采集'});
-            setStore('currentTitle','循环信息采集')
-          } else {
-            this.sweepAstoffice();
-          }
-        }
-      } else {
-        this.sweepAstoffice();
-      }
+      this.sweepAstoffice()
     },
 
     //判断扫码科室是否为当前要收集的科室
@@ -234,39 +195,9 @@ export default {
       this.showLoadingHint = true;
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.changeIsFirstSweepCode(false);
-          setStore("isCirculationFirstSweepCode",false);
+          // 存储校验通过的科室id
+          this.changeVerifyCirculationOfficeId(data['departmentNo']);
           if(this.isCollectEnterSweepCodePage) {
-            // 存储已经扫码验证通过的科室id
-            let temporaryOfficeList = [];
-            let temporaryDepartmentId = [];
-            temporaryOfficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
-            if (this.isDispatchTaskCompleteSweepCodeOfficeList.length > 0 ) {
-              let temporaryIndex = this.isDispatchTaskCompleteSweepCodeOfficeList.indexOf(this.isDispatchTaskCompleteSweepCodeOfficeList.filter((item) => {return item.taskId == this.circulationId})[0]);
-              if (temporaryIndex != -1) {
-                temporaryDepartmentId = temporaryOfficeList[temporaryIndex]['officeList'];
-                temporaryDepartmentId.push(this.clickDepartmentId);
-                temporaryOfficeList[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentId)
-              } else {
-                temporaryDepartmentId.push(this.clickDepartmentId);
-                temporaryOfficeList.push(
-                  { 
-                    officeList: repeArray(temporaryDepartmentId),
-                    taskId: this.circulationId
-                  }
-                )
-              };
-            } else {
-              temporaryDepartmentId.push(this.clickDepartmentId);
-              temporaryOfficeList.push(
-                { 
-                  officeList: repeArray(temporaryDepartmentId),
-                  taskId: this.circulationId
-                }
-              )
-            };
-            this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporaryOfficeList);
-            setStore('completeCirculationSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
             this.$router.push({path:'/circulationTaskCollectMessage'});
             this.changeTitleTxt({tit:'循环信息采集'});
             setStore('currentTitle','循环信息采集')
@@ -295,9 +226,9 @@ export default {
     // 取消扫码事件
     cancelSweepCode () {
       this.changeIsrefreshCirculationConnectPage(false);
-      this.$router.push({path:'/circulationTask'});
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     }
   }
 }

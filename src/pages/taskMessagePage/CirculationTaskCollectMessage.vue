@@ -215,16 +215,15 @@ export default {
       'circulationCollectMessageList',
       'isDeleteEcho',
       'isDeleteCancel',
-      'isClickSure'
+      'isClickSure',
+      'circulationDetails',
+      'verifyCirculationOfficeId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
-    departmentId () {
-      return this.circulationTaskMessage.officeId
-    },
     circulationTaskId () {
-      return this.circulationTaskMessage.currentMsg.id
+      return this.circulationDetails.id
     },
   },
 
@@ -297,10 +296,10 @@ export default {
           if (this.completeDeparnmentInfo.length > 0) {
             if (temporaryIndex != -1) {
               temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-              temporaryDepartmentId.push(this.departmentId);
+              temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
             } else {
-              temporaryDepartmentId.push(this.departmentId);
+              temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo.push(
                 { 
                   departmentIdList: temporaryDepartmentId,
@@ -309,7 +308,7 @@ export default {
               )
             }
           } else {
-            temporaryDepartmentId.push(this.departmentId);
+            temporaryDepartmentId.push(this.verifyCirculationOfficeId);
             temporaryCompleteInfo.push(
               { 
                 departmentIdList: temporaryDepartmentId,

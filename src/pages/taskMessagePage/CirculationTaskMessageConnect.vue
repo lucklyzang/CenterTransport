@@ -431,8 +431,9 @@ export default {
       margin: 0 auto;
       width: 100%;
       .sample-type-list {
-        height: 250px;
+        max-height: 80%;
         position: relative;
+        overflow: auto;
         .sample-type-title-wrapper {
           position: relative;
           height: 30px;
@@ -456,8 +457,6 @@ export default {
           }
         }
         .sample-type-message-wrapper{
-          height: 220px;
-          overflow: auto;
           box-sizing: border-box;
           padding: 10px;
           .sample-type-message-list {
@@ -486,15 +485,11 @@ export default {
       }
     };
     .btn-area {
-      position: absolute;
-      bottom: 0;
-      left: 0;
       height: 80px;
       text-align: center;
       line-height: 80px;
-      width: 100%;
       span {
-       .bottomButton;
+        .bottomButton;
         display: inline-block;
         margin-top: 15px;
         img {

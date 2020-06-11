@@ -136,8 +136,7 @@
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
-            </div>
-            <div class="handle-message-line-wrapper">
+              <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">病人姓名:</span>
                 <span class="message-tit-real">{{item.patientName}}</span>
@@ -146,6 +145,7 @@
                 <span class="message-tit">床号:</span>
                 <span class="message-tit-real">{{item.bedNumber}}</span>
               </p>
+            </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -195,8 +195,7 @@
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
-            </div>
-            <div class="handle-message-line-wrapper">
+              <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">病人姓名:</span>
                 <span class="message-tit-real">{{item.patientName}}</span>
@@ -205,6 +204,7 @@
                 <span class="message-tit">床号:</span>
                 <span class="message-tit-real">{{item.bedNumber}}</span>
               </p>
+            </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -254,8 +254,7 @@
                   <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
                 </P>
               </div>
-            </div>
-            <div class="handle-message-line-wrapper">
+              <div class="handle-message-line-wrapper">
               <p>
                 <span class="message-tit">病人姓名:</span>
                 <span class="message-tit-real">{{item.patientName}}</span>
@@ -264,6 +263,7 @@
                 <span class="message-tit">床号:</span>
                 <span class="message-tit-real">{{item.bedNumber}}</span>
               </p>
+            </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>

@@ -37,222 +37,63 @@
     </div>
     <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
       <div class="circulation-task-list" v-show="stateIndex == 0">
-        <van-collapse v-model="activeNames">
-          <van-collapse-item  v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-            <template #title>
-              <div class="wait-handle-list">
-                <div class="sample-type-check">
-                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-                </div>
-                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-                <p class="wait-handle-message-createTime">
-                  创建时间：{{item.createTime}}
-                </p>
-                <p class="wait-handle-message-createTime">
-                  开始时间：{{item.startTime}}
-                </p>
-              </div>
-            </template>
-            <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-              </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-              </ul>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
+        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
+          <p class="wait-handle-message-createTime">
+            任务名称：{{item.taskTypeName}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <p class="wait-handle-message-createTime wait-handle-message-style">
+            任务状态：{{stateTransfer(item.state)}}
+          </p>
+        </div>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 1">
-        <van-collapse v-model="activeNames">
-          <van-collapse-item v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-            <template #title>
-              <div class="wait-handle-list">
-                <div class="sample-type-check">
-                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-                </div>
-                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-                <p class="wait-handle-message-createTime">
-                  创建时间：{{item.createTime}}
-                </p>
-                <p class="wait-handle-message-createTime">
-                  开始时间：{{item.startTime}}
-                </p>
-              </div>
-            </template>
-            <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-              </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-              </ul>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
+        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
+          <p class="wait-handle-message-createTime">
+            任务名称：{{item.taskTypeName}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <p class="wait-handle-message-createTime wait-handle-message-style">
+            任务状态：{{stateTransfer(item.state)}}
+          </p>
+        </div>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 2">
-        <van-collapse v-model="activeNames">
-          <van-collapse-item name="indexWrapper" v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-            <template #title>
-              <div class="wait-handle-list">
-                <div class="sample-type-check">
-                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-                </div>
-                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-                <p class="wait-handle-message-createTime">
-                  创建时间：{{item.createTime}}
-                </p>
-                <p class="wait-handle-message-createTime">
-                  开始时间：{{item.startTime}}
-                </p>
-              </div>
-            </template>
-            <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-              </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" v-show="!innerItem.check" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-              </ul>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
+        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
+          <p class="wait-handle-message-createTime">
+            任务名称：{{item.taskTypeName}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <p class="wait-handle-message-createTime wait-handle-message-style">
+            任务状态：{{stateTransfer(item.state)}}
+          </p>
+        </div>
       </div>
-      <div class="circulation-task-list-two" v-show="taskQueryShow">
-         <van-collapse v-model="activeNames">
-          <van-collapse-item v-for="(item,indexWrapper) in circulationTaskList" :key="indexWrapper">
-            <template #title>
-              <div class="wait-handle-list">
-                <div class="sample-type-check">
-                  <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
-                </div>
-                <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
-                <p class="wait-handle-message-createTime">
-                  创建时间：{{item.createTime}}
-                </p>
-                <p class="wait-handle-message-createTime">
-                  开始时间：{{item.startTime}}
-                </p>
-              </div>
-            </template>
-            <div class="wait-handle-message" @click.stop="itemClick(item)">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real message-tit-real-style">{{priorityTransfer(item.priority)}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-              </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(item.id) != -1 && innerItem.check == true}" v-for="(innerItem, index) in item.spaces" :key="index" @click="officeTaskEvent(item, innerItem.text,innerItem.value, innerItem.check,indexWrapper)">{{innerItem.text}}</li>
-              </ul>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
+      <div class="circulation-task-list">
+        <div class="wait-handle-list"  v-show="taskQueryShow" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+          <div class="view-office" @click.stop="startTask(item)">进入任务</div>
+          <p class="wait-handle-message-createTime">
+            任务名称：{{item.taskTypeName}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <p class="wait-handle-message-createTime wait-handle-message-style">
+            任务状态：{{stateTransfer(item.state)}}
+          </p>
+        </div>
       </div>
     </van-pull-refresh>
     <div class="circultion-task-btn">
-      <span>
-        <img :src="taskArrivedPng" alt="" @click="circulationTaskArrived">
-      </span>
       <span>
         <img :src="taskConditionPng" alt=""  @click="circulationConditionEvent">
       </span>
@@ -309,8 +150,7 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'completeDeparnmentInfo',
-        'isDispatchTaskCompleteSweepCodeOfficeList'
+        'completeDeparnmentInfo'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -368,14 +208,13 @@
     methods: {
       ...mapMutations([
         'changeTitleTxt',
-        'changeCirculationTaskMessage',
         'changeIsCollectEnterSweepCodePage',
         'changeCirculationTaskId',
         'changeStipulateOfficeList',
         'changeArriveDepartmentId',
-        'changeIsDispatchTaskCompleteSweepCodeOfficeList',
         'changeTaskDetailsMessage',
-        'changeTaskType'
+        'changeTaskType',
+        'changeCirculationDetails'
       ]),
 
       // 右边下拉框菜单点击
@@ -388,11 +227,6 @@
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
-      },
-
-      // 查看科室事件
-      viewOfficeHandle (item) {
-        item.show = !item.show;
       },
 
       // 任务优先级转换
@@ -507,6 +341,48 @@
         }
       },
 
+      // 开始任务
+      startTask (item) {
+        // 判断上个任务是否完成或超时
+        let currentItemIndex = this.circulationTaskList.indexOf(item);
+        if (currentItemIndex != 0) {
+          let innerIndex = currentItemIndex - 1,
+              conditionOne = !this.circulationTaskList[innerIndex]['spaces'].every((item) => {return item.check == true}),
+              conditionTwo = compareDateTime(`${new Date().getHours()}:${new Date().getMinutes()}`,item.startTime),
+              conditionFour = compareDateTime(this.circulationTaskList[innerIndex]['startTime'],item.startTime);
+              let timeOne = new Date(item.createTime).getTime(),
+                  timeTwo = new Date(this.circulationTaskList[innerIndex]['createTime']).getTime(),
+                  conditionThree = timeOne == timeTwo;
+          if (conditionThree) {
+            if (conditionOne) {
+              if (conditionTwo) {
+                this.$dialog.alert({
+                  message: '请先完成该循环任务上一时间段的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+                return
+              }
+            }
+          } else {
+            if (conditionOne) {
+              if (conditionFour) {
+                this.$dialog.alert({
+                  message: '请先完成该循环任务上一时间段的任务',
+                  closeOnPopstate: true
+                }).then(() => {
+                });
+                return
+              }
+            }
+          }
+        };
+        this.$router.push({'path':'/circulationDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情');
+        this.changeCirculationDetails(item)
+      },
+
       // 提取存储已完成采集任务科室所属任务id
       drawTaskId () {
         this.drawCompleteTaskIdList = [];
@@ -549,7 +425,8 @@
                   spaces: item.spaces,
                   id: item.id,
                   show: false,
-                  check: false
+                  check: false,
+                  startUpTime: item.startUpTime
                 })
               };
               if (this.stateIndex !== null) {
@@ -625,14 +502,6 @@
                             }
                           }
                         }
-                      };
-                      // 清空上个任务存储的已完成科室信息
-                      if (this.circulationTaskList[n]['spaces'].every((item,index) => { return item.check == true})) {
-                        let temporaryTaskId = this.circulationTaskList[n]['id'];
-                        let temporarySweepCodeOficeList = deepClone(this.isDispatchTaskCompleteSweepCodeOfficeList);
-                        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != temporaryTaskId});
-                        this.changeIsDispatchTaskCompleteSweepCodeOfficeList(temporarySweepCodeOficeList);
-                        setStore('completeCirculationSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
                       }
                     }
                   }
@@ -691,130 +560,6 @@
         this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送')
-      },
-
-      checkBoxEvent () {
-        console.log('选中',this.circulationTaskList);
-      },
-
-      // 科室任务列表点击
-      officeTaskEvent (item, val, key, check, index, indexWrapper) {
-        console.log(item);
-        if (check == true) {
-          this.$dialog.alert({
-            message: '该科室已完成标本收集',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          return
-        };
-        if (item.state == 7) {
-          this.$dialog.alert({
-            message: '该科室对应的循环任务已完成',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          return
-        };
-        // 判断上个任务是否完成或超时
-        let currentItemIndex = this.circulationTaskList.indexOf(item);
-        if (currentItemIndex != 0) {
-          let innerIndex = currentItemIndex - 1,
-              conditionOne = !this.circulationTaskList[innerIndex]['spaces'].every((item) => {return item.check == true}),
-              conditionTwo = compareDateTime(`${new Date().getHours()}:${new Date().getMinutes()}`,item.startTime),
-              conditionFour = compareDateTime(this.circulationTaskList[innerIndex]['startTime'],item.startTime);
-              let timeOne = new Date(item.createTime).getTime(),
-                  timeTwo = new Date(this.circulationTaskList[innerIndex]['createTime']).getTime(),
-                  conditionThree = timeOne == timeTwo;
-          if (conditionThree) {
-            if (conditionOne) {
-              if (conditionTwo) {
-                this.$dialog.alert({
-                  message: '请先完成该循环任务上一时间段的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
-                return
-              }
-            }
-          } else {
-            if (conditionOne) {
-              if (conditionFour) {
-                this.$dialog.alert({
-                  message: '请先完成该循环任务上一时间段的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
-                return
-              }
-            }
-          }
-        };
-        this.changeArriveDepartmentId(false);
-        this.currentOfficeName = indexWrapper;
-        this.changeIsCollectEnterSweepCodePage(true);
-        this.changeStipulateOfficeList(item.spaces.filter((inx) => { return inx.check == false}));
-        this.$router.push({'path':'/circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码');
-        // 改变循环具体某一任务的信息状态
-        this.changeCirculationTaskMessage({DtMsg:{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key}});
-        setStore('currentCirculationTaskMessage',{currentMsg: item, wrapperIndex: indexWrapper, officeName: val, officeId: key});
-      },
-
-      // 循环任务送达
-      circulationTaskArrived () {
-        // 获取选中任务的id
-        let checkTaskId = '';
-        let checkList = [];
-        checkList = this.circulationTaskList.filter((item) => item.check == true);
-        if (checkList.length == 0) {
-          this.$dialog.alert({
-            message: '请选择要送达的循环任务',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          return;
-        };
-        if (checkList.length > 1) {
-          this.$dialog.alert({
-            message: '最多只能同时送达一条循环任务',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          return
-        }; 
-        if (checkList.length == 1) {
-          if (checkList[0].state == 7) { 
-            this.$dialog.alert({
-              message: '该条循环任务已完成,不能进行送达',
-              closeOnPopstate: true
-            }).then(() => {
-            });
-          } else {
-            this.changeArriveDepartmentId(true);
-            if (checkList[0]['spaces'].filter((item) => item.check == true).length == checkList[0]['spaces'].length) {
-              for (let item of checkList) {
-                for (let innerItem in item) {
-                  if (innerItem == 'id') {
-                    checkTaskId = item[innerItem]
-                  }
-                }
-              };
-              this.changeCirculationTaskId(checkTaskId);
-              this.changeIsCollectEnterSweepCodePage(false);
-              this.$router.push({path: 'circulationTaskSweepCode'});
-              this.changeTitleTxt({tit:'扫码'});
-              setStore('currentTitle','扫码')
-            } else {
-              this.$dialog.alert({
-                message: '请采集完该条循环任务下所有科室',
-                closeOnPopstate: true
-              }).then(() => {
-              });
-            }
-          }
-        }
       },
 
       // 循环情况事件
@@ -956,117 +701,38 @@
       margin: 0 auto;
       width: 100%;
       .circulation-task-list {
-        /deep/ .van-collapse {
-          .van-collapse-item {
-            .van-cell {
-              padding: 0;
-              padding-top: 8px;
-              border-bottom: 1px solid #d3d3d3;
-              box-sizing: border-box;
-              background: #f8f8f8;
-              .wait-handle-list {
-                box-sizing: border-box;
-                position: relative;
-                padding-bottom: 10px;
-                box-sizing: border-box;
-                .sample-type-check {
-                  position: absolute;
-                  top: 4px;
-                  left: 5px
-                };
-                .wait-handle-message-createTime {
-                  padding-left: 30px;
-                  height: 27px;
-                  line-height: 27px;
-                  font-size: 18px;
-                  color: #7f7d7d
-                };
-                .wait-handle-check {
-                  position: absolute;
-                  top: 30px;
-                  left: 6px
-                };
-                .get-wait-task {
-                  width: 100%;
-                  text-align: center
-                }
-              }
-              .van-cell__right-icon {
-                margin-top: 16px;
-                margin-right: 10px;
-                font-size: 18px
-              }
-            }
-          }
-          .van-collapse-item__wrapper {
-            .van-collapse-item__content {
-              padding: 0;
-              .wait-handle-message {
-                margin-left: 30px;
-                font-size: 18px;
-                padding-top: 15px;
-                padding-bottom: 2px;
-                box-sizing: border-box;
-                .handle-message-line-wrapper {
-                  p {
-                    margin-bottom: 12px;
-                    width: 47%;
-                    display: inline-block;
-                    .message-tit {
-                      color: #7f7d7d
-                    };
-                    .message-tit-real {
-                      color: black
-                    }
-                    .message-tit-real-style {
-                      color: #2895ea
-                    }
-                  }
-                }
-              };
-              .wait-handle-office-list {
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                min-height: 160px;
-                z-index: 100;
-                background: #f8f8f8;
-                ul {
-                  text-align: center;
-                  li {
-                    line-height: 50px;
-                    display: inline-block;
-                    font-size: 18px;
-                    text-align: center;
-                    background:#fff;
-                    border-bottom: 1px solid #fff;
-                    width: 95%;
-                    margin-bottom: 6px;
-                    &:first-child {
-                      margin-top: 6px;
-                    }
-                  }
-                  .officeCheckStyle {
-                    color: #fff;
-                    background: #2895ea
-                  }
-                }
-              }
-            }
-          }
-          .view-office {
+        .wait-handle-list {
+          box-sizing: border-box;
+          position: relative;
+          padding-bottom: 10px;
+          box-sizing: border-box;
+          border-bottom: 1px solid #e1e1e1;
+          .sample-type-check {
             position: absolute;
-            top: 24px;
-            right: 10px;
-            padding: 6px 4px;
-            line-height: 14px;
-            background: #2895ea;
-            font-size: 13px;
-            color: #fff;
-            border-radius: 3px;
-            box-sizing: border-box
-          }
+            top: 4px;
+            left: 5px
+          };
+          .wait-handle-message-createTime {
+            padding-left: 10px;
+            height: 27px;
+            line-height: 27px;
+            font-size: 18px;
+            color: #7f7d7d
+          };
+          .wait-handle-message-style {
+            color: red
+          };
+        }
+        .view-office {
+          position: absolute;
+          top: 22px;
+          right: 16px;
+          padding: 15px 12px;
+          background: #2895ea;
+          font-size: 13px;
+          color: #fff;
+          border-radius: 3px;
+          box-sizing: border-box
         }
       }
     };
@@ -1074,118 +740,38 @@
       height: 100%;
       overflow: auto;
       width: 100%;
-      /deep/ .van-collapse {
-          .van-collapse-item {
-            .van-cell {
-              padding: 0;
-              padding-top: 8px;
-              border-bottom: 1px solid #d3d3d3;
-              box-sizing: border-box;
-              background: #f8f8f8;
-              .wait-handle-list {
-                box-sizing: border-box;
-                position: relative;
-                padding-bottom: 10px;
-                box-sizing: border-box;
-                .sample-type-check {
-                  position: absolute;
-                  top: 4px;
-                  left: 5px
-                };
-                .wait-handle-message-createTime {
-                  padding-left: 30px;
-                  height: 27px;
-                  line-height: 27px;
-                  font-size: 18px;
-                  color: #7f7d7d
-                };
-                .wait-handle-check {
-                  position: absolute;
-                  top: 30px;
-                  left: 6px
-                };
-                .get-wait-task {
-                  width: 100%;
-                  text-align: center
-                }
-              }
-              .van-cell__right-icon {
-                margin-top: 16px;
-                margin-right: 10px;
-                font-size: 18px
-              }
-            }
-          }
-          .van-collapse-item__wrapper {
-            .van-collapse-item__content {
-              padding: 0;
-              .wait-handle-message {
-                margin-left: 30px;
-                font-size: 18px;
-                padding-top: 15px;
-                padding-bottom: 2px;
-                box-sizing: border-box;
-                .handle-message-line-wrapper {
-                  p {
-                    margin-bottom: 12px;
-                    width: 47%;
-                    display: inline-block;
-                    .message-tit {
-                      color: #7f7d7d
-                    };
-                    .message-tit-real {
-                      color: black
-                    }
-                    .message-tit-real-style {
-                      color: #2895ea
-                    }
-                  }
-                }
-              };
-              .wait-handle-office-list {
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                min-height: 160px;
-                z-index: 100;
-                background: #f8f8f8;
-                ul {
-                  text-align: center;
-                  li {
-                    line-height: 50px;
-                    display: inline-block;
-                    font-size: 18px;
-                    text-align: center;
-                    background:#fff;
-                    border-bottom: 1px solid #fff;
-                    width: 95%;
-                    margin-bottom: 6px;
-                    &:first-child {
-                      margin-top: 6px;
-                    }
-                  }
-                  .officeCheckStyle {
-                    color: #fff;
-                    background: #2895ea
-                  }
-                }
-              }
-            }
-          }
-          .view-office {
-            position: absolute;
-            top: 24px;
-            right: 20px;
-            padding: 6px 4px;
-            line-height: 14px;
-            background: #2895ea;
-            font-size: 13px;
-            color: #fff;
-            border-radius: 3px;
-            box-sizing: border-box
-          }
+      padding: 0;
+      padding-top: 8px;
+      border-bottom: 1px solid #d3d3d3;
+      box-sizing: border-box;
+      .wait-handle-list {
+        box-sizing: border-box;
+        position: relative;
+        padding-bottom: 10px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #e1e1e1;
+        .wait-handle-message-createTime {
+          padding-left: 10px;
+          height: 27px;
+          line-height: 27px;
+          font-size: 18px;
+          color: #7f7d7d
+        };
+        .wait-handle-message-style {
+          color: red
         }
+      }   
+      .view-office {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        padding: 15px 12px;
+        background: #2895ea;
+        font-size: 13px;
+        color: #fff;
+        border-radius: 3px;
+        box-sizing: border-box
+      }
     };
     .circultion-task-btn {
       height: 80px;

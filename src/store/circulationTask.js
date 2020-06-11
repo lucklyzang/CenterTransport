@@ -4,7 +4,6 @@ export default {
   state:{
     arriveCirculationTaskId: '',
     arriveDepartmentId: false,
-    isFirstSweepCode: true,
     storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
     currentElectronicSignature: null,
@@ -12,14 +11,15 @@ export default {
     isCollectEnterSweepCodePage: false,
     circulationConnectMessageList: [],
     isrefreshCirculationConnectPage: false,
-    isDispatchTaskCompleteSweepCodeOfficeList: [],
     completeDeparnmentInfo: [],
     stipulateOfficeList: [],
     storeAlreadyConnectSample: [],
     storeNoConnectSample: [],
     isDeleteEcho: false,
     isDeleteCancel: false,
-    isClickSure: false
+    isClickSure: false,
+    circulationDetails: null,
+    verifyCirculationOfficeId: ''
   },
   getters:{
     arriveCirculationTaskId: state => state.arriveCirculationTaskId,
@@ -33,22 +33,18 @@ export default {
     stipulateOfficeList: state => state.stipulateOfficeList,
     arriveDepartmentId: state => state.arriveDepartmentId,
     storeArriveDeparnmentId: state => state.storeArriveDeparnmentId,
-    isDispatchTaskCompleteSweepCodeOfficeList: state => state.isDispatchTaskCompleteSweepCodeOfficeList,
     storeAlreadyConnectSample: state => state.storeAlreadyConnectSample,
     storeNoConnectSample: state => state.storeNoConnectSample,
-    isFirstSweepCode: state => state.isFirstSweepCode,
     isDeleteEcho: state => state.isDeleteEcho,
     isDeleteCancel: state => state.isDeleteCancel,
-    isClickSure: state => state.isClickSure
+    isClickSure: state => state.isClickSure,
+    circulationDetails: state => state.circulationDetails,
+    verifyCirculationOfficeId: state => state.verifyCirculationOfficeId
   },
   mutations:{
     // 改变循环任务ID状态
     changeCirculationTaskId (state,payLoad) {
       state.arriveCirculationTaskId = payLoad
-    },
-    // 改变循环任务信息状态
-    changeCirculationTaskMessage (state,payLoad) {
-      state.circulationTaskMessage = payLoad.DtMsg
     },
     // 改变电子签名状态
     changeCurrentElectronicSignature (state,payLoad) {
@@ -86,10 +82,6 @@ export default {
     changeStoreArriveDeparnmentId (state,payLoad) {
       state.storeArriveDeparnmentId = payLoad
     },
-    // 改变是否完成扫码科室列表状态
-    changeIsDispatchTaskCompleteSweepCodeOfficeList (state,payLoad) {
-      state.isDispatchTaskCompleteSweepCodeOfficeList = deepClone(payLoad)
-    },
     // 改变已经交接的标本状态
     changeIsstoreAlreadyConnectSample (state,payLoad) {
       state.storeAlreadyConnectSample = deepClone(payLoad)
@@ -97,10 +89,6 @@ export default {
     // 改变没有交接的标本状态
     changeIsStoreNoConnectSample (state,payLoad) {
       state.storeNoConnectSample = deepClone(payLoad)
-    },
-    // 改变是否首次扫码状态
-    changeIsFirstSweepCode (state,payLoad) {
-      state.isFirstSweepCode = payLoad
     },
     // 改变采集页面是否按钮回显生效状态
     changeIsDeleteCancel(state,payLoad) {
@@ -110,9 +98,17 @@ export default {
      changeIsDeleteEcho(state,payLoad) {
       state.isDeleteEcho = payLoad
     },
-     // 改变采集页面是否点击弹框确定按钮状态
+    // 改变采集页面是否点击弹框确定按钮状态
      changeIsClickSure(state,payLoad) {
       state.isClickSure = payLoad
+    },
+    // 改变调度任务详细信息
+    changeCirculationDetails (state,payLoad) {
+      state.circulationDetails = payLoad
+    },
+    // 改变校验通过的科室id状态
+    changeVerifyCirculationOfficeId (state,payLoad) {
+      state.verifyCirculationOfficeId = payLoad
     }
   },
   actions:{}

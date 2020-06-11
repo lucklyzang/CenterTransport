@@ -440,7 +440,8 @@ export default {
       margin: 0 auto;
       width: 100%;
       .sample-type-list {
-        height: 250px;
+        max-height: 80%;
+        overflow: auto;
         position: relative;
         .sample-type-title-wrapper {
           position: relative;
@@ -465,8 +466,6 @@ export default {
           }
         }
         .sample-type-message-wrapper{
-          height: 220px;
-          overflow: auto;
           box-sizing: border-box;
           padding: 10px;
           .sample-type-message-list {

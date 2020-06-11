@@ -143,16 +143,15 @@ export default {
       'currentElectronicSignature',
       'circulationCollectMessageList',
       'circulationTaskMessage',
-      'completeDeparnmentInfo'
+      'completeDeparnmentInfo',
+      'verifyCirculationOfficeId',
+      'circulationDetails'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
     circulationTaskId () {
-      return this.circulationTaskMessage.currentMsg.id
-    },
-    departmentId () {
-      return this.circulationTaskMessage.officeId
+      return this.circulationDetails.id
     }
   },
 
@@ -271,10 +270,10 @@ export default {
           if (this.completeDeparnmentInfo.length > 0) {
             if (temporaryIndex != -1) {
               temporaryDepartmentId = temporaryCompleteInfo[temporaryIndex]['departmentIdList'];
-              temporaryDepartmentId.push(this.departmentId);
+              temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo[temporaryIndex]['departmentIdList'] = temporaryDepartmentId
             } else {
-              temporaryDepartmentId.push(this.departmentId);
+              temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo.push(
                 { 
                   departmentIdList: temporaryDepartmentId,
@@ -283,7 +282,7 @@ export default {
               )
             }
           } else {
-            temporaryDepartmentId.push(this.departmentId);
+            temporaryDepartmentId.push(this.verifyCirculationOfficeId);
             temporaryCompleteInfo.push(
               { 
                 departmentIdList: temporaryDepartmentId,
@@ -335,7 +334,7 @@ export default {
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
-        departmentId: this.departmentId,  //科室ID
+        departmentId: this.verifyCirculationOfficeId,  //科室ID
         singImg: this.currentElectronicSignature, //签名照片
         specList: []
       };
