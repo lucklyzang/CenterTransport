@@ -535,6 +535,7 @@
   export default {
     data () {
       return {
+        value:0,
         showLoadingHint: false,
         noDataShow: false,
         stateListShow: false,

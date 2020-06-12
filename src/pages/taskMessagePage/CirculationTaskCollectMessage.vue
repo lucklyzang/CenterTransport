@@ -19,49 +19,18 @@
     <div class="sample-number-box">
       <van-field v-model="sampleAmount" disabled type="number" label="标本总数"/>
     </div>
-    <div class="increase-btn">
-      <span>
-        <img :src="taskIncreasePng" alt=""  @click="increaseSampleCollectBox">
-      </span>
-    </div>
     <div class="sweep-code-area">
-      <div class="increaseLineArea">
-        <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
-          <div class="sample-box">
-            <div class="sample-title">标本类型</div>
-            <div class="sample-content">
-                <van-dropdown-menu>
-                  <van-dropdown-item v-model="item.sampleType" :options="item.sampleTypeList"/>
-                </van-dropdown-menu>
-            </div>
-          </div>
-          <div class="check-entry-box">
-            <div class="check-entry-title">检查项</div>
-              <div class="check-entry-content">
-                <van-checkbox-group v-model="item.checkEntryList" direction="horizontal">
-                  <van-checkbox
-                    shape="quare"
-                    v-for="(item,index) in item.entryList"
-                    :key="`${item}-${index}`"
-                    :name='`{"id":"${item.id}","itemName":"${item.itemName}"}`'
-                  >
-                    {{ item.itemName }}
-                  </van-checkbox>
-                </van-checkbox-group>
-              </div>
-            </div>
-            <div class="inner-sample--number-box">
-              <div class="inner-sample--number-title">数量</div>
-              <div class="inner-sample--number-content">
-                <van-field v-model="item.innerSampleAmount" type="number" placeholder="请输入该标本数量"/>
-              </div>
-            </div>
-            <div class="delete-box">
-              <span>
-                <img :src="taskDeletePng" alt=""  @click="deleteCurrentSampleCollectBox(item,index)">
-              </span>
-            </div>
-          </div>
+      <div class="circulation-area-title">
+        <span>标本名称</span>
+        <span>数量</span>
+      </div>
+      <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
+        <p v-for="(innerItem, innerIndex) in item.sampleTypeList" :key="`${innerItem}-${innerIndex}`">
+          <span>{{innerItem.text}}</span>
+          <span>
+            <van-stepper @change="stepperEvent" v-model="innerItem.sampleNumber" min="0"/>
+          </span>
+        </p>
       </div>
     </div>
     <div class="btn-area">
@@ -111,16 +80,11 @@ export default {
       isNoBedInfoShow: false,
       sampleMessageList: [
         {
-          sampleType: '',
-          sampleTypeList: [],
-          entryList: [],
-          checkEntryList: [],
-          innerSampleAmount: 0
+          sampleTypeList: []
         }
       ],
       temporaryInfo: [],
       temporarySampleTypeList: [],
-      temporarySampleType: '',
       temporaryCheckEntryList: [],
       taskIncreasePng: require('@/components/images/task-increase.png'),
       taskDeletePng: require('@/components/images/task-delete.png'),
@@ -137,27 +101,6 @@ export default {
   },
 
   watch: {
-    sampleMessageList: {
-      handler(newName, oldName) {
-        let emptyArr = [];
-        if (newName.length > 0) {
-          for (let item of newName) {
-            for (let val in item) {
-              if (val == 'innerSampleAmount') {
-                emptyArr.push(item[val])
-              }
-            }
-          };
-        }
-        if (emptyArr.length>0) {
-            this.sampleAmount = checkEmptyArray(emptyArr).reduce((prev, curr, idx, arr) => {
-            return Number(prev) + Number(curr);
-          })
-        };
-      },
-      immediate: true,
-      deep: true
-    }
   },
 
   // beforeRouteLeave (to, from , next) {
@@ -249,6 +192,23 @@ export default {
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})
+      },
+
+      // 计数器变化回调
+      stepperEvent (value) {
+        let emptyArr = [];
+        for (let item of this.sampleMessageList[0].sampleTypeList) {
+          for (let val in item) {
+            if (val == 'sampleNumber') {
+              emptyArr.push(item[val])
+            }
+          }
+        };
+        if (emptyArr.length>0) {
+            this.sampleAmount = checkEmptyArray(emptyArr).reduce((prev, curr, idx, arr) => {
+            return Number(prev) + Number(curr);
+          })
+        };
       },
       
       // 丢失数据提示
@@ -370,40 +330,28 @@ export default {
       this.bedNumber = temporaryEchoList[0]['bedNumber'];
       this.patientName = temporaryEchoList[0]['patientName'];
       this.sampleAmount = temporaryEchoList[0]['sampleAmount'];
-      this.sampleMessageList =  temporaryEchoList[0]['sampleMessageList'];
+      this.sampleMessageList[0].sampleTypeList = temporaryEchoList[0]['sampleMessageList'];
       this.changeIsDeleteEcho(true);
       setStore('isDeleteEcho',true);
     },
 
       // 并行查询标本信息和检查项信息
       parallelFunction () {
-        Promise.all([this.getSampleMessage(),this.getCheckEntryMessage()])
+        Promise.all([this.getSampleMessage()])
         .then((res) => {
           if (res && res.length > 0) {
-            let [item1,item2] = res;
+            let [item1] = res;
             if (item1) {
               for (let item of item1) {
-                this.sampleMessageList[0].sampleType = item.id;
                 this.sampleMessageList[0].sampleTypeList.push({
                   text: item.specimenName,
                   value: item.id,
+                  sampleNumber:0
                 })
               };
               // 标本信息存入locaStorage
               setStore('sampleInfo',{sampleKey:this.sampleMessageList[0].sampleTypeList});
-              this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList;
-              this.temporarySampleType =  this.sampleMessageList[0].sampleType
-            };
-            if (item2) {
-              let temporaryCheckList = [];
-              for (let item of item2) {
-                temporaryCheckList.push({
-                  id: item.id,
-                  itemName: item.itemName
-                })
-              };
-              this.sampleMessageList[0].entryList = temporaryCheckList;
-              this.temporaryCheckEntryList = this.sampleMessageList[0].entryList;
+              this.temporarySampleTypeList = this.sampleMessageList[0].sampleTypeList
             }
           }
         })
@@ -424,7 +372,6 @@ export default {
           })
           .then((res) => {
             this.sampleMessageList[0].sampleTypeList = [];
-            this.sampleMessageList[0].sampleType = '';
             if (res && res.data.code == 200) {
               if (res.data.data.length > 0) {
                 resolve(res.data.data)
@@ -437,26 +384,6 @@ export default {
       })
     },
 
-    // 查询检查项信息
-    getCheckEntryMessage () {
-      return new Promise((resolve,reject) => {
-        queryCheckEntry(
-          { proId: this.proId, // 项目ID 必输
-          state: 0  //查询状态，0-启用，1-禁用，固定传 0
-          })
-          .then((res) => {
-            this.sampleMessageList[0].entryList = [];
-            if (res && res.data.code == 200) {
-              if (res.data.data.length > 0) {
-                resolve(res.data.data)
-              }
-            }
-          })
-          .catch((err) => {
-            reject(err.message)
-          })
-      })
-    },
 
     // 返回上一页
     backTo () {
@@ -518,6 +445,8 @@ export default {
       if (this.circulationCollectMessageList.length > 0) {
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
         if (temporaryIndex != -1) {
+          // 过滤数量为0的标本
+          let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
           if (this.isDeleteCancel || this.isDeleteEcho) {
             // 防止最后一条信息重复存入
             let spliceInfo = [];
@@ -530,7 +459,7 @@ export default {
             setStore('isDeleteEcho',false);
             temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentList.push({
-              sampleMessageList: this.sampleMessageList,
+              sampleMessageList: temporarySanpleList,
               bedNumber: this.bedNumber,
               patientName: this.patientName,
               sampleAmount: this.sampleAmount
@@ -538,7 +467,7 @@ export default {
           } else {
             temporaryDepartmentList = currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentList.push({
-              sampleMessageList: this.sampleMessageList,
+              sampleMessageList: temporarySanpleList,
               bedNumber: this.bedNumber,
               patientName: this.patientName,
               sampleAmount: this.sampleAmount
@@ -546,8 +475,10 @@ export default {
           }
           currentCollectAllMessageSure[temporaryIndex]['collectDepartmentList'] = repeArray(temporaryDepartmentList)
         } else {
+          // 过滤数量为0的标本
+          let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
           temporaryDepartmentList.push({
-            sampleMessageList: this.sampleMessageList,
+            sampleMessageList: temporarySanpleList,
             bedNumber: this.bedNumber,
             patientName: this.patientName,
             sampleAmount: this.sampleAmount
@@ -558,8 +489,10 @@ export default {
           })
         }
       } else {
+        // 过滤数量为0的标本
+        let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
         temporaryDepartmentList.push({
-          sampleMessageList: this.sampleMessageList,
+          sampleMessageList: temporarySanpleList,
           bedNumber: this.bedNumber,
           patientName: this.patientName,
           sampleAmount: this.sampleAmount
@@ -579,11 +512,7 @@ export default {
       this.sampleAmount = 0;
       this.sampleMessageList = [
         {
-          sampleType: '',
-          sampleTypeList: [],
-          entryList: [],
-          checkEntryList: [],
-          innerSampleAmount: 0
+          sampleTypeList: []
         }
       ];
       this.isDialogShow = false;
@@ -602,6 +531,8 @@ export default {
       if (this.circulationCollectMessageList.length > 0) {
         let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
         if (temporaryIndex != -1) {
+          // 过滤数量为0的标本
+          let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
           if (this.isDeleteCancel || this.isDeleteEcho) {
             // 防止最后一条信息重复存入
             let spliceInfo = [];
@@ -614,7 +545,7 @@ export default {
             setStore('isDeleteEcho',false);
             temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentListTwo.push({
-              sampleMessageList: this.sampleMessageList,
+              sampleMessageList: temporarySanpleList,
               bedNumber: this.bedNumber,
               patientName: this.patientName,
               sampleAmount: this.sampleAmount
@@ -622,7 +553,7 @@ export default {
           } else {
             temporaryDepartmentListTwo = currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'];
             temporaryDepartmentListTwo.push({
-              sampleMessageList: this.sampleMessageList,
+              sampleMessageList: temporarySanpleList,
               bedNumber: this.bedNumber,
               patientName: this.patientName,
               sampleAmount: this.sampleAmount
@@ -630,8 +561,10 @@ export default {
           }
           currentCollectAllMessageCancel[temporaryIndex]['collectDepartmentList'] = repeArray(temporaryDepartmentListTwo)
         } else {
+          // 过滤数量为0的标本
+          let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
           temporaryDepartmentListTwo.push({
-            sampleMessageList: this.sampleMessageList,
+            sampleMessageList: temporarySanpleList,
             bedNumber: this.bedNumber,
             patientName: this.patientName,
             sampleAmount: this.sampleAmount
@@ -642,8 +575,10 @@ export default {
           })
         }
       } else {
+        // 过滤数量为0的标本
+        let temporarySanpleList = this.sampleMessageList[0]['sampleTypeList'].filter((item) => {return item.sampleNumber !== 0});
         temporaryDepartmentListTwo.push({
-          sampleMessageList: this.sampleMessageList,
+          sampleMessageList: temporarySanpleList,
           bedNumber: this.bedNumber,
           patientName: this.patientName,
           sampleAmount: this.sampleAmount
@@ -664,6 +599,7 @@ export default {
       this.$router.push({path:'/circulationTaskCollectMessageSure'});
       this.changeTitleTxt({tit:'采集信息确认'});
       setStore('currentTitle','采集信息确认');
+      console.log('收集信息',this.circulationCollectMessageList)
     },
 
     // 采集信息取消事件
@@ -687,7 +623,8 @@ export default {
             this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
             this.patientName = temporaryBedCollectMsg[0]['patientName'];
             this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
-            this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList'];
+            this.sampleMessageList[0]['sampleTypeList'] =  temporaryBedCollectMsg[0]['sampleMessageList'];
+            console.log('取消', this.circulationCollectMessageList[temporaryIndex]);
           } else {
             if (this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'].length == 1) {
               this.bedNumber = '';
@@ -695,11 +632,7 @@ export default {
               this.sampleAmount = 0;
               this.sampleMessageList = [
                 {
-                  sampleType: '',
-                  sampleTypeList: [],
-                  entryList: [],
-                  checkEntryList: [],
-                  innerSampleAmount: 0
+                  sampleTypeList: []
                 }
               ];
               this.parallelFunction();
@@ -727,7 +660,7 @@ export default {
                 this.bedNumber = temporaryBedCollectMsg[0]['bedNumber'];
                 this.patientName = temporaryBedCollectMsg[0]['patientName'];
                 this.sampleAmount = temporaryBedCollectMsg[0]['sampleAmount'];
-                this.sampleMessageList =  temporaryBedCollectMsg[0]['sampleMessageList']
+                this.sampleMessageList[0]['sampleTypeList'] =  temporaryBedCollectMsg[0]['sampleMessageList']
               }
             }
           };
@@ -747,27 +680,6 @@ export default {
       this.$router.push({'path':'/circulationTaskSweepCode'});
       this.changeTitleTxt({tit:'扫码'});
       setStore('currentTitle','扫码')
-    },
-
-    // 新增标本采集框
-    increaseSampleCollectBox () {
-      this.sampleMessageList.push( 
-        {
-          sampleType: this.temporarySampleType,
-          sampleTypeList: this.temporarySampleTypeList,
-          entryList: this.temporaryCheckEntryList,
-          checkEntryList: [],
-          innerSampleAmount: 0
-        }
-      );
-    },
-
-    // 删除当前标本采集项
-    deleteCurrentSampleCollectBox (item,index) {
-      this.sampleMessageList.splice(index, 1);
-      for (let i in this.sampleMessageList) {
-        this.sampleMessageList[i].index = i
-      }
     }
   }
 }
@@ -796,10 +708,8 @@ export default {
       padding: 2px;
     };
     .increase-btn {
-      height: 40px;
-      line-height: 40px;
-      padding-right: 10px;
-      text-align: right;
+      height: 10px;
+      line-height: 10px;
       background: #f6f6f6;
       span {
         display: inline-block;
@@ -832,64 +742,62 @@ export default {
       margin: 0 auto;
       margin: 10px 0;
       width: 100%;
-      .increaseLineArea {
-        .circulation-area {
-          padding: 10px 18px;
-          height: 200px;
+      .circulation-area {
+        height: 90%;
+        width: 96%;
+        margin: 0 auto;
+        overflow: auto;
+        font-size: 16px;
+        > p {
           position: relative;
-          border-bottom: 1px solid #dfdfdf;
-          .sample-box {
-            > div {
-              display: inline-block
-            };
-            .sample-title {
-              width: 30%
-            }
-            .sample-content {
-              width: 60%;
-              /deep/ .van-dropdown-menu {
-               .van-dropdown-menu__item {
-                 .van-dropdown-menu__title {
-                    width: 100%;
-                    padding: 0
-                 }
-               }
-              }
-            }
+          height: 30px;
+          border:1px solid #d6d6d6;
+          margin-bottom:4px;
+          &:last-child {
+            margin-bottom:0
           }
-          .check-entry-box {
-            > div {
-              display: inline-block
-            };
-            .check-entry-title {
-              width: 30%;
-              vertical-align: top;
-            }
-            .check-entry-content {
-              width: 60%;
-              height: 100px;
-              overflow: auto;
-               /depp/.van-checkbox-group {
-                .van-checkbox {
-                  display: inline-block
-                }
-              }
-            }
-          }
-          .delete-box {
+          span {
+            height: 30px;
+            line-height: 30px;
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            span {
-              display: inline-block;
-              width: 70px;
-              height: 30px;
-              margin-top: 5px;
-              img {
-                width: 100%;
-                height: 100%
-              }
+            display: inline-block;
+            text-align: center;
+            width: 50%;
+            &:first-child {
+              top: 0;
+              left:0;
+              background: #f7f7f7;
+              text-align: left;
+              padding-left: 12px
             }
+            &:last-child {
+              top: 0;
+              right:0;
+              text-align: right
+            }
+          }
+        }
+      };
+      .circulation-area-title {
+        height: 10%;
+        font-size: 18px;
+        position: relative;
+        span {
+          display: inline-block;
+          width: 50%;
+          position: absolute;
+          text-align: center;
+          &:first-child {
+            top: 0;
+            left:0;
+            text-align: left;
+            padding-left: 16px
+          }
+          &:last-child {
+            top: 0;
+            right:0;
+            text-align: right;
+            padding-right: 20px
           }
         }
       }

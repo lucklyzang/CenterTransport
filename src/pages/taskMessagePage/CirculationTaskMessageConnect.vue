@@ -54,7 +54,7 @@
                 <span class="message-tit">标本数量:</span>
                 <span class="message-tit-real">{{innerItem.quantity}}</span>
               </p>
-              <P>
+              <!-- <P>
                 <span class="message-tit">检查项:</span>
                 <span class="message-tit-real">
                     <van-checkbox-group  v-model="innerItem.checkEntryList" direction="horizontal">
@@ -68,7 +68,7 @@
                       </van-checkbox>
                     </van-checkbox-group>
                 </span>
-              </P>
+              </P> -->
             </div>
           </div>
         </div>
@@ -312,24 +312,24 @@ export default {
             let manageCheckArray = [];
             let manageCheckArrayCheck = [];
             // 格式换标本项里的检查项字段
-            for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
-              manageCheckArray = [];
-              manageCheckArrayCheck = [];
-              let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
-              for (let currentCheckEntry of removeBraceArray) {
-                let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
-                manageCheckArray.push({
-                  itemName: transferArray[1],
-                  id: transferArray[0]
-                });
-                manageCheckArrayCheck.push(JSON.stringify({
-                  itemName: transferArray[1],
-                  id: transferArray[0]
-                }))
-              };
-              this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
-              this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
-            }
+            // for (let j = 0, innerLen = this.manageSampleDataList[i].sampleList.length; j < innerLen; j++) {
+            //   manageCheckArray = [];
+            //   manageCheckArrayCheck = [];
+            //   let removeBraceArray = this.manageSampleDataList[i].sampleList[j]['collectionItem'].split(",");
+            //   for (let currentCheckEntry of removeBraceArray) {
+            //     let transferArray = removeBlock(currentCheckEntry.replace(/\"/g, "")).split(":");
+            //     manageCheckArray.push({
+            //       itemName: transferArray[1],
+            //       id: transferArray[0]
+            //     });
+            //     manageCheckArrayCheck.push(JSON.stringify({
+            //       itemName: transferArray[1],
+            //       id: transferArray[0]
+            //     }))
+            //   };
+            //   this.manageSampleDataList[i]['sampleList'][j]['collectionItem'] = manageCheckArray;
+            //   this.manageSampleDataList[i]['sampleList'][j]['checkEntryList'] = manageCheckArrayCheck
+            // }
           };
           // 去除已经交接过的标本
           this.manageSampleDataList = arrayDiff(this.manageSampleDataList, this.storeAlreadyConnectSample);

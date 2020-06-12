@@ -267,38 +267,6 @@ export default {
         quereDeviceMessage(data)
         .then((res) => {
           if (res && res.data.code == 200) {
-            // if (this.destinationAddress !== '') {
-            //   var destinationName = this.destinationList.filter((item) => { return item.value == this.destinationAddress})[0]['text'];
-            //   if (this.destinationAddress == 0) {
-            //     destinationName = ''
-            //   }
-            // };
-            let taskMessage = {
-              setOutPlaceId: res.data.data['spaceId'],  //出发地ID
-              setOutPlaceName: res.data.data['spaceName'],  //出发地名称
-              destinationId: '',   //目的地ID
-              destinationName: '',  //目的地名称
-              taskTypeId: this.typeValue,  //运送类型 ID
-              taskTypeName: this.typeText,  //运送类型 名 称
-              priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-              toolId: this.toolValue,   //运送工具ID
-              toolName: this.toolName,  //运送工具名称
-              actualCount: this.actualData,   //实际数量
-              patientName: this.patientName,  //病人姓名
-              sex: 0,    //病人性别  0-未指定,1-男, 2-女
-              age: "",   //年龄
-              number: this.patientNumber,   //住院号
-              bedNumber: this.bedNumber,  //床号
-              taskRemark: this.taskDescribe,   //备注
-              createId: this.workerId,   //创建者ID  当前登录者
-              createName: this.userName,   //创建者名称  当前登陆者
-              proId: this.proId,   //项目ID
-              proName: this.proName,   //项目名称
-              isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
-              createType: 1   //创建类型   0-调度员，1-医务人员 固定传 1
-            };
-            // 创建调度任务
-            this.postGenerateDispatchTask(taskMessage)
           }
         })
         .catch((err) => {
@@ -448,14 +416,32 @@ export default {
 
       // 运送类型信息确认事件
       dispatchTaskSure () {
-        try {
-          this.getDeviceMessage();
-        } catch (err) {
-          this.$dialog.alert({
-            message: `${err}`,
-            closeOnPopstate: true
-          }).then(() => {})
-        }
+        let taskMessage = {
+          setOutPlaceId: this.userInfo.depId,  //出发地ID
+          setOutPlaceName: this.userInfo.depName,  //出发地名称
+          destinationId: '',   //目的地ID
+          destinationName: '',  //目的地名称
+          taskTypeId: this.typeValue,  //运送类型 ID
+          taskTypeName: this.typeText,  //运送类型 名 称
+          priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+          toolId: this.toolValue,   //运送工具ID
+          toolName: this.toolName,  //运送工具名称
+          actualCount: this.actualData,   //实际数量
+          patientName: this.patientName,  //病人姓名
+          sex: 0,    //病人性别  0-未指定,1-男, 2-女
+          age: "",   //年龄
+          number: this.patientNumber,   //住院号
+          bedNumber: this.bedNumber,  //床号
+          taskRemark: this.taskDescribe,   //备注
+          createId: this.workerId,   //创建者ID  当前登录者
+          createName: this.userName,   //创建者名称  当前登陆者
+          proId: this.proId,   //项目ID
+          proName: this.proName,   //项目名称
+          isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
+          createType: 1   //创建类型   0-调度员，1-医务人员 固定传 1
+        };
+        // 创建调度任务
+        this.postGenerateDispatchTask(taskMessage)
       },
 
       // 运送类型信息取消事件

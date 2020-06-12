@@ -45,7 +45,7 @@
                 <span class="message-tit">标本数量:</span>
                 <span class="message-tit-real">{{innerItem.quantity}}</span>
               </p>
-              <P>
+              <!-- <P>
                 <span class="message-tit">检查项:</span>
                 <span class="message-tit-real">
                     <van-checkbox-group  v-model="innerItem.checkEntryList" direction="horizontal">
@@ -60,7 +60,7 @@
                       </van-checkbox>
                     </van-checkbox-group>
                 </span>
-              </P>
+              </P> -->
             </div>
           </div>
         </div>
@@ -123,9 +123,6 @@ export default {
         if (!this.isDialogShow) {
           this.loseDataInfo();
           return
-        };
-        if (!this.showSignatureBox) {
-          this.signatureInfo()
         }
       })
     };
@@ -187,27 +184,6 @@ export default {
         .catch(() => {
           this.isDialogShow = false;
           this.showSignatureBox = true;
-        })
-      },
-
-      // 医生签字提示
-      signatureInfo () {
-        this.isClickCancelBtn = false;
-        this.isDialogShow = true;
-        this.showSignatureBox = false;
-        this.$dialog.alert({
-          message: '请医生签字',
-          closeOnPopstate: false,
-          showCancelButton: true   
-        }).then(() => {
-          this.showSignature = true;
-          this.isDialogShow = false;
-          this.showSignatureBox = true;
-        })
-        .catch(() => {
-          this.isDialogShow = false;
-          this.showSignatureBox = true;
-          this.isClickCancelBtn = true
         })
       },
 
@@ -343,8 +319,8 @@ export default {
 
      // 交接信息确认事件
     connectMessageSure () {
-      if (!this.showSignatureBox || this.isClickCancelBtn) {
-        this.signatureInfo();
+      if (!this.showSignature) {
+        this.showSignature = true;
         return
       };
       if (!this.currentElectronicSignature) {

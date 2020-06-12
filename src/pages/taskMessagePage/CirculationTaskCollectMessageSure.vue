@@ -12,51 +12,29 @@
     <div class="sweep-code-title">
       <h3>科室信息采集确认</h3>
     </div>
-      <div class="bed-number-list-outer">
-        <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
-          <div class="form-two">
-            <van-field v-model="outerItem.bedNumber" disabled label="床号"/>
-            <van-field v-model="outerItem.patientName" disabled type="tel" label="姓名"/>
-            <van-field v-model="outerItem.sampleAmount" disabled type="number" label="标本总数"/>
+    <div class="bed-number-list-outer">
+      <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
+        <div class="form-two">
+          <van-field v-model="outerItem.bedNumber" disabled label="床号"/>
+          <van-field v-model="outerItem.patientName" disabled type="tel" label="姓名"/>
+          <van-field v-model="outerItem.sampleAmount" disabled type="number" label="标本总数"/>
+        </div>
+        <div class="sweep-code-area">
+          <div class="circulation-area-title">
+            <span>标本名称</span>
+            <span>数量</span>
           </div>
-          <div class="sweep-code-area">
-            <div class="increaseLineArea">
-              <div class="circulation-area" v-for="(item,index) in outerItem.sampleMessageList" :key="`${item}-${index}`">
-                <div class="sample-box">
-                  <div class="sample-title">标本类型</div>
-                  <div class="sample-content">
-                      <van-dropdown-menu>
-                        <van-dropdown-item disabled v-model="item.sampleType" :options="item.sampleTypeList"/>
-                      </van-dropdown-menu>
-                  </div>
-                </div>
-                <div class="check-entry-box">
-                  <div class="check-entry-title">检查项</div>
-                  <div class="check-entry-content">
-                      <van-checkbox-group v-model="item.checkEntryList" direction="horizontal">
-                         <van-checkbox
-                            disabled
-                            shape="quare"
-                            v-for="(item,index) in item.entryList"
-                            :key="`${item}-${index}`"
-                            :name='`{"id":"${item.id}","itemName":"${item.itemName}"}`'
-                          >
-                            {{ item.itemName }}
-                          </van-checkbox>
-                      </van-checkbox-group>
-                  </div>
-                </div>
-                <div class="inner-sample--number-box">
-                  <div class="inner-sample--number-title">数量</div>
-                  <div class="inner-sample--number-content">
-                    <van-field v-model="item.innerSampleAmount" type="number" placeholder="请输入该标本数量"/>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="circulation-area">
+            <p v-for="(innerItem,innerIndex) in outerItem.sampleMessageList" :key="`${innerItem}-${innerIndex}`">
+              <span>{{innerItem.text}}</span>
+              <span>
+                <van-stepper v-model="innerItem.sampleNumber" min="0" disabled />
+              </span>
+            </p>
           </div>
         </div>
       </div>
+    </div>
     <div class="electronic-signature" v-if="showSignature">
       <ElectronicSignature></ElectronicSignature>
     </div>
@@ -129,9 +107,6 @@ export default {
           this.loseDataInfo();
           return
         };
-        if (!this.showSignatureBox) {
-          this.signatureInfo()
-        }
       })
     };
     this.echoCollectMessage()
@@ -199,26 +174,6 @@ export default {
         })
     },
 
-    // 医生签字提示
-    signatureInfo () {
-      this.isClickCancelBtn = false;
-      this.isDialogShow = true;
-      this.showSignatureBox = false;
-      this.$dialog.alert({
-        message: '请医生签字',
-        closeOnPopstate: false,
-        showCancelButton: true   
-      }).then(() => {
-        this.showSignature = true;
-        this.isDialogShow = false;
-        this.showSignatureBox = true;
-      })
-      .catch(() => {
-        this.isDialogShow = false;
-        this.showSignatureBox = true;
-        this.isClickCancelBtn = true
-      })
-    },
 
     // 更新循环任务状态
     updateCirculationtaskState (data) {
@@ -241,7 +196,8 @@ export default {
     echoCollectMessage () {
       this.allcirculationCollectMessageList = [];
       let temporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
-      this.allcirculationCollectMessageList = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList'])
+      this.allcirculationCollectMessageList = deepClone(this.circulationCollectMessageList[temporaryIndex]['collectDepartmentList']);
+      console.log('wq',this.allcirculationCollectMessageList);
     },
 
      // 收集标本信息
@@ -319,8 +275,8 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      if (!this.showSignatureBox || this.isClickCancelBtn) {
-        this.signatureInfo();
+      if (!this.showSignature) {
+        this.showSignature = true;
         return
       };
       if (!this.currentElectronicSignature) {
@@ -354,19 +310,12 @@ export default {
             for (let j = 0, len = temporaryCollectInfoList[i].sampleMessageList.length; j < len; j++) {
               submitCollectMsg['specList'][i]['specimen'].push(
                 {
-                  specimenId: temporaryCollectInfoList[i].sampleMessageList[j].sampleType,    //标本ID
-                  specimenName: querySampleName(JSON.parse(getStore('sampleInfo')).sampleKey,temporaryCollectInfoList[i].sampleMessageList[j].sampleType), //标本名称
-                  quantity: temporaryCollectInfoList[i].sampleMessageList[j].innerSampleAmount,    //标本数量
+                  specimenId: temporaryCollectInfoList[i].sampleMessageList[j].value,    //标本ID
+                  specimenName: temporaryCollectInfoList[i].sampleMessageList[j].text, //标本名称
+                  quantity: temporaryCollectInfoList[i].sampleMessageList[j].sampleNumber,  //标本数量
                   checkItems: {} //检查项
                 }
-              );
-              if (temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList.length > 0)  {
-                let temporarySampleList = [];
-                for (let k = 0, len = temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList.length; k < len; k++) {
-                  let temporarySampleList = Object.values(JSON.parse(temporaryCollectInfoList[i].sampleMessageList[j].checkEntryList[k]));
-                  submitCollectMsg['specList'][i]['specimen'][j]['checkItems'][temporarySampleList[0]] = temporarySampleList[1];
-                }
-              }
+              )
             }
           }
         };
@@ -447,68 +396,68 @@ export default {
           box-sizing: border-box;
         };
         .sweep-code-area {
-          width: 100%;
-          height: auto;
+          flex:1;
           overflow: auto;
-          .increaseLineArea {
-            height: 100%;
-            .circulation-area {
-              padding: 10px 18px;
-              height: 100%;
+          margin: 0 auto;
+          margin: 10px 0;
+          width: 100%;
+          .circulation-area {
+            height: 90%;
+            width: 96%;
+            margin: 0 auto;
+            overflow: auto;
+            font-size: 16px;
+            > p {
               position: relative;
-              border-bottom: 1px solid #dfdfdf;
-              .sample-box {
-                > div {
-                  display: inline-block
-                };
-                .sample-title {
-                  width: 30%
+              height: 30px;
+              border:1px solid #d6d6d6;
+              margin-bottom:4px;
+              &:last-child {
+                margin-bottom:0
+              }
+              span {
+                height: 30px;
+                line-height: 30px;
+                position: absolute;
+                display: inline-block;
+                text-align: center;
+                width: 50%;
+                &:first-child {
+                  top: 0;
+                  left:0;
+                  background: #f7f7f7;
+                  text-align: left;
+                  padding-left: 12px
                 }
-                .sample-content {
-                  width: 60%;
-                  /deep/ .van-dropdown-menu {
-                    .van-dropdown-menu__item {
-                      .van-dropdown-menu__title {
-                          width: 100%;
-                          padding: 0
-                      }
-                    }
-                  }
+                &:last-child {
+                  top: 0;
+                  right:0;
+                  text-align: right
                 }
               }
-              .check-entry-box {
-                > div {
-                  display: inline-block
-                };
-                .check-entry-title {
-                  width: 30%;
-                  vertical-align: top;
-                }
-                .check-entry-content {
-                  width: 60%;
-                  height: 50px;
-                  overflow: auto;
-                  height: 100px;
-                  /depp/.van-checkbox-group {
-                    .van-checkbox {
-                      display: inline-block
-                    }
-                  }
-                }
+            }
+          };
+          .circulation-area-title {
+            height: 40px;
+            line-height: 40px;
+            font-size: 18px;
+            position: relative;
+            span {
+              display: inline-block;
+              width: 50%;
+              position: absolute;
+              text-align: center;
+              &:first-child {
+                top: 0;
+                left:0;
+                text-align: left;
+                padding-left: 16px
               }
-              .inner-sample--number-box {
-                > div {
-                    display: inline-block
-                  };
-                .inner-sample--number-title {
-                  width: 30%
-                };
-                .inner-sample--number-content {
-                  width: 60%;
-                  /deep/ .van-cell{
-                    padding-left: 0
-                  }
-                }
+              &:last-child {
+                top: 0;
+                right:0;
+                text-align: right;
+                padding-right: 20px
               }
             }
           }
