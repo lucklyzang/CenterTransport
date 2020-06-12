@@ -10,10 +10,10 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="校验中,请稍候····" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
     </div>
     <div class="sweep-code-title">
-      <h3></h3>
+      <span @click="endTask" v-show="appointAreaShow && !isSingleDestination">结束任务</span>
     </div>
     <div class="sweep-code-area">
       <div class="point-area" v-show="appointAreaShow">
@@ -21,7 +21,7 @@
           <span>任务起点:</span>
           <span>{{dispatchTaskMessage.setOutPlaceName}}</span>
         </p>
-        <p class="task-end-point" style="line-height:20px">
+        <p class="task-end-point" style="line-height:30px">
           <span>已扫任务目的地:</span>
           <span style="margin-right:8px" v-for="(item,index) in sweepCodeDestinationList" :key="index">{{`${item}`}}</span>
         </p>
@@ -455,6 +455,37 @@ export default {
         this.$router.push({path:'/'})
       },
 
+      // 结束任务
+      endTask () {
+        this.$dialog.alert({
+          message: '确定结束任务?',
+          showCancelButton: true
+        })
+        .then(() => {
+          this.judgeIsGoDeparture()
+        })
+        .catch((err) => {
+        })
+      },
+
+      // 判断是否需要要回到出发地 0不回 1回
+      judgeIsGoDeparture () {
+        if (this.isBack == 1) {
+          // 需要回到出发地时更新任务状态为4未结束
+          this.updateTaskState({
+            proId: this.proId, //当前项目ID
+            id: this.dispatchTaskMessage.id, //当前任务ID
+            state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+          })
+        } else {
+          this.updateTaskState({
+            proId: this.proId, //当前项目ID
+            id: this.dispatchTaskMessage.id, //当前任务ID
+            state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+          })
+        }
+      },
+
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
@@ -560,21 +591,13 @@ export default {
                 id: this.dispatchTaskMessage.id, //当前任务ID
                 state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
               })
-            } else {
-              //手动结束
-              this.changeShowEndTaskBtn(true);
-              // 跳到手动结束页面
-              this.$router.push({path:'/dispatchTaskJudge'});
-              this.changeTitleTxt({tit:''});
-              setStore('currentTitle','')
             }
           }
         } else {
-          // 跳到判断是否还有其它目的地页面
-          this.changeShowEndTaskBtn(false);
-          this.$router.push({path:'/dispatchTaskJudge'});
-          this.changeTitleTxt({tit:''});
-          setStore('currentTitle','')
+          this.getDepartmentName();
+          this.photoAreaBoxShow = false;
+          this.showSignature = false;
+          this.appointAreaShow = true
         }
       }
     },
@@ -710,12 +733,22 @@ export default {
       text-align: center;
     };
     .sweep-code-title {
-      height: 30px;
+      margin-top: 10px;
+      width: 100%;
+      height: 50px;
       line-height: 30px;
-      padding-left: 10px;
-      h3 {
+      text-align: right;
+      span {
+        width: 80px;
+        height: 45px;
+        display: inline-block;
+        line-height: 45px;
+        background: #2895ea;
         font-size: 14px;
-        color: #1699e8
+        border-radius: 4px;
+        text-align: center;
+        color: #fff;
+        margin-right: 10px;
       }
     };
     .sweep-code-area {

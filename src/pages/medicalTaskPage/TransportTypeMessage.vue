@@ -1,5 +1,6 @@
 <template>
   <div class="content-wrapper">
+    <van-overlay :show="overlayShow"/>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
@@ -9,6 +10,9 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
+    <div class="loading">
+      <loading :isShow="showLoadingHint" textContent="创建中,请稍候····" textColor="#2895ea"></loading>
+    </div>
     <div class="transport-type-title">
       <h3>{{transportantTaskMessage.value}}</h3>
     </div>
@@ -107,6 +111,7 @@ import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
 import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType} from '@/api/medicalPort.js'
 import NoData from '@/components/NoData'
+import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
@@ -115,6 +120,8 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      showLoadingHint: false,
+      overlayShow: false,
       liIndex: null,
       toolShow: false,
       typeIndex: '',
@@ -124,7 +131,7 @@ export default {
       toolText: '',
       toolValue: '',
       typeValue: '',
-      checkResult: '',
+      checkResult: '0',
       destinationAddress: 0,
       destinationList: [],
       vehicleOperationList: [],
@@ -132,10 +139,6 @@ export default {
       typeList: [],
       returnDepartureOperation: 0,
       judgeResult: '',
-      returnDepartureOperationList: [
-        { text: '是', value: 1 },
-        { text: '否', value: 0 },
-      ],
       bedNumber: '',
       patientName: '',
       patientNumber: '',
@@ -149,6 +152,7 @@ export default {
   components: {
     HeaderTop,
     NoData,
+    Loading,
     FooterBottom,
     VanFieldSelectPicker
   },
@@ -415,6 +419,8 @@ export default {
 
       // 生成调度任务
       postGenerateDispatchTask (data) {
+        this.showLoadingHint = true;
+        this.overlayShow = true;
         generateDispatchTask(data).then((res) => {
           if (res && res.data.code == 200) {
             this.$dialog.alert({
@@ -426,6 +432,8 @@ export default {
             this.changeTitleTxt({tit:'中央运送'});
             setStore('currentTitle','中央运送');
           }
+          this.showLoadingHint = false;
+          this.overlayShow = false
         })
         .catch((err) => {
           this.$dialog.alert({
@@ -433,6 +441,8 @@ export default {
             closeOnPopstate: true
           }).then(() => {
           });
+          this.showLoadingHint = false;
+          this.overlayShow = false
         })
       },
 
@@ -500,7 +510,16 @@ export default {
             }
           }
         }
-      }
+      };
+    .loading {
+      position: absolute;
+      top: 300px;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      text-align: center;
+    };
+    position: relative;
     .content-wrapper();
     font-size: 14px;
       .left-dropDown {

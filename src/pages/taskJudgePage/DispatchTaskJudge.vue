@@ -35,14 +35,7 @@ export default {
     if (!IsPC()) {
       pushHistory();
       this.gotoURL(() => {
-        pushHistory();
-        if (!this.showIsGoOtherDestination) {
-          this.judgeIsGoOtherDestination();
-          return
-        };
-        if (this.endTaskShow) {
-          this.judgeEndTask()
-        }
+        pushHistory()
       })
     }
   },
@@ -101,22 +94,23 @@ export default {
 
     // 判断是否要去其它目的地
     judgeIsGoOtherDestination () {
-      this.showIsGoOtherDestination = false;
-      this.$dialog.confirm({
-        message: '是否要去其它目的地?',
-        closeOnPopstate: false,
-        confirmButtonText: '是',
-        cancelButtonText: '否'
-      })
-      .then(() => {
-        this.$router.push({'path':'/dispatchTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码')
-      })
-      .catch(() => {
-        this.showIsGoOtherDestination = true;
-        this.judgeIsGoDeparture()
-      })
+      this.$router.push({'path':'/dispatchTaskSweepCode'});
+      this.changeTitleTxt({tit:'扫码'});
+      setStore('currentTitle','扫码')
+      // this.$dialog.confirm({
+      //   message: '是否要去其它目的地?',
+      //   closeOnPopstate: false,
+      //   confirmButtonText: '是',
+      //   cancelButtonText: '否'
+      // })
+      // .then(() => {
+      //   this.$router.push({'path':'/dispatchTaskSweepCode'});
+      //   this.changeTitleTxt({tit:'扫码'});
+      //   setStore('currentTitle','扫码')
+      // })
+      // .catch(() => {
+      //   this.judgeIsGoDeparture()
+      // })
     },
 
     // 判断是否需要要回到出发地 0不回 1回
@@ -129,14 +123,12 @@ export default {
           state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
         })
       } else {
-        this.showIsGoOtherDestination = true;
         this.judgeIsSingleDestination()
       }
     },
 
     // 提示结束手动任务
     judgeEndTask () {
-      this.showIsGoOtherDestination = true;
       this.$dialog.alert({
         message: '请手动结束任务',
       }).then(() => {
