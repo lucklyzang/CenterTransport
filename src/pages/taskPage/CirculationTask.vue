@@ -126,7 +126,7 @@
         stateScreenVal: '全部',
         taskLlineOneIndex: '0',
         activeNames: [],
-        taskOneList: ['待处理', '任务查询'],
+        taskOneList: ['待办任务', '任务查询'],
         stateList: ['全部','未开始','进行中'],
         circulationTaskListShow: false,
         leftDropdownDataList: ['退出登录'],
@@ -150,7 +150,8 @@
     computed: {
       ...mapGetters([
         'navTopTitle',
-        'completeDeparnmentInfo'
+        'completeDeparnmentInfo',
+        'globalTimer'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -219,6 +220,7 @@
 
       // 右边下拉框菜单点击
       leftLiCLick (index) {
+       if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})
@@ -704,7 +706,7 @@
         .wait-handle-list {
           box-sizing: border-box;
           position: relative;
-          padding-bottom: 10px;
+          padding-bottom: 4px;
           box-sizing: border-box;
           border-bottom: 1px solid #e1e1e1;
           .sample-type-check {

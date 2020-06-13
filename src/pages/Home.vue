@@ -376,7 +376,8 @@
         // 轮询是否有新任务
         windowTimer = window.setInterval(() => {
           setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 3000)
+        }, 3000);
+        this.changeGlobalTimer(windowTimer);
       } else {
         let me = this;
         window['setDeviceInfo'] = (val) => {
@@ -435,7 +436,8 @@
         'navTopTitle',
         'userType',
         'userInfo',
-        'newTaskName'
+        'newTaskName',
+        'globalTimer'
       ]),
       userName () {
        return this.userInfo.extendData.userName
@@ -459,7 +461,8 @@
         'changetransportTypeMessage',
         'changeOverDueWay',
         'changeNewTaskList',
-        'changeTaskTranceMsg'
+        'changeTaskTranceMsg',
+        'changeGlobalTimer'
       ]),
 
       juddgeIspc () {
@@ -638,6 +641,7 @@
         setStore('storeOverDueWay',true);
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
+            if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             localStorage.clear();
             this.$router.push({path:'/'})
           } else {
@@ -736,6 +740,7 @@
 
       // 右边下拉框菜单点击
       leftLiCLick (index) {
+        if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})
@@ -1233,17 +1238,20 @@
           .task-message-number {
             height: 100%;
             box-sizing: border-box;
-            font-size: 13px;
             color: #434343;
-            padding: 28px 70px;
+            font-size: 0;
+            padding: 28px 0;
             .transport-day-number {
+              font-size: 13px;
               height: 100%;
-              width: 49%;
+              width: 50%;
               display: inline-block;
               position: relative;
               span {
                 position: absolute;
                 left: 0;
+                width: 100%;
+                text-align: center;
                 &:first-child {
                   top: 0
                 };
@@ -1256,10 +1264,13 @@
             }
             .transport-day-rank {
               height: 100%;
-              width: 49%;
+              font-size: 13px;
+              width: 50%;
               display: inline-block;
               position: relative;
               span {
+                width: 100%;
+                text-align: center;
                 position: absolute;
                 right: 0;
                 &:first-child {
@@ -1269,7 +1280,7 @@
                   bottom: 0;
                   font-size: 22px;
                   color: #fa8118;
-                  right: 26px;
+                  right: 0;
                 }
               }
             }

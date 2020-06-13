@@ -740,7 +740,8 @@ export default {
         };
         .van-tabs__nav {
           .van-tab {
-            font-size: 18px
+            font-size: 18px;
+            flex-basis: 33% !important;
           }
         }
       };

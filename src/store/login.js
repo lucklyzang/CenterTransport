@@ -13,7 +13,8 @@ export default {
     departmentInfoListNo: {},
     newTaskName: '',
     taskDetailsMessage: {},
-    taskType: ''
+    taskType: '',
+    globalTimer: null
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -26,7 +27,8 @@ export default {
     departmentInfoListNo: state => state.departmentInfoListNo,
     newTaskName: state => state.newTaskName,
     taskDetailsMessage: state => state.taskDetailsMessage,
-    taskType: state => state.taskType
+    taskType: state => state.taskType,
+    globalTimer: state => state.globalTimer
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -71,6 +73,10 @@ export default {
     // 改变任务类型状态
     changeTaskType (state, playLoad) {
       state.taskType = playLoad
+    },
+    // 改变全局定时器的状态
+    changeGlobalTimer (state, playLoad) {
+      state.globalTimer = playLoad
     }
   },
   actions:{}

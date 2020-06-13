@@ -209,6 +209,11 @@ export default {
 
     // 还有要交接的标本
     connectSure () {
+      this.$dialog.alert({
+        message: '交接成功',
+        closeOnPopstate: false
+      }).then(() => {
+      });
       // 当前页面回显数据
       this.manageSampleDataList = [];
       // 清空本页面store的签名数据
@@ -319,18 +324,18 @@ export default {
 
      // 交接信息确认事件
     connectMessageSure () {
-      if (!this.showSignature) {
-        this.showSignature = true;
-        return
-      };
-      if (!this.currentElectronicSignature) {
-        this.$dialog.alert({
-          message: '签名不能为空，请确认签名!',
-          closeOnPopstate: false
-        }).then(() => {
-        });
-        return;
-      };
+      // if (!this.showSignature) {
+      //   this.showSignature = true;
+      //   return
+      // };
+      // if (!this.currentElectronicSignature) {
+      //   this.$dialog.alert({
+      //     message: '签名不能为空，请确认签名!',
+      //     closeOnPopstate: false
+      //   }).then(() => {
+      //   });
+      //   return;
+      // };
       let connectSampleId = [];
       // 获取需要交接的标本id
       for (let item of this.manageSampleDataList) {
@@ -350,7 +355,7 @@ export default {
       this.postSampleConnectMessage({
         proId: this.proId,  //项目ID
         departmentId: this.storeArriveDeparnmentId,  //送达科室ID
-        singImg: this.currentElectronicSignature,   //送达签名图片信息
+        singImg: '',   //送达签名图片信息this.currentElectronicSignature
         ids: connectSampleId   //送达选择的标本ID
       })
     },

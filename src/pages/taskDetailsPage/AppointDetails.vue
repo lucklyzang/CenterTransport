@@ -10,38 +10,35 @@
         <div class="handle-message-line-wrapper">
           <P>
             <span class="message-tit">任务名称:</span>
-            <span class="message-tit-real message-tit-real-style">{{circulationDetails.taskTypeName}}</span>
+            <span class="message-tit-real message-tit-real-style">12</span>
           </P>
           <p>
             <span class="message-tit">任务状态:</span>
-            <span class="message-tit-real" style="color:red">{{stateTransfer(circulationDetails.state)}}</span>
+            <span class="message-tit-real" style="color:red">212</span>
           </p>
         </div>
         <div class="handle-message-line-wrapper">
           <p>
             <span class="message-tit">预计开始时间:</span>
-            <span class="message-tit-real">{{circulationDetails.startTime}}</span>
+            <span class="message-tit-real">2121</span>
           </p>
           <P>
             <span class="message-tit">实际开始时间:</span>
-            <span class="message-tit-real message-tit-real-style">2020-06-13 09:00:34</span>
+            <span class="message-tit-real message-tit-real-style">121</span>
           </P>
         </div>
       </div>
     </div>
     <div class="office-list">
       <p class="office-list-inner-wrapper">
-        <span :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(circulationDetails.id) != -1 && item.check == true}" v-for="(item,index) in circulationDetails.spaces" :key="`${item}-${index}`">
-          {{item.text}}
+        <span>
+          1212
         </span>
       </p>
     </div>
     <div class="circultion-task-btn">
       <span>
         <img :src="taskSweepCodePng" alt="" @click="joinSweepCode">
-      </span>
-      <span>
-        <img :src="taskArrivedPng" alt="" @click="circulationTaskArrived">
       </span>
     </div>
   </div>
@@ -63,7 +60,6 @@ export default {
       leftDownShow: false,
       liIndex: null,
       drawCompleteTaskIdList: [],
-      taskArrivedPng: require('@/components/images/task-arrived.png'),
       taskSweepCodePng: require('@/components/images/task-sweep-code.png')
     }
   },
@@ -104,28 +100,23 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.$router.push({path:'/circulationTask'});
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({path:'/appointTask'});
+        this.changeTitleTxt({tit:'预约任务'});
+        setStore('currentTitle','预约任务')
       })
     };
-    this.drawTaskId()
   },
 
   methods: {
     ...mapMutations([
-      'changeTitleTxt',
-      'changeArriveDepartmentId',
-      'changeIsCollectEnterSweepCodePage',
-      'changeCirculationTaskId'
-
+      'changeTitleTxt'
     ]),
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/circulationTask'});
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({path:'/appointTask'});
+      this.changeTitleTxt({tit:'预约任务'});
+      setStore('currentTitle','预约任务')
     },
 
     // 任务状态转换
@@ -158,58 +149,17 @@ export default {
       }
     },
 
-    // 提取存储已完成采集任务科室所属任务id
-    drawTaskId () {
-      this.drawCompleteTaskIdList = [];
-      if (this.completeDeparnmentInfo.length > 0) {
-        for (let item of this.completeDeparnmentInfo) { 
-          for (let innerItem in item) {
-            if (innerItem == 'taskId') {
-              this.drawCompleteTaskIdList.push(item[innerItem])
-            }
-          }
-        }
-      }
-    },
-
-    // 循环任务送达
-    circulationTaskArrived () {
-      if (this.circulationDetails.state == 7) { 
-        this.$dialog.alert({
-          message: '该条循环任务已完成,不能进行送达',
-          closeOnPopstate: true
-        }).then(() => {
-        });
-      } else {
-        this.changeArriveDepartmentId(true);
-        if (this.circulationDetails['spaces'].filter((item) => item.check == true).length == this.circulationDetails['spaces'].length) {
-          this.changeCirculationTaskId(this.circulationDetails.id);
-          this.changeIsCollectEnterSweepCodePage(false);
-          this.$router.push({path: 'circulationTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码')
-        } else {
-          this.$dialog.alert({
-            message: '请采集完该条循环任务下所有科室',
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        }
-      }
-    },
 
     // 进入扫码页
     joinSweepCode () {
       if (this.circulationDetails.state == 7) { 
         this.$dialog.alert({
-          message: '该条循环任务已完成,不能进行扫码',
+          message: '该条预约任务已完成,不能进行扫码',
           closeOnPopstate: true
         }).then(() => {
         })
       } else {
-        this.changeArriveDepartmentId(false);
-        this.changeIsCollectEnterSweepCodePage(true);
-        this.$router.push({'path':'/circulationTaskSweepCode'});
+        this.$router.push({'path':'/appointTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码')
       }

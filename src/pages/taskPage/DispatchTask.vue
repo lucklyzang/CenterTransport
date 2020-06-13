@@ -554,7 +554,7 @@
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
-        taskOneList: ['待处理', '任务查询'],
+        taskOneList: ['待办任务', '任务查询'],
         taskLlineOneIndex: '0',
         checkPerson: 0,
         stateCompleteList: [],
@@ -585,7 +585,8 @@
       ...mapGetters([
         'navTopTitle',
         'isRefershDispatchTaskPage',
-        'userInfo'
+        'userInfo',
+        'globalTimer'
       ]),
       proId () {
         return this.userInfo.extendData.proId
@@ -887,6 +888,7 @@
 
       // 右边下拉框菜单点击
       leftLiCLick (index) {
+      if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
         localStorage.clear();
         this.$router.push({path:'/'})

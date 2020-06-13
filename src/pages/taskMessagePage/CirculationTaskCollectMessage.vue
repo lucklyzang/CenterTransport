@@ -740,10 +740,10 @@ export default {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin: 10px 0;
+      margin: 10px 0 0 0;
       width: 100%;
       .circulation-area {
-        height: 90%;
+        max-height: 90%;
         width: 96%;
         margin: 0 auto;
         overflow: auto;

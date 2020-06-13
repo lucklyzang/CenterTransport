@@ -275,23 +275,23 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      if (!this.showSignature) {
-        this.showSignature = true;
-        return
-      };
-      if (!this.currentElectronicSignature) {
-        this.$dialog.alert({
-          message: '签名不能为空，请确认签名!',
-          closeOnPopstate: false
-        }).then(() => {
-        });
-        return;
-      };
+      // if (!this.showSignature) {
+      //   this.showSignature = true;
+      //   return
+      // };
+      // if (!this.currentElectronicSignature) {
+      //   this.$dialog.alert({
+      //     message: '签名不能为空，请确认签名!',
+      //     closeOnPopstate: false
+      //   }).then(() => {
+      //   });
+      //   return;
+      // };
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
         departmentId: this.verifyCirculationOfficeId,  //科室ID
-        singImg: this.currentElectronicSignature, //签名照片
+        singImg: '', //签名照片this.currentElectronicSignature
         specList: []
       };
       let currentTemporaryIndex = this.circulationCollectMessageList.indexOf(this.circulationCollectMessageList.filter((item) => {return item.taskId == this.circulationTaskId})[0]);
@@ -399,10 +399,10 @@ export default {
           flex:1;
           overflow: auto;
           margin: 0 auto;
-          margin: 10px 0;
+          margin: 10px 0 0 0;
           width: 100%;
           .circulation-area {
-            height: 90%;
+            max-height: 90%;
             width: 96%;
             margin: 0 auto;
             overflow: auto;

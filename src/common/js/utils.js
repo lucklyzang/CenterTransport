@@ -122,7 +122,7 @@ export const scanCode = (callback) => {
 /*
  * 验证输入重量是否合法正则
 */
-export const testWeight = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/ 
+export const testWeight = /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/
 
 /*
  * 扫码后从字典中取值
