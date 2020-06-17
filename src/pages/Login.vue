@@ -33,13 +33,12 @@ export default {
   },
   data () {
     return {
-      username: this.loginName,
-      password: this.loginPassword,
+      username: '',
+      password: '',
       showAccountLogin: true,
       showSweepLogin: false,
       showLoadingHint: false,
       sweepMsg: null,
-      currentIndex: 0,
       proId: '',
       barCodeScannerShow: false,
       logoTopPng: require('@/components/images/logo-top.png'),
@@ -48,10 +47,6 @@ export default {
   },
 
   watch: {
-    currentIndex (newValue, olValue) {
-      newValue == 0 ? this.showAccountLogin = true : this.showAccountLogin = false;
-      newValue == 1 ? this.showSweepLogin = true : this.showSweepLogin = false
-    }
   },
 
   computed: {
@@ -59,19 +54,15 @@ export default {
       return getStore('userName') ? getStore('userName') : ''
     },
     loginPassword () {
-      return getStore('password') ? getStore('password') : ''
+      return getStore('userPassword') ? getStore('userPassword') : ''
     },
     ...mapGetters([
-      'loginSweepCode'
     ])
   },
 
   mounted () {
-    // 二维码回调方法绑定到window下面,提供给外部调用
-    let me = this;
-    window['scanQRcodeCallback'] = (code) => {
-      me.scanQRcodeCallback(code);
-    };
+    this.username = getStore('userName') ? getStore('userName') : '';
+    this.password = getStore('userPassword') ? getStore('userPassword') : '';
     // 控制设备物理返回按键
     if (!IsPC()) {
       let that = this;
@@ -95,9 +86,6 @@ export default {
         this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0' 
       }
     };
-
-    // 判断是否执行扫码枪方法
-    this.isExecute();
   },
 
   methods: {
@@ -109,76 +97,6 @@ export default {
       'changeUserType',
       'changeOverDueWay'
     ]),
-
-    // 登录方式切换点击事件
-    checkClick (item, index) {
-      this.currentIndex = index;
-      if (index == 0) {
-      }
-    },
-
-    // 是否执行扫码枪的绑定方法
-    isExecute () {
-      if (IsPC()) {
-        scanCode(this.barcodeScanner)
-      }
-    },
-
-    // 扫描二维码方法
-    sweepPersonCode () {
-      if (IsPC()) {
-      } else {
-        window.android.scanQRcode()
-      }
-    },
-
-    // 摄像头扫码后的回调
-    scanQRcodeCallback(code) {
-      var code = decodeURIComponent(JSON.stringify(code));
-      this.processMethods(JSON.parse(code))
-    },
-
-    //扫码枪扫码回调方法
-    barcodeScanner (code) {
-      var code = JSON.parse(code);
-      this.barCodeScannerShow = false
-    },
-
-    // 扫码流程公共方法
-    processMethods (code) {
-      if(code && Object.keys(code).length > 0) {
-        if (code.hasOwnProperty('msg')) {
-          if (code.msg) {
-            this.sweepMsg = code.msg;
-            this.login()
-          } else {
-            this.$dialog.alert({
-            message: '个人信息不能为空,请重新扫描',
-            closeOnPopstate: true
-            }).then(() => {
-              this.sweepPersonCode() 
-            })
-          };
-          this.barCodeScannerShow = false
-        } else {
-          this.$dialog.alert({
-          message: '请扫描正确的二维码',
-          closeOnPopstate: true
-          }).then(() => {
-            this.sweepPersonCode() 
-          })
-        };
-        this.barCodeScannerShow = false
-      } else {
-        this.$dialog.alert({
-          message: '没有扫描到任何个人信息,请重新扫描',
-          closeOnPopstate: true
-        }).then(() => {
-          this.sweepPersonCode() 
-        })
-      }
-      this.barCodeScannerShow = false
-    },
 
     // 并行获取科室字典值(编号和字典)
      parallelFunction () {
@@ -284,7 +202,15 @@ export default {
             this.changeTitleTxt({tit:'中央运送'});
             this.proId = res.data.data['proId'];
             // 注册channel
-            this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,channelId:window.android.getChannelId()});
+            try {
+              this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,channelId:window.android.getChannelId()});
+            } catch (err) {
+              this.$dialog.alert({
+                message: `${err}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            };
             // 获取科室字典数据
             this.parallelFunction()
           } else {

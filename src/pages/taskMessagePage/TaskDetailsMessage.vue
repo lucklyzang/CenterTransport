@@ -120,7 +120,7 @@ export default {
       return this.userInfo.extendData.proId
     },
     userName () {
-      return this.userInfo.extendData.userName
+      return this.userInfo.userName
     },
     proName () {
       return this.userInfo.extendData.proName

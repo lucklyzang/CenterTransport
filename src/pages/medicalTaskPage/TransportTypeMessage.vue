@@ -4,7 +4,7 @@
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -21,10 +21,10 @@
         <div class="destination-title">优先级</div>
           <div class="destination-content">
             <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">
-              <van-radio name="0">正常</van-radio>
-              <van-radio name="1">重要</van-radio>
-              <van-radio name="2">紧急</van-radio>
-              <van-radio name="3">紧急重要</van-radio>
+              <van-radio name="1">正常</van-radio>
+              <van-radio name="2">重要</van-radio>
+              <van-radio name="3">紧急</van-radio>
+              <van-radio name="4">紧急重要</van-radio>
             </van-radio-group>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default {
       toolText: '',
       toolValue: '',
       typeValue: '',
-      checkResult: '0',
+      checkResult: '1',
       destinationAddress: 0,
       destinationList: [],
       vehicleOperationList: [],
@@ -167,7 +167,7 @@ export default {
       return this.userInfo.extendData.proId
     },
     userName () {
-      return this.userInfo.extendData.userName
+      return this.userInfo.userName
     },
     proName () {
       return this.userInfo.extendData.proName
@@ -299,6 +299,7 @@ export default {
 
       // 转运工具弹框取消事件
       toolCancel () {
+        this.toolIndex = '';
         this.toolName = '';
         this.toolShow = false
       },
@@ -373,7 +374,7 @@ export default {
       // 查询转运工具
       getTransportTools () {
         return new Promise((resolve,reject) => {
-          queryTransportTools({proId: '', state: 0})
+          queryTransportTools({proId: this.proId, state: 0})
           .then((res) => {
             if (res && res.data.code == 200) {
               resolve(res.data.data)
@@ -421,6 +422,8 @@ export default {
           setOutPlaceName: this.userInfo.depName,  //出发地名称
           destinationId: '',   //目的地ID
           destinationName: '',  //目的地名称
+          parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
+          parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
           taskTypeId: this.typeValue,  //运送类型 ID
           taskTypeName: this.typeText,  //运送类型 名 称
           priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
@@ -504,6 +507,7 @@ export default {
       width: 100%;
       height: 50px;
       text-align: center;
+      pointer-events: none
     };
     position: relative;
     .content-wrapper();
@@ -640,6 +644,7 @@ export default {
         .transport-type-list {
           padding: 6px;
           margin-top: 10px;
+          z-index: 200;
           .spanStyle {
             color: #fff;
             background: #2895ea
@@ -670,6 +675,7 @@ export default {
           display: inline-block;
           width: 49%;
           /deep/ .van-cell {
+            padding: 10px 2px;
             .van-field__label {
               width: 60px;
               text-align: left
@@ -692,6 +698,7 @@ export default {
         margin-bottom: 2px;
         border: 1px solid #b2b2b2;
         /deep/ .van-cell {
+          padding: 10px 10px;
           .van-field__label {
             width: 80px;
             text-align: left

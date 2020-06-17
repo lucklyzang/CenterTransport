@@ -82,7 +82,7 @@ export default {
       return this.userInfo.extendData.userId
     },
     workerName () {
-      return this.userInfo.extendData.userName
+      return this.userInfo.userName
     }
   },
 

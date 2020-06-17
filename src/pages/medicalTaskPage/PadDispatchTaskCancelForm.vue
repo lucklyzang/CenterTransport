@@ -81,7 +81,7 @@ export default {
       return JSON.parse(getStore('userInfo')).extendData.userId
     },
     workerName () {
-      return JSON.parse(getStore('userInfo')).extendData.userName
+      return JSON.parse(getStore('userInfo')).userName
     },
   },
 

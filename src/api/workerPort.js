@@ -60,6 +60,13 @@ export function updateDispatchTask(data) {
     data
   })
 };
+// 调度任务退回接口
+export function sendBackDispatchTask(proId,taskId) {
+  return request({
+    url: `task/sendBack/${proId}/${taskId}`,
+    method: 'get'
+  })
+};
 // 调度任务批量取消
 export function cancelDispatchTaskBatch(data) {
   return request({

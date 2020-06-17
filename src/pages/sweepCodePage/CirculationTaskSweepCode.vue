@@ -275,6 +275,7 @@ export default {
         padding: 20px 10px 20px 20px;
         box-shadow: 0 2.5px 12px 4px #d1d1d1;
         border-radius: 8px;
+        overflow: auto;
         box-sizing: border-box;
         color: #313131;
         font-weight: bold;

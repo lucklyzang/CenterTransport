@@ -12,9 +12,9 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
     </div>
-    <div class="sweep-code-title">
+    <!-- <div class="sweep-code-title">
       <span @click="endTask" v-show="appointAreaShow && !isSingleDestination">结束任务</span>
-    </div>
+    </div> -->
     <div class="sweep-code-area">
       <div class="point-area" v-show="appointAreaShow">
         <p class="task-start-point">
@@ -112,9 +112,9 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.$router.push({path:'/dispatchTask'});
-        this.changeTitleTxt({tit:'调度任务'});
-        setStore('currentTitle','调度任务')
+        this.$router.push({'path':'/dispatchDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情');
       })
     };
     // 二维码回调方法绑定到window下面,提供给外部调用
@@ -128,7 +128,7 @@ export default {
       this.currentSiteId = this.dispatchTaskMessage.destinationId
     };
     this.getDepartmentName();
-    console.log('调度任务状态' ,this.departmentInfoList, this.dispatchTaskMessage, this.dispatchTaskState, this.dispatchTaskDepartmentType,this.isCoerceTakePhoto);
+    console.log('调度任务状态');
   },
 
   computed:{
@@ -594,10 +594,9 @@ export default {
             }
           }
         } else {
-          this.getDepartmentName();
-          this.photoAreaBoxShow = false;
-          this.showSignature = false;
-          this.appointAreaShow = true
+          this.$router.push({path:'/dispatchTask'});
+          this.changeTitleTxt({tit:'调度任务'});
+          setStore('currentTitle','调度任务');
         }
       }
     },
@@ -629,7 +628,7 @@ export default {
             let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeDestinationList);
             temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
             this.changeIsCompleteSweepCodeDestinationList(temporarySweepCodeOficeList);
-            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
+            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
           };
           // 清空该完成任务存储的已扫过出发地和单一目的地科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
@@ -658,9 +657,9 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/dispatchTask'});
-      this.changeTitleTxt({tit:'调度任务'});
-      setStore('currentTitle','调度任务')
+      this.$router.push({'path':'/dispatchDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     },
 
      // 扫码确认事件
@@ -705,9 +704,9 @@ export default {
 
     // 取消扫码事件
     cancelSweepCode () {
-      this.$router.push({path:'/dispatchTask'});
-      this.changeTitleTxt({tit:'调度任务'});
-      setStore('currentTitle','调度任务')
+      this.$router.push({'path':'/dispatchDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     }
   }
 }

@@ -427,3 +427,43 @@ export const compareDateTime = (t1,t2) => {
   let b = t2.split(":");
   return date.setHours(a[0],a[1]) <= date.setHours(b[0],b[1]);
 }
+
+/*
+ * 
+ *  清空所有LocalStorage
+ * 
+ * 
+*/
+
+export const removeAllLocalStorage = () => {
+  removeStore('currentTitle');
+  removeStore('storeOverDueWay');
+  removeStore('departmentInfo');
+  removeStore('departmentInfoNo');
+  removeStore('questToken');
+  // removeStore('userName');
+  // removeStore('userPassword');
+  removeStore('userInfo');
+  removeStore('isLogin');
+  removeStore('userType');
+  removeStore('isAppointFirstSweepCode');
+  removeStore('completAppointTaskSweepCodeInfo');
+  removeStore('completAppointTaskSweepCodeDestinationInfo');
+  removeStore('currentDepartmentId');
+  removeStore('completPhotoInfo');
+  removeStore('completeDispatchSweepCodeDestinationInfo');
+  removeStore('isDispatchFirstSweepCode');
+  removeStore('completeDispatchSweepCodeInfo');
+  removeStore('completAppointTaskSweepCodeInfo');
+  removeStore('currentCirculationCollectMessage');
+  removeStore('completeDepartmentMessage');
+  removeStore('isDeleteEcho');
+  removeStore('isampleInfo');
+  removeStore('isClickSure');
+  removeStore('isDeleteCancel');
+  removeStore('isDeleteEcho');
+  removeStore('currentCirculationConnectMessage');
+  removeStore('currentAppointTaskMessage');
+  removeStore('currentDispatchTaskMessage');
+  removeStore('currentDispatchTaskMessage');
+}

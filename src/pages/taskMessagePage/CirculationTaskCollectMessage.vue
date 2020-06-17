@@ -85,7 +85,6 @@ export default {
       ],
       temporaryInfo: [],
       temporarySampleTypeList: [],
-      temporaryCheckEntryList: [],
       taskIncreasePng: require('@/components/images/task-increase.png'),
       taskDeletePng: require('@/components/images/task-delete.png'),
       taskSurePng: require('@/components/images/task-sure.png'),

@@ -111,9 +111,16 @@
                           <span class="message-tit">出发地:</span>
                           <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                         </p>
-                        <P>
+                        <P class="destiname-line">
                           <span class="message-tit">目的地:</span>
-                          <span class="message-tit-real message-tit-real-style">{{item.destinationName}}</span>
+                          <span v-show="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
+                            class="message-tit-real message-tit-real-style">
+                            {{itemInner}}
+                          </span>
+                          <span v-show="item.state == 0 || item.state == 1"
+                            class="message-tit-real message-tit-real-style">
+                            {{item.destinationName}}
+                          </span>
                         </P>
                         <p>
                           <span class="message-tit">运送类型:</span>
@@ -205,7 +212,7 @@
                       <div class="handle-message-line-wrapper">
                         <p>
                           <span class="message-tit">终点:</span>
-                          <span class="message-tit-real">{{item.destinationName}}</span>
+                          <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
                         </p>
                         <p>
                           <span class="message-tit">转运工具:</span>
@@ -273,7 +280,7 @@
   import {queryTransportTypeClass, collectDispatchTask, queryAllDestination, generateDispatchTask, quereDeviceMessage, taskReminder} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, changeArrIndex } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, changeArrIndex, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   import dispatchTaskPng from '@/common/images/home/dispatch-task.png'
   import circulationTaskPng from '@/common/images/home/circulation-task.png'
@@ -440,7 +447,7 @@
         'globalTimer'
       ]),
       userName () {
-       return this.userInfo.extendData.userName
+       return this.userInfo.userName
       },
       userTypeId () {
         return this.userInfo.extendData.user_type_id
@@ -642,7 +649,7 @@
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
-            localStorage.clear();
+            removeAllLocalStorage();
             this.$router.push({path:'/'})
           } else {
             this.$dialog.alert({
@@ -742,8 +749,7 @@
       leftLiCLick (index) {
         if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
+        this.userLoginOut(this.proId, this.userInfo.userName)
       },
 
       // 跳转到我的页
@@ -771,7 +777,7 @@
             closeOnPopstate: true,
             showCancelButton: true
           }).then(() => {
-            this.userLoginOut(this.proId, this.workerId)
+            this.userLoginOut(this.proId, this.userInfo.userName)
           })
           .catch(() => {
 
@@ -1095,6 +1101,7 @@
                     toolName: item.toolName,
                     priority: item.priority,
                     id: item.id,
+                    distName: item.distName,
                     patientName: item.patientName,
                     bedNumber: item.bedNumber,
                     startPhoto: item.startPhoto,
@@ -1113,7 +1120,8 @@
                     id: item.id,
                     patientName: item.patientName,
                     bedNumber: item.bedNumber,
-                    workerName: item.workerName
+                    workerName: item.workerName,
+                    distName: item.distName
                   })
                 }
               }
@@ -1710,6 +1718,11 @@
                           }
                           .message-tit-real-style {
                             color: #2895ea
+                          }
+                        }
+                        .destiname-line {
+                          span {
+                            line-height: 24px;
                           }
                         }
                       }

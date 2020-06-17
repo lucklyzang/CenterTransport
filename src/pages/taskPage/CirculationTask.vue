@@ -104,11 +104,11 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {queryCirculationTask} from '@/api/workerPort.js'
+  import {queryCirculationTask,userSignOut} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   let windowTimer
   export default {
@@ -151,7 +151,8 @@
       ...mapGetters([
         'navTopTitle',
         'completeDeparnmentInfo',
-        'globalTimer'
+        'globalTimer',
+        'isFreshCirculationTaskPage'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -202,6 +203,48 @@
       this.drawTaskId()
     },
 
+    activated () {
+      if (!IsPC()) {
+        let that = this;
+        pushHistory();
+        that.gotoURL(() => {
+          pushHistory();
+          this.$router.push({path: 'home'});
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
+        })
+      };
+      document.addEventListener('click', (e) => {
+        if(e.target.className!='status-name'){
+          this.stateListShow = false;
+        };
+        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+          this.leftDownShow = false;
+        }
+      });
+      // 轮询是否有新任务
+      windowTimer = window.setInterval(() => {
+        setTimeout(
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.stateIndex), 0)
+      }, 600000);
+      if (this.isFreshCirculationTaskPage) {
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.stateIndex);
+      };
+      this.drawTaskId()
+    },
+
     beforeDestroy() {
       if(windowTimer) {window.clearInterval(windowTimer)}
     },
@@ -215,15 +258,44 @@
         'changeArriveDepartmentId',
         'changeTaskDetailsMessage',
         'changeTaskType',
-        'changeCirculationDetails'
+        'changeCirculationDetails',
+        'changeOverDueWay'
       ]),
+
+      // 用户签退
+      userLoginOut (proId,workerId) {
+        this.changeOverDueWay(true);
+        setStore('storeOverDueWay',true);
+        userSignOut(proId,workerId).then((res) => {
+          if (res && res.data.code == 200) {
+            if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            removeAllLocalStorage();
+            this.$router.push({path:'/'})
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.changeOverDueWay(false);
+            setStore('storeOverDueWay',false);
+          }
+        }).
+        catch((err) => {
+          this.changeOverDueWay(false);
+          setStore('storeOverDueWay',false);
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
 
       // 右边下拉框菜单点击
       leftLiCLick (index) {
-       if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
+        this.userLoginOut(this.proId, this.userInfo.userName)
       },
 
       // 跳转到我的页

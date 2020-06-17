@@ -19,7 +19,8 @@ export default {
     isDeleteCancel: false,
     isClickSure: false,
     circulationDetails: null,
-    verifyCirculationOfficeId: ''
+    verifyCirculationOfficeId: '',
+    isFreshCirculationTaskPage: true
   },
   getters:{
     arriveCirculationTaskId: state => state.arriveCirculationTaskId,
@@ -39,7 +40,8 @@ export default {
     isDeleteCancel: state => state.isDeleteCancel,
     isClickSure: state => state.isClickSure,
     circulationDetails: state => state.circulationDetails,
-    verifyCirculationOfficeId: state => state.verifyCirculationOfficeId
+    verifyCirculationOfficeId: state => state.verifyCirculationOfficeId,
+    isFreshCirculationTaskPage: state => state.isFreshCirculationTaskPage
   },
   mutations:{
     // 改变循环任务ID状态
@@ -109,6 +111,10 @@ export default {
     // 改变校验通过的科室id状态
     changeVerifyCirculationOfficeId (state,payLoad) {
       state.verifyCirculationOfficeId = payLoad
+    },
+    // 改变是否刷新任务页的状态
+    changeIsFreshCirculationTaskPage (state,payLoad) {
+      state.isFreshCirculationTaskPage = payLoad
     }
   },
   actions:{}

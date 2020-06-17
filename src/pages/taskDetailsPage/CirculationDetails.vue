@@ -86,7 +86,7 @@ export default {
       return this.userInfo.extendData.proId
     },
     userName () {
-      return this.userInfo.extendData.userName
+      return this.userInfo.userName
     },
     proName () {
       return this.userInfo.extendData.proName
@@ -94,6 +94,12 @@ export default {
     workerId () {
       return this.userInfo.extendData.userId
     }
+  },
+
+  beforeRouteLeave(to, from, next) {
+    // 设置下一个路由的 meta
+    to.meta.keepAlive = true;
+    next();
   },
 
   mounted () {
@@ -104,6 +110,11 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
+        if (this.circulationDetails.state == 7) {
+          this.changeIsFreshCirculationTaskPage(false)
+        } else {
+          this.changeIsFreshCirculationTaskPage(true)
+        };
         this.$router.push({path:'/circulationTask'});
         this.changeTitleTxt({tit:'循环任务'});
         setStore('currentTitle','循环任务')
@@ -117,12 +128,17 @@ export default {
       'changeTitleTxt',
       'changeArriveDepartmentId',
       'changeIsCollectEnterSweepCodePage',
-      'changeCirculationTaskId'
-
+      'changeCirculationTaskId',
+      'changeIsFreshCirculationTaskPage'
     ]),
 
     // 返回上一页
     backTo () {
+      if (this.circulationDetails.state == 7) {
+        this.changeIsFreshCirculationTaskPage(false)
+      } else {
+        this.changeIsFreshCirculationTaskPage(true)
+      };
       this.$router.push({path:'/circulationTask'});
       this.changeTitleTxt({tit:'循环任务'});
       setStore('currentTitle','循环任务')
@@ -278,10 +294,10 @@ export default {
         span {
           font-size: 16px;
           display: inline-block;
-          width: 45%;
+          width: 48%;
           line-height: 50px;
           text-align: center;
-          margin-right: 10%;
+          margin-right: 4%;
           margin-bottom: 12px;
           background: #f5f5f5;
           &:nth-child(even) {

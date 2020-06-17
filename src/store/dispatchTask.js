@@ -17,6 +17,7 @@ export default {
     isSign: '',
     isSingleDestination: '',
     showEndTaskBtn: false,
+    isFreshDispatchTaskPage: true
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -33,7 +34,8 @@ export default {
     isSign: state => state.isSign,
     isSingleDestination:  state => state.isSingleDestination,
     showEndTaskBtn: state => state.showEndTaskBtn,
-    isCompleteSweepCodeDestinationList: state => state.isCompleteSweepCodeDestinationList
+    isCompleteSweepCodeDestinationList: state => state.isCompleteSweepCodeDestinationList,
+    isFreshDispatchTaskPage: state => state.isFreshDispatchTaskPage
   },
   mutations:{
     // 改变页面标题
@@ -97,6 +99,10 @@ export default {
     // 改变是否显示结束任务按钮状态
     changeShowEndTaskBtn (state,payLoad) {
       state.showEndTaskBtn = payLoad
+    },
+    // 改变是否刷新任务页的状态
+    changeIsFreshDispatchTaskPage (state,payLoad) {
+      state.isFreshDispatchTaskPage = payLoad
     }
   },
   actions:{}
