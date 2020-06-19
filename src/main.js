@@ -3,7 +3,7 @@ import Vue from 'vue'
 import router from './router'
 import store from './store'
 import Vant from 'vant';
-import 'vant/lib/index.css';
+// import 'vant/lib/index.css';
 import moment from 'moment'
 import {setStore, getStore, IsPC} from '@/common/js/utils.js'
 import echarts from 'echarts'
@@ -105,10 +105,14 @@ new Vue({
     if (getStore('isClickSure')) {
       store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
     };
-    // 页面刷新重新存入调度任务完成扫码的出发地和单一目的地科室信息
+    // 页面刷新重新存入调度任务完成扫码的出发地和单一目的地科室信息（id）
     if (getStore('completeDispatchSweepCodeInfo')) {
       store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
     };
+    // 页面刷新重新存入调度任务完成扫码的出发地和单一目的地科室信息（编号）
+    // if (getStore('completeDispatchSweepCodeInfoNumber')) {
+    //   store.commit('changeisCompleteSweepCodeNumber', JSON.parse(getStore('completeDispatchSweepCodeInfoNumber'))['sweepCodeInfo']);
+    // };
     // 页面刷新重新存入调度任务完成扫码的非单一目的地科室信息
     if (getStore('completeDispatchSweepCodeDestinationInfo')) {
       store.commit('changeIsCompleteSweepCodeDestinationList', JSON.parse(getStore('completeDispatchSweepCodeDestinationInfo'))['sweepCodeInfo']);

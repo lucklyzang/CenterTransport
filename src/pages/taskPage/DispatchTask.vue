@@ -38,11 +38,11 @@
     <van-pull-refresh class="wait-handle-box" v-show="waitHandleBox" v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 0">
         <div class="task-status-list">
-          <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
+          <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
               <p class="wait-handle-message-top">
-                <span>标本-{{item.taskTypeName}}</span>
+                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </p>
               <p class="wait-handle-message-bottom">
@@ -66,11 +66,11 @@
       </div>
       <div class="state-filter-no-get wait-handle-one" v-show="stateIndex == 1">
         <div class="task-status-list">
-          <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
+          <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
               <p class="wait-handle-message-top">
-                <span>标本-{{item.taskTypeName}}</span>
+                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </p>
               <p class="wait-handle-message-bottom">
@@ -94,11 +94,11 @@
       </div>
       <div class="state-filter-get wait-handle-one" v-show="stateIndex == 2">
         <div class="task-status-list">
-          <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}`">
+          <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
               <p class="wait-handle-message-top">
-                <span>标本-{{item.taskTypeName}}</span>
+                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </p>
               <p class="wait-handle-message-bottom">
@@ -122,11 +122,11 @@
       </div>
       <div class="state-filter-going wait-handle-one" v-show="stateIndex == 3">
         <div class="task-status-list">
-          <div class="wait-handle-list" v-for="(item,index) in stateFilterList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
+          <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
               <p class="wait-handle-message-top">
-                <span>标本-{{item.taskTypeName}}</span>
+                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </p>
               <p class="wait-handle-message-bottom">
@@ -175,11 +175,11 @@
         </span>
       </p>
       <div class="task-status-list">
-        <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" @click="taskClickEvent(item)" :key="`${item}-${index}` ">
+        <div class="wait-handle-list" v-for="(item,index) in stateCompleteList"  :key="`${item}-${index}`">
           <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
           <div class="wait-handle-message">
             <p class="wait-handle-message-top">
-              <span>标本-{{item.taskTypeName}}</span>
+              <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
               <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
             </p>
             <p class="wait-handle-message-bottom">
@@ -235,7 +235,7 @@
         leftDropdownDataList: ['退出登录'],
         leftDownShow: false,
         liIndex: null,
-        taskOneList: ['待办任务', '任务查询'],
+        taskOneList: ['待办任务', '历史任务'],
         taskLlineOneIndex: '0',
         checkPerson: 0,
         stateCompleteList: [],
@@ -354,7 +354,7 @@
       });
       // 查询调度任务(分配给自己的)
       if (this.isFreshDispatchTaskPage) {
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, 0)
       }
     },
 
@@ -418,6 +418,7 @@
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   setOutPlaceId: item.setOutPlaceId,
+                  parentTypeName: item.parentTypeName,
                   destinationName: item.destinationName,
                   destinationId: item.destinationId,
                   taskTypeName: item.taskTypeName,
@@ -508,6 +509,7 @@
                   toolName: item.toolName,
                   priority: item.priority,
                   id: item.id,
+                  parentTypeName: item.parentTypeName,
                   finishTime: item.finishTime,
                   patientName: item.patientName,
                   bedNumber: item.bedNumber,
@@ -875,10 +877,10 @@
           height: 40px;
           font-size: 0;
           box-sizing: border-box;
-          color: #7f7d7d;
+          color: #000000;
           position: absolute;
           top: 0;
-          left: 10px;
+          left: 7px;
           span {
             font-size: 18px;
             height: 40px;
@@ -895,7 +897,7 @@
           position: absolute;
           width: 100px;
           top: 0;
-          right: 10px;
+          right: 0;
           font-size: 18px;
           .status-name-title {
             width: 100%;
@@ -955,13 +957,10 @@
           border: 1px solid #cecece;
           width: 96%;
           margin:0 auto;
-          height: 180px;
-          margin-bottom: 6px;
+          margin-top: 6px;
+          height: 200px;
           padding-left: 8px;
           box-sizing: border-box;
-          &:last-child {
-            margin-bottom: 0
-          };
           .list-status {
             position: absolute;
             top: 0;
@@ -982,14 +981,14 @@
           }
           .wait-handle-message {
             font-size: 18px;
-            padding: 8px 0;
+            padding: 14px 0;
             box-sizing: border-box;
             .wait-handle-message-top {
               height: 50px;
               border-left: 6px solid #2895ea;
               span {
                 display: inline-block;
-                width: 70%;
+                width: 75%;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {
@@ -1002,8 +1001,7 @@
               margin-top: 8px;
               margin-left: -4px;
               span {
-                display: inline-block;
-                width: 90%;
+                display: block;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {
@@ -1060,13 +1058,10 @@
         border: 1px solid #cecece;
         width: 96%;
         margin:0 auto;
-        height: 180px;
-        margin-bottom: 6px;
+        height: 200px;
+        margin-top: 6px;
         padding-left: 8px;
         box-sizing: border-box;
-        &:last-child {
-          margin-bottom: 0
-        };
         .list-status {
           position: absolute;
           top: 0;
@@ -1087,14 +1082,14 @@
         }
        .wait-handle-message {
             font-size: 18px;
-            padding: 8px 0;
+            padding: 14px 0;
             box-sizing: border-box;
             .wait-handle-message-top {
               height: 50px;
               border-left: 6px solid #2895ea;
               span {
                 display: inline-block;
-                width: 70%;
+                width: 75%;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {
@@ -1107,8 +1102,7 @@
               margin-top: 8px;
               margin-left: -4px;
               span {
-                display: inline-block;
-                width: 90%;
+                display: block;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {
@@ -1212,13 +1206,10 @@
           border: 1px solid #cecece;
           width: 96%;
           margin:0 auto;
-          height: 180px;
-          margin-bottom: 6px;
+          height: 200px;
+          margin-top: 6px;
           padding-left: 8px;
           box-sizing: border-box;
-          &:last-child {
-            margin-bottom: 0
-          };
       .list-status {
           position: absolute;
           top: 0;
@@ -1239,14 +1230,14 @@
         }
        .wait-handle-message {
             font-size: 18px;
-            padding: 8px 0;
+            padding: 14px 0;
             box-sizing: border-box;
             .wait-handle-message-top {
               height: 50px;
               border-left: 6px solid #2895ea;
               span {
                 display: inline-block;
-                width: 70%;
+                width: 75%;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {
@@ -1259,8 +1250,7 @@
               margin-top: 8px;
               margin-left: -4px;
               span {
-                display: inline-block;
-                width: 90%;
+                display: block;
                 padding-left: 5px;
                 box-sizing: border-box;
                 &:first-child {

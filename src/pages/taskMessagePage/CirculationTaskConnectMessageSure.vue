@@ -16,6 +16,9 @@
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
         <div class="sample-type-title-wrapper">
           <div class="sample-type-title">{{item.sampleTypeName}}</div>
+          <!-- <div class="sample-type-stepper">
+            <van-stepper  v-model="item.sampleNumber" min="0" disabled/>
+          </div> -->
           <div class="sample-type-total">{{item.sampleTotal}}</div>
         </div>
         <div class="sample-type-message-wrapper">
@@ -426,9 +429,9 @@ export default {
         position: relative;
         .sample-type-title-wrapper {
           position: relative;
-          height: 30px;
-          background: #f1f1f1;
-          line-height: 30px;
+          height: 40px;
+          background: #e4e4e4;
+          line-height: 40px;
           color: #2895ea;
           .sample-type-check {
             position: absolute;
@@ -444,6 +447,11 @@ export default {
             position: absolute;
             top: 0;
             right: 10px;
+          };
+          .sample-type-stepper {
+            position: absolute;
+            top: 0;
+            left: 150px;
           }
         }
         .sample-type-message-wrapper{

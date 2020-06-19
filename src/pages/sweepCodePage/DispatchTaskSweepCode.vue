@@ -12,9 +12,6 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
     </div>
-    <!-- <div class="sweep-code-title">
-      <span @click="endTask" v-show="appointAreaShow && !isSingleDestination">结束任务</span>
-    </div> -->
     <div class="sweep-code-area">
       <div class="point-area" v-show="appointAreaShow">
         <p class="task-start-point">
@@ -23,7 +20,7 @@
         </p>
         <p class="task-end-point" style="line-height:30px">
           <span>已扫任务目的地:</span>
-          <span style="margin-right:8px" v-for="(item,index) in sweepCodeDestinationList" :key="index">{{`${item}`}}</span>
+          <span style="margin-right:8px" v-for="(item,index) in dispatchTaskMessage.distName" :key="index">{{`${item}`}}</span>
         </p>
         <p class="task-end-point">
           <span>任务终点:</span>
@@ -77,6 +74,7 @@ export default {
       temporaryUpImgUrl: '',
       currentTextContent: '',
       sweepCodeDestinationList: [],
+      sweepCodeDestinationListOne: [],
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showLoadingHint: false,
@@ -127,8 +125,8 @@ export default {
     } else if (this.dispatchTaskDepartmentType == 1) {
       this.currentSiteId = this.dispatchTaskMessage.destinationId
     };
-    this.getDepartmentName();
-    console.log('调度任务状态');
+    // this.getDepartmentNameOne();
+    // this.getDepartmentName()
   },
 
   computed:{
@@ -147,7 +145,8 @@ export default {
       'isSingleDestination',
       'isCompleteSweepCodeDestinationList',
       'departmentInfoList',
-      'departmentInfoListNo'
+      'departmentInfoListNo',
+      'isCompleteSweepCodeNumber'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -174,7 +173,8 @@ export default {
       'changeIsCompletePhotoList',
       'changeCurrentElectronicSignature',
       'changeShowEndTaskBtn',
-      'changeIsCompleteSweepCodeDestinationList'
+      'changeIsCompleteSweepCodeDestinationList',
+      'changeisCompleteSweepCodeNumber'
     ]),
 
     // 扫描二维码方法
@@ -182,7 +182,7 @@ export default {
       window.android.scanQRcode()
     },
 
-    // 根据科室id获取科室名称
+    // 根据科室编号获取科室名称(非单一目的地)
     getDepartmentName () {
       let temporarySweepCodeDestinationList = [];
       let temporarySweepCodeOficeList = [];
@@ -194,6 +194,19 @@ export default {
       };
       this.sweepCodeDestinationList = temporarySweepCodeDestinationList;
     },
+
+    // 根据科室编号获取科室名称(出发地和单一目的地)
+    // getDepartmentNameOne () {
+    //   let temporarySweepCodeDestinationListOne = [];
+    //   let temporarySweepCodeOficeListOne = [];
+    //   let echoIndex = this.isCompleteSweepCodeNumber.indexOf(this.isCompleteSweepCodeNumber.filter((item) => {return item.taskId == this.taskId})[0]);
+    //   if (echoIndex == -1) {return};
+    //   temporarySweepCodeOficeListOne = this.isCompleteSweepCodeNumber.filter((item) => { return item.taskId == this.taskId})[0]['officeList'];
+    //   for (let item of temporarySweepCodeOficeListOne) {
+    //     temporarySweepCodeDestinationListOne.push(Dictionary(this.departmentInfoListNo,item.toString()))
+    //   };
+    //   this.sweepCodeDestinationListOne = temporarySweepCodeDestinationList;
+    // },
 
     // 图片上传预览
     previewFileOne() {
@@ -455,19 +468,6 @@ export default {
         this.$router.push({path:'/'})
       },
 
-      // 结束任务
-      endTask () {
-        this.$dialog.alert({
-          message: '确定结束任务?',
-          showCancelButton: true
-        })
-        .then(() => {
-          this.judgeIsGoDeparture()
-        })
-        .catch((err) => {
-        })
-      },
-
       // 判断是否需要要回到出发地 0不回 1回
       judgeIsGoDeparture () {
         if (this.isBack == 1) {
@@ -499,12 +499,13 @@ export default {
         if (res && res.data.code == 200) {
           this.changeIsDispatchTaskFirstSweepCode(false);
           setStore("isDispatchFirstSweepCode",false);
-          // 只存储出发地和单一目的地科室
+          // 只存储出发地和单一目的地科室;
           if (this.dispatchTaskDepartmentType == 0 || (this.isSingleDestination && this.dispatchTaskDepartmentType == 1)) {
             // 存储已经扫码验证通过的科室id
             let temporaryOfficeList = [];
             let temporaryDepartmentId = [];
             temporaryOfficeList = deepClone(this.isCompleteSweepCode);
+            // 存储已经扫码验证通过的科室id
             if (this.isCompleteSweepCode.length > 0 ) {
               let temporaryIndex = this.isCompleteSweepCode.indexOf(this.isCompleteSweepCode.filter((item) => {return item.taskId == this.taskId})[0]);
               if (temporaryIndex != -1) {
@@ -530,7 +531,37 @@ export default {
               )
             };
             this.changeisCompleteSweepCode(temporaryOfficeList);
-            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList})
+            setStore('completeDispatchSweepCodeInfo', {"sweepCodeInfo": temporaryOfficeList});
+            // 存储已经扫码验证通过的科室bumber
+            // let temporaryOfficeListNumber = [];
+            // let temporaryDepartmentNumber = [];
+            // temporaryOfficeListNumber = deepClone(this.isCompleteSweepCodeNumber);
+            // if (this.isCompleteSweepCode.length > 0 ) {
+            //   let temporaryIndex = this.isCompleteSweepCodeNumber.indexOf(this.isCompleteSweepCodeNumber.filter((item) => {return item.taskId == this.taskId})[0]);
+            //   if (temporaryIndex != -1) {
+            //     temporaryDepartmentNumber = temporaryOfficeListNumber[temporaryIndex]['officeList'];
+            //     temporaryDepartmentNumber.push(data.departmentNo);
+            //     temporaryOfficeListNumber[temporaryIndex]['officeList'] = repeArray(temporaryDepartmentNumber)
+            //   } else {
+            //     temporaryDepartmentNumber.push(data.departmentNo);
+            //     temporaryOfficeListNumber.push(
+            //       { 
+            //         officeList: repeArray(temporaryDepartmentNumber),
+            //         taskId: this.taskId
+            //       }
+            //     )
+            //   };
+            // } else {
+            //   temporaryDepartmentNumber.push(data.departmentNo);
+            //   temporaryOfficeListNumber.push(
+            //     { 
+            //       officeList: repeArray(temporaryDepartmentNumber),
+            //       taskId: this.taskId
+            //     }
+            //   )
+            // };
+            // this.changeisCompleteSweepCodeNumber(temporaryOfficeListNumber);
+            // setStore('completeDispatchSweepCodeInfoNumber', {"sweepCodeInfo": temporaryOfficeListNumber})
           };
           // 判断是否需要拍照0不拍照1拍照
           if (this.isCoerceTakePhoto == 0) {
@@ -629,6 +660,11 @@ export default {
             temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
             this.changeIsCompleteSweepCodeDestinationList(temporarySweepCodeOficeList);
             setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+            // 清空该完成任务存储的已扫过单一目的地和出发地科室信息
+            // let temporarySweepCodeOficeListNumber = deepClone(this.isCompleteSweepCodeNumber);
+            // temporarySweepCodeOficeListNumber = temporarySweepCodeOficeListNumber.filter((item) => { return item.taskId != this.taskId});
+            // this.changeisCompleteSweepCodeNumber(temporarySweepCodeOficeListNumber);
+            // setStore('completeDispatchSweepCodeInfoNumber', {"sweepCodeInfo": temporarySweepCodeOficeListNumber});
           };
           // 清空该完成任务存储的已扫过出发地和单一目的地科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);

@@ -126,7 +126,7 @@
         stateScreenVal: '全部',
         taskLlineOneIndex: '0',
         activeNames: [],
-        taskOneList: ['待办任务', '任务查询'],
+        taskOneList: ['待办任务', '历史任务'],
         stateList: ['全部','未开始','进行中'],
         circulationTaskListShow: false,
         leftDropdownDataList: ['退出登录'],
@@ -240,7 +240,7 @@
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, this.stateIndex);
+        }, 0);
       };
       this.drawTaskId()
     },
@@ -707,14 +707,14 @@
           height: 40px;
           font-size: 0;
           box-sizing: border-box;
-          color: #7f7d7d;
           position: absolute;
           top: 0;
-          left: 10px;
+          left: 7px;
           .taskLineTwoStyle {
             color: #2895ea
           }
           span {
+            color: #000000;
             font-size: 18px;
             height: 40px;
             display: inline-block;
@@ -730,7 +730,7 @@
           position: absolute;
           width: 100px;
           top: 0;
-          right: 10px;
+          right: 0;
           font-size: 18px;
           .status-name-title {
             width: 100%;
@@ -776,11 +776,14 @@
       width: 100%;
       .circulation-task-list {
         .wait-handle-list {
+          width: 96%;
+          margin: 0 auto;
+          margin-top: 6px;
           box-sizing: border-box;
           position: relative;
           padding-bottom: 4px;
           box-sizing: border-box;
-          border-bottom: 1px solid #e1e1e1;
+          border: 1px solid #e1e1e1;
           .sample-type-check {
             position: absolute;
             top: 4px;
@@ -821,6 +824,7 @@
       .wait-handle-list {
         box-sizing: border-box;
         position: relative;
+        margin-top: 6px;
         padding-bottom: 10px;
         box-sizing: border-box;
         border-bottom: 1px solid #e1e1e1;

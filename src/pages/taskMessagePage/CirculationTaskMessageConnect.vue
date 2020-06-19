@@ -21,6 +21,9 @@
     <div class="sweep-code-area" v-show="connectMessageArea">
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
         <div class="sample-type-title-wrapper">
+          <!-- <div class="sample-type-stepper">
+            <van-stepper @change="stepperEvent" v-model="item.sampleNumber" min="1"  :max="`${item.sampleTotal}`"/>
+          </div> -->
           <div class="sample-type-check">
             <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
           </div>
@@ -136,7 +139,7 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
-    this.getCollectSampleMessage(this.proId,this.arriveCirculationTaskId)
+    this.getCollectSampleMessage(this.proId,6164)
   },
 
   beforeRouteLeave(to, from, next) {
@@ -160,8 +163,9 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
+    // this.arriveCirculationTaskId
     if (this.isrefreshCirculationConnectPage) {
-      this.getCollectSampleMessage(this.proId,this.arriveCirculationTaskId)
+      this.getCollectSampleMessage(this.proId,6164)
     }
   },
 
@@ -186,6 +190,11 @@ export default {
       'changeIsStoreNoConnectSample',
       'changeCompleteDeparnmentInfo'
     ]),
+
+    // 计数器变化回调
+    stepperEvent (value) {
+      let emptyArr = [];
+      },
 
     // 右边下拉框菜单点击
     leftLiCLick (index) {
@@ -306,7 +315,8 @@ export default {
                 sampleTypeName: repeArray(this.allSampleTypeList)[i],
                 check: false,
                 sampleTotal: sameSampleTypeNumber,
-                sampleList: deepClone(filterSampleMessage)
+                sampleList: deepClone(filterSampleMessage),
+                sampleNumber: 0
               }
             );
             let manageCheckArray = [];
@@ -436,13 +446,13 @@ export default {
         overflow: auto;
         .sample-type-title-wrapper {
           position: relative;
-          height: 30px;
-          background: #f1f1f1;
-          line-height: 30px;
+          height: 40px;
+          background: #e4e4e4;
+          line-height: 40px;
           color: #2895ea;
           .sample-type-check {
             position: absolute;
-            top: 5px;
+            top: 10px;
             left: 10px
           }
           .sample-type-title {
@@ -454,6 +464,11 @@ export default {
             position: absolute;
             top: 0;
             right: 10px;
+          };
+          .sample-type-stepper {
+            position: absolute;
+            top: 0;
+            left: 150px;
           }
         }
         .sample-type-message-wrapper{

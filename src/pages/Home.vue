@@ -23,7 +23,7 @@
           <span class="content-top-userName-img">
             <img :src="defaultPersonPng" alt="">
           </span>
-          <span class="real-name">{{userName}}</span>
+          <span class="real-name">{{name}}</span>
         </div>
         <div class="wait-dask-wrapper">
           <p class="wait-dask-title">待办任务：</p>
@@ -460,6 +460,9 @@
       },
       workerId () {
         return this.userInfo.extendData.userId
+      },
+      name () {
+        return this.userInfo.name
       }
     },
     methods:{
@@ -846,10 +849,14 @@
         if (getStore('isClickSure')) {
           this.$store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
         };
-        // 重新存入调度任务完成扫码的出发地和单一目的地科室信息
+        // 重新存入调度任务完成扫码的出发地和单一目的地科室信息(id)
         if (getStore('completeDispatchSweepCodeInfo')) {
           this.$store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
         };
+        // 重新存入调度任务完成扫码的出发地和单一目的地科室信息(编号)
+        // if (getStore('completeDispatchSweepCodeInfoNumber')) {
+        //   this.$store.commit('changeisCompleteSweepCodeNumber', JSON.parse(getStore('completeDispatchSweepCodeInfoNumber'))['sweepCodeInfo']);
+        // };
         // 页面刷新重新存入调度任务完成扫码的非单一目的地科室信息
         if (getStore('completeDispatchSweepCodeDestinationInfo')) {
           this.$store.commit('changeIsCompleteSweepCodeDestinationList', JSON.parse(getStore('completeDispatchSweepCodeDestinationInfo'))['sweepCodeInfo']);
@@ -1211,7 +1218,7 @@
             };
             li {
               display: inline-block;
-              width: 32%;
+              width: 33.3%;
               text-align: left;
               position: relative;
               .dask-list-sign {

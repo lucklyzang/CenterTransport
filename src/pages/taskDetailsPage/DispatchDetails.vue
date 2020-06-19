@@ -141,9 +141,13 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = true;
-    next();
+    if (to.name == 'dispatchTaskSweepCode') {
+      // 设置下一个路由的 meta
+      to.meta.keepAlive = false;
+    } else {
+      to.meta.keepAlive = true;
+    };
+    next()
   },
 
   mounted () {

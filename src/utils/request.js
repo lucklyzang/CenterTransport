@@ -3,7 +3,6 @@ import store from '@/store'
 import router from '../router'
 import Vue from 'vue';
 import { Dialog } from 'vant';
-import {  removeStore } from '@/common/js/utils'
 // 全局注册
 Vue.use(Dialog);
 import { setStore } from '@/common/js/utils'

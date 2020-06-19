@@ -203,7 +203,7 @@ export default {
             this.proId = res.data.data['proId'];
             // 注册channel
             try {
-              this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,channelId:window.android.getChannelId()});
+              this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,type:res.data.data["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
             } catch (err) {
               this.$dialog.alert({
                 message: `${err}`,

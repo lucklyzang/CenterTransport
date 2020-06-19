@@ -10,6 +10,7 @@ export default {
     dispatchTaskDepartmentType: '',
     isCoerceTakePhoto: false,
     isCompleteSweepCode: [],
+    isCompleteSweepCodeNumber: [],
     isCompleteSweepCodeDestinationList: [],
     isDispatchTaskFirstSweepCode: true,
     isCompletePhotoList: [],
@@ -28,6 +29,7 @@ export default {
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
     isCompleteSweepCode: state => state.isCompleteSweepCode,
+    isCompleteSweepCodeNumber: state => state.isCompleteSweepCodeNumber,
     isDispatchTaskFirstSweepCode: state => state.isDispatchTaskFirstSweepCode,
     isCompletePhotoList: state => state.isCompletePhotoList,
     isBack: state => state.isBack,
@@ -68,9 +70,13 @@ export default {
     changeIsCoerceTakePhoto (state,payLoad) {
       state.isCoerceTakePhoto = payLoad
     },
-    //改变是否完成扫码的状态
+    //改变是否完成扫码的状态(出发地和单一目的地的id)
     changeisCompleteSweepCode (state,payLoad) {
       state.isCompleteSweepCode = payLoad
+    },
+    //改变是否完成扫码的状态(出发地和单一目的地的编号)
+    changeisCompleteSweepCodeNumber (state,payLoad) {
+      state.isCompleteSweepCodeNumber = payLoad
     },
     //改变是否完成非单一目的地扫码的状态
     changeIsCompleteSweepCodeDestinationList (state,payLoad) {

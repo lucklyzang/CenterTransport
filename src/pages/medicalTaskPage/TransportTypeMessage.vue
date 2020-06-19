@@ -400,7 +400,13 @@ export default {
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
             setStore('currentTitle','中央运送');
-          }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          };
           this.showLoadingHint = false;
           this.overlayShow = false
         })

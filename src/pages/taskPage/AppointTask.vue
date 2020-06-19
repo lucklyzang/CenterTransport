@@ -453,7 +453,7 @@
         minDateEnd: new Date(2020, 0, 1),
         liIndex: null,
         transferWorkerShow: false,
-        taskOneList: ['待办任务', '任务查询'],
+        taskOneList: ['待办任务', '历史任务'],
         taskLlineOneIndex: '0',
         cancelTask: false,
         transferTask: false,
