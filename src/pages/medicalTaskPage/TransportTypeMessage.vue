@@ -392,11 +392,7 @@ export default {
         this.overlayShow = true;
         generateDispatchTask(data).then((res) => {
           if (res && res.data.code == 200) {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-            });
+            this.$toast(`${res.data.msg}`);
             this.$router.push({path:'/home'});
             this.changeTitleTxt({tit:'中央运送'});
             setStore('currentTitle','中央运送');

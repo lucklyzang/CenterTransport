@@ -52,6 +52,13 @@ export function getDispatchTaskComplete(data) {
     params: data
   })
 };
+// 查询调度任务(根据id)
+export function getDispatchTaskMessageById(taskId) {
+  return request({
+    url: `task/query/${taskId}`,
+    method: 'get'
+  })
+};
 // 调度任务的操作(更新、延迟、取消)
 export function updateDispatchTask(data) {
   return request({
@@ -161,6 +168,14 @@ export function queryCirculationTask(data) {
     url: 'circleTask/workerTask',
     method: 'get',
     params: data
+  })
+};
+
+// 查询循环任务(根据id)
+export function getCirculationTaskMessageById(id) {
+  return request({
+    url: `circleTask/query/${id}`,
+    method: 'get'
   })
 };
 

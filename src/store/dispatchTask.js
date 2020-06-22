@@ -7,10 +7,10 @@ export default {
     dispatchTaskTransferIdList: [],
     dispatchTaskCancelIdList: [],
     dispatchTaskState: '',
+    dispatchTaskId: '',
     dispatchTaskDepartmentType: '',
     isCoerceTakePhoto: false,
     isCompleteSweepCode: [],
-    isCompleteSweepCodeNumber: [],
     isCompleteSweepCodeDestinationList: [],
     isDispatchTaskFirstSweepCode: true,
     isCompletePhotoList: [],
@@ -18,7 +18,8 @@ export default {
     isSign: '',
     isSingleDestination: '',
     showEndTaskBtn: false,
-    isFreshDispatchTaskPage: true
+    isFreshDispatchTaskPage: true,
+    currentDepartmentNumber: []
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -29,15 +30,16 @@ export default {
     dispatchTaskDepartmentType: state => state.dispatchTaskDepartmentType,
     isCoerceTakePhoto: state => state.isCoerceTakePhoto,
     isCompleteSweepCode: state => state.isCompleteSweepCode,
-    isCompleteSweepCodeNumber: state => state.isCompleteSweepCodeNumber,
     isDispatchTaskFirstSweepCode: state => state.isDispatchTaskFirstSweepCode,
     isCompletePhotoList: state => state.isCompletePhotoList,
     isBack: state => state.isBack,
     isSign: state => state.isSign,
+    dispatchTaskId: state => state.dispatchTaskId,
     isSingleDestination:  state => state.isSingleDestination,
     showEndTaskBtn: state => state.showEndTaskBtn,
     isCompleteSweepCodeDestinationList: state => state.isCompleteSweepCodeDestinationList,
-    isFreshDispatchTaskPage: state => state.isFreshDispatchTaskPage
+    isFreshDispatchTaskPage: state => state.isFreshDispatchTaskPage,
+    currentDepartmentNumber: state => state.currentDepartmentNumber
   },
   mutations:{
     // 改变页面标题
@@ -48,6 +50,11 @@ export default {
     // 改变调度任务信息状态
     changeDispatchTaskMessage (state,payLoad) {
       state.dispatchTaskMessage = payLoad.DtMsg
+    },
+
+    // 改变调度任务id状态
+    changeDispatchTaskId (state,payLoad) {
+      state.dispatchTaskId = payLoad
     },
 
     // 改变转移人员列表状态
@@ -73,10 +80,6 @@ export default {
     //改变是否完成扫码的状态(出发地和单一目的地的id)
     changeisCompleteSweepCode (state,payLoad) {
       state.isCompleteSweepCode = payLoad
-    },
-    //改变是否完成扫码的状态(出发地和单一目的地的编号)
-    changeisCompleteSweepCodeNumber (state,payLoad) {
-      state.isCompleteSweepCodeNumber = payLoad
     },
     //改变是否完成非单一目的地扫码的状态
     changeIsCompleteSweepCodeDestinationList (state,payLoad) {
@@ -109,7 +112,11 @@ export default {
     // 改变是否刷新任务页的状态
     changeIsFreshDispatchTaskPage (state,payLoad) {
       state.isFreshDispatchTaskPage = payLoad
-    }
+    },
+    // 改变当前科室标号状态
+    changeCurrentDepartmentNumber (state,payLoad) {
+      state.currentDepartmentNumber = payLoad
+    },
   },
   actions:{}
 }

@@ -241,7 +241,16 @@
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
         }, 0);
-      };
+      } else {
+        this.stateIndex = null;
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          state: 7, //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        },7)
+      }
       this.drawTaskId()
     },
 
@@ -253,13 +262,13 @@
       ...mapMutations([
         'changeTitleTxt',
         'changeIsCollectEnterSweepCodePage',
-        'changeCirculationTaskId',
         'changeStipulateOfficeList',
         'changeArriveDepartmentId',
         'changeTaskDetailsMessage',
         'changeTaskType',
         'changeCirculationDetails',
-        'changeOverDueWay'
+        'changeOverDueWay',
+        'changeCirculationTaskId'
       ]),
 
       // 用户签退
@@ -451,6 +460,7 @@
             }
           }
         };
+        this.changeCirculationTaskId(item.id);
         this.$router.push({'path':'/circulationDetails'});
         this.changeTitleTxt({tit:'任务详情'});
         setStore('currentTitle','任务详情');

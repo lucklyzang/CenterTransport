@@ -509,6 +509,7 @@ export default {
                   })
                 };
                 this.taskCount = this.completedTasksList.length;
+                console.log('21212',this.completedTasksList);
               } else {
                 this.taskCount = 0;
                 this.noDataShow = true

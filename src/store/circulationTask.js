@@ -2,7 +2,6 @@ import { deepClone } from '@/common/js/utils'
 
 export default {
   state:{
-    arriveCirculationTaskId: '',
     arriveDepartmentId: false,
     storeArriveDeparnmentId: '',
     circulationTaskMessage: null,
@@ -20,7 +19,8 @@ export default {
     isClickSure: false,
     circulationDetails: null,
     verifyCirculationOfficeId: '',
-    isFreshCirculationTaskPage: true
+    isFreshCirculationTaskPage: true,
+    circulationTaskId: ''
   },
   getters:{
     arriveCirculationTaskId: state => state.arriveCirculationTaskId,
@@ -41,13 +41,10 @@ export default {
     isClickSure: state => state.isClickSure,
     circulationDetails: state => state.circulationDetails,
     verifyCirculationOfficeId: state => state.verifyCirculationOfficeId,
-    isFreshCirculationTaskPage: state => state.isFreshCirculationTaskPage
+    isFreshCirculationTaskPage: state => state.isFreshCirculationTaskPage,
+    circulationTaskId: state => state.circulationTaskId
   },
   mutations:{
-    // 改变循环任务ID状态
-    changeCirculationTaskId (state,payLoad) {
-      state.arriveCirculationTaskId = payLoad
-    },
     // 改变电子签名状态
     changeCurrentElectronicSignature (state,payLoad) {
       state.currentElectronicSignature = payLoad.DtMsg
@@ -104,7 +101,7 @@ export default {
      changeIsClickSure(state,payLoad) {
       state.isClickSure = payLoad
     },
-    // 改变调度任务详细信息
+    // 改变循环任务详细信息
     changeCirculationDetails (state,payLoad) {
       state.circulationDetails = payLoad
     },
@@ -115,6 +112,10 @@ export default {
     // 改变是否刷新任务页的状态
     changeIsFreshCirculationTaskPage (state,payLoad) {
       state.isFreshCirculationTaskPage = payLoad
+    },
+    // 改变循环任务id状态
+    changeCirculationTaskId (state,payLoad) {
+      state.circulationTaskId = payLoad
     }
   },
   actions:{}

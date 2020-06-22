@@ -248,9 +248,9 @@ export default {
           };
           this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
           setStore('completeDepartmentMessage',{"sureInfo": temporaryCompleteInfo});
-          this.$router.push({path:'/circulationTask'});
-          this.changeTitleTxt({tit:'循环任务'});
-          setStore('currentTitle','循环任务');
+          this.$router.push({'path':'/circulationDetails'});
+          this.changeTitleTxt({tit:'任务详情'});
+          setStore('currentTitle','任务详情');
         } else {
           this.$dialog.alert({
             message: res.data.msg,

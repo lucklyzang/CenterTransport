@@ -24,7 +24,7 @@
           </p>
           <P>
             <span class="message-tit">实际开始时间:</span>
-            <span class="message-tit-real message-tit-real-style">2020-06-13 09:00:34</span>
+            <span class="message-tit-real message-tit-real-style">{{circulationDetails.startUpTime}}</span>
           </P>
         </div>
       </div>
@@ -37,12 +37,15 @@
       </p>
     </div>
     <div class="circultion-task-btn">
-      <span>
+      <span v-show="circulationDetails.state != 7">
         <img :src="taskSweepCodePng" alt="" @click="joinSweepCode">
       </span>
-      <span>
+      <span v-show="circulationDetails.state != 7">
         <img :src="taskArrivedPng" alt="" @click="circulationTaskArrived">
       </span>
+      <p class="circultion-task-btn-bottom" v-show="circulationDetails.state == 7">
+        <span @click="backTo">返回</span>
+      </p>
     </div>
   </div>
 </template>
@@ -51,7 +54,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import {} from '@/api/medicalPort.js'
-import {} from '@/api/workerPort.js'
+import {getCirculationTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
@@ -62,6 +65,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      circulationTaskList: [],
       drawCompleteTaskIdList: [],
       taskArrivedPng: require('@/components/images/task-arrived.png'),
       taskSweepCodePng: require('@/components/images/task-sweep-code.png')
@@ -79,7 +83,8 @@ export default {
       'navTopTitle',
       'userInfo',
       'circulationDetails',
-      'completeDeparnmentInfo'
+      'completeDeparnmentInfo',
+      'circulationTaskId'
     ]),
 
     proId () {
@@ -123,6 +128,7 @@ export default {
         setStore('currentTitle','循环任务')
       })
     };
+    this.getTaskMessage();
     this.drawTaskId()
   },
 
@@ -131,8 +137,8 @@ export default {
       'changeTitleTxt',
       'changeArriveDepartmentId',
       'changeIsCollectEnterSweepCodePage',
-      'changeCirculationTaskId',
-      'changeIsFreshCirculationTaskPage'
+      'changeIsFreshCirculationTaskPage',
+      'changeCirculationDetails'
     ]),
 
     // 返回上一页
@@ -177,6 +183,97 @@ export default {
       }
     },
 
+    // 获取任务详情
+    getTaskMessage () {
+      getCirculationTaskMessageById(this.circulationTaskId)
+      .then((res) => {
+        this.circulationTaskList = [];
+        let temporaryTaskListFirst = [];
+        if (res && res.data.code == 200) {
+          if (JSON.stringify(res.data.data) !== "{}") {
+            temporaryTaskListFirst.push(
+              {
+                createTime: res.data.data.createTime,
+                startTime: res.data.data.startTime,
+                proName: res.data.data.proName,
+                officeName: res.data.data.proName,
+                taskTypeName: res.data.data.taskTypeName,
+                workerName: res.data.data.workerName,
+                state: res.data.data.state,
+                priority: res.data.data.priority,
+                taskNumber: res.data.data.taskNumber,
+                finishTime: res.data.data.finishTime,
+                spaces: res.data.data.spaces,
+                id: res.data.data.id,
+                show: false,
+                check: false,
+                startUpTime: res.data.data.startUpTime
+              }
+            );
+            this.circulationTaskList = temporaryTaskListFirst;
+            // 改变科室列表数据结构
+            for (let item = 0, len = this.circulationTaskList.length; item < len; item++) {
+              let temporaryArrayTwo = [];
+              for (let innerItem in this.circulationTaskList[item]) {
+                if (innerItem == 'spaces') {
+                  let temporaryArrayTwo = [];
+                  let temporaryItem = removeBlock(this.circulationTaskList[item][innerItem]).split(",");
+                  let temporaryArrayOne = [];
+                  for (let kip of temporaryItem) {
+                    temporaryArrayOne = [];
+                    temporaryArrayOne = kip.replace(/\"/g, "").split(':');
+                    temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
+                  }
+                  this.circulationTaskList[item]['spaces'] = temporaryArrayTwo;
+                };
+              }
+            };
+            // 科室列表增加字段
+            for (let item of this.circulationTaskList) {
+              for (let innerItem in item) {
+                if (innerItem == 'spaces') {
+                  for (let medicalItem of item[innerItem]) {
+                    medicalItem['check'] = false
+                  }
+                }
+              }
+            };
+            // 为完成采集的科室增加标记
+            if (this.completeDeparnmentInfo.length > 0) {
+              for (let w = 0, wLen = this.completeDeparnmentInfo.length; w < wLen; w++) {
+                if (this.circulationTaskList.length > 0) {
+                    for (let n = 0, nLen = this.circulationTaskList.length; n < nLen; n++) {
+                    if (this.circulationTaskList[n]['id'] == this.completeDeparnmentInfo[w]['taskId']) {
+                      if (this.completeDeparnmentInfo[w]['departmentIdList'].length > 0) {
+                        for (let i = 0, len1 = this.completeDeparnmentInfo[w]['departmentIdList'].length; i < len1; i++) {
+                          if (this.circulationTaskList[n]['spaces'].length > 0) {
+                            for (let j = 0, len2 = this.circulationTaskList[n]['spaces'].length; j < len2; j++) {
+                              if (this.circulationTaskList[n]['spaces'][j]['value'] == this.completeDeparnmentInfo[w]['departmentIdList'][i]) {
+                                this.circulationTaskList[n]['spaces'][j]['check'] = true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            };
+            // 改变调度具体某一任务的信息状态
+            this.changeCirculationDetails(this.circulationTaskList[0])
+          }
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
+
     // 提取存储已完成采集任务科室所属任务id
     drawTaskId () {
       this.drawCompleteTaskIdList = [];
@@ -202,7 +299,6 @@ export default {
       } else {
         this.changeArriveDepartmentId(true);
         if (this.circulationDetails['spaces'].filter((item) => item.check == true).length == this.circulationDetails['spaces'].length) {
-          this.changeCirculationTaskId(this.circulationDetails.id);
           this.changeIsCollectEnterSweepCodePage(false);
           this.$router.push({path: 'circulationTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
@@ -317,13 +413,31 @@ export default {
       height: 80px;
       text-align: center;
       line-height: 80px;
-      span {
+      >span {
         .bottomButton;
         display: inline-block;
         margin-top: 15px;
         img {
           width: 100%;
           height: 100%
+        }
+      }
+      .circultion-task-btn-bottom {
+        position: relative;
+        height: 40px;
+        width: 96%;
+        margin: 0 auto;
+        margin-top: 30px;
+        span {
+          width: 100%;
+          border-radius: 4px;
+          vertical-align: top;
+          display: inline-block;
+          line-height: 40px;
+          height: 40px;
+          background: #8d9eda;
+          color: #333;
+          text-align: center
         }
       }
     }

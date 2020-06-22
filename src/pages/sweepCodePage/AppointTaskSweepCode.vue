@@ -291,11 +291,7 @@ export default {
       updateAppointTaskMessage(data).then((res) => {
         if (res && res.data.code == 200) {
           if (this.appointTaskState == 7) {
-              this.$dialog.alert({
-              message: '该任务已完成',
-              closeOnPopstate: true
-            }).then(() => {
-            });
+            this.$toast('该条任务已完成');
             // 清空该完成任务存储的已扫过目的地科室信息
             this.emptyCompleteDestinationDepartment();
           };

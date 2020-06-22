@@ -142,7 +142,7 @@ export default {
       'storeAlreadyConnectSample',
       'storeNoConnectSample',
       'completeDeparnmentInfo',
-      'arriveCirculationTaskId'
+      'circulationTaskId'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -157,7 +157,8 @@ export default {
       'changeCompleteDeparnmentInfo',
       'changeCurrentElectronicSignature',
       'changeIsstoreAlreadyConnectSample',
-      'changeIsStoreNoConnectSample'
+      'changeIsStoreNoConnectSample',
+      'changeIsFreshCirculationTaskPage'
     ]),
 
       // 右边下拉框菜单点击
@@ -225,16 +226,16 @@ export default {
       this.changeCirculationConnectMessageList({DtMsg:[]});
       // 清空上一页面Localstorage已选择标本
       removeStore('currentCirculationConnectMessage');
-      this.$router.push({path:'/circulationTask'});
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务');
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     },
 
     // 没有要交接的标本
     connectCancel () {
       this.updateCirculationtaskState({
         proId: this.proId,		 //当前项目ID
-        id: this.arriveCirculationTaskId, //当前任务ID
+        id: this.circulationTaskId, //当前任务ID
         state: 7 //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'}
       });
     },
@@ -282,11 +283,7 @@ export default {
     updateCirculationtaskState (data) {
       updateCirculationTask(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: '该条循环任务已经完成',
-            closeOnPopstate: true
-          }).then(() => {
-          });
+          this.$toast('该条任务已完成');
           // 清空当前页面回显数据
           this.manageSampleDataList = [];
           // 清空本页store的签名信息
@@ -295,7 +292,7 @@ export default {
           this.changeCirculationConnectMessageList({DtMsg:[]});
           // 清空store已完成科室信息
           let temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.arriveCirculationTaskId});
+          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.circulationTaskId});
           this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
           // 清空Localstorage的已完成科室信息
           setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
@@ -308,6 +305,7 @@ export default {
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');
+          this.changeIsFreshCirculationTaskPage(true)
         } else {
           this.$dialog.alert({
             message: `${res.data.data}`,

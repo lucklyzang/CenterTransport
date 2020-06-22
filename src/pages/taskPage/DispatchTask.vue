@@ -245,9 +245,7 @@
         transferTask: false,
         taskQueryShow: false,
         waitHandleCheck: true,
-        cancelTaskBtnShow: false,
         waitHandleBox: true,
-        transferTaskBtnShow: false,
         isRefresh: false,
         waitBaskList: [],
         taskGetPng: require('@/components/images/task-get.png'),
@@ -279,32 +277,6 @@
     },
 
     watch : {
-      waitBaskList: {
-        handler(newName, oldName) {
-          if (newName.some(function (item, index) {return item.taskCheck == true})) {
-            this.cancelTaskBtnShow = true;
-            this.transferTaskBtnShow = true;
-          } else {
-            this.cancelTaskBtnShow = false;
-            this.transferTaskBtnShow = false;
-          }
-        },
-        deep: true,
-        immediate: true
-      },
-      stateFilterList: {
-        handler(newName, oldName) {
-          if (newName.some(function (item, index) {return item.taskCheck == true})) {
-            this.cancelTaskBtnShow = true;
-            this.transferTaskBtnShow = true;
-          } else {
-            this.cancelTaskBtnShow = false;
-            this.transferTaskBtnShow = false;
-          }
-        },
-        deep: true,
-        immediate: true
-      }
     },
 
     mounted () {
@@ -372,7 +344,8 @@
         'changeIsSingleDestination',
         'changeTaskDetailsMessage',
         'changeTaskType',
-        'changeOverDueWay'
+        'changeOverDueWay',
+        'changeDispatchTaskId'
       ]),
 
       startTimeChange(e) { 
@@ -659,9 +632,7 @@
         } else if (index == '1') {
           this.stateIndex = null;
           this.taskQueryShow = true;
-          this.cancelTaskBtnShow = false;
           this.waitHandleBox = false;
-          this.transferTaskBtnShow = false;
           this.initDate();
           this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7, startDate: this.startTime, endDate: this.endTime})
         }
@@ -758,27 +729,9 @@
           } else {
             this.changeIsSingleDestination(true)
           };
-          if (item.state == 2) {
-            // 判断出发地是否强制拍照
-            this.changeIsCoerceTakePhoto(item.startPhoto);
-            this.changeDispatchTaskDepartmentType(0);
-            this.changeDispatchTaskState(3)
-          } else if (item.state == 3) {
-            // 判断目的地是否强制拍照
-            this.changeIsCoerceTakePhoto(item.endPhoto);
-            this.changeDispatchTaskDepartmentType(1);
-            // 判断是否回到出发地0不回1回
-            if (item.isBack == 0) {
-              this.changeDispatchTaskState(7)
-            } else {
-              this.changeDispatchTaskState(4)
-            }
-          } else if (item.state == 4) {
-            this.changeIsCoerceTakePhoto(item.startPhoto);
-            this.changeDispatchTaskDepartmentType(0);
-            this.changeDispatchTaskState(7)
-          };
         };
+        //储存任务id状态
+        this.changeDispatchTaskId(item.id);
         this.$router.push({'path':'/dispatchDetails'});
         this.changeTitleTxt({tit:'任务详情'});
         setStore('currentTitle','任务详情');

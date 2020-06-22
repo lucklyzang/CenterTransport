@@ -10,7 +10,6 @@
     <div class="worker-show" v-if="workerShow">
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
-        <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
         <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
       </HeaderTop>
       <!-- 右边下拉框菜单 -->
@@ -64,13 +63,15 @@
             <p  class="task-btn-tit">{{item.tit}}</p>
           </li>
         </ul>
+        <p class="task-version">
+          <span>{{versionNumber}}</span>
+        </p>
       </div>
     </div>
     <!-- 医护人员操作区域 -->
     <div class="medical-worker-show" v-else>
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
-        <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
         <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
       </HeaderTop>
        <!-- 右边下拉框菜单 -->
@@ -90,6 +91,10 @@
         </div>
         <div class="medical-worker-operate-right">
           <div class="medical-worker-operate-right-inner">
+            <div class="medical-version">
+              <span>{{versionNumber}}</span>
+              <span>{{this.userInfo.depName}}</span>
+            </div>
             <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
               <p>消息</p>
             </div>
@@ -322,6 +327,7 @@
         startTime: '',
         endTime: '',
         startTimePop: false,
+        versionNumber: '',
         endTimePop: false,
         historyTaskListShow: false,
         currentDateStart: new Date(),
@@ -368,7 +374,8 @@
       if (!IsPC()) {
         pushHistory();
         this.gotoURL(() => { 
-        })
+        });
+        this.getVersionNumber()
       };
       document.addEventListener('click',(e) => {
         if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
@@ -415,13 +422,19 @@
     activated () {
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
+      if (!IsPC()) {
+        pushHistory();
+        this.gotoURL(() => { 
+        });
+        this.getVersionNumber()
+      };
       this.noDataShow = false;
       if (this.userTypeId == 0) {
         // 查询任务数量
         this.leftDownShow = false;
         this.isHaveTask = this.newTaskName;
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-        this.judgeTaskComplete() 
+        this.judgeTaskComplete(); 
       } else {
         let me = this;
         window['setDeviceInfo'] = (val) => {
@@ -482,6 +495,11 @@
       playInfoVoice () {
         let currentAudio = this.$refs.audio;
         currentAudio.play()
+      },
+
+      // 获取版本号
+      getVersionNumber () {
+        this.versionNumber = window.android.getVersion()
       },
 
       // 并行查询任务数量和排名
@@ -637,10 +655,6 @@
         })
       },
 
-      // 返回上一页
-      backTo () {
-      },
-
       /**
        * 工作人员代码
       */
@@ -682,6 +696,12 @@
           .then(res => {
             if (res && res.data.code == 200) {
               resolve(res.data.data)
+            } else {
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
             }
           })
           .catch((err) => {
@@ -750,7 +770,6 @@
 
       // 右边下拉框菜单点击
       leftLiCLick (index) {
-        if(this.globalTimer) {window.clearInterval(this.globalTimer)};
         this.liIndex = index;
         this.userLoginOut(this.proId, this.userInfo.userName)
       },
@@ -783,7 +802,6 @@
             this.userLoginOut(this.proId, this.userInfo.userName)
           })
           .catch(() => {
-
           })
         }
       },
@@ -853,10 +871,6 @@
         if (getStore('completeDispatchSweepCodeInfo')) {
           this.$store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
         };
-        // 重新存入调度任务完成扫码的出发地和单一目的地科室信息(编号)
-        // if (getStore('completeDispatchSweepCodeInfoNumber')) {
-        //   this.$store.commit('changeisCompleteSweepCodeNumber', JSON.parse(getStore('completeDispatchSweepCodeInfoNumber'))['sweepCodeInfo']);
-        // };
         // 页面刷新重新存入调度任务完成扫码的非单一目的地科室信息
         if (getStore('completeDispatchSweepCodeDestinationInfo')) {
           this.$store.commit('changeIsCompleteSweepCodeDestinationList', JSON.parse(getStore('completeDispatchSweepCodeDestinationInfo'))['sweepCodeInfo']);
@@ -876,6 +890,10 @@
         // 重新存入调度任务完成上传的照片
         if (getStore('completPhotoInfo')) {
           this.$store.commit('changeIsCompletePhotoList', JSON.parse(getStore('completPhotoInfo'))['photoInfo']);
+        };
+        // 重新存入调度任务当前扫码校验通过的科室编号
+        if (getStore('completDepartmentNumber')) {
+          this.$store.commit('changeCurrentDepartmentNumber', JSON.parse(getStore('completDepartmentNumber'))['number']);
         };
         // 重新存入预约任务是否第一次扫码
         if (getStore('isAppointFirstSweepCode')) {
@@ -1309,6 +1327,8 @@
         margin-top: 10px;
         width: 100%;
         .task-button  {
+          height: 85%;
+          box-sizing: border-box;
           padding: 0 10px;
           li {
             width:49.5%;
@@ -1356,12 +1376,26 @@
             }
           }
         }
+        .task-version {
+          height: 15%;
+          position: relative;
+          span {
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            position: absolute;
+            bottom: 10px;
+            color:#bebebe;
+            font-size: 16px
+          }
+        }
       };  
       .left-dropDown {
         .rightDropDown
       }
     }
     .medical-worker-show {
+      position: relative;
       .content-wrapper();
       overflow: auto;
       .left-dropDown {
@@ -1415,9 +1449,37 @@
           .medical-worker-operate-right-inner {
             width: 100%;
             height: 100%;
+            position: relative;
+            .medical-version {
+              position: absolute;
+              width: 100%;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              height: 3%;
+              color:#bebebe;
+              font-size: 16px;
+              span {
+                display: inline-block;
+                position: absolute;
+                bottom: 0;
+                &:first-child {
+                  left: 0;
+                  width: 10%;
+                  text-align: left;
+                  padding-left: 6px;
+                };
+                &:last-child {
+                  right: 0;
+                  width: 80%;
+                  text-align: right;
+                  padding-right: 6px;
+                }
+              }
+            }
             > div {
               display: flex;
-              height: 100%;
+              height: 97%;
               flex-direction: column;
               background: #f4f4f4;
               > p {

@@ -83,7 +83,11 @@ export default {
     let me = this;
     window['scanQRcodeCallback'] = (code) => {
       me.scanQRcodeCallback(code);
-    }
+    };
+    window['scanQRcodeCallbackCanceled'] = () => {
+      me.scanQRcodeCallbackCanceled();
+    };
+    this.sweepCodeSure()
   },
 
   beforeRouteLeave(to, from, next) {
@@ -152,6 +156,11 @@ export default {
       setStore('currentTitle','任务详情');
     },
 
+    // 摄像头取消扫码后的回调
+    scanQRcodeCallbackCanceled () {
+      this.backTo()
+    },
+
     // 摄像头扫码后的回调
     scanQRcodeCallback(code) {
       if (code) {
@@ -203,17 +212,18 @@ export default {
             setStore('currentTitle','循环信息采集')
           }
         } else {
+          this.backTo();
           this.$dialog.alert({
             message: res.data.msg,
-            closeOnPopstate: true,
-            showCancelButton: true 
+            closeOnPopstate: true
           }).then(() => {
-            this.againSweepCode()
-          }).catch((err) =>{})
+          }).catch((err) =>{
+          })
         };
         this.showLoadingHint = false
       })
       .catch((err) => {
+        this.backTo();
         this.showLoadingHint = false
         this.$dialog.alert({
           message: `${err.message}`,

@@ -466,4 +466,5 @@ export const removeAllLocalStorage = () => {
   removeStore('currentAppointTaskMessage');
   removeStore('currentDispatchTaskMessage');
   removeStore('currentDispatchTaskMessage');
+  removeStore('completDepartmentNumber')
 }

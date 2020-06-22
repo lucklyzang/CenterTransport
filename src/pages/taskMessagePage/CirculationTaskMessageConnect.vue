@@ -134,12 +134,12 @@ export default {
           this.noConnectSampleInfo();
           return
         };
-        this.$router.push({path:'/circulationTask'})
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({'path':'/circulationDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情');
       })
     };
-    this.getCollectSampleMessage(this.proId,6164)
+    this.getCollectSampleMessage(this.proId,this.circulationTaskId)
   },
 
   beforeRouteLeave(to, from, next) {
@@ -158,14 +158,13 @@ export default {
           this.noConnectSampleInfo();
           return
         };
-        this.$router.push({path:'/circulationTask'})
-        this.changeTitleTxt({tit:'循环任务'});
-        setStore('currentTitle','循环任务')
+        this.$router.push({'path':'/circulationDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情');
       })
     };
-    // this.arriveCirculationTaskId
     if (this.isrefreshCirculationConnectPage) {
-      this.getCollectSampleMessage(this.proId,6164)
+      this.getCollectSampleMessage(this.proId,this.circulationTaskId)
     }
   },
 
@@ -173,7 +172,7 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'isrefreshCirculationConnectPage',
-      'arriveCirculationTaskId',
+      'circulationTaskId',
       'storeNoConnectSample',
       'storeAlreadyConnectSample',
       'completeDeparnmentInfo'
@@ -188,7 +187,8 @@ export default {
       'changeTitleTxt',
       'changeCirculationConnectMessageList',
       'changeIsStoreNoConnectSample',
-      'changeCompleteDeparnmentInfo'
+      'changeCompleteDeparnmentInfo',
+      'changeIsFreshCirculationTaskPage'
     ]),
 
     // 计数器变化回调
@@ -221,9 +221,9 @@ export default {
 
     // 返回上一页
     backTo () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     },
 
     // 没有需要交接的标本操作
@@ -234,22 +234,19 @@ export default {
         state: 7
       }).then((res) => {
         if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: '该条循环任务已经完成',
-            closeOnPopstate: true
-          }).then(() => {
-          });
+          this.$toast('该条任务已完成');
           this.noConnectSampleShow = false;
           this.noDataShow = false;
           // 清空store已完成科室信息
           let temporaryCompleteInfo = deepClone(this.completeDeparnmentInfo);
-          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.arriveCirculationTaskId});
+          temporaryCompleteInfo = temporaryCompleteInfo.filter((item) => { return item.taskId != this.circulationTaskId});
           this.changeCompleteDeparnmentInfo({DtMsg: temporaryCompleteInfo});
           // 清空Localstorage的已完成科室信息
           setStore('completeDepartmentMessage', {"sureInfo": temporaryCompleteInfo});
           this.$router.push({path:'/circulationTask'});
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务');
+          this.changeIsFreshCirculationTaskPage(true)
         } else {
           this.$dialog.alert({
             message: `${res.data.data}`,
@@ -392,9 +389,9 @@ export default {
 
     // 交接信息取消事件
     ConnectCancel () {
-      this.$router.push({path:'/circulationTask'})
-      this.changeTitleTxt({tit:'循环任务'});
-      setStore('currentTitle','循环任务')
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情');
     }
   }
 }
@@ -447,12 +444,12 @@ export default {
         .sample-type-title-wrapper {
           position: relative;
           height: 40px;
-          background: #e4e4e4;
+          background: #f7f7f7;
           line-height: 40px;
           color: #2895ea;
           .sample-type-check {
             position: absolute;
-            top: 10px;
+            top: 12px;
             left: 10px
           }
           .sample-type-title {

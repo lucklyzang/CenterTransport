@@ -17,6 +17,18 @@
             <span class="message-tit-real" style="color:red">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
           </p>
         </div>
+        <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+          <P>
+            <span class="message-tit">任务起点:</span>
+            <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
+          </P>
+        </div>
+        <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+          <P>
+            <span class="message-tit">任务终点:</span>
+            <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
+          </P>
+        </div>
         <div class="handle-message-line-wrapper">
           <p>
             <span class="message-tit">任务状态:</span>
@@ -87,7 +99,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import {} from '@/api/medicalPort.js'
-import {updateDispatchTask} from '@/api/workerPort.js'
+import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, repeArray} from '@/common/js/utils'
@@ -120,7 +132,9 @@ export default {
       'dispatchTaskState',
       'dispatchTaskDepartmentType',
       'isCompleteSweepCode',
-      'isBack'
+      'isBack',
+      'dispatchTaskId',
+      'currentDepartmentNumber'
     ]),
 
     proId () {
@@ -167,9 +181,7 @@ export default {
         setStore('currentTitle','调度任务')
       })
     };
-    if (!this.isSingleDestination) {
-      this.getDepartmentName()
-    }
+    this.getTaskMessage()
   },
 
   methods: {
@@ -177,8 +189,31 @@ export default {
       'changeTitleTxt',
       'changeIsCompleteSweepCodeDestinationList',
       'changeisCompleteSweepCode',
-      'changeIsFreshDispatchTaskPage'
+      'changeIsFreshDispatchTaskPage',
+      'changeDispatchTaskMessage',
+      'changeIsCoerceTakePhoto',
+      'changeDispatchTaskDepartmentType',
+      'changeDispatchTaskState',
+      'changeCurrentDepartmentNumber'
     ]),
+
+    // 获取任务详情
+    getTaskMessage () {
+      getDispatchTaskMessageById(this.dispatchTaskId)
+      .then((res) => {
+        if (res && res.data.code == 200) {
+          // 改变调度具体某一任务的信息状态
+          this.changeDispatchTaskMessage({DtMsg: res.data.data})
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
+    },
 
     // 返回上一页
     backTo () {
@@ -195,21 +230,11 @@ export default {
     // 结束任务
     endTask () {
       if (this.dispatchTaskMessage.distName.length == 0) {
-        this.$dialog.alert({
-          message: '至少完成一个目的时,才能结束任务',
-          showCancelButton: false
-        })
-        .then(() => {
-        });
+        this.$toast('至少完成一个目的地时,才能结束任务');
         return
       };
       if (this.dispatchTaskMessage.state == 4) {
-        this.$dialog.alert({
-          message: '请再次扫描出发地结束任务',
-          showCancelButton: true
-        })
-        .then(() => {
-        })
+        this.$toast('请再次扫描出发地结束任务');
       } else {
         this.$dialog.alert({
           message: '确定结束任务?',
@@ -247,16 +272,18 @@ export default {
         if (res && res.data.code == 200) {
           // 为单一类型目的地或第二次扫出发地时结束该任务
           if ((this.dispatchTaskDepartmentType == 1 && this.isSingleDestination && this.dispatchTaskState != 4) || (this.dispatchTaskState == 7)) {
-            this.$dialog.alert({
-              message: '该条任务已完成',
-              closeOnPopstate: true
-            }).then(() => {
-            });
+            this.$toast('该条任务已完成');
             // 清空该完成任务存储的已扫过非单一目的地科室信息
             let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeDestinationList);
             temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
             this.changeIsCompleteSweepCodeDestinationList(temporarySweepCodeOficeList);
-            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
+            setStore('completeDispatchSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+
+            // 清空该完成任务存储的已校验通过的当前科室编号
+            let temporaryCurrentDepartmentNumber = deepClone(this.currentDepartmentNumber);
+            temporaryCurrentDepartmentNumber = temporaryCurrentDepartmentNumber.filter((item) => { return item.taskId != this.taskId});
+            this.changeCurrentDepartmentNumber(temporaryCurrentDepartmentNumber);
+            setStore('completDepartmentNumber', {"number": temporaryCurrentDepartmentNumber})
           };
           // 清空完成该任务存储的已扫过出发地和单一目的地科室信息
           let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCode);
@@ -354,6 +381,26 @@ export default {
         }).then(() => {
         })
       } else {
+      if (this.dispatchTaskMessage.state == 2) {
+          // 判断出发地是否强制拍照
+          this.changeIsCoerceTakePhoto(this.dispatchTaskMessage.startPhoto);
+          this.changeDispatchTaskDepartmentType(0);
+          this.changeDispatchTaskState(3)
+        } else if (this.dispatchTaskMessage.state == 3) {
+          // 判断目的地是否强制拍照
+          this.changeIsCoerceTakePhoto(this.dispatchTaskMessage.endPhoto);
+          this.changeDispatchTaskDepartmentType(1);
+          // 判断是否回到出发地0不回1回
+          if (this.dispatchTaskMessage.isBack == 0) {
+            this.changeDispatchTaskState(7)
+          } else {
+            this.changeDispatchTaskState(4)
+          }
+        } else if (this.dispatchTaskMessage.state == 4) {
+          this.changeIsCoerceTakePhoto(this.dispatchTaskMessage.startPhoto);
+          this.changeDispatchTaskDepartmentType(0);
+          this.changeDispatchTaskState(7)
+        };
         this.$router.push({'path':'/DispatchTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码')

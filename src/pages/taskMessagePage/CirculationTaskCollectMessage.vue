@@ -281,13 +281,9 @@ export default {
           this.isDialogShow = true;
           this.isNoBedInfoShow = true;
           this.collectMessaheSureShow = false;  
-          this.$router.push({path:'/circulationTask'});
-          this.changeTitleTxt({tit:'循环任务'});
-          setStore('currentTitle','循环任务');
-          this.$dialog.alert({
-            message: '当前科室没有需要采集的信息',
-            closeOnPopstate: true  
-          });
+          this.$router.push({'path':'/circulationDetails'});
+          this.changeTitleTxt({tit:'任务详情'});
+          setStore('currentTitle','任务详情')
         })
         .catch(() => {
           this.isNoSampleDialogShow = true;
@@ -676,9 +672,9 @@ export default {
 
     // 跳转到扫码页
     skipSweepCode () {
-      this.$router.push({'path':'/circulationTaskSweepCode'});
-      this.changeTitleTxt({tit:'扫码'});
-      setStore('currentTitle','扫码')
+      this.$router.push({'path':'/circulationDetails'});
+      this.changeTitleTxt({tit:'任务详情'});
+      setStore('currentTitle','任务详情')
     }
   }
 }
