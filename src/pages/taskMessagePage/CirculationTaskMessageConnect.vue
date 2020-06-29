@@ -99,6 +99,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone, removeBlock, arrayDiff} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationTaskMessageConnect',
   data () {
     return {
       showLoadingHint: false,
@@ -142,12 +143,6 @@ export default {
     this.getCollectSampleMessage(this.proId,this.circulationTaskId)
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   activated () {
     // 控制设备物理返回按键测试
     if (!IsPC()) {
@@ -175,7 +170,8 @@ export default {
       'circulationTaskId',
       'storeNoConnectSample',
       'storeAlreadyConnectSample',
-      'completeDeparnmentInfo'
+      'completeDeparnmentInfo',
+      'circulationDetails'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -211,12 +207,19 @@ export default {
     // 没有交接标本提示提示
     noConnectSampleInfo () {
       this.noConnectSampleShow = true;
-      this.$dialog.alert({
-        message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
-        closeOnPopstate: false
-      }).then(() => {
-        this.dealNoSampleMessage()
-      })
+      if (this.circulationDetails['spaces'].every((item) => item.check) == true ) {
+        this.$dialog.alert({
+          message: '该条循环任务没有需要交接的标本,确定后将更新该循环任务状态为已完成',
+          closeOnPopstate: false
+        }).then(() => {
+          this.dealNoSampleMessage()
+        })
+      } else {
+        this.$toast('当前没有需要交接的标本');
+        this.$router.push({'path':'/circulationDetails'});
+        this.changeTitleTxt({tit:'任务详情'});
+        setStore('currentTitle','任务详情')
+      }
     },
 
     // 返回上一页
@@ -230,7 +233,7 @@ export default {
     dealNoSampleMessage () {
       updateCirculationTask({
         proId: this.proId,
-        id: this.arriveCirculationTaskId,
+        id: this.circulationTaskId,
         state: 7
       }).then((res) => {
         if (res && res.data.code == 200) {

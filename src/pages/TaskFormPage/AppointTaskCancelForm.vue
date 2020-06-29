@@ -36,6 +36,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'appointTaskCancelForm',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -69,12 +70,6 @@ export default {
     this.getDispatchTaskCancelReason({proId: this.proId, state: 0})
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   computed:{
     ...mapGetters([
       'dispatchTaskTransferIdList',
@@ -94,7 +89,8 @@ export default {
 
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeCatchComponent'
     ]),
 
     // 获取取消原因列表

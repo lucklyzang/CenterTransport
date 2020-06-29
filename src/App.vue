@@ -1,25 +1,37 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view v-if="$route.meta.keepAlive"/>
+     <keep-alive :include="catch_components">
+      <router-view/>
     </keep-alive>
-    <router-view v-if="!$route.meta.keepAlive"/>
   </div>
-
 </template>
 <script>
+import store from '@/store'
+import { mapGetters} from 'vuex'
   export default {
     // mounted () {
-    //    if (!!window.ActiveXObject || 'ActiveXObject' in window) {
-    //   window.addEventListener('hashchange', () => {
-    //       let currentPath = window.location.hash.slice(1)
-    //       if (this.$route.path !== currentPath) {
-    //           this.$router.push(currentPath);// 主动更改路由界面
-    //       }
-    //   }, false);
-    // }
-    // }
-  }
+    //   if (!!window.ActiveXObject || 'ActiveXObject' in window) {
+    //     window.addEventListener('hashchange', () => {
+    //         let currentPath = window.location.hash.slice(1)
+    //         if (this.$route.path !== currentPath) {
+    //             this.$router.push(currentPath);// 主动更改路由界面
+    //         }
+    //     }, false);
+    //   }
+    // },
+    computed:{
+      ...mapGetters([
+        'catch_components'
+      ])
+    },
+    watch: {
+      catch_components: {
+       handler (){
+        console.log('缓存组件',this.catch_components);
+      },deep: true
+      }
+    }
+  };
   //App接口
   window['setAppInfo'] =function (uid,os) {
     window.os=os

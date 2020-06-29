@@ -21,6 +21,7 @@
 
 <script>
 export default {
+  name: 'VanFieldSelectPicker',
   model: {
     prop: "selectValue"
   },

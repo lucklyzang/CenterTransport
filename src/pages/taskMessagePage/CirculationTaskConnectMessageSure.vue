@@ -94,6 +94,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationTaskConnectMessageSure',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -142,7 +143,8 @@ export default {
       'storeAlreadyConnectSample',
       'storeNoConnectSample',
       'completeDeparnmentInfo',
-      'circulationTaskId'
+      'circulationTaskId',
+      'circulationDetails'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -213,11 +215,7 @@ export default {
 
     // 还有要交接的标本
     connectSure () {
-      this.$dialog.alert({
-        message: '交接成功',
-        closeOnPopstate: false
-      }).then(() => {
-      });
+      this.$toast('交接成功');
       // 当前页面回显数据
       this.manageSampleDataList = [];
       // 清空本页面store的签名数据
@@ -256,9 +254,13 @@ export default {
           this.changeCurrentElectronicSignature({DtMsg: null});
           // 删除本次locaStorage的交接科室id
           removeStore('currentDepartmentId');
-          // 如果未交接的标本信息数量为0,则结束本次循环任务,更新该条任务状态为已完成
+          // 如果未交接的标本信息数量为0并且所有科室都已采集完成,则结束本次循环任务,更新该条任务状态为已完成
           if (this.storeNoConnectSample.length == 0) {
-            this.connectCancel()
+            if (this.circulationDetails['spaces'].every((item) => item.check) == true ) {
+              this.connectCancel()
+            } else {
+              this.connectSure()
+            }
           } else {
             this.connectSure()
           }

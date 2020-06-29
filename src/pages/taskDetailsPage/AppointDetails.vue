@@ -54,6 +54,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'appointDetails',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],

@@ -432,6 +432,7 @@
   import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
+    name: 'appointTask',
     data () {
       return {
         showLoadingHint: false,
@@ -588,7 +589,8 @@
         'changeSurplusDestinationList',
         'changeTaskDetailsMessage',
         'changeTaskType',
-        'changeOverDueWay'
+        'changeOverDueWay',
+        'changeCatchComponent'
       ]),
 
       // 右边下拉框菜单点击
@@ -605,6 +607,7 @@
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             removeAllLocalStorage();
+            this.changeCatchComponent([]);
             this.$router.push({path:'/'})
           } else {
             this.$dialog.alert({

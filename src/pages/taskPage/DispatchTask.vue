@@ -201,22 +201,37 @@
         </div>
       </div>
     </div>
+    <van-dialog v-model="toolShow" title="请选择退回原因" show-cancel-button width="92%"
+          @confirm="toolSure" @cancel="toolCancel"
+        >
+          <div class="tool-name-list">
+            <div class="tool-name-list-title-innner">退回原因:</div>
+            <div class="tool-name-list-content">
+              <span :class="{spanStyle:toolIndex === index}" v-for="(item,index) in vehicleOperationList" :key="`${item}-${index}`" @click="toolCheck(item,index)">
+                {{item.text}}
+              </span>
+            </div>
+          </div>
+    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {getDispatchTaskMessage, getDispatchTaskComplete, updateDispatchTask, queryTaskCancelReason, queryTaskDelayReason, userSignOut, cancelDispatchTaskBatch, sendBackDispatchTask} from '@/api/workerPort.js'
+  import {getDispatchTaskMessage, getDispatchTaskComplete, querySendBackDispatchTaskReason, updateDispatchTask, userSignOut, sendBackDispatchTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
+  import store from '@/store'
   import { formatTime, setStore, getStore, removeStore, IsPC, judgeOverTime, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
+    name: 'dispatchTask',
     data () {
       return {
         value:0,
+        taskId: '',
         showLoadingHint: false,
         noDataShow: false,
         stateListShow: false,
@@ -225,6 +240,12 @@
         stateScreenVal: '全部',
         startTime: '',
         endTime: '',
+        toolIndex: '',
+        toolText: '',
+        toolShow: false,
+        toolName: '',
+        toolValue: '',
+        vehicleOperationList: [],
         startTimePop: false,
         endTimePop: false,
         currentDateStart: new Date(),
@@ -266,7 +287,8 @@
         'isRefershDispatchTaskPage',
         'userInfo',
         'globalTimer',
-        'isFreshDispatchTaskPage'
+        'isFreshDispatchTaskPage',
+        'catch_components'
       ]),
       proId () {
         return this.userInfo.extendData.proId
@@ -278,6 +300,22 @@
 
     watch : {
     },
+
+    beforeRouteEnter (to, from, next){
+      let catch_components = store.state.catchComponent.catch_components;
+      let i = catch_components.indexOf('dispatchTask');
+      i === -1 && catch_components.push('dispatchTask');
+      next();
+    },
+
+    beforeRouteLeave(to, from, next) {
+      let catch_components = this.catch_components;
+      if (to.name !== 'dispatchDetails'){
+        let i = catch_components.indexOf('dispatchTask');
+        i > -1 && this.changeCatchComponent([]);
+      }
+      next()
+   },
 
     mounted () {
       // 控制设备物理返回按键测试
@@ -345,7 +383,8 @@
         'changeTaskDetailsMessage',
         'changeTaskType',
         'changeOverDueWay',
-        'changeDispatchTaskId'
+        'changeDispatchTaskId',
+        'changeCatchComponent'
       ]),
 
       startTimeChange(e) { 
@@ -527,6 +566,7 @@
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             removeAllLocalStorage();
+            this.changeCatchComponent([]);
             this.$router.push({path:'/'})
           } else {
             this.$dialog.alert({
@@ -647,14 +687,52 @@
 
       // 退回接口
       sendBack (item) {
-        sendBackDispatchTask(this.proId,item.id)
+        this.taskId = item.id;
+        this.toolShow = true;
+        querySendBackDispatchTaskReason(this.proId)
+        .then((res) => {
+          this.vehicleOperationList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                this.vehicleOperationList.push({
+                  text: item.name,
+                  value: item.code
+                })
+              }
+            } else {
+              this.$toast('没有查到退回原因');
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        });
+        this.toolIndex = ''
+      },
+
+      // 退回原因选中点击事件
+      toolCheck (item, index) {
+        this.toolIndex = index;
+        this.toolText = item.text;
+        this.toolName = item.text
+        this.toolValue = item.value
+      },
+
+      // 退回原因弹框确认事件
+      toolSure () {
+        if (this.toolIndex === '') {
+          this.$toast('请选择退回原因');
+          return
+        };
+        sendBackDispatchTask(this.proId,this.taskId,this.toolText)
         .then((res) => {
           if (res && res.data.code == 200) {
-            this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-            });
+            this.$toast(`${res.data.msg}`);
             this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
           }
         })
@@ -667,6 +745,13 @@
         })
       },
 
+      // 退回原因取消事件
+      toolCancel () {
+        this.toolIndex = '';
+        this.toolName = '';
+        this.toolShow = false
+      },
+
       // 状态筛选按钮点击
       statusScreenEvent () {
         this.taskQueryShow = false;
@@ -675,45 +760,6 @@
           this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
           this.stateIndex = 0;
         }
-      },
-
-      // 取消任务按钮点击
-      cancelTaskEvent () {
-        this.cancelTask = true;
-        this.transferTask = false;
-        this.cancelTaskIdList = [];
-        this.$router.push({path:'/dispatchTaskCancelForm'});
-        this.changeTitleTxt({tit:'取消原因选择'});
-        setStore('currentTitle','取消原因选择');
-        this.cancelTaskIdList = [];
-        let temporaryCancelTaskCheckList = [];
-        temporaryCancelTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-        for (let item of temporaryCancelTaskCheckList)  {
-          for (let key in item) {
-            if (key == 'id')
-            this.cancelTaskIdList.push(item['id'])
-          }
-        };
-        this.changedispatchTaskCancelIdList({DtMsg: this.cancelTaskIdList})
-      },
-
-      // 转移任务按钮点击
-      transferTaskEvent () {
-        this.transferTask = true;
-        this.cancelTask = false;
-        this.$router.push({path:'/dispatchTaskTransferForm'});
-        this.changeTitleTxt({tit:'转移人员选择'});
-        setStore('currentTitle','转移人员选择');
-        this.transferTaskIdList = [];
-        let temporaryTransferTaskCheckList = [];
-        temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-        for (let item of temporaryTransferTaskCheckList)  {
-          for (let key in item) {
-            if (key == 'id')
-            this.transferTaskIdList.push(item['id'])
-          }
-        };
-        this.changedispatchTaskTransferIdList({DtMsg: this.transferTaskIdList})
       },
 
       // 点击具体任务事件
@@ -774,6 +820,44 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    /deep/ .van-dialog {
+      .van-dialog__content {
+        margin-bottom: 6px;
+        height: 200px;
+        margin: 10px 0;
+        .tool-name-list {
+          width: 94%;
+          height: 100%;
+          overflow: auto;
+          margin: 0 auto;
+          padding: 0;
+          border: 1px solid #b2b2b2;
+          .tool-name-list-title-innner {
+            padding: 10px;
+          }
+          .tool-name-list-content {
+            padding: 6px;
+            .spanStyle {
+              color: #fff;
+              background: #2895ea
+            }
+            span {
+              display: inline-block;
+              width: 48%;
+              height: 40px;
+              text-align: center;
+              margin-bottom: 8px;
+              line-height: 40px;
+              background: #f3f3f3;
+              margin-right: 4%;
+              &:nth-child(even) {
+                margin-right: 0
+              }
+            }
+          }
+        }
+      }
+    };
     .content-wrapper();
     position: relative;
     font-size: 14px;

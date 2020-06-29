@@ -46,6 +46,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationTaskSweepCode',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -88,12 +89,6 @@ export default {
       me.scanQRcodeCallbackCanceled();
     };
     this.sweepCodeSure()
-  },
-
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
   },
 
   computed:{

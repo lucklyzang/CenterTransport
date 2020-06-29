@@ -89,6 +89,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'taskDetailsMessage',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -157,12 +158,6 @@ export default {
     } else if (this.taskType == '循环任务') {
       this.getCirculationTaskMessage(this.taskDetailsMessage.id,this.taskDetailsMessage.createTime)
     }
-  },
-
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = true;
-    next();
   },
 
   methods: {

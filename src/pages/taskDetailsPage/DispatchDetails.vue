@@ -54,7 +54,17 @@
         <div class="handle-message-line-wrapper">
           <p>
             <span class="message-tit">数量:</span>
-            <span class="message-tit-real">{{dispatchTaskMessage.actualCount == '' ? "无" : dispatchTaskMessage.actualCount}}</span>
+            <span class="message-tit-real">{{dispatchTaskMessage.actualCount == "" ? "无" : dispatchTaskMessage.actualCount}}</span>
+          </p>
+          <p>
+            <span class="message-tit">转运工具:</span>
+            <span class="message-tit-real">{{dispatchTaskMessage.toolName == "" ? '无' : dispatchTaskMessage.toolName}}</span>
+          </p>
+        </div>
+        <div class="handle-message-line-wrapper">
+          <p class="describe-line-wrapper">
+            <span class="message-tit">任务描述:</span>
+            <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
           </p>
         </div>
       </div>
@@ -82,8 +92,8 @@
     </div>
     <div class="circultion-task-btn">
       <p class="circultion-task-btn-top" v-show="dispatchTaskMessage.state != 7">
-        <span @click="joinSweepCode">取件</span>
-        <span @click="joinSweepCode">送件</span>
+        <span @click="fetchPiece">取件</span>
+        <span @click="sendPiece">送件</span>
       </p>
       <p class="circultion-task-btn-bottom" v-show="!isSingleDestination && dispatchTaskMessage.state != 7">
         <span @click="endTask">完成任务</span>
@@ -105,6 +115,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, repeArray} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'dispatchDetails',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -134,7 +145,8 @@ export default {
       'isCompleteSweepCode',
       'isBack',
       'dispatchTaskId',
-      'currentDepartmentNumber'
+      'currentDepartmentNumber',
+      'catch_components'
     ]),
 
     proId () {
@@ -154,15 +166,6 @@ export default {
     }
   },
 
-  beforeRouteLeave(to, from, next) {
-    if (to.name == 'dispatchTaskSweepCode') {
-      // 设置下一个路由的 meta
-      to.meta.keepAlive = false;
-    } else {
-      to.meta.keepAlive = true;
-    };
-    next()
-  },
 
   mounted () {
     // 控制设备物理返回按键测试
@@ -194,7 +197,8 @@ export default {
       'changeIsCoerceTakePhoto',
       'changeDispatchTaskDepartmentType',
       'changeDispatchTaskState',
-      'changeCurrentDepartmentNumber'
+      'changeCurrentDepartmentNumber',
+      'changeCatchComponent'
     ]),
 
     // 获取任务详情
@@ -241,6 +245,11 @@ export default {
           showCancelButton: true
         })
         .then(() => {
+          if (this.dispatchTaskMessage.state == 7) {
+            this.changeIsFreshDispatchTaskPage(false)
+          } else {
+            this.changeIsFreshDispatchTaskPage(true)
+          };
           this.judgeIsGoDeparture()
         })
         .catch((err) => {
@@ -371,6 +380,23 @@ export default {
         }
       },
 
+    // 取件
+    fetchPiece () {
+      if (this.dispatchTaskMessage.state == 3 || this.dispatchTaskMessage.state == 4) {
+        this.$toast('取件已完成，请点击送件')
+      } else {
+        this.joinSweepCode()
+      }
+    },
+
+    // 送件
+    sendPiece () {
+      if (this.dispatchTaskMessage.state == 2) {
+        this.$toast('请先完成出发地取件');
+      } else {
+        this.joinSweepCode()
+      }
+    },
 
     // 进入扫码页
     joinSweepCode () {
@@ -437,7 +463,7 @@ export default {
       .wait-handle-message {
         margin-top: 35px;
         .handle-message-line-wrapper {
-          margin-left: 5px;
+          margin: 0 5px;
           p {
             margin-bottom: 12px;
             width: 49%;
@@ -450,8 +476,11 @@ export default {
               color: #2895ea;
             }
             span:last-child {
-              line-height: 22px
+              line-height: 18px
             }
+          };
+          .describe-line-wrapper {
+            width: 100%
           }
         }
         .handle-message-line-wrapper-other {

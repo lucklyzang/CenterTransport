@@ -60,6 +60,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationTaskCollectMessageSure',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -128,12 +129,6 @@ export default {
     circulationTaskId () {
       return this.circulationDetails.id
     }
-  },
-
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
   },
 
   methods:{

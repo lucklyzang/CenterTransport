@@ -14,6 +14,7 @@ import Loading from '../components/Loading'
 // import {getAlltTaskNumber} from '@/api/workerPort.js'
 import { formatTime, setStore, IsPC} from '@/common/js/utils'
 export default {
+  name: 'HeaderTop',
   props:{
     title:String
   }

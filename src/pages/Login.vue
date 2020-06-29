@@ -28,6 +28,7 @@ import userPng from '@/components/images/user.png'
 import Loading from '@/components/Loading'
 import { setStore, getStore, IsPC, scanCode } from '@/common/js/utils'
 export default {
+  name: 'login',
   components: {
     Loading
   },

@@ -14,7 +14,8 @@ export default {
     newTaskName: '',
     taskDetailsMessage: {},
     taskType: '',
-    globalTimer: null
+    globalTimer: null,
+    isFreshHomePage: false,
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -28,7 +29,8 @@ export default {
     newTaskName: state => state.newTaskName,
     taskDetailsMessage: state => state.taskDetailsMessage,
     taskType: state => state.taskType,
-    globalTimer: state => state.globalTimer
+    globalTimer: state => state.globalTimer,
+    isFreshHomePage: state => state.isFreshHomePage
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -77,6 +79,10 @@ export default {
     // 改变全局定时器的状态
     changeGlobalTimer (state, playLoad) {
       state.globalTimer = playLoad
+    },
+    // 改变是否刷新首页的状态
+    changeIsFreshHomePage (state, playLoad) {
+      state.isFreshHomePage = playLoad
     }
   },
   actions:{}

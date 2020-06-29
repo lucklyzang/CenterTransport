@@ -192,79 +192,166 @@
                     <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
                   </span>
                 </p>
-                <div class="historyTask-list" v-show="historyTaskListShow">
-                  <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
-                    <p class="wait-handle-message-createTime">
-                      创建时间：{{item.createTime}}
-                    </p>
-                    <p class="wait-handle-message-createTime">
-                      计划开始时间：{{item.planStartTime}}
-                    </p>
-                    <p class="wait-handle-message-planUseTime">
-                      计划用时：{{item.planUseTime}}分钟
-                    </p>
-                    <div class="wait-handle-message">
-                      <div class="handle-message-line-wrapper">
-                        <p>
-                          <span class="message-tit">状态:</span>
-                          <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                        </p>
-                        <P>
-                          <span class="message-tit">起点:</span>
-                          <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                        </P>
-                      </div>
-                      <div class="handle-message-line-wrapper">
-                        <p>
-                          <span class="message-tit">终点:</span>
-                          <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
-                        </p>
-                        <p>
-                          <span class="message-tit">转运工具:</span>
-                          <span class="message-tit-real">{{item.toolName}}</span>
-                        </p>
-                      </div>
-                      <div class="handle-message-line-wrapper">
-                        <p>
-                          <span class="message-tit">运送类型:</span>
-                          <span class="message-tit-real">{{item.taskTypeName}}</span>
-                        </p>
-                        <p>
-                          <span class="message-tit">优先级:</span>
-                          <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                        </p>
-                      </div>
-                      <div class="handle-message-line-wrapper">
-                        <p>
-                          <span class="message-tit">出发地拍照:</span>
-                          <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
-                        </p>
-                        <p>
-                          <span class="message-tit">目的地拍照:</span>
-                          <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
-                        </p>
-                      </div>
-                      <div class="handle-message-line-wrapper">
-                        <p>
-                          <span class="message-tit">签字:</span>
-                          <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
-                        </p>
-                        <p>
-                          <span class="message-tit">回到出发地:</span>
-                          <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
-                        </p>
-                      </div>
-                      <p class="wait-handle-check" v-show="item.state == 2 ">
-                        <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-                      </p>
+                <van-tabs v-model="activetask" @click="onClickTab">
+                  <van-tab name="0">
+                    <div slot="title">
+                      <span class="title">已完成</span>
+                      <span class="right-sign sign-not-in" v-show="currentIndex == 0">{{taskCount}}</span>
                     </div>
-                    <p class="get-wait-task">
-                      <span v-show="item.state == '1'">
-                        <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
-                      </span>
-                    </p>
-                  </div>
-                </div>
+                    <div class="historyTask-list">
+                      <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                        <p class="wait-handle-message-createTime">
+                          创建时间：{{item.createTime}}
+                        </p>
+                        <p class="wait-handle-message-createTime">
+                          计划开始时间：{{item.planStartTime}}
+                        </p>
+                        <p class="wait-handle-message-planUseTime">
+                          计划用时：{{item.planUseTime}}分钟
+                        </p>
+                        <div class="wait-handle-message">
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">状态:</span>
+                              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                            </p>
+                            <P>
+                              <span class="message-tit">起点:</span>
+                              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                            </P>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">终点:</span>
+                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">转运工具:</span>
+                              <span class="message-tit-real">{{item.toolName}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">运送类型:</span>
+                              <span class="message-tit-real">{{item.taskTypeName}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">优先级:</span>
+                              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">出发地拍照:</span>
+                              <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">目的地拍照:</span>
+                              <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">签字:</span>
+                              <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">回到出发地:</span>
+                              <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                            </p>
+                          </div>
+                          <p class="wait-handle-check" v-show="item.state == 2 ">
+                            <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                          </p>
+                        </div>
+                        <p class="get-wait-task">
+                          <span v-show="item.state == '1'">
+                            <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </van-tab>
+                  <van-tab name="1" >
+                    <div slot="title">
+                      <span class="title">已取消</span>
+                      <span class="right-sign sign-not-in" v-show="currentIndex == 1">{{taskCount}}</span>
+                    </div>
+                    <div class="historyTask-list">
+                      <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                        <p class="wait-handle-message-createTime">
+                          创建时间：{{item.createTime}}
+                        </p>
+                        <p class="wait-handle-message-createTime">
+                          计划开始时间：{{item.planStartTime}}
+                        </p>
+                        <p class="wait-handle-message-planUseTime">
+                          计划用时：{{item.planUseTime}}分钟
+                        </p>
+                        <div class="wait-handle-message">
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">状态:</span>
+                              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
+                            </p>
+                            <P>
+                              <span class="message-tit">起点:</span>
+                              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                            </P>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">终点:</span>
+                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">转运工具:</span>
+                              <span class="message-tit-real">{{item.toolName}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">运送类型:</span>
+                              <span class="message-tit-real">{{item.taskTypeName}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">优先级:</span>
+                              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">出发地拍照:</span>
+                              <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">目的地拍照:</span>
+                              <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">签字:</span>
+                              <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">回到出发地:</span>
+                              <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                            </p>
+                          </div>
+                          <p class="wait-handle-check" v-show="item.state == 2 ">
+                            <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                          </p>
+                        </div>
+                        <p class="get-wait-task">
+                          <span v-show="item.state == '1'">
+                            <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </van-tab>
+                </van-tabs>
               </div>
             </div>
             <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
@@ -281,6 +368,7 @@
   import FooterBottom from '../components/FooterBottom'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
+  import store from '@/store'
   import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, cancelDispatchTaskBatch} from '@/api/workerPort.js'
   import {queryTransportTypeClass, collectDispatchTask, queryAllDestination, generateDispatchTask, quereDeviceMessage, taskReminder} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
@@ -303,6 +391,7 @@
   import medicalCollectCheckedPng from '@/common/images/home/medical-collect-checked.png'
   let windowTimer
   export default {
+    name: 'home',
     components:{
       HeaderTop,
       NoData,
@@ -318,7 +407,10 @@
         liIndex: null,
         showLoadingHint: false,
         noDataShow: false,
-        operateListInnerIndex: '',
+        activetask: 0,
+        currentIndex: 0,
+        taskCount: '',
+        operateListInnerIndex: 1,
         yesterdayNumber: '',
         yesterdayRank: '',
         isHaveTask: '',
@@ -329,7 +421,6 @@
         startTimePop: false,
         versionNumber: '',
         endTimePop: false,
-        historyTaskListShow: false,
         currentDateStart: new Date(),
         currentDateEnd: new Date(),
         minDateStart: new Date(2020, 0, 1),
@@ -347,8 +438,8 @@
           {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
           {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
-        operateMessage: 1,
-        operateCallOut: '',
+        operateMessage: '',
+        operateCallOut: 2,
         isRefresh: false,
         operateTaskTrace: '',
         operateHistoryTask: '',
@@ -388,22 +479,19 @@
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
         this.judgeTaskComplete();
         // 轮询是否有新任务
-        windowTimer = window.setInterval(() => {
-          setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-        }, 3000);
-        this.changeGlobalTimer(windowTimer);
+        if (!windowTimer) {
+          windowTimer = window.setInterval(() => {
+            setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
+          }, 3000);
+          this.changeGlobalTimer(windowTimer)
+        }
       } else {
         let me = this;
         window['setDeviceInfo'] = (val) => {
           me.setDeviceInfo(val);
-        }
+        };
+        this.parallelFunctionTwo()
       }
-    },
-
-    beforeRouteLeave(to, from, next) {
-      // 设置下一个路由的 meta
-      to.meta.keepAlive = false;
-      next();
     },
     
     watch: {
@@ -439,6 +527,21 @@
         let me = this;
         window['setDeviceInfo'] = (val) => {
           me.setDeviceInfo(val);
+        };
+        this.parallelFunctionTwo();
+        if (this.isFreshHomePage) {
+          if (this.operateListInnerIndex == 1) {
+            this.operateListInnerIndex = 1
+          } else {
+            this.operateListInnerIndex = 2;
+          }
+          this.operateTaskTrace = 3;
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state: -1,
+              departmentId: this.userInfo.depId
+            },"任务跟踪"
+          )
         }
       };
       document.addEventListener('click',(e) => {
@@ -457,7 +560,9 @@
         'userType',
         'userInfo',
         'newTaskName',
-        'globalTimer'
+        'globalTimer',
+        'catch_components',
+        'isFreshHomePage'
       ]),
       userName () {
        return this.userInfo.userName
@@ -478,6 +583,27 @@
         return this.userInfo.name
       }
     },
+
+    beforeRouteEnter (to, from, next) {
+      if (store.state.login.userInfo.extendData.user_type_id == 1) {
+        let catch_components = store.state.catchComponent.catch_components;
+        let i = catch_components.indexOf('home');
+        i === -1 && catch_components.push('home')
+      };
+      next()
+    },
+
+    beforeRouteLeave (to, from, next) {
+      let catch_components = this.catch_components;
+      if (store.state.login.userInfo.extendData.user_type_id == 1) {
+        if (to.name !== 'transportTypeMessage' && to.name !== 'padDispatchTaskCancelForm'){
+          let i = catch_components.indexOf('home');
+          i > -1 && this.changeCatchComponent([]);
+        }
+      };
+      next()
+    },
+
     methods:{
       ...mapMutations([
         'changeTitleTxt',
@@ -485,7 +611,8 @@
         'changeOverDueWay',
         'changeNewTaskList',
         'changeTaskTranceMsg',
-        'changeGlobalTimer'
+        'changeGlobalTimer',
+        'changeCatchComponent'
       ]),
 
       juddgeIspc () {
@@ -667,6 +794,7 @@
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             removeAllLocalStorage();
+            this.changeCatchComponent([]);
             this.$router.push({path:'/'})
           } else {
             this.$dialog.alert({
@@ -930,16 +1058,48 @@
         this.endTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
       },
 
+      // 点击标签按钮事件
+      onClickTab (name, title) {
+        this.currentIndex = name;
+        this.taskCount = 0;
+        if (name == 1) {
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state:6,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            },"历史任务",name
+          )
+        } else {
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state:7,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            },"历史任务",name
+          )
+        }
+      },
+
       // 搜索完成的任务
       searchCompleteTask () {
-        this.queryCompleteDispatchTask(
-          {
-            proId:this.proId, workerId:'',state:7,
-            startDate: this.startTime, endDate: this.endTime,
-            createId: this.workerId,
-            createType: 1 
-          },"历史任务"
-        )
+        if (this.currentIndex == 0) {
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state:7,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            },"历史任务",0
+          )
+        } else {
+          this.queryCompleteDispatchTask(
+            {
+              proId:this.proId, workerId:'',state:6,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            },"历史任务",1
+          )
+        }
       },
 
       // 左边列表点击
@@ -968,11 +1128,12 @@
           this.queryCompleteDispatchTask(
             {
               proId:this.proId, workerId:'',state: -1,
-              createId: this.workerId,
-              createType: 1 
+              departmentId: this.userInfo.depId
             },"任务跟踪"
           )
         } else if (index == 3) {
+          this.currentIndex = 0;
+          this.activetask = 0;
           this.operateMessage = '';
           this.operateCallOut = '';
           this.operateTaskTrace = '';
@@ -983,9 +1144,8 @@
             {
               proId:this.proId, workerId:'',state:7,
               startDate: this.startTime, endDate: this.endTime,
-              createId: this.workerId,
-              createType: 1 
-            },"历史任务"
+              departmentId: this.userInfo.depId
+            },"历史任务",0
           )
         } else if (index == 4) {
           this.operateMessage = '';
@@ -1000,11 +1160,7 @@
       reminderTask(item) {
         taskReminder(this.proId,item.id).then((res) => {
           if (res && res.data.code == 200) {
-            this.$dialog.alert({
-              message: `${res.data.data}`,
-              closeOnPopstate: true
-            }).then(() => {
-            })
+            this.$toast(`${res.data.data}`);
           }
         })
         .catch((err) => {
@@ -1029,8 +1185,7 @@
         this.queryCompleteDispatchTask(
           {
             proId:this.proId, workerId:'',state: -1,
-            createId: this.workerId,
-            createType: 1 
+            departmentId: this.userInfo.depId
           },"任务跟踪"
         )
       },
@@ -1101,7 +1256,7 @@
       },
 
       // 查询历史调度任务(已完成)
-      queryCompleteDispatchTask (data, type) {
+      queryCompleteDispatchTask (data, type, name) {
         this.noDataShow = false;
         this.showLoadingHint = true;
         getDispatchTaskComplete(data).then((res) => {
@@ -1111,7 +1266,6 @@
             this.stateCompleteList = [];
             this.taskTraceList = [];
             if (res.data.data.length > 0) {
-              this.historyTaskListShow = true;
               this.noDataShow = false;
               for (let item of res.data.data) {
                 if (type == "历史任务") {
@@ -1133,7 +1287,8 @@
                     endPhoto: item.endPhoto,
                     isBack: item.isBack,
                     isSign: item.isSign
-                  })
+                  });
+                  this.taskCount = this.stateCompleteList.length;
                 } else if (type == "任务跟踪") {
                   this.taskTraceList.push({
                     state: item.state,
@@ -1151,8 +1306,8 @@
                 }
               }
             } else {
-              this.historyTaskListShow = false;
-              this.noDataShow = true
+              this.noDataShow = true;
+              this.taskCount = 0
             }
           }
         })
@@ -1178,14 +1333,15 @@
     position: relative;
      .no-data {
       position: absolute;
-      top: 200px;
+      top: 245px;
       left: 13%;
       width: 100%;
       text-align: center;
+      z-index: 100
     }
     .loading {
       position: absolute;
-      top: 260px;
+      top: 280px;
       left: 13%;
       width: 100%;
       height: 100px;
@@ -1612,6 +1768,24 @@
               }
             }
             .medical-worker-operate-right-historyTask {
+              flex:1;
+              overflow: auto;
+              /deep/ .van-tabs--line {
+                .van-tabs__line {
+                  background-color: @color-theme;
+                }
+              };
+              /deep/ .van-tabs {
+                .right-sign {
+                  .status-sign
+                };
+                .van-tabs__nav {
+                  .van-tab {
+                    font-size: 18px;
+                    flex-basis: 33% !important;
+                  }
+                }
+              };
               > p {
                 color: #2895ea;
                 font-size: 16px;
@@ -1626,6 +1800,10 @@
                 display: flex;
                 height: 100%;
                 flex-direction: column;
+                /deep/ .van-tabs {
+                  flex: 1;
+                  overflow: auto
+                };
                 .time-search {
                   background: #fff;
                   height: 44px;
@@ -1669,9 +1847,6 @@
                   }
                 }
                 .historyTask-list {
-                  flex:1;
-                  overflow: auto;
-                  overflow-x: hidden;
                   .wait-handle-list {
                     box-sizing: border-box;
                     position: relative;
@@ -1738,6 +1913,9 @@
             .wait-handle-box {
               overflow: auto;
               .medical-worker-operate-right-taskTrace {
+                display: flex;
+                height: 100%;
+                flex-direction: column;
                 > p {
                   color: #2895ea;
                   font-size: 16px;
@@ -1756,7 +1934,7 @@
                 .task-list-trace {
                   box-sizing: border-box;
                   position: relative;
-                  height: 100%;
+                  flex: 1;
                   overflow: auto;
                   .task-list-inner {
                     background: #eee;

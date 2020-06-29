@@ -296,6 +296,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationTaskCondition',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -348,12 +349,6 @@ export default {
     },0)
   },
 
-   beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   computed:{
     ...mapGetters([
       'navTopTitle'
@@ -369,7 +364,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeIsrefreshCirculationConnectPage'
+      'changeIsrefreshCirculationConnectPage',
+      'changeCatchComponent'
     ]),
 
      // 右边下拉框菜单点击

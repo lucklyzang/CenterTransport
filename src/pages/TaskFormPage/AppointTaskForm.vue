@@ -36,6 +36,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'appointTaskForm',
   data () {
     return {
        leftDropdownDataList: ['退出登录'],
@@ -69,12 +70,6 @@ export default {
     this.queryOnlineWorker({proId: this.proId, state:''})
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   computed:{
     ...mapGetters([
       'appointTaskTransferIdList',
@@ -95,7 +90,8 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
-      'changeAppointTaskTransferIdList'
+      'changeAppointTaskTransferIdList',
+      'changeCatchComponent'
     ]),
 
     // 获取在线工作人员

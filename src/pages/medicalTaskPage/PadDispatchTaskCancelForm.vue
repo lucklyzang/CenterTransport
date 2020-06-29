@@ -36,6 +36,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'padDispatchTaskCancelForm',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -61,6 +62,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
+        this.changeIsFreshHomePage(true);
         this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'中央运送'});
         setStore('currentTitle','中央运送')
@@ -85,15 +87,10 @@ export default {
     },
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   methods:{
     ...mapMutations([
-      'changeTitleTxt'
+      'changeTitleTxt',
+      'changeIsFreshHomePage'
     ]),
 
     // 获取取消原因列表
@@ -125,14 +122,10 @@ export default {
         updateDispatchTask(data)
         .then((res) => {
           if (res && res.data.code == 200) {
-            this.$dialog.alert({
-              message: res.data.msg,
-              closeOnPopstate: true
-            }).then(() => {
-              this.$router.push({path: 'home'});
-              this.changeTitleTxt({tit:'中央运送'});
-              setStore('currentTitle','中央运送')
-            });
+            this.$toast(`${res.data.msg}`);
+            this.$router.push({path: 'home'});
+            this.changeTitleTxt({tit:'中央运送'});
+            setStore('currentTitle','中央运送')
           } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
@@ -164,6 +157,7 @@ export default {
 
     // 返回上一页
     backTo () {
+      this.changeIsFreshHomePage(true);
       this.$router.push({path: 'home'});
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送')
@@ -172,6 +166,10 @@ export default {
 
     // 取消原因确认事件
     canceltaskSure () {
+      if (!this.taskCancelReason) {
+        this.$toast('请选择退回原因');
+        return
+      };
       this.cancelDispatchTask({
         proId: this.proId,	//当前项目ID
         id: this.taskTranceMsg.id, //当前任务ID

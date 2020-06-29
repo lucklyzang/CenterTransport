@@ -39,10 +39,7 @@ let baseRoute  = [
   {
     path: '/home',
     name: 'home',
-    component: Home,
-    meta: {
-      keepAlive: false
-    }
+    component: Home
   },
   {
     path: '/taskDetailsMessage',
@@ -97,10 +94,7 @@ let baseRoute  = [
   {
     path: '/circulationTaskMessageConnect',
     name: 'circulationTaskMessageConnect',
-    component: CirculationTaskMessageConnect,
-    meta: {
-      keepAlive: true
-    }
+    component: CirculationTaskMessageConnect
   },
   {
     path: '/circulationTaskConnectMessageSure',
@@ -169,7 +163,17 @@ let baseRoute  = [
   }
 ];
 let router = new Router({
-  routes: baseRoute
+  routes: baseRoute,
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return {
+        x: 0,
+        y: 0
+      }
+    }
+  }
 });
 router.beforeEach((to, from, next) => {
   if (getStore('isLogin')) {

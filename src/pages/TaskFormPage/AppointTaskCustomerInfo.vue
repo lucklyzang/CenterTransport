@@ -53,6 +53,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'appointTaskCustomerInfo',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -110,18 +111,13 @@ export default {
     this.echoCustomerInfo()
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
-  },
-
   methods: {
     ...mapMutations([
       'changeTitleTxt',
       'changeCurrentElectronicSignature',
       'changeIsCompleteSweepCodeList',
-      'changeAppointSweepCodeIntoPage'
+      'changeAppointSweepCodeIntoPage',
+      'changeCatchComponent'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {

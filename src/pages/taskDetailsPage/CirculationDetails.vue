@@ -60,6 +60,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'circulationDetails',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -99,15 +100,6 @@ export default {
     workerId () {
       return this.userInfo.extendData.userId
     }
-  },
-
-  beforeRouteLeave(to, from, next) {
-    if (to.name == 'circulationTaskSweepCode') {
-      to.meta.keepAlive = false
-    } else {
-      to.meta.keepAlive = true
-    };
-    next();
   },
 
   mounted () {
@@ -298,14 +290,14 @@ export default {
         });
       } else {
         this.changeArriveDepartmentId(true);
-        if (this.circulationDetails['spaces'].filter((item) => item.check == true).length == this.circulationDetails['spaces'].length) {
+        if (this.circulationDetails['spaces'].filter((item) => item.check == true).length >= 1) {
           this.changeIsCollectEnterSweepCodePage(false);
           this.$router.push({path: 'circulationTaskSweepCode'});
           this.changeTitleTxt({tit:'扫码'});
           setStore('currentTitle','扫码')
         } else {
           this.$dialog.alert({
-            message: '请采集完该条循环任务下所有科室',
+            message: '请至少采集完一个科室,才能进行送达',
             closeOnPopstate: true
           }).then(() => {
           });
@@ -373,7 +365,7 @@ export default {
               color: #2895ea;
             }
             span:last-child {
-              line-height: 22px
+              line-height: 18px
             }
           }
         }

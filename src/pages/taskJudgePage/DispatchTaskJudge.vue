@@ -15,6 +15,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import {updateDispatchTask} from '@/api/workerPort.js'
 import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg} from '@/common/js/utils'
 export default {
+  name: 'dispatchTaskJudge',
   data () {
     return {
       showIsGoOtherDestination: false,
@@ -38,12 +39,6 @@ export default {
         pushHistory()
       })
     }
-  },
-
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
   },
 
   computed: {

@@ -45,6 +45,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'appointTaskSweepCode',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -108,12 +109,6 @@ export default {
     taskId () {
       return this.appointTaskMessage.id
     }
-  },
-
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = false;
-    next();
   },
 
   methods:{

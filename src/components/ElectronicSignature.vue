@@ -24,6 +24,7 @@
 import { mapGetters, mapMutations } from 'vuex'
 import { base64ImgtoFile } from '@/common/js/utils'
   export default {
+    name: 'ElectronicSignature',
     data() {
       return {
         ctx: null,

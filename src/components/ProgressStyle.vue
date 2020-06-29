@@ -1,19 +1,20 @@
 <template>
   <div>
     <div class="progress-wrapper">
-      <div class="inner-content" v-for="(item,index) in progressTitleList">
+      <div class="inner-content" v-for="(item,index) in progressTitleList" :key="index">
         <div class="inner-circle" :class="{'inner-circle-style': currentItem >= index}">{{index + 1}}</div>
         <div class="inner-line" :class="{'inner-line-style': currentItem >= index}" v-if="index == 0 || index == 1 || index == 2"></div>
       </div>
     </div>
     <div class="text-wrapper">
-      <div v-for="item in progressTitleList"><span>{{item}}</span></div>
+      <div v-for="item in progressTitleList" :key="item"><span>{{item}}</span></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'ProgressStyle',
   data () {
     return {
       progressTitleList: ['扫描科室','扫描医护','扫描医废','医废称重'],

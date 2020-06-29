@@ -107,11 +107,13 @@
   import {queryCirculationTask,userSignOut} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
+  import store from '@/store'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   let windowTimer
   export default {
+    name: 'circulationTask',
     data () {
       return {
         showLoadingHint: false,
@@ -152,7 +154,10 @@
         'navTopTitle',
         'completeDeparnmentInfo',
         'globalTimer',
-        'isFreshCirculationTaskPage'
+        'isFreshCirculationTaskPage',
+        'userInfo',
+        'catch_components',
+        'circulationDetails'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -240,22 +245,29 @@
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        }, 0);
-      } else {
-        this.stateIndex = null;
-        this.getCirculationTask({
-          proId: this.proId,  //医院ID，必输
-          workerId: this.workerId,   //运送员ID
-          state: 7, //查询状态
-          startDate: '',  //起始日期  YYYY-MM-dd
-          endDate: ''  //终止日期  格式 YYYY-MM-dd
-        },7)
-      }
+        },0);
+      };
       this.drawTaskId()
     },
 
     beforeDestroy() {
       if(windowTimer) {window.clearInterval(windowTimer)}
+    },
+
+    beforeRouteEnter (to, from, next){
+      let catch_components = store.state.catchComponent.catch_components;
+      let i = catch_components.indexOf('circulationTask');
+      i === -1 && catch_components.push('circulationTask');
+      next();
+    },
+
+    beforeRouteLeave(to, from, next) {
+      let catch_components = this.catch_components;
+      if (to.name !== 'circulationDetails'){
+        let i = catch_components.indexOf('circulationTask');
+        i > -1 && this.changeCatchComponent([]);
+      }
+      next()
     },
 
     methods: {
@@ -268,7 +280,8 @@
         'changeTaskType',
         'changeCirculationDetails',
         'changeOverDueWay',
-        'changeCirculationTaskId'
+        'changeCirculationTaskId',
+        'changeCatchComponent'
       ]),
 
       // 用户签退
@@ -279,6 +292,7 @@
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             removeAllLocalStorage();
+            this.changeCatchComponent([]);
             this.$router.push({path:'/'})
           } else {
             this.$dialog.alert({
@@ -439,23 +453,27 @@
           if (conditionThree) {
             if (conditionOne) {
               if (conditionTwo) {
-                this.$dialog.alert({
-                  message: '请先完成该循环任务上一时间段的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
-                return
+                if (item.state !== 7) {
+                  this.$dialog.alert({
+                    message: '请先完成该循环任务上一时间段的任务',
+                    closeOnPopstate: true
+                  }).then(() => {
+                  });
+                  return
+                }
               }
             }
           } else {
             if (conditionOne) {
               if (conditionFour) {
-                this.$dialog.alert({
-                  message: '请先完成该循环任务上一时间段的任务',
-                  closeOnPopstate: true
-                }).then(() => {
-                });
-                return
+                if (item.state !== 7) {
+                  this.$dialog.alert({
+                    message: '请先完成该循环任务上一时间段的任务',
+                    closeOnPopstate: true
+                  }).then(() => {
+                  });
+                  return
+                }
               }
             }
           }

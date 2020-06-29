@@ -67,10 +67,20 @@ export function updateDispatchTask(data) {
     data
   })
 };
-// 调度任务退回接口
-export function sendBackDispatchTask(proId,taskId) {
+// 调度任务退回原因查询
+export function querySendBackDispatchTaskReason(proId) {
   return request({
-    url: `task/sendBack/${proId}/${taskId}`,
+    url: 'back/dict',
+    method: 'get',
+    params: {
+      proId
+    }
+  })
+};
+// 调度任务退回接口
+export function sendBackDispatchTask(proId,taskId,reason) {
+  return request({
+    url: `task/sendBack/${proId}/${taskId}?reason=${reason}`,
     method: 'get'
   })
 };
@@ -90,22 +100,6 @@ export function queryDispatchTaskCancelReason(data) {
     params: data
   })
 };
-// // 调度任务的延迟
-// export function delayDispatchTask(data) {
-//   return request({
-//     url: 'task/update',
-//     method: 'put',
-//     data
-//   })
-// };
-// // 调度任务的取消
-// export function cancelDispatchTask(data) {
-//   return request({
-//     url: 'task/update',
-//     method: 'post',
-//     data
-//   })
-// };
 
 // 调度任务的转移
 export function transferDispatchTask(data) {

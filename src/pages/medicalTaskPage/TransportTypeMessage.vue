@@ -116,6 +116,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
+  name: 'transportTypeMessage',
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
@@ -197,11 +198,6 @@ export default {
     }
   },
 
-  beforeRouteLeave(to, from, next) {
-    // 设置下一个路由的 meta
-    to.meta.keepAlive = true;
-    next();
-  },
 
   methods: {
     ...mapMutations([
@@ -544,10 +540,8 @@ export default {
             display: inline-block
           };
           .destination-title {
-            width: 24%;
-            color: black;
-            vertical-align: top;
-            margin-top: 4px;
+            width: 18%;
+            color: black
           }
           .destination-title-inner {
             width: 27%
@@ -580,7 +574,7 @@ export default {
           }
           /deep/ .van-radio-group {
             .van-radio--horizontal {
-              margin-right: 3%;
+              margin-right: 7%;
               &:last-child {
                 margin-right: 0
               };
@@ -679,8 +673,11 @@ export default {
           /deep/ .van-cell {
             padding: 10px 2px;
             .van-field__label {
-              width: 60px;
-              text-align: left
+              width: 70px;
+              text-align: left;
+              font-size: 14px;
+              color: black;
+              margin-top: 6px
             }
             .van-field__value {
               border: 1px solid #bcbcbc;
@@ -703,7 +700,10 @@ export default {
           padding: 10px 10px;
           .van-field__label {
             width: 80px;
-            text-align: left
+            text-align: left;
+            font-size: 14px;
+            color: black;
+            margin-top: 6px
           }
           .van-field__value {
             .van-field__control {

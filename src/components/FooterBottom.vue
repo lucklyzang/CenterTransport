@@ -10,6 +10,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 export default {
+  name: 'FooterBottom',
   data () {
     return {
       itemFooter: [
