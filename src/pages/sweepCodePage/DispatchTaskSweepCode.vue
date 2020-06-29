@@ -157,6 +157,9 @@ export default {
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
     },
+    userId () {
+      return JSON.parse(getStore('userInfo')).id
+    },
     proName () {
       return JSON.parse(getStore('userInfo')).extendData.proName
     },
@@ -441,7 +444,8 @@ export default {
             proId: this.proId,  //项目ID
             departmentNo: this.departmentNo, //项目编号
             departmentId: this.departmentId,  //科室ID
-            checkType: this.dispatchTaskDepartmentType   //校验类型  出发地-0,目的地-1
+            checkType: this.dispatchTaskDepartmentType,   //校验类型  出发地-0,目的地-1
+            workerId: this.userId // 用户id
           });
           // 存储扫过的非单一目的地
           if (!this.isSingleDestination && this.dispatchTaskDepartmentType == 1) {

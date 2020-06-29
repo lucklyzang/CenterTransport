@@ -185,6 +185,7 @@ export default {
       logIn(loginMessage).then((res)=>{
         if (res) {
           if (res.data.code == 200) {
+            debugger;
             // 重置过期方式
             this.changeOverDueWay(false);
             setStore('storeOverDueWay',false);
