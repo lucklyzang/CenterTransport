@@ -986,7 +986,6 @@
 
       // 点击具体任务事件
       taskClickEvent (item) {
-        debugger;
         if (item.state == 7) {
           this.$router.push({'path':'/taskDetailsMessage'});
           this.changeTitleTxt({tit:'历史任务详情'});
