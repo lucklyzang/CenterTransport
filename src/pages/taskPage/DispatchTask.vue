@@ -219,7 +219,7 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {getDispatchTaskMessage, getDispatchTaskComplete, querySendBackDispatchTaskReason, updateDispatchTask, userSignOut, sendBackDispatchTask} from '@/api/workerPort.js'
+  import {getDispatchTaskMessage, getDispatchTaskComplete, querySendBackDispatchTaskReason, updateDispatchTask, getDispatchTask,userSignOut, sendBackDispatchTask} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
@@ -315,7 +315,7 @@
         i > -1 && this.changeCatchComponent([]);
       }
       next()
-   },
+    },
 
     mounted () {
       // 控制设备物理返回按键测试
@@ -788,11 +788,7 @@
 
       // 获取待处理任务事件
       getTask (item) {
-        updateDispatchTask({
-          proId: this.proId,//当前项目ID
-          id: item.id, //当前任务ID
-          state: 2 //更新后的状态
-        })
+        getDispatchTask(item.id,this.workerId)
         .then(res => {
           if (res && res.data.code == 200) {
             this.$dialog.alert({
@@ -801,6 +797,12 @@
             }).then(() => {
             });
             this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            })
           }
         })
         .catch(err => {

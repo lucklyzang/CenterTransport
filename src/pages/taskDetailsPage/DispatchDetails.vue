@@ -187,6 +187,13 @@ export default {
     this.getTaskMessage()
   },
 
+  beforeRouteLeave(to, from, next) {
+    if (to.name == 'dispatchTaskSweepCode'){
+      this.changeIsCallDispatchSweepcodeMethod(true)
+    };
+    next()
+  },
+
   methods: {
     ...mapMutations([
       'changeTitleTxt',
@@ -198,7 +205,8 @@ export default {
       'changeDispatchTaskDepartmentType',
       'changeDispatchTaskState',
       'changeCurrentDepartmentNumber',
-      'changeCatchComponent'
+      'changeCatchComponent',
+      'changeIsCallDispatchSweepcodeMethod'
     ]),
 
     // 获取任务详情
@@ -427,7 +435,7 @@ export default {
           this.changeDispatchTaskDepartmentType(0);
           this.changeDispatchTaskState(7)
         };
-        this.$router.push({'path':'/DispatchTaskSweepCode'});
+        this.$router.push({'path':'/dispatchTaskSweepCode'});
         this.changeTitleTxt({tit:'扫码'});
         setStore('currentTitle','扫码')
       }
@@ -550,8 +558,8 @@ export default {
         display: inline-block;
         line-height: 40px;
         height: 40px;
-        background: #8d9eda;
-        color: #333;
+        background: #2895ea;
+        color: #fff;
         text-align: center
       }
       .circultion-task-btn-top {

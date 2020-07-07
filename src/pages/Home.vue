@@ -260,6 +260,16 @@
                               <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
                             </p>
                           </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">病人名字:</span>
+                              <span class="message-tit-real">{{item.patientName ? item.patientName : '无'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">床号:</span>
+                              <span class="message-tit-real">{{item.bedNumber ? item.bedNumber : '无'}}</span>
+                            </p>
+                          </div>
                           <p class="wait-handle-check" v-show="item.state == 2 ">
                             <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                           </p>
@@ -337,6 +347,16 @@
                             <p>
                               <span class="message-tit">回到出发地:</span>
                               <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                            </p>
+                          </div>
+                          <div class="handle-message-line-wrapper">
+                            <p>
+                              <span class="message-tit">病人名字:</span>
+                              <span class="message-tit-real">{{item.patientName ? item.patientName : '无'}}</span>
+                            </p>
+                            <p>
+                              <span class="message-tit">床号:</span>
+                              <span class="message-tit-real">{{item.bedNumber ? item.bedNumber : '无'}}</span>
                             </p>
                           </div>
                           <p class="wait-handle-check" v-show="item.state == 2 ">

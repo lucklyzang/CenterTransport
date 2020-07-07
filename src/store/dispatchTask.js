@@ -19,7 +19,9 @@ export default {
     isSingleDestination: '',
     showEndTaskBtn: false,
     isFreshDispatchTaskPage: true,
-    currentDepartmentNumber: []
+    currentDepartmentNumber: [],
+    photoAreaBoxShow: false,
+    isCallDispatchSweepcodeMethod: true
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -39,7 +41,9 @@ export default {
     showEndTaskBtn: state => state.showEndTaskBtn,
     isCompleteSweepCodeDestinationList: state => state.isCompleteSweepCodeDestinationList,
     isFreshDispatchTaskPage: state => state.isFreshDispatchTaskPage,
-    currentDepartmentNumber: state => state.currentDepartmentNumber
+    currentDepartmentNumber: state => state.currentDepartmentNumber,
+    photoAreaBoxShow: state => state.photoAreaBoxShow,
+    isCallDispatchSweepcodeMethod: state => state.isCallDispatchSweepcodeMethod
   },
   mutations:{
     // 改变页面标题
@@ -116,6 +120,14 @@ export default {
     // 改变当前科室标号状态
     changeCurrentDepartmentNumber (state,payLoad) {
       state.currentDepartmentNumber = payLoad
+    },
+    // 改变显示图爿框的状态
+    changePhotoAreaBoxShow (state,payLoad) {
+      state.photoAreaBoxShow = payLoad
+    },
+    // 改变显是否调取扫码方法的状态
+    changeIsCallDispatchSweepcodeMethod (state,payLoad) {
+      state.isCallDispatchSweepcodeMethod = payLoad
     },
   },
   actions:{}

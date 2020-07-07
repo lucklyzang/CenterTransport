@@ -427,8 +427,8 @@ export default {
           display: inline-block;
           line-height: 40px;
           height: 40px;
-          background: #8d9eda;
-          color: #333;
+          background: #2895ea;
+          color: #fff;
           text-align: center
         }
       }

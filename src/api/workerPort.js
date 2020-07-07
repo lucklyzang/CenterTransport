@@ -67,6 +67,13 @@ export function updateDispatchTask(data) {
     data
   })
 };
+// 获取调度任务的操作
+export function getDispatchTask(taskId,workerId) {
+  return request({
+    url: `task/getTransTask/${taskId}/${workerId}`,
+    method: 'get'
+  })
+};
 // 调度任务退回原因查询
 export function querySendBackDispatchTaskReason(proId) {
   return request({

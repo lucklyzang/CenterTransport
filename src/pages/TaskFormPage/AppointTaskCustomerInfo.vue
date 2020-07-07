@@ -282,13 +282,23 @@ export default {
       h3 {
         font-size: 14px;
         color: #1699e8
+      };
+      .custormer-info {
+        /deep/ .van-cell {
+          padding: 10px 0;
+          color: black;
+          .van-cell__value {
+            .van-field__control:disabled {
+              color: black
+            }
+          }
+        }
       }
     };
     .customerInfo-box {
       flex:1;
       overflow: auto;
-      margin: 0 auto;
-      margin: 10px 0;
+      margin: 0 auto
     };
     .electronic-signature {
       height: 250px

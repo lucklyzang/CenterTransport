@@ -28,7 +28,7 @@
         </p>
       </div>
       <div class="photo-area-box" v-show="photoAreaBoxShow">
-        <div class="photo-preview">
+        <div class="photo-preview" @click="viewPhoto">
           <img width="100" height="130" id="preview1" :src="upImgUrl"/>
         </div>
         <div class="choose-photo-box">
@@ -79,9 +79,8 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       showLoadingHint: false,
-      photoAreaBoxShow: false,
       showSignature: false,
-      appointAreaShow: true,
+      appointAreaShow: false,
       srcUrl: '',
       headerImg: '',
       liIndex: null,
@@ -132,7 +131,11 @@ export default {
     };
     this.echoCurrentDepartmentNumber();
     // 调取摄像头
-    this.sweepCodeSure()
+    if (this.isCallDispatchSweepcodeMethod) {
+      this.sweepCodeSure()
+    } else {
+      this.echoPhoto()
+    }
   },
 
   computed:{
@@ -152,7 +155,9 @@ export default {
       'isCompleteSweepCodeDestinationList',
       'departmentInfoList',
       'departmentInfoListNo',
-      'currentDepartmentNumber'
+      'currentDepartmentNumber',
+      'photoAreaBoxShow',
+      'isCallDispatchSweepcodeMethod'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -177,12 +182,20 @@ export default {
       'changeCurrentElectronicSignature',
       'changeShowEndTaskBtn',
       'changeIsCompleteSweepCodeDestinationList',
-      'changeCurrentDepartmentNumber'
+      'changeCurrentDepartmentNumber',
+      'changePhotoAreaBoxShow'
     ]),
 
     // 扫描二维码方法
     sweepAstoffice () {
       window.android.scanQRcode()
+    },
+
+    // 查看上传的大图图片
+    viewPhoto () {
+      this.$router.push({path:'/dispatchTaskPhotoSure'});
+      this.changeTitleTxt({tit:'确认图片'});
+      setStore('currentTitle','确认图片')
     },
 
     // 根据科室编号获取科室名称(非单一目的地)
@@ -317,6 +330,7 @@ export default {
       };
       this.changeIsCompletePhotoList(temporaryPhotoList);
       setStore('completPhotoInfo', {"photoInfo": temporaryPhotoList});
+      // this.viewPhoto()
     },
 
     // 存储当前扫码校验通过的科室编号
@@ -359,7 +373,7 @@ export default {
             setStore('completPhotoInfo', {"photoInfo": temporaryInfo});
             // 判断是否需要签字
             this.judgeIsSignature();
-            this.photoAreaBoxShow = false
+            this.changePhotoAreaBoxShow(false)
           } else {
             // 清除本次签名
             this.changeCurrentElectronicSignature({DtMsg: null});
@@ -573,7 +587,7 @@ export default {
             // 判断是否需要签字
             this.judgeIsSignature()
           } else {
-            this.photoAreaBoxShow = true;
+            this.changePhotoAreaBoxShow(true);
             this.appointAreaShow = false;
             this.showSignature = false
           }
@@ -644,7 +658,7 @@ export default {
         this.judgeSubProcess()
       } else if (this.isSign == 1) {
         this.showSignature = true;
-        this.photoAreaBoxShow = false;
+        this.changePhotoAreaBoxShow(false);
         this.appointAreaShow = false
       }
     },
@@ -727,7 +741,7 @@ export default {
             });
             // 回显拍照照片
             this.echoPhoto();
-            this.photoAreaBoxShow = true;
+            this.changePhotoAreaBoxShow(true);
             this.appointAreaShow = false
           } else if (this.isSign == 1) {
             this.$dialog.alert({
@@ -735,7 +749,7 @@ export default {
               closeOnPopstate: true
             }).then(() => {
             });
-            this.photoAreaBoxShow = false;
+            this.changePhotoAreaBoxShow(false)
             this.appointAreaShow = false;
             this.showSignature = true
           } else {

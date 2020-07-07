@@ -28,6 +28,7 @@ const PadDispatchTaskCancelForm = () => import('@/pages/medicalTaskPage/PadDispa
 const CirculationDetails = () => import('@/pages/taskDetailsPage/CirculationDetails')
 const DispatchDetails = () => import('@/pages/taskDetailsPage/DispatchDetails')
 const AppointDetails = () => import('@/pages/taskDetailsPage/AppointDetails')
+const DispatchTaskPhotoSure = () => import('@/pages/sweepCodePage/DispatchTaskPhotoSure')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -160,6 +161,11 @@ let baseRoute  = [
     path: '/appointDetails',
     name: 'appointDetails',
     component: AppointDetails
+  },
+  {
+    path: '/dispatchTaskPhotoSure',
+    name: 'dispatchTaskPhotoSure',
+    component: DispatchTaskPhotoSure
   }
 ];
 let router = new Router({

@@ -110,10 +110,11 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
 import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType} from '@/api/medicalPort.js'
+  import {userSignOut} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   name: 'transportTypeMessage',
@@ -162,7 +163,8 @@ export default {
     ...mapGetters([
       'navTopTitle',
       'transportantTaskMessage',
-      'userInfo'
+      'userInfo',
+      'globalTimer'
     ]),
     proId () {
       return this.userInfo.extendData.proId
@@ -186,6 +188,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
+        this.changeIsFreshHomePage(false);
         this.$router.push({path: 'home'});
         this.changeTitleTxt({tit:'首页'});
         setStore('currentTitle','首页') 
@@ -202,21 +205,55 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
-      'changeDispatchTaskMessage'
+      'changeDispatchTaskMessage',
+      'changeOverDueWay',
+      'changeCatchComponent',
+      'changeIsFreshHomePage'
     ]),
 
-    // 返回上一页
-    backTo () {
-      this.$router.push({path: 'home'});
-      this.changeTitleTxt({tit:'中央运送'});
-      setStore('currentTitle','中央运送')
-    },
+      // 返回上一页
+      backTo () {
+        this.changeIsFreshHomePage(false);
+        this.$router.push({path: 'home'});
+        this.changeTitleTxt({tit:'中央运送'});
+        setStore('currentTitle','中央运送')
+      },
 
-    // 右边下拉框菜单点击
+      // 右边下拉框菜单点击
       leftLiCLick (index) {
         this.liIndex = index;
-        localStorage.clear();
-        this.$router.push({path:'/'})
+        this.userLoginOut(this.proId, this.userInfo.userName)
+      },
+
+      // 用户签退
+      userLoginOut (proId,workerId) {
+        this.changeOverDueWay(true);
+        setStore('storeOverDueWay',true);
+        userSignOut(proId,workerId).then((res) => {
+          if (res && res.data.code == 200) {
+            if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            removeAllLocalStorage();
+            this.changeCatchComponent([]);
+            this.$router.push({path:'/'})
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            this.changeOverDueWay(false);
+            setStore('storeOverDueWay',false);
+          }
+        }).
+        catch((err) => {
+          this.changeOverDueWay(false);
+          setStore('storeOverDueWay',false);
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
       },
 
       // 跳转到我的页
