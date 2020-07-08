@@ -9,6 +9,7 @@ export default {
     appointSweepCodeNumber: false,
     appointSweepCodeIntoPage: false,
     cancelTaskIdList: [],
+    isFreshAppointTaskPage: true,
     originalSignature: null,
     isCompleteSweepCodeList: [],
     isAppointTaskFirstSweepCode: true,
@@ -27,7 +28,8 @@ export default {
     isCompleteSweepCodeList: state => state.isCompleteSweepCodeList,
     isAppointTaskFirstSweepCode: state => state.isAppointTaskFirstSweepCode,
     completeSweepcodeDestinationInfo: state => state.completeSweepcodeDestinationInfo,
-    surplusDestinationList: state => state.surplusDestinationList
+    surplusDestinationList: state => state.surplusDestinationList,
+    isFreshAppointTaskPage: state => state.isFreshAppointTaskPage
   },
   mutations:{
     // 改变预约任务信息状态
@@ -77,6 +79,10 @@ export default {
     //改变没有扫码目的地状态
     changeSurplusDestinationList (state,payLoad) {
       state.surplusDestinationList = payLoad
+    },
+    //改变是否刷新预约任务页的状态
+    changeIsFreshAppointTaskPage (state,payLoad) {
+      state.isFreshAppointTaskPage = payLoad
     }
   },
   actions:{}

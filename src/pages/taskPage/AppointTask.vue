@@ -373,6 +373,7 @@
   import FooterBottom from '@/components/FooterBottom'
   import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
+  import store from '@/store'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
@@ -433,7 +434,9 @@
         'navTopTitle',
         'userInfo',
         'completeSweepcodeDestinationInfo',
-        'globalTimer'
+        'globalTimer',
+        'catch_components',
+        'isFreshAppointTaskPage'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -457,6 +460,7 @@
         deep: true,
         immediate: true
       },
+
       stateFilterList: {
         handler(newName, oldName) {
           if (newName.some(function (item, index) {return item.taskCheck == true})) {
@@ -497,30 +501,48 @@
       this.drawTaskId()
     },
 
-    // activated () {
-    //  // 控制设备物理返回按键测试
-    //   if (!IsPC()) {
-    //     let that = this;
-    //     pushHistory();
-    //     that.gotoURL(() => {
-    //       pushHistory();
-    //       this.$router.push({path: 'home'});
-    //       this.changeTitleTxt({tit:'中央运送'});
-    //       setStore('currentTitle','中央运送') 
-    //     })
-    //   };
-    //   document.addEventListener('click',(e) => {
-    //     if(e.target.className!='status-name'){
-    //       this.stateListShow = false;
-    //     };
-    //     if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
-    //       this.leftDownShow = false;
-    //     }
-    //   });
-    //   // 查询预约任务(分配给自己的)
-    //   this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
-    //   this.drawTaskId()
-    // },
+    activated () {
+     // 控制设备物理返回按键测试
+      if (!IsPC()) {
+        let that = this;
+        pushHistory();
+        that.gotoURL(() => {
+          pushHistory();
+          this.$router.push({path: 'home'});
+          this.changeTitleTxt({tit:'中央运送'});
+          setStore('currentTitle','中央运送') 
+        })
+      };
+      document.addEventListener('click',(e) => {
+        if(e.target.className!='status-name'){
+          this.stateListShow = false;
+        };
+        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+          this.leftDownShow = false;
+        }
+      });
+      // 查询预约任务(分配给自己的)
+      if (this.isFreshAppointTaskPage) {
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+        this.drawTaskId()
+      }
+    },
+
+     beforeRouteEnter (to, from, next){
+      let catch_components = store.state.catchComponent.catch_components;
+      let i = catch_components.indexOf('appointTask');
+      i === -1 && catch_components.push('appointTask');
+      next();
+    },
+
+    beforeRouteLeave(to, from, next) {
+      let catch_components = this.catch_components;
+      if (to.name !== 'appointDetails'){
+        let i = catch_components.indexOf('appointTask');
+        i > -1 && this.changeCatchComponent([]);
+      }
+      next()
+    },
 
     methods: {
       ...mapMutations([
@@ -547,7 +569,33 @@
 
       // 进入任务
       intoTask (item) {
-        this.taskClickEvent(item)
+        if (item.state !== 1 && item.state !== 7) {
+          // 传给扫码界面科室类型和任务状态的值
+          if (item.state == 2) {
+            this.changeAppointSweepCodeNumber(false);
+            this.changeAppointSweepCodeIntoPage(true);
+            this.changeAppointTaskDepartmentType(0);
+            this.changeAppointTaskState(3);
+            this.changeSurplusDestinationList(item.spaces)
+          } else if (item.state == 3) {
+            this.changeAppointSweepCodeIntoPage(false);
+            this.changeAppointSweepCodeNumber(true);
+            this.changeAppointTaskDepartmentType(1);
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
+          } else if (item.state == 4) {
+            this.changeAppointSweepCodeNumber(false);
+            this.changeAppointSweepCodeIntoPage(false);
+            this.changeAppointTaskDepartmentType(2);
+            this.changeAppointTaskState(7);
+            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
+          }
+        };
+        this.$router.push({'path':'/appointDetails'});
+        this.changeTitleTxt({tit:'预约任务详情'});
+        setStore('currentTitle','预约任务详情');
+        // 改变调度具体某一预约任务的信息状态
+        this.changeAppointTaskMessage({DtMsg: item});
+        setStore('currentAppointTaskMessage',item);
       },
 
       // 用户签退
@@ -984,44 +1032,6 @@
         })
       },
 
-      // 点击具体任务事件
-      taskClickEvent (item) {
-        if (item.state == 7) {
-          this.$router.push({'path':'/taskDetailsMessage'});
-          this.changeTitleTxt({tit:'历史任务详情'});
-          setStore('currentTitle','历史任务详情');
-          this.changeTaskDetailsMessage(item);
-          this.changeTaskType('预约任务')
-        };
-        if (item.state !== 1 && item.state !== 7) {
-          // 传给扫码界面科室类型和任务状态的值
-          if (item.state == 2) {
-            this.changeAppointSweepCodeNumber(false);
-            this.changeAppointSweepCodeIntoPage(true);
-            this.changeAppointTaskDepartmentType(0);
-            this.changeAppointTaskState(3);
-            this.changeSurplusDestinationList(item.spaces)
-          } else if (item.state == 3) {
-            this.changeAppointSweepCodeIntoPage(false);
-            this.changeAppointSweepCodeNumber(true);
-            this.changeAppointTaskDepartmentType(1);
-            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
-          } else if (item.state == 4) {
-            this.changeAppointSweepCodeNumber(false);
-            this.changeAppointSweepCodeIntoPage(false);
-            this.changeAppointTaskDepartmentType(2);
-            this.changeAppointTaskState(7);
-            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
-          };
-          this.$router.push({'path':'/appointTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码');
-          // 改变调度具体某一预约任务的信息状态
-          this.changeAppointTaskMessage({DtMsg: item});
-          setStore('currentAppointTaskMessage',item);
-        }
-      },
-
       // 取消任务按钮点击
       cancelTaskEvent () {
         this.cancelTask = true;
@@ -1190,8 +1200,8 @@
           position: relative;
           margin-bottom: 10px;
           box-sizing: border-box;
-          border: 1px solid #5d94f6;
-          width: 98%;
+          border: 1px solid #cecece;
+          width: 96%;
           .wait-handle-message {
             font-size: 18px;
             padding: 8px;
@@ -1331,8 +1341,8 @@
         position: relative;
         margin-bottom: 10px;
         box-sizing: border-box;
-        border: 1px solid #5d94f6;
-        width: 98%;
+        border: 1px solid #cecece;
+        width: 96%;
         .wait-handle-message {
           font-size: 18px;
           padding: 8px;
@@ -1405,14 +1415,14 @@
       }
     };
     .status-handle-screen {
-       .wait-handle-list {
-          margin: 0 auto;
-          box-sizing: border-box;
-          position: relative;
-          margin-bottom: 10px;
-          box-sizing: border-box;
-          border: 1px solid #5d94f6;
-          width: 98%;
+      .wait-handle-list {
+        margin: 0 auto;
+        box-sizing: border-box;
+        position: relative;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #cecece;
+        width: 96%;
         .wait-handle-message {
           font-size: 18px;
           padding: 8px;
