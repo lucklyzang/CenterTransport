@@ -35,7 +35,6 @@
         </p>
       </div>
       <div class="task-operate-box" v-show="cancelTaskBtnShow || transferTaskBtnShow">
-        <span v-show="cancelTaskBtnShow" @click="cancelTaskEvent">取消任务</span>
         <span v-show="transferTaskBtnShow" @click="transferTaskEvent">转移任务</span>
       </div>
     </div>
@@ -49,7 +48,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -76,9 +75,9 @@
                 </p>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2">
+            <!-- <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
+            </p> -->
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -86,6 +85,7 @@
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">取消</span>
             </p>
           </div>
         </div>
@@ -99,7 +99,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -126,9 +126,9 @@
                 </p>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2">
+            <!-- <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
+            </p> -->
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -136,6 +136,7 @@
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
             </p>
           </div>
         </div>
@@ -149,7 +150,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -176,9 +177,9 @@
                 </p>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2">
+            <!-- <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
+            </p> -->
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -186,6 +187,7 @@
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
             </p>
           </div>
         </div>
@@ -199,7 +201,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -226,9 +228,9 @@
                 </p>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2">
+            <!-- <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
+            </p> -->
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -236,6 +238,7 @@
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
             </p>
           </div>
         </div>
@@ -249,7 +252,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -276,9 +279,9 @@
                 </p>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2">
+            <!-- <p class="wait-handle-check" v-show="item.state == 2">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
+            </p> -->
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -286,6 +289,7 @@
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
             </p>
           </div>
         </div>
@@ -324,7 +328,7 @@
                   <span class="message-tit">开始时间: {{item.createTime}}</span>
                 </p>
                 <p>
-                  <span class="message-tit">任务描述: {{item.taskTypeName}}</span>
+                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
                 </p>
               </div>
               <div class="handle-message-line-wrapper">
@@ -351,9 +355,9 @@
                 </p>
               </div>
             </div>
-          <p class="wait-handle-check" v-show="item.state == 2">
+          <!-- <p class="wait-handle-check" v-show="item.state == 2">
             <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-          </p>
+          </p> -->
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
               <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -361,17 +365,31 @@
             <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
               进入任务
             </span>
+            <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
           </p>
         </div>
       </div>
     </div>
+    <!-- 退回原因弹窗 -->
+    <van-dialog v-model="reasonShow" title="请选择退回原因" show-cancel-button width="92%"
+      @confirm="reasonSure" @cancel="reasonCancel"
+    >
+      <div class="tool-name-list">
+        <div class="tool-name-list-title-innner">退回原因:</div>
+        <div class="tool-name-list-content">
+          <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
+            {{item.text}}
+          </span>
+        </div>
+      </div>
+    </van-dialog>
   </div>
 </template>
 
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut} from '@/api/workerPort.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut, queryDispatchTaskCancelReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import store from '@/store'
   import Loading from '@/components/Loading'
@@ -384,6 +402,12 @@
       return {
         showLoadingHint: false,
         noDataShow: false,
+        reasonShow: false,
+        reasonOperationList: [],
+        reasonIndex: '',
+        reasonText: '',
+        reasonName: '',
+        reasonValue: '',
         stateIndex: 0,
         taskQueryShow: false,
         leftDropdownDataList: ['退出登录'],
@@ -410,11 +434,11 @@
         transferTaskBtnShow: false,
         isRefresh: false,
         waitHandleBox: true,
+        taskId: '',
         stateFilterList: [],
         stateCompleteList: [],
         waitBaskList: [],
         screenTaskList: [],
-        cancelTaskIdList: [],
         transferTaskIdList: [],
         drawCompleteTaskIdList: [],
         taskGetPng: require('@/components/images/task-get.png'),
@@ -497,7 +521,7 @@
         }
       });
       // 查询预约任务(分配给自己的)
-      this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+      this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, startDate: '',endDate: ''}, this.stateIndex);
       this.drawTaskId()
     },
 
@@ -523,7 +547,7 @@
       });
       // 查询预约任务(分配给自己的)
       if (this.isFreshAppointTaskPage) {
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex);
         this.drawTaskId()
       }
     },
@@ -549,12 +573,6 @@
         'changeTitleTxt',
         'changeAppointTaskMessage',
         'changeAppointTaskTransferIdList',
-        'changeAppoinTaskCancelIdList',
-        'changeAppointSweepCodeNumber',
-        'changeAppointSweepCodeIntoPage',
-        'changeAppointTaskDepartmentType',
-        'changeAppointTaskState',
-        'changeSurplusDestinationList',
         'changeTaskDetailsMessage',
         'changeTaskType',
         'changeOverDueWay',
@@ -567,29 +585,77 @@
         this.userLoginOut(this.proId, this.userInfo.userName)
       },
 
+       // 任务退回
+      cancelTaskEvent (item) {
+        this.taskId = item.id;
+        this.reasonShow = true;
+        queryDispatchTaskCancelReason({proId:this.proId,state: 0})
+        .then((res) => {
+          this.reasonOperationList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                this.reasonOperationList.push({
+                  text: item.cancelName,
+                  value: item.id
+                })
+              }
+            } else {
+              this.$toast('没有查到退回原因');
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        });
+        this.reasonIndex = ''
+      },
+
+      // 退回原因确定
+      reasonSure () {
+        if (this.reasonIndex === '') {
+          this.$toast('请选择退回原因');
+          return
+        };
+        cancelAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.reasonText})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            this.$toast(`${res.data.msg}`);
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, startDate: '',endDate: ''}, this.stateIndex)
+          } else {
+            this.$toast(`${res.data.msg}`)
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 退回原因取消
+      reasonCancel() {
+        this.reasonIndex = '';
+        this.reasonName = '';
+        this.reasonShow = false
+      },
+      // 原因选中事件
+      reasonCheck (item,index) {
+        this.reasonIndex = index;
+        this.reasonText = item.text;
+        this.reasonName = item.text
+        this.reasonValue = item.value
+      },
+
+
       // 进入任务
       intoTask (item) {
-        if (item.state !== 1 && item.state !== 7) {
-          // 传给扫码界面科室类型和任务状态的值
-          if (item.state == 2) {
-            this.changeAppointSweepCodeNumber(false);
-            this.changeAppointSweepCodeIntoPage(true);
-            this.changeAppointTaskDepartmentType(0);
-            this.changeAppointTaskState(3);
-            this.changeSurplusDestinationList(item.spaces)
-          } else if (item.state == 3) {
-            this.changeAppointSweepCodeIntoPage(false);
-            this.changeAppointSweepCodeNumber(true);
-            this.changeAppointTaskDepartmentType(1);
-            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
-          } else if (item.state == 4) {
-            this.changeAppointSweepCodeNumber(false);
-            this.changeAppointSweepCodeIntoPage(false);
-            this.changeAppointTaskDepartmentType(2);
-            this.changeAppointTaskState(7);
-            this.changeSurplusDestinationList(item.spaces.filter((item) => {return item.check == false}))
-          }
-        };
         this.$router.push({'path':'/appointDetails'});
         this.changeTitleTxt({tit:'预约任务详情'});
         setStore('currentTitle','预约任务详情');
@@ -671,7 +737,7 @@
 
       // 搜索完成的任务
       searchCompleteTask () {
-        this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7, startDate: this.startTime, endDate: this.endTime})
+        this.queryCompleteDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -2,startDate: this.startTime,endDate: this.endTime})
       },
 
       // 任务状态转换
@@ -705,10 +771,10 @@
       },
 
       // 查询预约任务(状态筛选点击专用)  
-      queryStateFilterDispatchTask (proID, workerId, index) {
+      queryStateFilterDispatchTask (data, index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
-        queryAppointTaskMessage (proID, workerId)
+        queryAppointTaskMessage (data)
         .then((res) => {
           this.showLoadingHint = false;
           let temporaryTaskListFirst = [];
@@ -729,15 +795,15 @@
                   taskTypeName: item.taskName,
                   toolName: item.toolName,
                   id: item.id,
+                  taskNumber: item.taskNumber,
                   patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  sex: item.bedNumber,
+                  bedNumber: item.badNumber,
+                  sex: item.sex,
                   age: item.age,
                   patientId: item.id,
                   number: item.number,
                   priority: item.priority,
-                  taskRemark: item.taskRemark,
-                  spaces: item.destinationName
+                  taskRemark: item.taskRemark
                 })
               };
               if (index == 0) {
@@ -770,56 +836,6 @@
                   this.noDataShow = true;
                   return
                 }
-              };
-              // 改变目的地科室列表数据结构
-              for (let item = 0, len = this.stateFilterList.length; item < len; item++) {
-                let temporaryArrayTwo = [];
-                for (let innerItem in this.stateFilterList[item]) {
-                  if (innerItem == 'spaces') {
-                    let temporaryArrayTwo = [];
-                    let temporaryItem = removeBlock(this.stateFilterList[item][innerItem]).split(",");
-                    let temporaryArrayOne = [];
-                    for (let kip of temporaryItem) {
-                      temporaryArrayOne = [];
-                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
-                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
-                    }
-                    this.stateFilterList[item]['spaces'] = temporaryArrayTwo;
-                  };
-                }
-              };
-              // 目的地科室列表增加字段
-              for (let item of this.stateFilterList) {
-                for (let innerItem in item) {
-                  if (innerItem == 'spaces') {
-                    for (let medicalItem of item[innerItem]) {
-                      medicalItem['check'] = false
-                    }
-                  }
-                }
-              };
-              console.log('改变',this.stateFilterList);
-              // 为完成扫码目的地科室增加标记
-              if (this.completeSweepcodeDestinationInfo.length > 0) {
-                for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
-                  if (this.stateFilterList.length > 0) {
-                     for (let n = 0, nLen = this.stateFilterList.length; n < nLen; n++) {
-                      if (this.stateFilterList[n]['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
-                        if (this.completeSweepcodeDestinationInfo[w]['officeList'].length > 0) {
-                          for (let i = 0, len1 = this.completeSweepcodeDestinationInfo[w]['officeList'].length; i < len1; i++) {
-                            if (this.stateFilterList[n]['spaces'].length > 0) {
-                              for (let j = 0, len2 = this.stateFilterList[n]['spaces'].length; j < len2; j++) {
-                                if (this.stateFilterList[n]['spaces'][j]['value'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
-                                  this.stateFilterList[n]['spaces'][j]['check'] = true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
               }
             } else {
               this.noDataShow = true;
@@ -846,7 +862,7 @@
 
       // 下拉刷新
       onRefresh () {
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex)
       },
 
       // 提取存储已完成采集任务科室所属任务id
@@ -863,11 +879,11 @@
         }
       },
 
-      // 查询调度任务(已完成)
+      // 查询预约任务(已完成)
       queryCompleteDispatchTask (data) {
         this.noDataShow = false;
         this.showLoadingHint = true;
-        getAppointTaskComplete(data).then((res) => {
+        queryAppointTaskMessage(data).then((res) => {
           this.stateCompleteList = [];
           this.showLoadingHint = false;
           this.noDataShow = true
@@ -885,32 +901,17 @@
                   destinationName: item.destinationName,
                   taskTypeName: item.taskName,
                   toolName: item.toolName,
+                  taskNumber: item.taskNumber,
                   id: item.id,
                   patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  sex: item.bedNumber,
+                  bedNumber: item.badNumber,
+                  sex: item.sex,
                   age: item.age,
                   patientId: item.id,
                   number: item.number,
+                  priority: item.priority,
                   taskRemark: item.taskRemark
                 })
-              };
-               // 改变目的地科室列表数据结构
-              for (let item = 0, len = this.stateCompleteList.length; item < len; item++) {
-                let temporaryArrayTwo = [];
-                for (let innerItem in this.stateCompleteList[item]) {
-                  if (innerItem == 'spaces') {
-                    let temporaryArrayTwo = [];
-                    let temporaryItem = removeBlock(this.stateCompleteList[item][innerItem]).split(",");
-                    let temporaryArrayOne = [];
-                    for (let kip of temporaryItem) {
-                      temporaryArrayOne = [];
-                      temporaryArrayOne = kip.replace(/\"/g, "").split(':');
-                      temporaryArrayTwo.push({text: temporaryArrayOne[1], value: temporaryArrayOne[0]});
-                    }
-                    this.stateCompleteList[item]['spaces'] = temporaryArrayTwo;
-                  }
-                }
               }
             } else {
               this.noDataShow = true;
@@ -952,20 +953,20 @@
         this.transferTask = false;
         this.cancelTask = false;
         this.noDataShow = false;
+        this.initDate();
         if (index == '0') {
           this.stateIndex = 0;
           this.taskQueryShow = false;
           this.waitHandleBox = true;
           this.stateScreenVal = '全部';
-          this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex);
+          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex);
         } else if (index == '1') {
           this.stateIndex = null;
           this.taskQueryShow = true;
           this.waitHandleBox = false;
           this.cancelTaskBtnShow = false;
           this.transferTaskBtnShow = false;
-          this.initDate();
-          this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7,startDate: this.startTime, endDate: this.endTime})
+          this.queryCompleteDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -2,startDate: this.startTime,endDate: this.endTime})
         }
       },
 
@@ -973,7 +974,7 @@
       stateListEvent (index,item) {
         this.stateIndex = index;
         this.stateScreenVal = item;
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, index)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex)
       },
 
       // 状态筛选按钮点击
@@ -982,7 +983,7 @@
         this.taskQueryShow = false;
         this.stateListShow = !this.stateListShow;
         if (this.stateScreenVal == '状态筛选') {
-          this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
+          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, 0);
           this.stateIndex = 0;
         }
       },
@@ -1015,12 +1016,12 @@
       getTask (taskId) {
         updateAppointTaskMessage({
           proId: this.proId,//当前项目ID
-          id: taskId, //当前任务ID
-          state: 2 //更新后的状态
+          taskId: taskId, //当前任务ID
+          workerId: this.workerId// 运送员ID即当前登录人
         })
         .then(res => {
           if (res && res.data.code == 200) {
-            this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''},0)
           }
         })
         .catch(err => {
@@ -1030,26 +1031,6 @@
           }).then(() => {
           });
         })
-      },
-
-      // 取消任务按钮点击
-      cancelTaskEvent () {
-        this.cancelTask = true;
-        this.transferTask = false;
-        this.cancelTaskIdList = [];
-        this.$router.push({path:'/appointTaskCancelForm'});
-        this.changeTitleTxt({tit:'取消原因选择'});
-        setStore('currentTitle','取消原因选择');
-        this.cancelTaskIdList = [];
-        let temporaryCancelTaskCheckList = [];
-        temporaryCancelTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-        for (let item of temporaryCancelTaskCheckList)  {
-          for (let key in item) {
-            if (key == 'id')
-            this.cancelTaskIdList.push(item['id'])
-          }
-        };
-        this.changeAppoinTaskCancelIdList({DtMsg: this.cancelTaskIdList})
       }
     }
 }
@@ -1060,6 +1041,44 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
    .content-wrapper {
+    /deep/ .van-dialog {
+      .van-dialog__content {
+        margin-bottom: 6px;
+        height: 200px;
+        margin: 10px 0;
+        .tool-name-list {
+          width: 94%;
+          height: 100%;
+          overflow: auto;
+          margin: 0 auto;
+          padding: 0;
+          border: 1px solid #b2b2b2;
+          .tool-name-list-title-innner {
+            padding: 10px;
+          }
+          .tool-name-list-content {
+            padding: 6px;
+            .spanStyle {
+              color: #fff;
+              background: #2895ea
+            }
+            span {
+              display: inline-block;
+              width: 48%;
+              height: 40px;
+              text-align: center;
+              margin-bottom: 8px;
+              line-height: 40px;
+              background: #f3f3f3;
+              margin-right: 4%;
+              &:nth-child(even) {
+                margin-right: 0
+              }
+            }
+          }
+        }
+      }
+    };
     .content-wrapper();
     font-size: 14px;
     position: relative;
@@ -1258,14 +1277,29 @@
               width: 90px;
               height: 40px;
               line-height: 40px;
+              vertical-align: top;
               img {
                 width: 100%;
                 height: 100%
+              }
+              &:nth-child(1) {
+                color: #fff;
+                font-size: 13px;
+                background: #2895ea;
+                text-align: center;
+                border-radius: 4px
               }
               &:nth-child(2) {
                 color: #fff;
                 font-size: 13px;
                 background: #2895ea;
+                text-align: center;
+                border-radius: 4px
+              }
+              &:nth-child(3) {
+                color: #fff;
+                font-size: 13px;
+                background: #b4b4b4;
                 text-align: center;
                 border-radius: 4px
               }
@@ -1399,14 +1433,29 @@
             width: 90px;
             height: 40px;
             line-height: 40px;
+            vertical-align: top;
             img {
               width: 100%;
               height: 100%
             };
+            &:nth-child(1) {
+              color: #fff;
+              font-size: 13px;
+              background: #2895ea;
+              text-align: center;
+              border-radius: 4px
+            }
             &:nth-child(2) {
               color: #fff;
               font-size: 13px;
               background: #2895ea;
+              text-align: center;
+              border-radius: 4px
+            }
+            &:nth-child(3) {
+              color: #fff;
+              font-size: 13px;
+              background: #b4b4b4;
               text-align: center;
               border-radius: 4px
             }
@@ -1479,14 +1528,29 @@
             width: 90px;
             height: 40px;
             line-height: 40px;
+            vertical-align: top;
             img {
               width: 100%;
               height: 100%
             };
+           &:nth-child(1) {
+            color: #fff;
+            font-size: 13px;
+            background: #2895ea;
+            text-align: center;
+            border-radius: 4px
+            }
             &:nth-child(2) {
               color: #fff;
               font-size: 13px;
               background: #2895ea;
+              text-align: center;
+              border-radius: 4px
+            }
+            &:nth-child(3) {
+              color: #fff;
+              font-size: 13px;
+              background: #b4b4b4;
               text-align: center;
               border-radius: 4px
             }

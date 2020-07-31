@@ -446,15 +446,14 @@ export const removeAllLocalStorage = () => {
   removeStore('userInfo');
   removeStore('isLogin');
   removeStore('userType');
-  removeStore('isAppointFirstSweepCode');
-  removeStore('completAppointTaskSweepCodeInfo');
   removeStore('completAppointTaskSweepCodeDestinationInfo');
   removeStore('currentDepartmentId');
   removeStore('completPhotoInfo');
   removeStore('completeDispatchSweepCodeDestinationInfo');
+  removeStore('completAppointTaskSweepCodeDepartureInfo');
+  removeStore('completAppointTaskCheckedItemInfo');
   removeStore('isDispatchFirstSweepCode');
   removeStore('completeDispatchSweepCodeInfo');
-  removeStore('completAppointTaskSweepCodeInfo');
   removeStore('currentCirculationCollectMessage');
   removeStore('completeDepartmentMessage');
   removeStore('isDeleteEcho');

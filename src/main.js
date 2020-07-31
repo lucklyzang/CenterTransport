@@ -117,13 +117,17 @@ new Vue({
      if (getStore('isDispatchFirstSweepCode')) {
       store.commit('changeIsDispatchTaskFirstSweepCode', JSON.parse(getStore('isDispatchFirstSweepCode')));
     };
-    // 页面刷新重新存入预约任务完成扫码的出发地科室信息
-    if (getStore('completAppointTaskSweepCodeInfo')) {
-      store.commit('changeIsCompleteSweepCodeList', JSON.parse(getStore('completAppointTaskSweepCodeInfo'))['sweepCodeInfo']);
-    };
     // 页面刷新重新存入预约任务完成扫码的目的地科室信息
     if (getStore('completAppointTaskSweepCodeDestinationInfo')) {
       store.commit('changeCompleteSweepcodeDestinationInfo', JSON.parse(getStore('completAppointTaskSweepCodeDestinationInfo'))['sweepCodeInfo']);
+    };
+    // 页面刷新重新存入预约任务完成扫码起始地科室信息
+    if (getStore('completAppointTaskSweepCodeDepartureInfo')) {
+      store.commit('changeCompleteSweepcodeDepartureInfo', JSON.parse(getStore('completAppointTaskSweepCodeDepartureInfo'))['sweepCodeInfo']);
+    };
+    // 页面刷新重新存入预约任务完成检查的科室信息
+    if (getStore('completAppointTaskCheckedItemInfo')) {
+      store.commit('changeCompleteCheckedItemInfo', JSON.parse(getStore('completAppointTaskCheckedItemInfo'))['sweepCodeInfo']);
     };
     // 重新存入调度任务完成上传的照片
     if (getStore('completPhotoInfo')) {
@@ -132,10 +136,6 @@ new Vue({
     // 重新存入调度任务当前扫码校验通过的科室编号
     if (getStore('completDepartmentNumber')) {
       store.commit('changeCurrentDepartmentNumber', JSON.parse(getStore('completDepartmentNumber'))['number']);
-    };
-    // 页面刷新重新存入预约任务是否第一次扫码
-    if (getStore('isAppointFirstSweepCode')) {
-      store.commit('changeIsAppointTaskFirstSweepCode', JSON.parse(getStore('isAppointFirstSweepCode')));
     };
     // 页面刷新重新存入科室信息
     if (getStore('departmentInfo')) {

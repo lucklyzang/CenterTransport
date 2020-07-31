@@ -4,31 +4,20 @@ export default {
   state:{
     appointTaskMessage: null,
     appointTaskTransferIdList: [],
-    appointTaskState: '',
-    appointTaskDepartmentType: '',
-    appointSweepCodeNumber: false,
-    appointSweepCodeIntoPage: false,
-    cancelTaskIdList: [],
     isFreshAppointTaskPage: true,
     originalSignature: null,
-    isCompleteSweepCodeList: [],
-    isAppointTaskFirstSweepCode: true,
     completeSweepcodeDestinationInfo: [],
-    surplusDestinationList: []
+    completeSweepcodeDepartureInfo: [],
+    completeCheckedItemInfo: []
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
     appointTaskTransferIdList: state => state.appointTaskTransferIdList,
-    appointTaskState: state => state.appointTaskState,
-    appointTaskDepartmentType: state => state.appointTaskDepartmentType,
-    appointSweepCodeNumber: state => state.appointSweepCodeNumber,
-    appointSweepCodeIntoPage: state => state.appointSweepCodeIntoPage,
-    cancelTaskIdList: state => state.cancelTaskIdList,
     originalSignature: state => state.originalSignature,
-    isCompleteSweepCodeList: state => state.isCompleteSweepCodeList,
     isAppointTaskFirstSweepCode: state => state.isAppointTaskFirstSweepCode,
     completeSweepcodeDestinationInfo: state => state.completeSweepcodeDestinationInfo,
-    surplusDestinationList: state => state.surplusDestinationList,
+    completeSweepcodeDepartureInfo: state => state.completeSweepcodeDepartureInfo,
+    completeCheckedItemInfo: state => state.completeCheckedItemInfo,
     isFreshAppointTaskPage: state => state.isFreshAppointTaskPage
   },
   mutations:{
@@ -40,45 +29,21 @@ export default {
     changeAppointTaskTransferIdList (state,payLoad) {
       state.appointTaskTransferIdList = payLoad.DtMsg
     },
-    // 改变预约任务状态的状态
-    changeAppointTaskState (state,payLoad) {
-      state.appointTaskState = payLoad
-    },
-    // 改变预约任务科室类型的状态
-    changeAppointTaskDepartmentType (state,payLoad) {
-      state.appointTaskDepartmentType = payLoad
-    },
-    // 改变预约任务的扫码次数状态
-    changeAppointSweepCodeNumber (state,payLoad) {
-      state.appointSweepCodeNumber = payLoad
-    },
-    // 改变预约任务扫码后进入页面的状态
-    changeAppointSweepCodeIntoPage (state,payLoad) {
-      state.appointSweepCodeIntoPage = payLoad
-    },
-    // 改变取消原因列表状态
-    changeAppoinTaskCancelIdList (state,payLoad) {
-      state.cancelTaskIdList = payLoad.DtMsg
-    },
     // 改变原始签名状态
     changeOriginalSignature (state,payLoad) {
       state.originalSignature = payLoad
-    },
-    // 改变科室是否完成扫码状态
-    changeIsCompleteSweepCodeList (state,payLoad) {
-      state.isCompleteSweepCodeList = payLoad
-    },
-    //改变是否首次扫码的状态
-    changeIsAppointTaskFirstSweepCode (state,payLoad) {
-      state.isAppointTaskFirstSweepCode = payLoad
     },
     //改变完成扫码目的地信息的状态
     changeCompleteSweepcodeDestinationInfo (state,payLoad) {
       state.completeSweepcodeDestinationInfo = payLoad
     },
-    //改变没有扫码目的地状态
-    changeSurplusDestinationList (state,payLoad) {
-      state.surplusDestinationList = payLoad
+    //改变完成检查科室的信息状态
+    changeCompleteCheckedItemInfo (state,payLoad) {
+      state.completeCheckedItemInfo = payLoad
+    },
+    //改变完成扫码起始地信息的状态
+     changeCompleteSweepcodeDepartureInfo(state,payLoad) {
+      state.completeSweepcodeDepartureInfo = payLoad
     },
     //改变是否刷新预约任务页的状态
     changeIsFreshAppointTaskPage (state,payLoad) {

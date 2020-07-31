@@ -272,10 +272,19 @@ export function queryCirculationTaskMessage(id, date) {
  * 预约任务
 */
 
-// 查询预约任务(分配给本人的)
-export function queryAppointTaskMessage(proId, workerId) {
+// 查询预约任务
+export function queryAppointTaskMessage(data) {
   return request({
-    url: `reserve/allTask/${proId}/${workerId}`,
+    url: 'bookTask/queryTask',
+    method: 'get',
+    params: data
+  })
+};
+
+// 根据ID查询预约任务详情
+export function queryAppointTaskDetailsMessage(taskId) {
+  return request({
+    url: `bookTask/query/${taskId}`,
     method: 'get'
   })
 };
@@ -289,10 +298,10 @@ export function getAppointTaskComplete(data) {
   })
 };
 
-// 预约任务的更新
+// 预约任务的获取
 export function updateAppointTaskMessage(data) {
   return request({
-    url: 'reserve/update',
+    url: 'bookTask/confirm',
     method: 'put',
     data
   })
@@ -310,26 +319,35 @@ export function transferAppointTask(data) {
 // 任务取消
 export function cancelAppointTask(data) {
   return request({
-    url: 'reserve/batchCancel',
+    url: 'bookTask/cancelTask',
     method: 'put',
     data
   })
 };
 
-// 校验科室
-export function judgeAppointTaskDepartment(data) {
+// 校验病人信息
+export function judgeAppointTaskCheckPatient(data) {
   return request({
-    url: 'reserve/verifySpace',
+    url: 'bookTask/checkPatient',
     method: 'put',
     data
   })
 };
 
-// 查询客户预约信息
-export function queryCustomerAppointInfo (data) {
+// 校验起始科室
+export function judgeAppointTaskCheckDepartment(data) {
   return request({
-    url: '',
-    method: 'post',
+    url: 'bookTask/checkDepartment',
+    method: 'put',
+    data
+  })
+};
+
+// 校验检查项科室
+export function judgeAppointTaskCheckItem(data) {
+  return request({
+    url: 'bookCheckItem/verify',
+    method: 'put',
     data
   })
 };
@@ -337,8 +355,26 @@ export function queryCustomerAppointInfo (data) {
 // 客户预约信息确认
 export function sureCustomerAppointInfo (data) {
   return request({
-    url: 'reserve/updateSign',
-    method: 'post',
+    url: 'bookTask/saveSign',
+    method: 'put',
+    data
+  })
+};
+
+// 预约任务检查科室完成
+export function checkItemsCompleted (data) {
+  return request({
+    url: 'bookCheckItem/complete',
+    method: 'put',
+    data
+  })
+};
+
+// 预约任务完成
+export function appointTaskCompleted (data) {
+  return request({
+    url: 'bookTask/completeTask',
+    method: 'put',
     data
   })
 };

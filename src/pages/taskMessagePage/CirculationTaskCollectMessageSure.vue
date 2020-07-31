@@ -35,8 +35,11 @@
         </div>
       </div>
     </div>
-    <div class="electronic-signature" v-if="showSignature">
-      <ElectronicSignature></ElectronicSignature>
+    <div class="electronic-signature"  v-if="showSignature">
+      <ElectronicSignature ref="mychild"></ElectronicSignature>
+    </div>
+    <div class="rewrite-box" v-if="showSignature">
+      <span @click="rewrite">重写</span>
     </div>
     <div class="btn-area">
       <span>
@@ -116,6 +119,7 @@ export default {
   computed:{
     ...mapGetters([
       'navTopTitle',
+      'originalSignature',
       'currentElectronicSignature',
       'circulationCollectMessageList',
       'circulationTaskMessage',
@@ -186,6 +190,10 @@ export default {
       })
     },
 
+    // 重写
+    rewrite () {
+      this.$refs.mychild.overwrite()
+    },
 
     // 回显已经采集信息
     echoCollectMessage () {
@@ -270,17 +278,9 @@ export default {
 
     // 采集信息确认事件
     collectMessageSure () {
-      // if (!this.showSignature) {
-      //   this.showSignature = true;
+      // this.$refs.mychild.commitSure();
+      // if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
       //   return
-      // };
-      // if (!this.currentElectronicSignature) {
-      //   this.$dialog.alert({
-      //     message: '签名不能为空，请确认签名!',
-      //     closeOnPopstate: false
-      //   }).then(() => {
-      //   });
-      //   return;
       // };
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
@@ -462,6 +462,22 @@ export default {
     .electronic-signature {
       height: 250px
     }
+    .rewrite-box {
+      height: 40px;
+      margin: 10px 0;
+      width: 100%;
+      text-align: center;
+      span {
+        display: inline-block;
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        background: #fff;
+        border-radius: 3px;
+        color: #888888;
+        border: 1px solid #ebebeb
+      }
+    };
     .btn-area {
       height: 80px;
       text-align: center;

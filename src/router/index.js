@@ -20,7 +20,6 @@ const TransportTypeMessage = () => import('@/pages/medicalTaskPage/TransportType
 const DispatchTaskTransferForm = () => import('@/pages/taskFormPage/DispatchTaskTransferForm')
 const DispatchTaskCancelForm = () => import('@/pages/taskFormPage/DispatchTaskCancelForm')
 const AppointTaskForm = () => import('@/pages/taskFormPage/AppointTaskForm')
-const AppointTaskCancelForm = () => import('@/pages/taskFormPage/AppointTaskCancelForm')
 const AppointTaskCustomerInfo = () => import('@/pages/taskFormPage/AppointTaskCustomerInfo')
 const DispatchTaskJudge = () => import('@/pages/taskJudgePage/dispatchTaskJudge')
 const TaskDetailsMessage = () => import('@/pages/taskMessagePage/TaskDetailsMessage')
@@ -128,11 +127,6 @@ let baseRoute  = [
     component: AppointTaskForm
   },
   {
-    path: '/appointTaskCancelForm',
-    name: 'appointTaskCancelForm',
-    component: AppointTaskCancelForm
-  },
-  {
     path: '/appointTaskCustomerInfo',
     name: 'appointTaskCustomerInfo',
     component: AppointTaskCustomerInfo
@@ -181,20 +175,37 @@ let router = new Router({
     }
   }
 });
+// router.beforeEach((to, from, next) => {
+//   if (getStore('isLogin')) {
+//     if (to.name === 'login') {
+//       // 判断登录方式(用户名密码登录或扫码登录)PadDispatchTaskCancelForm
+//       if (getStore('userName') && getStore('userPassword')) {
+//         next({path: '/home'})
+//       } else {
+//         next()
+//       }
+//     } else {
+//       next()
+//     }
+//   } else {
+//     next()
+//   }
+// });
 router.beforeEach((to, from, next) => {
-  if (getStore('isLogin')) {
-    if (to.name === 'login') {
-      // 判断登录方式(用户名密码登录或扫码登录)PadDispatchTaskCancelForm
-      if (getStore('userName') && getStore('userPassword')) {
-        next({path: '/home'})
-      } else {
-        next()
-      }
+  let login = getStore('isLogin');
+  let name = to.name;
+  if (name === 'login') {
+    if (login) {
+      next({path: '/home'})
     } else {
       next()
     }
   } else {
-    next()
+    if (login) {
+      next()
+    } else {
+      next({path: '/'})
+    }
   }
 });
 export default router

@@ -103,25 +103,6 @@ export default {
   watch: {
   },
 
-  // beforeRouteLeave (to, from , next) {
-  //   if (!this.isDialogShow) { 
-  //     this.isDialogShow = false;
-  //     next(false);
-  //     return 
-  //   }; 
-  //   if (!this.isNoSampleDialogShow) { 
-  //     this.isNoSampleDialogShow = false;
-  //     next(false);
-  //     return 
-  //   }; 
-  //   if (this.collectMessaheSureShow)  {
-  //     this.collectMessaheSureShow = true;
-  //     next(false);
-  //     return 
-  //   };
-  //   next()
-  // },
-
   mounted () {
     this.parallelFunction();
     // 回显收集过的科室信息

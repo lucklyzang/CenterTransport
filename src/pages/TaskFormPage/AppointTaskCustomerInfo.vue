@@ -3,7 +3,6 @@
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -11,6 +10,8 @@
     </ul>
     <div class="sweep-code-title">
       <h3>客户预约信息</h3>
+    </div>
+    <div class="customerInfo-box">
       <div class="custormer-info">
         <van-field disabled v-model="patientName" label="病人姓名"/>
         <van-field  disabled v-model="sex" label="病人性别"/>
@@ -27,9 +28,11 @@
         />
       </div>
     </div>
-    <div class="customerInfo-box"></div>
     <div class="electronic-signature">
-      <ElectronicSignature></ElectronicSignature>
+      <ElectronicSignature ref="mychild"></ElectronicSignature>
+    </div>
+    <div class="rewrite-box">
+      <span @click="rewrite">重写</span>
     </div>
     <div class="btn-area">
       <span>
@@ -47,7 +50,7 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-import {queryCustomerAppointInfo,sureCustomerAppointInfo,updateAppointTaskMessage} from '@/api/workerPort.js'
+import {sureCustomerAppointInfo,updateAppointTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
@@ -81,10 +84,11 @@ export default {
   computed: {
     ...mapGetters([
       'navTopTitle',
+      'userInfo',
+      'originalSignature',
       'appointTaskMessage',
-      'appointTaskState',
-      'currentElectronicSignature',
-      'isCompleteSweepCodeList'
+      'completeSweepcodeDepartureInfo',
+      'currentElectronicSignature'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -92,6 +96,9 @@ export default {
     taskId () {
       return this.appointTaskMessage.id
     },
+    workerId () {
+      return this.userInfo.extendData.userId
+    }
   },
 
   mounted () {
@@ -102,10 +109,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        this.changeCurrentElectronicSignature({DtMsg: null});
-        this.$router.push({path:'/appointTask'});
-        this.changeTitleTxt({tit:'预约任务'});
-        setStore('currentTitle','预约任务')
+        this.backTo()
       })
     };
     this.echoCustomerInfo()
@@ -115,9 +119,8 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeCurrentElectronicSignature',
-      'changeIsCompleteSweepCodeList',
-      'changeAppointSweepCodeIntoPage',
-      'changeCatchComponent'
+      'changeCatchComponent',
+      'changeCompleteSweepcodeDepartureInfo'
     ]),
     // 右边下拉框菜单点击
     leftLiCLick (index) {
@@ -149,38 +152,22 @@ export default {
       this.sex = this.sexTransfer(this.appointTaskMessage['sex']),
       this.age = this.appointTaskMessage['age'],
       this.bedNumber = this.appointTaskMessage['bedNumber'],
-      this.number = this.appointTaskMessage['number'],
+      this.number = this.appointTaskMessage['taskNumber'],
       this.appointDescribe = this.appointTaskMessage['taskRemark']
     },
 
-    // 查询客户预约信息
-    getCustomerAppointInfo (data) {
-      queryCustomerAppointInfo(data).then((res) => {
-        if (res && res.data.code == 200) {}
-      })
-      .catch((err)=>{
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
-      })
+    // 重写
+    rewrite () {
+      this.$refs.mychild.overwrite()
     },
 
     // 确认客户信息
     checkCustomerInfo (data) {
       sureCustomerAppointInfo(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true   
-          }).then(() => {
-          });
-          this.updateTaskState({
-            proId: this.proId, //当前项目ID
-            id: this.appointTaskMessage.id, //当前任务ID
-            state: this.appointTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
-          });
+          this.$toast(`${res.data.msg}`);
+          this.rewrite();
+          this.clearInfo()
         } else {
           this.$dialog.alert({
             message: `${res.data.msg}`,
@@ -194,37 +181,16 @@ export default {
           message: `${err.message}`,
           closeOnPopstate: true
         }).then(() => {
-        });
+        })
       })
     },
 
      // 更新任务状态
-    updateTaskState (data) {
-      updateAppointTaskMessage(data).then((res) => {
-        if (res && res.data.code == 200) {
-          // 清空该完成任务存储的已扫过出发地科室信息
-          let temporarySweepCodeOficeList = deepClone(this.isCompleteSweepCodeList);
-          temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.taskId});
-          this.changeIsCompleteSweepCodeList(temporarySweepCodeOficeList);
-          setStore('completAppointTaskSweepCodeInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
-          this.$router.push({path:'/appointTask'});
-          this.changeTitleTxt({tit:'预约任务'});
-          setStore('currentTitle','预约任务')
-        } else {
-          this.$dialog.alert({
-            message: res.data.msg,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        }
-      })
-      .catch((err) => {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
-      })
+    clearInfo () {
+      this.changeCurrentElectronicSignature({DtMsg: null});
+      this.$router.push({'path':'/appointDetails'});
+      this.changeTitleTxt({tit:'预约任务详情'});
+      setStore('currentTitle','预约任务详情')
     },
     
     // 跳转到我的页
@@ -234,32 +200,44 @@ export default {
 
     // 预约信息确认
     appointMessageSure () {
-      if (!this.currentElectronicSignature) {
-        this.$dialog.alert({
-          message: '签名不能为空,请确认签名',
-          closeOnPopstate: true
-        }).then(() => {
-        });
+      this.$refs.mychild.commitSure();
+      if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
         return
       };
       this.checkCustomerInfo({
-        id: this.taskId,//任务Id,必填项
-			  proId: this.proId,//项目ID，必填项
-			  ensureSign: this.currentElectronicSignature //base64字符串 必填项
+        taskId: this.taskId,//任务Id,必填项
+        proId: this.proId,//项目ID，必填项
+        workerId: this.workerId, //运送员ID即当前登录人
+			  sign: this.currentElectronicSignature //base64字符串 必填项
       })
     },
 
     // 预约信息取消
     appointMessageCancel () {
-
+      // 重置起始科室校验状态
+      let temporaryOfficeList = deepClone(this.completeSweepcodeDepartureInfo);
+      if (this.completeSweepcodeDepartureInfo.length > 0 ) {
+        let temporaryIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
+        if (temporaryIndex != -1) {
+          temporaryOfficeList[temporaryIndex]['patienVerified'] = false;
+          temporaryOfficeList[temporaryIndex]['startPonitVerified'] = false;
+          temporaryOfficeList[temporaryIndex]['backStartPonitVerified'] = false
+        }
+      };
+      this.changeCompleteSweepcodeDepartureInfo(temporaryOfficeList);
+      setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporaryOfficeList})
+      this.$router.push({'path':'/appointDetails'});
+      this.changeTitleTxt({tit:'预约任务详情'});
+      setStore('currentTitle','预约任务详情')
     },
 
     // 返回上一页
     backTo () {
-      this.changeCurrentElectronicSignature({DtMsg: null});
-      this.$router.push({path:'/appointTask'});
-      this.changeTitleTxt({tit:'预约任务'});
-      setStore('currentTitle','预约任务')
+      this.$dialog.alert({
+        message: '请确认客户信息',
+        closeOnPopstate: true
+      }).then(() => {
+      });
     }
   }
 }
@@ -282,8 +260,17 @@ export default {
       h3 {
         font-size: 14px;
         color: #1699e8
-      };
+      }
+    };
+    .customerInfo-box {
+      width: 100%;
+      flex:1;
+      overflow: auto;
+      margin: 0 auto;
       .custormer-info {
+        width: 100%;
+        font-size: 14px;
+        padding-left: 10px;
         /deep/ .van-cell {
           padding: 10px 0;
           color: black;
@@ -295,14 +282,25 @@ export default {
         }
       }
     };
-    .customerInfo-box {
-      flex:1;
-      overflow: auto;
-      margin: 0 auto
-    };
     .electronic-signature {
-      height: 250px
+      height: auto
     }
+    .rewrite-box {
+      height: 40px;
+      margin: 10px 0;
+      width: 100%;
+      text-align: center;
+      span {
+        display: inline-block;
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        background: #fff;
+        border-radius: 3px;
+        color: #888888;
+        border: 1px solid #ebebeb
+      }
+    };
     .btn-area {
       height: 80px;
       text-align: center;

@@ -41,8 +41,11 @@
         </div>
       </div>
       <div class="electronic-signature" v-if="showSignature">
-        <ElectronicSignature></ElectronicSignature>
+        <ElectronicSignature ref="mychild"></ElectronicSignature>
       </div>
+    </div>
+    <div class="rewrite-box" v-show="showSignature == true">
+      <span @click="rewrite">重写</span>
     </div>
     <div class="btn-area">
       <span v-show="photoAreaBoxShow == true || showSignature == true">
@@ -141,6 +144,7 @@ export default {
   computed:{
     ...mapGetters([
       'navTopTitle',
+      'originalSignature',
       'dispatchTaskMessage',
       'dispatchTaskState',
       'dispatchTaskDepartmentType',
@@ -333,6 +337,11 @@ export default {
       // this.viewPhoto()
     },
 
+    // 重写
+    rewrite () {
+      this.$refs.mychild.overwrite()
+    },
+
     // 存储当前扫码校验通过的科室编号
     storeCurrentDepartmentNumber (departmentNumber) {
       let temporaryDepartmentNumber = [];
@@ -415,12 +424,8 @@ export default {
         // 压缩图片
         compressImg(this.upImgUrl,this.compressCallback)
       } else {
-        if (!this.currentElectronicSignature) {
-          this.$dialog.alert({
-            message: '签名不能为空，请确认签名!',
-            closeOnPopstate: false
-          }).then(() => {
-          });
+        this.$refs.mychild.commitSure();
+        if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
           return
         };
         this.currentTextContent = '上传中,请稍候···'
@@ -907,6 +912,23 @@ export default {
       margin-top: 150px;
       box-sizing: border-box
     }
+    };
+    .rewrite-box {
+      height: 40px;
+      margin: 10px 0;
+      width: 100%;
+      text-align: center;
+      z-index: 100;
+      span {
+        display: inline-block;
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        background: #fff;
+        border-radius: 3px;
+        color: #888888;
+        border: 1px solid #ebebeb
+      }
     };
     .btn-area {
       height: 80px;

@@ -11,10 +11,6 @@
           @mouseup="mouseUp"
         >
         </canvas>
-        <div class="btnBox">
-          <div @click="overwrite">重写</div>
-          <div @click="commitSure">确认签名</div>
-        </div>   
       </div>
     </div>
   </section> 
@@ -193,12 +189,7 @@ import { base64ImgtoFile } from '@/common/js/utils'
         this.signNatureData = this.$refs.board.toDataURL("image/png");
         this.changeCurrentElectronicSignature({DtMsg:this.$refs.board.toDataURL("image/png")});
         var imgFile = base64ImgtoFile(this.$refs.board.toDataURL());
-        this.changeOriginalSignature(null);
-        this.$dialog.alert({
-          message: '签名已保存',
-          closeOnPopstate: false  
-        }).then(() => {
-        });
+        this.changeOriginalSignature(null)
       }
     }
   }
@@ -223,25 +214,5 @@ import { base64ImgtoFile } from '@/common/js/utils'
     height: 100%;
     width: 100%;
     background: #efefef
-  }
-  .btnBox {
-    padding: 10px;
-    text-align: center;
-  }
-  .btnBox 
-  > div {
-    display: inline-block;
-    border-radius: 4px;
-    height: 30px;
-    line-height: 30px;
-    width: 80px;
-    font-size: 13px;
-    color: #fff;
-    &:first-child {
-      background: orange
-    };
-    &:last-child {
-      background: #71b900
-    }
   }
 </style>
