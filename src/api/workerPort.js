@@ -310,7 +310,7 @@ export function updateAppointTaskMessage(data) {
 // 任务转移
 export function transferAppointTask(data) {
   return request({
-    url: 'reserve/batchTransfer',
+    url: 'bookTask/transfer',
     method: 'put',
     data
   })

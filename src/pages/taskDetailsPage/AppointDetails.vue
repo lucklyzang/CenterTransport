@@ -141,7 +141,7 @@ export default {
   },
 
   mounted () {
-    // 控制设备物理返回按键测试
+    // 控制设备物理返回按键
     if (!IsPC()) {
       let that = this;
       pushHistory();
@@ -276,10 +276,12 @@ export default {
                           if (this.completeCheckedItemInfo.length > 0) {
                             let temporaryIndex = this.completeCheckedItemInfo.indexOf(this.completeCheckedItemInfo.filter((item) => {return item.taskId == this.taskId})[0]);
                             if (temporaryIndex != -1) {
-                              let targetDepartmentList = this.completeCheckedItemInfo[temporaryIndex]['officeList']
-                              for (let targetItem of targetDepartmentList) {
-                                if (this.appointDetailsMessage['checkItems'][j]['id'] == targetItem) {
-                                  this.appointDetailsMessage['checkItems'][j]['isCompleted'] = true
+                              let targetDepartmentList = this.completeCheckedItemInfo[temporaryIndex]['officeList'];
+                              if (targetDepartmentList.length > 0) {
+                                for (let targetItem of targetDepartmentList) {
+                                  if (this.appointDetailsMessage['checkItems'][j]['id'] == targetItem) {
+                                    this.appointDetailsMessage['checkItems'][j]['isCompleted'] = true
+                                  }
                                 }
                               }
                             }
@@ -291,8 +293,7 @@ export default {
                 }
               }
             }
-          };
-          console.log('改变',this.appointDetailsMessage)
+          }
         } else {
           this.$toast(`${res.data.msg}`)
         }
@@ -394,7 +395,7 @@ export default {
             this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
           } else {
             this.$dialog.alert({
-              message: '确定完成',
+              message: '是否确认完成任务',
               closeOnPopstate: true,
               showCancelButton: true 
             }).then(() => {

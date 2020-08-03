@@ -33,7 +33,7 @@ import {getWorkerMessage} from '@/api/login.js'
 import {transferAppointTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, deepClone } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   name: 'appointTaskForm',
@@ -74,7 +74,10 @@ export default {
     ...mapGetters([
       'appointTaskTransferIdList',
       'navTopTitle',
-      'userInfo'
+      'userInfo',
+      'completeCheckedItemInfo',
+      'completeSweepcodeDestinationInfo',
+      'completeSweepcodeDepartureInfo'
     ]),
     proId () {
       return this.userInfo.extendData.proId
@@ -83,7 +86,7 @@ export default {
       return this.userInfo.extendData.userId
     },
     workerName () {
-      return this.userInfo.userName
+      return this.userInfo.name
     }
   },
 
@@ -91,14 +94,17 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeAppointTaskTransferIdList',
-      'changeCatchComponent'
+      'changeCatchComponent',
+      'changeCompleteCheckedItemInfo',
+      'changeCompleteSweepcodeDestinationInfo',
+      'changeCompleteSweepcodeDepartureInfo'
     ]),
 
     // 获取在线工作人员
     queryOnlineWorker (data) {
       getWorkerMessage(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.onlinePersonLlist = [];
+          this.onlinePersonLlist = [{text: '请选择',value: ''}];
           for (let item of res.data.data) {
             let temporaryWorkerMessageArray = [];
             for (let innerItem in item) {
@@ -142,14 +148,13 @@ export default {
       transferAppointTask(data)
       .then((res) => {
         if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: res.data.msg,
-            closeOnPopstate: true
-          }).then(() => {
-            this.$router.push({path:'/appointTask'});
-            this.changeTitleTxt({tit:'预约任务'});
-            setStore('currentTitle','预约任务')
-          });
+          this.$toast(`${ res.data.msg}`);
+          this.emptyCompleteCheckedItem();
+          this.emptyCompleteDestinationDepartment();
+          this.emptyCompleteDepartureDepartment();
+          this.$router.push({path:'/appointTask'});
+          this.changeTitleTxt({tit:'预约任务'});
+          setStore('currentTitle','预约任务');
         } else {
           this.$dialog.alert({
             message: res.data.msg,
@@ -174,20 +179,17 @@ export default {
       currentCheckWorkerInfo = this.onlinePersonLlist.filter((item) => {return item.value == this.currentPerson});
       taskAcceptName = currentCheckWorkerInfo[0]['text'];
       if (taskAcceptName == this.workerName) {
-        this.$dialog.alert({
-          message: '任务不能转移给自己',
-          closeOnPopstate: true
-        }).then(() => {
-        });
+        this.$toast(`任务不能转移给自己`);
+        return
+      };
+      if (taskAcceptName == '请选择') {
+        this.$toast(`请选择要转移的人员`);
         return
       };
       this.sureTransferDispatchTask ({
-        // taskId: this.dispatchTaskTransferIdList[0],
-        taskIds: this.appointTaskTransferIdList,  //任务ID
-        afterId: this.currentPerson,   //任务接受者ID
-        afterName: taskAcceptName, //任务接受者姓名
-        modifyId: this.workerId,      //转移者ID
-        modifyName: this.workerName    //转移者姓名
+        taskId: this.appointTaskTransferIdList[0],
+        afterWorkerId: this.currentPerson,   //任务接受者ID
+        beforeWorkerId: this.workerId,      //转移者ID
       })
     },
 
@@ -196,6 +198,30 @@ export default {
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
+    },
+
+    // 清空该完成任务存储的已完成检查的信息
+    emptyCompleteCheckedItem () {
+      let temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
+      temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+      this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
+      setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
+    },
+
+    // 清空该完成任务存储的已扫过目的地科室信息
+    emptyCompleteDestinationDepartment () {
+      let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
+      temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+      this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
+      setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+    },
+
+    // 清空该完成任务存储的已扫过起始地科室信息
+    emptyCompleteDepartureDepartment () {
+      let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
+      temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+      this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
+      setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
     }
   }
 }

@@ -75,9 +75,9 @@
                 </p>
               </div>
             </div>
-            <!-- <p class="wait-handle-check" v-show="item.state == 2">
+            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p> -->
+            </p>
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -126,9 +126,9 @@
                 </p>
               </div>
             </div>
-            <!-- <p class="wait-handle-check" v-show="item.state == 2">
+            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p> -->
+            </p>
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -177,9 +177,9 @@
                 </p>
               </div>
             </div>
-            <!-- <p class="wait-handle-check" v-show="item.state == 2">
+            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p> -->
+            </p>
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -228,9 +228,9 @@
                 </p>
               </div>
             </div>
-            <!-- <p class="wait-handle-check" v-show="item.state == 2">
+            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p> -->
+            </p>
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -279,9 +279,9 @@
                 </p>
               </div>
             </div>
-            <!-- <p class="wait-handle-check" v-show="item.state == 2">
+            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p> -->
+            </p>
             <p class="get-wait-task">
               <span v-show="item.state == '1'">
                 <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -355,9 +355,9 @@
                 </p>
               </div>
             </div>
-          <!-- <p class="wait-handle-check" v-show="item.state == 2">
+          <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
             <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-          </p> -->
+          </p>
           <p class="get-wait-task">
             <span v-show="item.state == '1'">
               <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
@@ -990,22 +990,26 @@
 
       // 转移任务按钮点击
       transferTaskEvent () {
-        this.transferTask = true;
-        this.cancelTask = false;
-        this.transferWorkerShow = true;
-        this.$router.push({path:'/appointTaskForm'});
-        this.changeTitleTxt({tit:'转移人员选择'});
-        setStore('currentTitle','转移人员选择');
         this.transferTaskIdList = [];
         let temporaryTransferTaskCheckList = [];
         temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-        for (let item of temporaryTransferTaskCheckList)  {
-          for (let key in item) {
-            if (key == 'id')
-            this.transferTaskIdList.push(item['id'])
-          }
-        };
-        this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList})
+        if (temporaryTransferTaskCheckList.length == 1) {
+          for (let item of temporaryTransferTaskCheckList)  {
+            for (let key in item) {
+              if (key == 'id')
+              this.transferTaskIdList.push(item['id'])
+            }
+          };
+          this.transferTask = true;
+          this.cancelTask = false;
+          this.transferWorkerShow = true;
+          this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList});
+          this.$router.push({path:'/appointTaskForm'});
+          this.changeTitleTxt({tit:'转移人员选择'});
+          setStore('currentTitle','转移人员选择')
+        } else {
+          this.$toast('只能同时转移一个任务')
+        }
       },
 
       // 复选框选择事件 
