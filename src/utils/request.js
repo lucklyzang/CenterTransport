@@ -44,6 +44,12 @@ service.interceptors.response.use(
         Toast('token已过期,请重新登录');
         if(store.getters.globalTimer) {window.clearInterval(store.getters.globalTimer)};
         removeAllLocalStorage();
+        // 退出信标服务器连接
+        try {
+          window.android.logOut()
+        } catch (err) {
+          Toast(`${err}`)
+        };
         setTimeout(() => {
           router.push({path: '/'})
         },2000);

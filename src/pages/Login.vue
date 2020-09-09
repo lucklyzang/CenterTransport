@@ -11,7 +11,7 @@
         <van-field label="密码" left-icon="bag-o" placeholder="请输入密码" type="password" v-model="password"></van-field>
       </van-cell-group>
     </div>
-    <div class="btn-box" @click="login">
+    <div class="btn-box" @click="loginHandle">
       <img :src="loginBtnPng" alt="">
     </div>
     <div class="loading-btn">
@@ -36,15 +36,12 @@ export default {
     return {
       username: '',
       password: '',
-      showAccountLogin: true,
-      showSweepLogin: false,
       showLoadingHint: false,
       sweepMsg: null,
       proId: '',
-      barCodeScannerShow: false,
       logoTopPng: require('@/components/images/logo-top.png'),
       loginBtnPng: require('@/components/images/login-btn.png'),
-    };
+    }
   },
 
   watch: {
@@ -99,42 +96,21 @@ export default {
       'changeOverDueWay'
     ]),
 
-    // 并行获取科室字典值(编号和字典)
-     parallelFunction () {
-        Promise.all([this.queryDepartmentList(),this.queryDepartmentListNo()])
-        .then((res) => {
-          if (res && res.length > 0) {
-            this.destinationList = [];
-            this.vehicleOperationList = [];
-            this.destinationList.push({text: '无', value: 0});
-            let [item1,item2] = res;
-            if (item1) {
-             setStore('departmentInfo', item1);
-            };
-            if (item2) {
-             setStore('departmentInfoNo', item2);
-             window.location.reload()
-            };
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err}`,
-            closeOnPopstate: true
-          }).then(() => {})
-        })
-      },
 
     // 获取科室字典id
     queryDepartmentList () {
       return new Promise((resolve,reject) => {
         getdepartmentList(this.proId).then((res) => {
           if (res && res.data.code == 200) {
-              resolve(res.data.data)
+              resolve(res.data.data);
+              setStore('departmentInfo', res.data.data);
             }
           })
           .catch((err) => {
-            reject(err.message)
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {})
           })
       })
     },
@@ -144,96 +120,125 @@ export default {
       return new Promise((resolve,reject) => {
         getdepartmentListNo(this.proId).then((res) => {
           if (res && res.data.code == 200) {
-              resolve(res.data.data)
+              resolve(res.data.data);
+              setStore('departmentInfoNo', res.data.data);
             }
           })
           .catch((err) => {
-            reject(err.message)
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {})
           })
       })
     },
 
     // 注册channel
     getChannel (data) {
-      registerChannel(data)
-      .then((res) => {
-      })
-      .catch((err) => {
-        this.$dialog.alert({
-          message: `${err}`,
-          closeOnPopstate: true
-        }).then(() => {})
+      return new Promise((resolve,reject) => {
+        registerChannel(data)
+        .then((res) => {
+          resolve()
+        })
+        .catch((err) => {
+         this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
       })
     },
 
     // 账号密码登录方法
     login () {
-      let loginMessage;
-      this.showLoadingHint = true;
-      if (this.showAccountLogin) {
+      return new Promise((resolve,rejrect)=> {
+        let loginMessage;
+        this.showLoadingHint = true;
         loginMessage = {
           username: this.username,
           password: this.password,
           rememberMe: 1
         };
-      } else {
-        loginMessage = {
-          username: this.sweepMsg,
-          flag: 1,
-        }
-      };
-      logIn(loginMessage).then((res)=>{
-        if (res) {
-          if (res.data.code == 200) {
-            // 重置过期方式
-            this.changeOverDueWay(false);
-            setStore('storeOverDueWay',false);
-            if (this.showAccountLogin) {
+        logIn(loginMessage).then((res) => {
+          if (res) {
+            if (res.data.code == 200) {
+              // 重置过期方式
+              this.changeOverDueWay(false);
+              setStore('storeOverDueWay',false);
               setStore('userName', this.username);
               setStore('userPassword', this.password);
-            };
-            // 登录用户名密码及用户信息存入Locastorage
-            setStore('userInfo', res.data.data);
-            setStore('isLogin', true);
-            // 用户身份类别存入store和Locastorage
-            this.changeUserType(res.data.data["extendData"]['user_type_id']);
-            setStore('userType', res.data.data["extendData"]['user_type_id']);
-            this.storeUserInfo(JSON.parse(getStore('userInfo')));
-            this.$router.push({path:'/home'});
-            this.changeTitleTxt({tit:'中央运送'});
-            this.proId = res.data.data['proId'];
-            // 注册channel
-            try {
-              this.getChannel({proId:res.data.data.proId,workerId:res.data.data.id,type:res.data.data["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
-            } catch (err) {
+              resolve(res.data.data)
+            } else {
               this.$dialog.alert({
-                message: `${err}`,
+                message: `${res.data.msg}`,
                 closeOnPopstate: true
               }).then(() => {
-              })
-            };
-            // 获取科室字典数据
-            this.parallelFunction()
-          } else {
-             this.$dialog.alert({
-              message: `${res.data.msg}`,
-              closeOnPopstate: true
-            }).then(() => {
-            });
-          }
-        };
-        this.showLoadingHint = false
+              });
+            }
+          };
+          this.showLoadingHint = false
+        })
+        .catch((err) => {
+          this.showLoadingHint = false;
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        })
       })
-      .catch((err) => {
-        this.showLoadingHint = false;
+    },
+
+    // 向客户端发送信标服务器地址
+    postUrl (workerId) {
+      return new Promise((resolve,reject) => {
+        let xinbiaoTimer = setTimeout(window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`),100);
+        if (window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`) == 'success') {
+          resolve(window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`));
+          clearTimeout(xinbiaoTimer)
+        }
+      })
+    },
+
+    // 登录事件
+    async loginHandle () {
+      // 获取用户登录信息
+      const userInfo = await this.login();
+      // 登录用户名密码及用户信息存入Locastorage
+      setStore('userInfo', userInfo);
+      setStore('isLogin', true);
+      // 用户身份类别存入store和Locastorage
+      this.changeUserType(userInfo["extendData"]['user_type_id']);
+      setStore('userType', userInfo["extendData"]['user_type_id']);
+      this.storeUserInfo(JSON.parse(getStore('userInfo')));
+      this.proId = userInfo['proId'];
+      // 注册channel
+      try {
+        await this.getChannel({proId:userInfo.proId,workerId:userInfo.id,type:userInfo["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
+      } catch (err) {
         this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
-        }).then(() => {
-        })
-      })
+        }).then(() => {})
+      };
+      // 向客户端发送信标服务器地址
+      try {
+        let xinbiaoInfo = await this.postUrl(userInfo.id);
+      } catch (err) {
+        this.$dialog.alert({
+          message: `${err}`,
+          closeOnPopstate: true
+        }).then(() => {})
+      };
+      // 获取科室字典id
+      await this.queryDepartmentList();
+      // 获取科室字典编号
+      await this.queryDepartmentListNo();
+      this.$router.push({path:'/home'});
+      this.changeTitleTxt({tit:'中央运送'});
+      window.location.reload()
     }
-  } 
+  }
 }
 </script>
 <style lang="less" scoped>

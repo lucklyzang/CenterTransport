@@ -790,7 +790,7 @@
                   this.parallelFunction(this.taskTypeTransfer(item))
                 }
               }
-            });
+            })
           }
         })
         .catch((err) => {
@@ -813,6 +813,16 @@
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            // 退出信标服务器连接
+            try {
+              window.android.logOut()
+            } catch (err) {
+              this.$dialog.alert({
+                message: `${err}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            };
             removeAllLocalStorage();
             this.changeCatchComponent([]);
             this.$router.push({path:'/'})
@@ -1560,7 +1570,7 @@
             display: inline-block;
             text-align: center;
             position: absolute;
-            bottom: 10px;
+            bottom: 2px;
             color:#bebebe;
             font-size: 16px
           }
