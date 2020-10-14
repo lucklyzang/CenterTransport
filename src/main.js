@@ -7,6 +7,8 @@ import Vant from 'vant';
 import moment from 'moment'
 import {setStore, getStore, IsPC} from '@/common/js/utils.js'
 import echarts from 'echarts'
+// import audio from 'vue-mobile-audio'
+// Vue.use(audio)
 
 Vue.prototype.$echarts = echarts
 // 全局挂载时间格式化方法

@@ -67,6 +67,17 @@
             <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
           </p>
         </div>
+        <div class="handle-message-line-wrapper">
+          <p class="describe-line-wrapper">
+            <span class="message-tit">语音备注:</span>
+            <span class="message-tit-real-audio" v-if="showChildrenComponent">
+              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+            </span>
+            <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
+              无语音信息
+            </span>
+          </p>
+        </div>
       </div>
     </div>
     <div class="office-list">
@@ -111,6 +122,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {} from '@/api/medicalPort.js'
 import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
+import MyAudio from '@/components/MyAudio'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, repeArray} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
@@ -121,14 +133,16 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
-      trackList: []
+      trackList: [],
+      showChildrenComponent: false,
     }
   },
 
   components: {
     HeaderTop,
     NoData,
-    FooterBottom
+    FooterBottom,
+    MyAudio
   },
 
   computed: {
@@ -214,8 +228,10 @@ export default {
       getDispatchTaskMessageById(this.dispatchTaskId)
       .then((res) => {
         if (res && res.data.code == 200) {
+          this.showChildrenComponent = true;
           // 改变调度具体某一任务的信息状态
-          this.changeDispatchTaskMessage({DtMsg: res.data.data})
+          this.changeDispatchTaskMessage({DtMsg: res.data.data});
+          console.log('飒飒飒飒',this.dispatchTaskMessage.taskNumber)
         }
       })
       .catch((err) => {
@@ -488,7 +504,10 @@ export default {
             }
           };
           .describe-line-wrapper {
-            width: 100%
+            width: 100%;
+            .message-tit-real-audio {
+              margin-left: 4px
+            }
           }
         }
         .handle-message-line-wrapper-other {

@@ -212,23 +212,29 @@ export default {
       setStore('userType', userInfo["extendData"]['user_type_id']);
       this.storeUserInfo(JSON.parse(getStore('userInfo')));
       this.proId = userInfo['proId'];
-      // 注册channel
-      try {
-        await this.getChannel({proId:userInfo.proId,workerId:userInfo.id,type:userInfo["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
-      } catch (err) {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {})
-      };
-      // 向客户端发送信标服务器地址
-      try {
-        let xinbiaoInfo = await this.postUrl(userInfo.id);
-      } catch (err) {
-        this.$dialog.alert({
-          message: `${err}`,
-          closeOnPopstate: true
-        }).then(() => {})
+      if (!IsPC()) {
+        // 注册channel
+        if (window.android.getChannelId()) {
+          try {
+            await this.getChannel({proId:userInfo.proId,workerId:userInfo.id,type:userInfo["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
+          } catch (err) {
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {})
+          }
+        } else {
+          this.$toast('未获取到channelId')
+        };
+        // 向客户端发送信标服务器地址
+        try {
+          let xinbiaoInfo = await this.postUrl(userInfo.id);
+        } catch (err) {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        }
       };
       // 获取科室字典id
       await this.queryDepartmentList();
