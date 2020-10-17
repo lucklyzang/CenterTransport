@@ -3,6 +3,7 @@
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
+      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>
     </HeaderTop>
     <div class="basic-message">
       <p class="basic-message-title">基本信息</p>
@@ -14,7 +15,7 @@
           </P>
           <p>
             <span class="message-tit">优先级:</span>
-            <span class="message-tit-real" style="color:red">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
+            <span class="message-tit-real" style="color:#ff0000">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
           </p>
         </div>
         <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
@@ -182,7 +183,7 @@ export default {
 
 
   mounted () {
-    // 控制设备物理返回按键测试
+    // 控制设备物理按键返回
     if (!IsPC()) {
       let that = this;
       pushHistory();
@@ -254,6 +255,12 @@ export default {
       this.changeTitleTxt({tit:'调度任务'});
       setStore('currentTitle','调度任务')
     },
+    // 自主拍照
+    takePhoto () {
+      this.$router.push({path:'/dispatchTakePhoto'});
+      this.changeTitleTxt({tit:'拍照'});
+      setStore('currentTitle','拍照')
+    },
 
     // 结束任务
     endTask () {
@@ -299,7 +306,7 @@ export default {
       }
     },
 
-     // 更新任务状态
+    // 更新任务状态
     updateTaskState (data) {
       updateDispatchTask(data).then((res) => {
         if (res && res.data.code == 200) {
@@ -424,7 +431,7 @@ export default {
 
     // 进入扫码页
     joinSweepCode () {
-      if (this.dispatchTaskMessage.state == 7) { 
+      if (this.dispatchTaskMessage.state == 7) {
         this.$dialog.alert({
           message: '该条调度任务已完成,不能进行扫码',
           closeOnPopstate: true
@@ -467,6 +474,20 @@ export default {
   .content-wrapper {
     .content-wrapper();
       font-size: 16px;
+    .right-text {
+      position: absolute;
+      top: 10px;
+      right: 9px;
+      font-size: 16px;
+      color: #4788fe;
+      width: 80px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      background: #fff;
+      border-radius: 4px;
+      display: inline-block
+    };
     .basic-message {
       width: 95%;
       margin: 0 auto;
@@ -552,7 +573,7 @@ export default {
             position: relative;
             margin-right: 16px;
             &:after {
-              content: "—";   
+              content: "—";
               position: absolute;
             }
           }
@@ -560,7 +581,7 @@ export default {
             position: relative;
             margin-right: 20px;
             &:after {
-              content: "—";   
+              content: "—";
               position: absolute;
             }
           }
@@ -591,12 +612,12 @@ export default {
             position: absolute;
             top: 0;
             left: 0
-          } 
+          }
           &:last-child {
             position: absolute;
             top: 0;
             right: 0
-          } 
+          }
         }
       };
        .circultion-task-btn-bottom {

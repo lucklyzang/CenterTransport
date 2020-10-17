@@ -10,7 +10,7 @@
     <div class="worker-show" v-if="workerShow">
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
-        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
       </HeaderTop>
       <!-- 右边下拉框菜单 -->
       <ul class="left-dropDown" v-show="leftDownShow">
@@ -28,7 +28,7 @@
           <p class="wait-dask-title">待办任务：</p>
           <ul class="wait-dask-list">
             <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">
-              {{item.text}} 
+              {{item.text}}
               <span class="dask-list-sign" :class="{daskListSignStyle:index == 0 && isHaveTask != ''}">{{item.number}}</span>
             </li>
           </ul>
@@ -72,7 +72,7 @@
     <div class="medical-worker-show" v-else>
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
-        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+        <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
       </HeaderTop>
        <!-- 右边下拉框菜单 -->
       <ul class="left-dropDown" v-show="leftDownShow">
@@ -178,11 +178,11 @@
                       <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
                     </div>
                   </div>
-                  <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+                  <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
                     <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
                     @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
                   </van-popup>
-                  <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true"> 
+                  <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
                     <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
                     @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
                   </van-popup>
@@ -446,8 +446,8 @@
         minDateStart: new Date(2020, 0, 1),
         minDateEnd: new Date(2020, 0, 1),
         taskList: [
-          {tit:'调度任务',imgUrl: dispatchTaskPng}, 
-          {tit:'循环任务',imgUrl: circulationTaskPng}, 
+          {tit:'调度任务',imgUrl: dispatchTaskPng},
+          {tit:'循环任务',imgUrl: circulationTaskPng},
           {tit:'预约任务',imgUrl: appointTaskPng},
           {tit:'下班签退',imgUrl: offWorkSignOutPng}
         ],
@@ -477,14 +477,14 @@
         taskGetPng: require('@/components/images/task-get.png')
       }
     },
-    
+
     mounted() {
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
       if (!IsPC()) {
         pushHistory();
-        this.gotoURL(() => { 
+        this.gotoURL(() => {
         });
         this.getVersionNumber()
       };
@@ -513,7 +513,7 @@
         this.parallelFunctionTwo()
       }
     },
-    
+
     watch: {
       userTypeId: {
         handler(newName, oldName) {
@@ -532,7 +532,7 @@
       setStore('currentTitle','中央运送');
       if (!IsPC()) {
         pushHistory();
-        this.gotoURL(() => { 
+        this.gotoURL(() => {
         });
         this.getVersionNumber()
       };
@@ -542,7 +542,7 @@
         this.leftDownShow = false;
         this.isHaveTask = this.newTaskName;
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
-        this.judgeTaskComplete(); 
+        this.judgeTaskComplete();
       } else {
         let me = this;
         window['setDeviceInfo'] = (val) => {
@@ -571,9 +571,9 @@
         if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
           this.leftDownShow = false;
         }
-      })  
+      })
     },
-    
+
     computed:{
       ...mapGetters([
         'navTopTitle',
@@ -874,7 +874,7 @@
           queryAllTaskMessage({
             proId: this.proId, // 项目ID 必输
             workerId: this.workerId, //运送员ID   非必输
-            date: ''  
+            date: ''
           })
           .then((res) => {
             if (res && res.data.code == 200) {
@@ -1071,13 +1071,13 @@
        * 医务人员代码
       */
 
-      startTimeChange(e) { 
-        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+      startTimeChange(e) {
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
       },
 
       endTimeChange(e) {
-        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
       },
 
@@ -1575,7 +1575,7 @@
             font-size: 16px
           }
         }
-      };  
+      };
       .left-dropDown {
         .rightDropDown
       }

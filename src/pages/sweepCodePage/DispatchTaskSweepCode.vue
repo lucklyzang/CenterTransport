@@ -2,7 +2,7 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
@@ -229,7 +229,7 @@ export default {
         }).then(() => {
         });
         return
-      };  
+      };
       reader.addEventListener("load", function () {
         img.src = reader.result;
         _this.upImgUrl = reader.result;
@@ -256,7 +256,7 @@ export default {
         }).then(() => {
         });
         return
-      };  
+      };
       reader.addEventListener("load", function () {
         img.src = reader.result;
         _this.upImgUrl = reader.result;
@@ -317,7 +317,7 @@ export default {
         } else {
           temporaryPhotoId.push(photoId);
           temporaryPhotoList.push(
-            { 
+            {
               phototList: repeArray(temporaryPhotoId),
               taskId: this.taskId
             }
@@ -326,7 +326,7 @@ export default {
       } else {
         temporaryPhotoId.push(photoId);
         temporaryPhotoList.push(
-          { 
+          {
             phototList: repeArray(temporaryPhotoId),
             taskId: this.taskId
           }
@@ -352,7 +352,7 @@ export default {
           temporaryDepartmentNumber[temporaryIndex]['number'] = departmentNumber
         } else {
           temporaryDepartmentNumber.push(
-            { 
+            {
               number: departmentNumber,
               taskId: this.taskId
             }
@@ -360,7 +360,7 @@ export default {
         };
       } else {
         temporaryDepartmentNumber.push(
-          { 
+          {
             number:departmentNumber,
             taskId: this.taskId
           }
@@ -369,7 +369,7 @@ export default {
       this.changeCurrentDepartmentNumber(temporaryDepartmentNumber);
       setStore('completDepartmentNumber', {"number": temporaryDepartmentNumber});
     },
-    
+
     // 上传图片
     uploadPhoto (data) {
       dispatchTaskUploadMsg(data).then((res) => {
@@ -480,7 +480,7 @@ export default {
               } else {
                 temporaryDepartmentId.push(this.departmentNo);
                 temporaryOfficeList.push(
-                  { 
+                  {
                     officeList: repeArray(temporaryDepartmentId),
                     taskId: this.taskId
                   }
@@ -489,7 +489,7 @@ export default {
             } else {
               temporaryDepartmentId.push(this.departmentNo);
               temporaryOfficeList.push(
-                { 
+                {
                   officeList: repeArray(temporaryDepartmentId),
                   taskId: this.taskId
                 }
@@ -569,7 +569,7 @@ export default {
               } else {
                 temporaryDepartmentId.push(this.currentSiteId);
                 temporaryOfficeList.push(
-                  { 
+                  {
                     officeList: repeArray(temporaryDepartmentId),
                     taskId: this.taskId
                   }
@@ -578,7 +578,7 @@ export default {
             } else {
               temporaryDepartmentId.push(this.currentSiteId);
               temporaryOfficeList.push(
-                { 
+                {
                   officeList: repeArray(temporaryDepartmentId),
                   taskId: this.taskId
                 }
@@ -860,7 +860,7 @@ export default {
           > div {
             display: inline-block;
             width: 100px
-          }
+          };
           .choose-photo {
             padding: 8px 10px;
             height: 20px;

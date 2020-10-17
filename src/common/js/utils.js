@@ -37,7 +37,7 @@ export const removeStore = name => {
   window.localStorage.removeItem(name);
 }
 
-/** 
+/**
  * 存储当前历史记录点,实现控制手机物理返回键的按钮事件
 */
 export const pushHistory = () => {
@@ -48,7 +48,7 @@ export const pushHistory = () => {
   window.history.pushState(state, state.title, state.url)
 }
 
-/** 
+/**
  * 判断设备的操作系统环境
 */
 export const IsPC = () => {
@@ -151,7 +151,7 @@ export const judgeDataType = (data) => {
 /*
  * 判断数组对象中每项某个key对应value是否相同
  * @param{Array} data
- * @param{String} key 
+ * @param{String} key
 */
 
 export const judgeKeyEquail = (data,key) => {
@@ -204,7 +204,7 @@ export const dealMedicalWaste = (typeArr, weightArr, timeArr) => {
   return [typeTarget, weightTarget, timeTarget]
 }
 
-/* 
+/*
   * 合并医废类型、重量
   * @param{Array} wasteType 医废类型
   * @param{Array} wasteWeight 医废重量
@@ -218,7 +218,7 @@ export const dealMedicalWast = (wasteType,wasteWeight) => {
   return map
 }
 
-/* 
+/*
   * 数组去重
   * @param{Array} currentArr
 */
@@ -233,7 +233,7 @@ export const checkEmptyArray = (currentArr) => {
   return arr;
 }
 
-/* 
+/*
   * Base64编码转换图片
   * @param{String} dataurl base编码字符串
   * @param{String} filename 文件名称
@@ -253,7 +253,7 @@ export const base64ImgtoFile = (dataurl, filename = 'file') => {
   })
 }
 
-/* 
+/*
   * 引用类型数据深度克隆
   * @param{Array || Object} obj
 */
@@ -269,7 +269,7 @@ export const deepClone = (obj) => {
   return newObj
 }
 
-/* 
+/*
   * 根据标本id查询标本名称
   * @param{Array} sampleArray 标本信息对象数组
   * @param{String} sampleId 标本ID值
@@ -282,7 +282,7 @@ export const querySampleName = (sampleArray,sampleId) => {
   return targetSmple[0].text
 }
 
-/* 
+/*
   * 数组去重方法
   * @param{Array} targetArray
 */
@@ -298,8 +298,74 @@ export const repeArray = (targetArray) => {
     })
   return result;
 }
-
-/* 
+/*
+  * 压缩图片
+  * @param{String} img 图片对象
+*/
+export const compress = (image,Orientation) => {
+  // let canvas = document.createElement("canvas");
+  // let ctx = canvas.getContext('2d');
+  // //创建canvas
+  // let tCanvas = document.createElement("canvas");
+  // let tctx = tCanvas.getContext("2d");
+  // let initSize = img.src.length;
+  // let width = img.width;
+  // let height = img.height;
+  // //如果图片大于四百万像素，计算压缩比并将大小压至400万以下
+  // let ratio;
+  // if ((ratio = width * height / 4000000) > 1) {
+  //   console.log("大于400万像素")
+  //   ratio = Math.sqrt(ratio);
+  //   width /= ratio;
+  //   height /= ratio
+  // } else {
+  //   ratio = 1;
+  // };
+  // canvas.width = width;
+  // canvas.height = height;
+  // //铺底色
+  // ctx.fillStyle = "#fff";
+  // ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // //如果图片像素大于100万则使用canvas绘制
+  // let count;
+  // if ((count = width * height / 1000000) > 1) {
+  //   count = ~~(Math.sqrt(count) + 1); //计算要分成多少块瓦片
+  //   //计算每块canvas的宽和高
+  //   let nw = ~~(width / count);
+  //   let nh = ~~(height / count);
+  //   tCanvas.width = nw;
+  //   tCanvas.height = nh;
+  //   for (let i = 0; i < count; i++) {
+  //     for (let j = 0; j < count; j++) {
+  //         tctx.drawImage(img, i * nw * ratio, j * nh * ratio, nw * ratio, nh * ratio, 0, 0, nw, nh);
+  //         ctx.drawImage(tCanvas, i * nw, j * nh, nw, nh);
+  //     }
+  //   }
+  // } else {
+  //   ctx.drawImage(img, 0, 0, width, height);
+  // };
+  // //进行最小压缩
+  // let ndata = canvas.toDataURL('image/jpeg', 0.3);
+  // tCanvas.width = tCanvas.height = canvas.width = canvas.height = 0;
+  // return ndata
+  let canvas = document.createElement('canvas'),
+    context = canvas.getContext('2d');
+  let x = image.width/500;  //压缩倍数
+  if (image.width > 500) {
+    var imageWidth = image.width / x;   //压缩后图片的大小
+    var imageHeight = image.height / x;
+  } else {
+    var imageWidth = image.width / 1;   //不进行压缩大小
+    var imageHeight = image.height / 1;
+  };
+  let data = '';
+  canvas.width = imageWidth;
+  canvas.height = imageHeight;
+  context.drawImage(image, 0, 0, imageWidth, imageHeight);
+  data = canvas.toDataURL('image/jpeg');
+  return data
+}
+/*
   * 去除包裹的大括号
   * @param{String} str
 */
@@ -315,7 +381,7 @@ export const removeBlock = (str) => {
   }
 }
 
-/* 
+/*
   * 生成UUID
 */
 export const UUID = () => {
@@ -328,24 +394,24 @@ export const UUID = () => {
   return uuid
 }
 
-/* 
+/*
   * 去除两个数组的相同值
   * @param{Array} a
   * @param{Array} b
 */
-export const arrayDiff = (a, b) => { 
-  for(let i=0; i<b.length; i++) { 
-    for(let j=0; j<a.length; j++) { 
-      if(a[j] == b[i]){ 
-        a.splice(j,1); 
-        j=j-1; 
-      } 
-    } 
-  } 
-  return a; 
+export const arrayDiff = (a, b) => {
+  for(let i=0; i<b.length; i++) {
+    for(let j=0; j<a.length; j++) {
+      if(a[j] == b[i]){
+        a.splice(j,1);
+        j=j-1;
+      }
+    }
+  }
+  return a;
 }
 
-/* 
+/*
   * 压缩图片
   * @param{Array} originSite base64字符串
   * @param{Function} callback 压缩成功后的回调函数
@@ -373,10 +439,10 @@ export const compressImg = (originSite,callback) => {
   }
 }
 
-/* 
+/*
   * 将数组中符合条件的元素移到最前面
   * @param{Array} arr
-  * @param{String} key 
+  * @param{String} key
 */
 export const changeArrIndex = (arr,key) => {
   let deleteItem = [];
@@ -392,7 +458,7 @@ export const changeArrIndex = (arr,key) => {
 
 /*
  * 判断时间是否超时
- * @param{String} startTime YYYY-mm-dd HH:MM:ss 开始时间 
+ * @param{String} startTime YYYY-mm-dd HH:MM:ss 开始时间
  * @param{Number} interVal minute 计划用时
  * @return {Boolean} 返回true或false
 */
@@ -416,7 +482,7 @@ export const judgeOverTime = (startTime,interVal) => {
 
 /*
  * 判断时间大小
- * @param{String} t1 HH:MM 时间1 
+ * @param{String} t1 HH:MM 时间1
  * @param{String} t2 HH:MM 时间2
  * @return {Boolean} 返回true或false
 */
@@ -429,10 +495,10 @@ export const compareDateTime = (t1,t2) => {
 }
 
 /*
- * 
+ *
  *  清空所有LocalStorage
- * 
- * 
+ *
+ *
 */
 
 export const removeAllLocalStorage = () => {

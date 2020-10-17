@@ -1,8 +1,8 @@
 <template>
    <div class="content-wrapper">
-    <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏测试 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->

@@ -258,7 +258,9 @@ export default {
             if (item == 'checkItems') {
               for (let innerItem of this.appointDetailsMessage[item]) {
                 innerItem['isChecked'] = false;
-                innerItem['isCompleted'] = false
+                innerItem['isCompleted'] = false;
+                // innerItem['checkDepName'] = this.appointDetailsMessage.extendData.checkDepName;
+                // innerItem['room'] = this.appointDetailsMessage.extendData.room;
               }
             }
           };
@@ -363,7 +365,7 @@ export default {
         } else {
           temporaryDepartmentId.push(depId);
           temporaryOfficeList.push(
-            { 
+            {
               officeList: repeArray(temporaryDepartmentId),
               taskId: this.taskId
             }
@@ -372,7 +374,7 @@ export default {
       } else {
         temporaryDepartmentId.push(depId);
         temporaryOfficeList.push(
-          { 
+          {
             officeList: repeArray(temporaryDepartmentId),
             taskId: this.taskId
           }
@@ -397,7 +399,7 @@ export default {
             this.$dialog.alert({
               message: '是否确认完成任务',
               closeOnPopstate: true,
-              showCancelButton: true 
+              showCancelButton: true
             }).then(() => {
               this.completeTask()
             }).catch((err) => {})
@@ -475,8 +477,8 @@ export default {
           this.$toast('请先进行出发地科室二维码或病人二维码校验')
         }
       } else {
-        if (type == 0) { 
-           if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {  
+        if (type == 0) {
+           if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
             let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
             if (echoIndex !== -1) {
               if (this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified']) {
@@ -513,7 +515,7 @@ export default {
           }
         };
         if (type == 1) {
-          if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {  
+          if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
             let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
             if (echoIndex !== -1) {
               if (this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
@@ -819,12 +821,12 @@ export default {
             position: absolute;
             top: 0;
             left: 0
-          } 
+          }
           &:last-child {
             position: absolute;
             top: 0;
             right: 0
-          } 
+          }
         }
       };
        .circultion-task-btn-bottom {
