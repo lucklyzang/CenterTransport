@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
-      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>
+<!--      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>-->
     </HeaderTop>
     <div class="basic-message">
       <p class="basic-message-title">基本信息</p>

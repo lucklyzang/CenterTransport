@@ -55,7 +55,8 @@
         <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.checkItems" :key="`${item}-${index}`" class="office-list-item">
           <div class="office-list-left">
             <p>{{item.bookTime}}</p>
-            <p>{{item.depName}}</p>
+            <p v-show="!item.checkDepName || !item.room">{{item.depName}}</p>
+            <p v-show="item.checkDepName != null && item.room != null">{{item.checkDepName}}-{{item.room}}</p>
           </div>
           <div class="office-list-right">
             <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">科室扫码</p>
@@ -259,11 +260,12 @@ export default {
               for (let innerItem of this.appointDetailsMessage[item]) {
                 innerItem['isChecked'] = false;
                 innerItem['isCompleted'] = false;
-                // innerItem['checkDepName'] = this.appointDetailsMessage.extendData.checkDepName;
-                // innerItem['room'] = this.appointDetailsMessage.extendData.room;
-              }
+                this.appointDetailsMessage.extendData1 ? innerItem['checkDepName'] = this.appointDetailsMessage.extendData1.checkDepName : innerItem['checkDepName'] = null;
+                this.appointDetailsMessage.extendData1 ? innerItem['room'] = this.appointDetailsMessage.extendData1.room : innerItem['room'] = null;
+              };
             }
           };
+          console.log(this.appointDetailsMessage)
           // 为完成二维码校验的科室增加标价
           if (this.completeSweepcodeDestinationInfo.length > 0) {
             for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
