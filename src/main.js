@@ -10,7 +10,8 @@ import echarts from 'echarts'
 // import audio from 'vue-mobile-audio'
 // Vue.use(audio)
 
-Vue.prototype.$echarts = echarts
+Vue.prototype.$echarts = echarts;
+Vue.prototype.Base64 = require('js-base64').Base64;
 // 全局挂载时间格式化方法
 Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(dataStr).format(pattern)
@@ -134,6 +135,10 @@ new Vue({
     // 重新存入调度任务完成上传的照片
     if (getStore('completPhotoInfo')) {
       store.commit('changeIsCompletePhotoList', JSON.parse(getStore('completPhotoInfo'))['photoInfo']);
+    };
+    // 重新存入调度任务上传的问题图片
+    if (getStore('completdispatchIssuePhotoInfo')) {
+      store.commit('changeIsCompleteDispatchIssuePhotoList', JSON.parse(getStore('completdispatchIssuePhotoInfo'))['photoInfo']);
     };
     // 重新存入调度任务当前扫码校验通过的科室编号
     if (getStore('completDepartmentNumber')) {

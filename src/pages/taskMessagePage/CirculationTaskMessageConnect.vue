@@ -8,7 +8,7 @@
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
@@ -452,7 +452,8 @@ export default {
           color: #2895ea;
           .sample-type-check {
             position: absolute;
-            top: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             left: 10px
           }
           .sample-type-title {

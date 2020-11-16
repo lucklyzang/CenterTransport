@@ -26,7 +26,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import passwordPng from '@/components/images/password.png'
 import userPng from '@/components/images/user.png'
 import Loading from '@/components/Loading'
-import { setStore, getStore, IsPC, scanCode } from '@/common/js/utils'
+import { setStore, getStore, removeStore,IsPC, scanCode } from '@/common/js/utils'
 export default {
   name: 'login',
   components: {
@@ -41,6 +41,7 @@ export default {
       proId: '',
       logoTopPng: require('@/components/images/logo-top.png'),
       loginBtnPng: require('@/components/images/login-btn.png'),
+      temporaryUsername: ''
     }
   },
 
@@ -65,7 +66,7 @@ export default {
     if (!IsPC()) {
       let that = this;
       pushHistory()
-      that.gotoURL(() => { 
+      that.gotoURL(() => {
         pushHistory();
         this.$router.push({path: '/'});  //输入要返回的上一级路由地址
       });
@@ -78,10 +79,10 @@ export default {
       let resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
       if (resizeHeight < originalHeight) {
         return (()=>{
-          this.$refs['bgIconWrapper'].style.cssText='flex:none;height:220px' 
+          this.$refs['bgIconWrapper'].style.cssText='flex:none;height:220px'
         })()
       } else {
-        this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0' 
+        this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0'
       }
     };
   },
@@ -152,13 +153,13 @@ export default {
     // 账号密码登录方法
     login () {
       return new Promise((resolve,rejrect)=> {
-        let loginMessage;
         this.showLoadingHint = true;
-        loginMessage = {
+        let loginMessage = {
           username: this.username,
           password: this.password,
           rememberMe: 1
         };
+        this.temporaryUsername = getStore('userName') ? getStore('userName') : '无';
         logIn(loginMessage).then((res) => {
           if (res) {
             if (res.data.code == 200) {
@@ -202,7 +203,7 @@ export default {
 
     // 登录事件
     async loginHandle () {
-      // 获取用户登录信息
+      // 获取用户登录信息 completeDepartmentMessage
       const userInfo = await this.login();
       // 登录用户名密码及用户信息存入Locastorage
       setStore('userInfo', userInfo);
@@ -227,19 +228,23 @@ export default {
           this.$toast('未获取到channelId')
         };
         // 向客户端发送信标服务器地址
-        try {
-          let xinbiaoInfo = await this.postUrl(userInfo.id);
-        } catch (err) {
-          this.$dialog.alert({
-            message: `${err}`,
-            closeOnPopstate: true
-          }).then(() => {})
-        }
+        // try {
+        //   let xinbiaoInfo = await this.postUrl(userInfo.id);
+        // } catch (err) {
+        //   this.$dialog.alert({
+        //     message: `${err}`,
+        //     closeOnPopstate: true
+        //   }).then(() => {})
+        // }
       };
       // 获取科室字典id
       await this.queryDepartmentList();
       // 获取科室字典编号
       await this.queryDepartmentListNo();
+      // 如果当前登录用户和上次登录用户不一致，则清除循环任务完成标本采集的科室信息
+      if (this.temporaryUsername != this.username) {
+        removeStore('completeDepartmentMessage')
+      };
       this.$router.push({path:'/home'});
       this.changeTitleTxt({tit:'中央运送'});
       window.location.reload()
@@ -318,7 +323,7 @@ export default {
         .van-loading__text {
           color: #2895ea
         }
-      } 
+      }
     }
   }
 </style>

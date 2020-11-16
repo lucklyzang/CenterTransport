@@ -8,8 +8,8 @@
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
+      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -176,7 +176,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click', (e) => {
@@ -216,7 +216,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click', (e) => {
@@ -291,6 +291,16 @@
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            // 退出信标服务器连接
+            // try {
+            //   window.android.logOut()
+            // } catch (err) {
+            //   this.$dialog.alert({
+            //     message: `${err}`,
+            //     closeOnPopstate: true
+            //   }).then(() => {
+            //   })
+            // };
             removeAllLocalStorage();
             this.changeCatchComponent([]);
             this.$router.push({path:'/'})
@@ -489,7 +499,7 @@
       drawTaskId () {
         this.drawCompleteTaskIdList = [];
         if (this.completeDeparnmentInfo.length > 0) {
-          for (let item of this.completeDeparnmentInfo) { 
+          for (let item of this.completeDeparnmentInfo) {
             for (let innerItem in item) {
               if (innerItem == 'taskId') {
                 this.drawCompleteTaskIdList.push(item[innerItem])
@@ -793,7 +803,7 @@
     .circulation-task-list {
       /deep/ .van-tabs {
         .right-sign {
-          .status-sign 
+          .status-sign
         }
       }
     };
@@ -866,7 +876,7 @@
         .wait-handle-message-style {
           color: red
         }
-      }   
+      }
       .view-office {
         position: absolute;
         top: 22px;

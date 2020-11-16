@@ -8,8 +8,8 @@
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
+      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -62,7 +62,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -113,7 +113,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -164,7 +164,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -215,7 +215,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -266,7 +266,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -306,11 +306,11 @@
             <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
           </div>
         </div>
-        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
           @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
         </van-popup>
-        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true"> 
+        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
           @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
         </van-popup>
@@ -342,7 +342,7 @@
               <div class="handle-message-line-wrapper">
                 <p class="p-other">
                   <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" style="color:#1faaff">{{priorityTransfer(item.priority)}}</span>
+                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
                 </p>
                 <P class="p-other">
                   <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
@@ -509,7 +509,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click',(e) => {
@@ -521,7 +521,7 @@
         }
       });
       // 查询预约任务(分配给自己的)
-      this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, startDate: '',endDate: ''}, this.stateIndex);
+      this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, isMobile: 1,startDate: '',endDate: ''}, this.stateIndex);
       this.drawTaskId()
     },
 
@@ -534,7 +534,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click',(e) => {
@@ -547,7 +547,7 @@
       });
       // 查询预约任务(分配给自己的)
       if (this.isFreshAppointTaskPage) {
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex);
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, this.stateIndex);
         this.drawTaskId()
       }
     },
@@ -625,7 +625,7 @@
         .then((res) => {
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.msg}`);
-            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, startDate: '',endDate: ''}, this.stateIndex)
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1, startDate: '',endDate: ''}, this.stateIndex)
           } else {
             this.$toast(`${res.data.msg}`)
           }
@@ -671,6 +671,16 @@
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            // 退出信标服务器连接
+            // try {
+            //   window.android.logOut()
+            // } catch (err) {
+            //   this.$dialog.alert({
+            //     message: `${err}`,
+            //     closeOnPopstate: true
+            //   }).then(() => {
+            //   })
+            // };
             removeAllLocalStorage();
             this.changeCatchComponent([]);
             this.$router.push({path:'/'})
@@ -718,13 +728,13 @@
         this.leftDownShow = !this.leftDownShow;
       },
 
-      startTimeChange(e) { 
-        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+      startTimeChange(e) {
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
       },
 
       endTimeChange(e) {
-        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
       },
 
@@ -770,7 +780,7 @@
         }
       },
 
-      // 查询预约任务(状态筛选点击专用)  
+      // 查询预约任务(状态筛选点击专用)
       queryStateFilterDispatchTask (data, index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
@@ -862,14 +872,14 @@
 
       // 下拉刷新
       onRefresh () {
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, this.stateIndex)
       },
 
       // 提取存储已完成采集任务科室所属任务id
       drawTaskId () {
         this.drawCompleteTaskIdList = [];
         if (this.completeSweepcodeDestinationInfo.length > 0) {
-          for (let item of this.completeSweepcodeDestinationInfo) { 
+          for (let item of this.completeSweepcodeDestinationInfo) {
             for (let innerItem in item) {
               if (innerItem == 'taskId') {
                 this.drawCompleteTaskIdList.push(item[innerItem])
@@ -935,7 +945,7 @@
           this.showLoadingHint = false;
         })
       },
-      
+
 
       // 阻止change事件冒泡
       emptyHandle () {},
@@ -959,7 +969,7 @@
           this.taskQueryShow = false;
           this.waitHandleBox = true;
           this.stateScreenVal = '全部';
-          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex);
+          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, this.stateIndex);
         } else if (index == '1') {
           this.stateIndex = null;
           this.taskQueryShow = true;
@@ -974,7 +984,7 @@
       stateListEvent (index,item) {
         this.stateIndex = index;
         this.stateScreenVal = item;
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, this.stateIndex)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: -1,startDate: '',endDate: ''}, this.stateIndex)
       },
 
       // 状态筛选按钮点击
@@ -983,7 +993,7 @@
         this.taskQueryShow = false;
         this.stateListShow = !this.stateListShow;
         if (this.stateScreenVal == '状态筛选') {
-          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''}, 0);
+          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: -1,startDate: '',endDate: ''}, 0);
           this.stateIndex = 0;
         }
       },
@@ -1012,7 +1022,7 @@
         }
       },
 
-      // 复选框选择事件 
+      // 复选框选择事件
       waitTaskChecked (waitHandleCheck) {
       },
 
@@ -1025,7 +1035,7 @@
         })
         .then(res => {
           if (res && res.data.code == 200) {
-            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1,startDate: '',endDate: ''},0)
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},0)
           }
         })
         .catch(err => {
@@ -1240,7 +1250,14 @@
                 };
                 .message-tit-real {
                   color: black
-                }
+                };
+                .natureNormalStyle {
+                  color: #1faaff !important;
+                };
+                .natureImportantStyle {
+                  color: red !important;
+                  font-weight:bold !important;
+                };
                 .message-tit-real-style {
                   color: #2895ea
                 }
@@ -1397,6 +1414,13 @@
               .message-tit-real {
                 color: black
               };
+              .natureNormalStyle {
+                color: #1faaff !important;
+              };
+              .natureImportantStyle {
+                color: red !important;
+                font-weight:bold !important;
+              };
               .message-tit-real-style {
                 color: #2895ea
               }
@@ -1411,7 +1435,7 @@
               .destinationRealStyle {
                 background: #2895ea;
                 color: #fff
-              }
+              };
             };
             .p-other {
               width: 49%;
@@ -1492,6 +1516,13 @@
               .message-tit-real {
                 color: black
               };
+              .natureNormalStyle {
+                color: #1faaff !important;
+              };
+              .natureImportantStyle {
+                color: red !important;
+                font-weight:bold !important;
+              };
               .message-tit-real-style {
                 color: #2895ea
               }
@@ -1565,7 +1596,7 @@
     .status-handle-screen {
       /deep/ .van-tabs {
         .right-sign {
-          .status-sign 
+          .status-sign
         }
       }
     }

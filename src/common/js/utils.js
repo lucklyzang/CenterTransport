@@ -515,13 +515,15 @@ export const removeAllLocalStorage = () => {
   removeStore('completAppointTaskSweepCodeDestinationInfo');
   removeStore('currentDepartmentId');
   removeStore('completPhotoInfo');
+  removeStore('completdispatchIssuePhotoInfo');
   removeStore('completeDispatchSweepCodeDestinationInfo');
   removeStore('completAppointTaskSweepCodeDepartureInfo');
   removeStore('completAppointTaskCheckedItemInfo');
   removeStore('isDispatchFirstSweepCode');
   removeStore('completeDispatchSweepCodeInfo');
   removeStore('currentCirculationCollectMessage');
-  removeStore('completeDepartmentMessage');
+  // 暂不清除循环任务完成标本采集的科室信息
+  // removeStore('completeDepartmentMessage');
   removeStore('isDeleteEcho');
   removeStore('isampleInfo');
   removeStore('isClickSure');

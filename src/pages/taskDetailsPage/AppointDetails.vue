@@ -14,7 +14,7 @@
           </P>
           <p>
             <span class="message-tit">优先级:</span>
-            <span class="message-tit-real message-tit-real-style">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
+            <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
           </p>
         </div>
         <div class="handle-message-line-wrapper">
@@ -216,16 +216,16 @@ export default {
     // 任务优先级转换
     priorityTransfer (index) {
       switch(index) {
-        case 0 :
+        case 1 :
           return '正常'
           break;
-        case 1 :
+        case 2 :
           return '重要'
           break;
-        case 2 :
+        case 3 :
           return '紧急'
           break;
-        case 3 :
+        case 4 :
           return '紧急重要'
           break;
       }
@@ -645,6 +645,13 @@ export default {
             vertical-align: top;
             span:first-child {
               color: black
+            };
+            .natureNormalStyle {
+              color: #1faaff !important;
+            };
+            .natureImportantStyle {
+              color: red !important;
+              font-weight:bold !important;
             };
             .message-tit-real-style {
               color: #2895ea;

@@ -21,7 +21,8 @@ export default {
     isFreshDispatchTaskPage: true,
     currentDepartmentNumber: [],
     photoAreaBoxShow: false,
-    isCallDispatchSweepcodeMethod: true
+    isCallDispatchSweepcodeMethod: true,
+    isCompleteDispatchIssuePhotoList: []
   },
   getters:{
     navTopTitle: state => state.navTitle,
@@ -43,7 +44,8 @@ export default {
     isFreshDispatchTaskPage: state => state.isFreshDispatchTaskPage,
     currentDepartmentNumber: state => state.currentDepartmentNumber,
     photoAreaBoxShow: state => state.photoAreaBoxShow,
-    isCallDispatchSweepcodeMethod: state => state.isCallDispatchSweepcodeMethod
+    isCallDispatchSweepcodeMethod: state => state.isCallDispatchSweepcodeMethod,
+    isCompleteDispatchIssuePhotoList: state => state.isCompleteDispatchIssuePhotoList,
   },
   mutations:{
     // 改变页面标题
@@ -125,9 +127,13 @@ export default {
     changePhotoAreaBoxShow (state,payLoad) {
       state.photoAreaBoxShow = payLoad
     },
-    // 改变显是否调取扫码方法的状态
+    // 改变是否调取扫码方法的状态
     changeIsCallDispatchSweepcodeMethod (state,payLoad) {
       state.isCallDispatchSweepcodeMethod = payLoad
+    },
+    // 改变已完成上传图片的状态
+    changeIsCompleteDispatchIssuePhotoList (state, playLoad) {
+      state.isCompleteDispatchIssuePhotoList = playLoad
     },
   },
   actions:{}

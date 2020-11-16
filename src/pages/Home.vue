@@ -464,6 +464,7 @@
         operateTaskTrace: '',
         operateHistoryTask: '',
         operateTaskCollect: '',
+        isTimeoutContinue: true,
         stateCompleteList: [],
         transPortTypeList: [],
         taskTraceList: [],
@@ -500,10 +501,12 @@
         this.judgeTaskComplete();
         // 轮询是否有新任务
         if (!windowTimer) {
-          windowTimer = window.setInterval(() => {
-            setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
-          }, 3000);
-          this.changeGlobalTimer(windowTimer)
+            windowTimer = window.setInterval(() => {
+              if (this.isTimeoutContinue) {
+                setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
+              }
+            }, 3000);
+            this.changeGlobalTimer(windowTimer)
         }
       } else {
         let me = this;
@@ -767,6 +770,7 @@
 
       // 查询是否有新任务
       queryNewWork (proId,workerId) {
+        this.isTimeoutContinue = false;
         let audio = new Audio();
         audio.preloadc = "auto";
         process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
@@ -776,6 +780,7 @@
             if(windowTimer) {window.clearInterval(windowTimer)}
           };
           if (res && res.data.code == 200) {
+            this.isTimeoutContinue = true;
             let isBreak = false;
             Object.keys(res.data.data).forEach((item) => {
               if (isBreak) {return};
@@ -791,6 +796,8 @@
                 }
               }
             })
+          } else {
+            this.$toast(`${res.data.msg}`);
           }
         })
         .catch((err) => {
@@ -814,15 +821,15 @@
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             // 退出信标服务器连接
-            try {
-              window.android.logOut()
-            } catch (err) {
-              this.$dialog.alert({
-                message: `${err}`,
-                closeOnPopstate: true
-              }).then(() => {
-              })
-            };
+            // try {
+            //   window.android.logOut()
+            // } catch (err) {
+            //   this.$dialog.alert({
+            //     message: `${err}`,
+            //     closeOnPopstate: true
+            //   }).then(() => {
+            //   })
+            // };
             removeAllLocalStorage();
             this.changeCatchComponent([]);
             this.$router.push({path:'/'})
@@ -1052,6 +1059,10 @@
         // 重新存入调度任务完成上传的照片
         if (getStore('completPhotoInfo')) {
           this.$store.commit('changeIsCompletePhotoList', JSON.parse(getStore('completPhotoInfo'))['photoInfo']);
+        };
+        // 重新存入调度任务上传的问题图片
+        if (getStore('completdispatchIssuePhotoInfo')) {
+          this.$store.commit('changeIsCompleteDispatchIssuePhotoList', JSON.parse(getStore('completdispatchIssuePhotoInfo'))['photoInfo']);
         };
         // 重新存入调度任务当前扫码校验通过的科室编号
         if (getStore('completDepartmentNumber')) {

@@ -8,8 +8,8 @@
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
+      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
     </HeaderTop>
    <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -160,11 +160,11 @@
             <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
           </div>
         </div>
-        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
           @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
         </van-popup>
-        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true"> 
+        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
           @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
         </van-popup>
@@ -326,7 +326,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click', (e) => {
@@ -339,7 +339,7 @@
       });
       // 查询调度任务(分配给自己的)
       this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
-      
+
     },
 
     activated () {
@@ -351,7 +351,7 @@
           pushHistory();
           this.$router.push({path: 'home'});
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       };
       document.addEventListener('click', (e) => {
@@ -387,13 +387,13 @@
         'changeCatchComponent'
       ]),
 
-      startTimeChange(e) { 
-        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+      startTimeChange(e) {
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
       },
 
       endTimeChange(e) {
-        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+        let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
       },
 
@@ -409,7 +409,7 @@
         this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7, startDate: this.startTime, endDate: this.endTime})
       },
 
-    // 查询调度任务(状态筛选点击专用)  
+    // 查询调度任务(状态筛选点击专用)
       queryStateFilterDispatchTask (proID, workerId, index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
@@ -565,6 +565,16 @@
         userSignOut(proId,workerId).then((res) => {
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
+            // 退出信标服务器连接
+            // try {
+            //   window.android.logOut()
+            // } catch (err) {
+            //   this.$dialog.alert({
+            //     message: `${err}`,
+            //     closeOnPopstate: true
+            //   }).then(() => {
+            //   })
+            // };
             removeAllLocalStorage();
             this.changeCatchComponent([]);
             this.$router.push({path:'/'})
@@ -588,7 +598,7 @@
           });
         })
       },
-      
+
       // 任务优先级转换
       priorityTransfer (index) {
         switch(index) {
@@ -1335,7 +1345,7 @@
     .status-handle-screen {
       /deep/ .van-tabs {
         .right-sign {
-          .status-sign 
+          .status-sign
         }
       }
     }

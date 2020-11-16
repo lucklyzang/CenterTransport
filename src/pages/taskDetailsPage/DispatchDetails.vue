@@ -1,5 +1,6 @@
 <template>
   <div class="content-wrapper">
+    <van-overlay :show="overlayShow" />
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -72,7 +73,7 @@
           <p class="describe-line-wrapper">
             <span class="message-tit">语音备注:</span>
             <span class="message-tit-real-audio" v-if="showChildrenComponent">
-              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
             </span>
             <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
               无语音信息
@@ -81,6 +82,23 @@
         </div>
       </div>
     </div>
+<!--    <div class="content-middle">-->
+<!--      <p class="issue-photo">-->
+<!--        <span>问题拍照</span>-->
+<!--        <ul class="photo-list">-->
+<!--          <li v-for="(item,index) in issueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state !== 7">-->
+<!--            <img width="100" height="130" :src="item" @click="enlargeCompleteImgEvent(item)"/>-->
+<!--            <van-icon name="cross" @click="issueDelete(index)"/>-->
+<!--          </li>-->
+<!--          <li v-for="(item,index) in historyIssueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state == 7">-->
+<!--            <img width="100" height="130" :src="Base64.decode(item)" @click="enlargeCompleteImgEvent(Base64.decode(item))"/>-->
+<!--          </li>-->
+<!--        </ul>-->
+<!--        <span @click="issueClickEvent" class="icon-wrapper" v-show="dispatchTaskMessage.state !== 7">-->
+<!--              <van-icon name="plus"/>-->
+<!--        </span>-->
+<!--      </p>-->
+<!--    </div>-->
     <div class="office-list">
       <div class="basic-message-title">地点轨迹</div>
       <div class="office-list-inner-wrapper">
@@ -114,6 +132,22 @@
         <span @click="backTo">返回</span>
       </p>
     </div>
+    <transition name="van-slide-up">
+      <div class="choose-photo-box" v-show="photoBox">
+        <div class="choose-photo">
+          <van-icon name="photo" />
+          <input name="uploadImg1" id="demo1" @change="previewFileOne" type="file" accept="image/album"/>从图库中选择
+        </div>
+        <div class="photo-graph">
+          <van-icon name="photograph" />
+          <input name="uploadImg2" id="demo2"  @change="previewFileTwo" type="file" accept="image/camera"/>拍照
+        </div>
+        <div class="photo-cancel" @click="photoCancel">取消</div>
+      </div>
+    </transition>
+    <van-dialog v-model="enlargeImgShow" width="90%">
+      <img :src="enlargeImgUrl">
+    </van-dialog>
   </div>
 </template>
 
@@ -125,7 +159,7 @@ import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js
 import NoData from '@/components/NoData'
 import MyAudio from '@/components/MyAudio'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, repeArray} from '@/common/js/utils'
+import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, compress, repeArray} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
 export default {
   name: 'dispatchDetails',
@@ -136,6 +170,12 @@ export default {
       liIndex: null,
       trackList: [],
       showChildrenComponent: false,
+      overlayShow: false,
+      enlargeImgShow: false,
+      photoBox: false,
+      enlargeImgUrl: '',
+      issueImageList: [],
+      historyIssueImageList: []
     }
   },
 
@@ -161,7 +201,8 @@ export default {
       'isBack',
       'dispatchTaskId',
       'currentDepartmentNumber',
-      'catch_components'
+      'catch_components',
+      'isCompleteDispatchIssuePhotoList'
     ]),
 
     proId () {
@@ -199,6 +240,13 @@ export default {
         setStore('currentTitle','调度任务')
       })
     };
+    document.addEventListener('click', (e) => {
+      if(e.target.className !='van-icon van-icon-plus' && e.target.className != 'quit-account'){
+        this.photoBox = false;
+        this.overlayShow = false
+      }
+    });
+    this.echoPhoto();
     this.getTaskMessage()
   },
 
@@ -221,8 +269,135 @@ export default {
       'changeDispatchTaskState',
       'changeCurrentDepartmentNumber',
       'changeCatchComponent',
-      'changeIsCallDispatchSweepcodeMethod'
+      'changeIsCallDispatchSweepcodeMethod',
+      'changeIsCompleteDispatchIssuePhotoList'
     ]),
+
+    // 图片上传预览
+    previewFileOne() {
+      let Orientation;
+      let file = document.getElementById("demo1").files[0];
+      let _this = this;
+      let reader = new FileReader();
+      let isLt2M = file.size/1024/1024 < 16;
+      if (!isLt2M) {
+        this.$dialog.alert({
+          message: '上传图片大小不能超过16MB!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };
+      reader.addEventListener("load", function () {
+        // 压缩图片
+        let result = reader.result;
+        let img = new Image();
+        img.src = result;
+        img.onload = function () {
+          let src = compress(img,Orientation);
+          _this.issueImageList.push(src);
+          _this.storePhoto(_this.issueImageList)
+        }
+      }, false);
+      if (file) {
+        reader.readAsDataURL(file);
+      };
+    },
+
+    //拍照预览
+    previewFileTwo() {
+      let Orientation;
+      let file = document.getElementById("demo2").files[0];
+      let _this = this;
+      let reader = new FileReader();
+      let isLt2M = file.size/1024/1024 < 16;
+      if (!isLt2M) {
+        _this.$dialog.alert({
+          message: '上传图片大小不能超过16MB!',
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        return
+      };
+      reader.addEventListener("load", function () {
+        // 压缩图片
+        let result = reader.result;
+        let img = new Image();
+        img.src = result;
+        img.onload = function () {
+          let src = compress(img,Orientation);
+          _this.issueImageList.push(src);
+          _this.storePhoto(_this.issueImageList)
+        }
+      }, false);
+      if (file) {
+        reader.readAsDataURL(file);
+      };
+    },
+
+    // 放大维修后图片点击事件
+    enlargeCompleteImgEvent (item) {
+      this.enlargeImgShow = true;
+      this.enlargeImgUrl = item
+    },
+
+    // 拍照取消
+    photoCancel () {
+      this.photoBox = false;
+      this.overlayShow = false
+    },
+
+    // 拍照问题照片点击
+    issueClickEvent () {
+      this.photoBox = true;
+      this.overlayShow = true
+    },
+
+    // 问题照片删除
+    issueDelete (index) {
+      this.issueImageList.splice(index,1);
+      this.storePhoto(this.issueImageList)
+    },
+
+    // 回显照片
+    echoPhoto () {
+      this.historyIssueImageList = [];
+      this.issueImageList = [];
+      if (this.isCompleteDispatchIssuePhotoList.length == 0) { return };
+      let echoIndex = this.isCompleteDispatchIssuePhotoList.indexOf(this.isCompleteDispatchIssuePhotoList.filter((item) => {return item.taskId == this.taskId})[0]);
+      if (echoIndex === -1) { return };
+      if (this.isCompleteDispatchIssuePhotoList[echoIndex]['issuePhototList']) {
+        this.issueImageList = deepClone(this.isCompleteDispatchIssuePhotoList[echoIndex]['issuePhototList'])
+      };
+    },
+
+    // 存储已经上传的照片
+    storePhoto (photoId) {
+      let temporaryPhotoList = [];
+      temporaryPhotoList = deepClone(this.isCompleteDispatchIssuePhotoList);
+      if (this.isCompleteDispatchIssuePhotoList.length > 0 ) {
+        let temporaryIndex = this.isCompleteDispatchIssuePhotoList.indexOf(this.isCompleteDispatchIssuePhotoList.filter((item) => {return item.taskId == this.taskId})[0]);
+        if (temporaryIndex !== -1) {
+          temporaryPhotoList[temporaryIndex]['issuePhototList'] = photoId;
+        } else {
+          temporaryPhotoList.push(
+            {
+              issuePhototList: photoId,
+              taskId: this.taskId
+            }
+          )
+        };
+      } else {
+        temporaryPhotoList.push(
+          {
+            issuePhototList: photoId,
+            taskId: this.taskId
+          }
+        )
+      };
+      this.changeIsCompleteDispatchIssuePhotoList(temporaryPhotoList);
+      setStore('completdispatchIssuePhotoInfo', {"photoInfo": temporaryPhotoList})
+    },
 
     // 获取任务详情
     getTaskMessage () {
@@ -538,6 +713,70 @@ export default {
         }
       }
     }
+    .content-middle {
+      height: 120px;
+      margin: 0 auto;
+      width: 100%;
+      font-size: 14px;
+      background: #f7f7f7;
+      position: relative;
+      .photo-list {
+        position: absolute;
+        left: 70px;
+        width: 250px;
+        top: 10px;
+        height: 100px;
+        overflow: auto;
+        li {
+          width: 80px;
+          height: 80px;
+          float: left;
+          margin-right: 4px;
+          position: relative;
+          margin-bottom: 4px;
+          /deep/ .van-icon-cross {
+            position: absolute;
+            top: 0;
+            right:0;
+            color: @color-theme;
+            font-size: 20px;
+          };
+          img {
+            width: 100%;
+            height: 100%
+          };
+          &:nth-of-type(3n+0)
+          {
+            margin-right: 0
+          }
+        }
+      };
+      .issue-photo {
+        position: relative;
+        margin-top: 15px;
+        height: 100px;
+        background: #fff;
+        line-height: 100px;
+        box-sizing: border-box;
+        > span {
+          position: absolute;
+          display: inline-block;
+          &:first-child {
+            left: 0;
+            top: 0;
+            color: #bbbaba;
+            padding-left: 10px;
+          };
+          &:last-child {
+            color: @color-theme;
+            font-size: 34px;
+            font-weight: bold;
+            right: 10px;
+            top: 4px
+          }
+        }
+      }
+    };
     .office-list {
       flex:1;
       overflow: auto;
@@ -628,6 +867,86 @@ export default {
           width: 100%;
           border-radius: 4px
         }
+      }
+    };
+    .choose-photo-box {
+      position: fixed;
+      margin: auto;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      z-index: 1000;
+      font-size: 0;
+      > div {
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+        background: #f6f6f6
+      }
+      .choose-photo {
+        padding: 8px 10px;
+        height: 30px;
+        .bottom-border-1px(#cbcbcb);
+        line-height: 30px;
+        position: relative;
+        cursor: pointer;
+        color: @color-theme;
+        overflow: hidden;
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+        /deep/ .van-icon {
+          vertical-align: top;
+          font-size: 20px;
+          display: inline-block;
+          line-height: 30px
+        };
+        input {
+          position: absolute;
+          font-size: 100px;
+          right: 0;
+          top: 0;
+          height: 100%;
+          opacity: 0;
+          filter: alpha(opacity=0);
+          cursor: pointer
+        }
+      };
+      .photo-graph {
+        position: relative;
+        display: inline-block;
+        height: 50px;
+        overflow: hidden;
+        .bottom-border-1px(#cbcbcb);
+        color: @color-theme;
+        text-decoration: none;
+        text-indent: 0;
+        line-height: 50px;
+        /deep/ .van-icon {
+          vertical-align: top;
+          font-size: 20px;
+          display: inline-block;
+          line-height: 50px
+        };
+        input {
+          position: absolute;
+          font-size: 100px;
+          right: 0;
+          height: 100%;
+          top: 0;
+          opacity: 0;
+        }
+      };
+      .photo-cancel {
+        position: relative;
+        display: inline-block;
+        padding: 8px 12px;
+        overflow: hidden;
+        color: @color-theme;
+        text-decoration: none;
+        text-indent: 0;
+        line-height: 30px;
+        font-weight: bold
       }
     }
   }
