@@ -6,8 +6,8 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
     </div>
-    <!-- 工作人员操作区域 v-if="workerShow"-->
-    <div class="worker-show" v-if="false">
+    <!-- 工作人员操作区域 v-if="workerShow-->
+    <div class="worker-show" v-if="true">
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
         <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
@@ -68,8 +68,8 @@
         </p>
       </div>
     </div>
-    <!-- 医护人员操作区域 v-else-->
-    <div class="medical-worker-show">
+    <!-- 医护人员操作区域 -->
+    <div class="medical-worker-show" v-else>
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
         <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
@@ -500,15 +500,13 @@
         this.parallelFunction(this.taskTypeTransfer(this.newTaskName));
         this.judgeTaskComplete();
         // 轮询是否有新任务
-        if (!this.globalTimer) {
-          windowTimer = window.setInterval(() => {
-            if (this.isTimeoutContinue) {
-              setTimeout(this.queryNewWork(this.proId, this.workerId), 0);
-              this.changeGlobalTimer(windowTimer)
-            } else {
-              this.changeGlobalTimer(null)
-            }
-          }, 3000);
+        if (!windowTimer) {
+            windowTimer = window.setInterval(() => {
+              if (this.isTimeoutContinue) {
+                setTimeout(this.queryNewWork(this.proId, this.workerId), 0)
+              }
+            }, 3000);
+            this.changeGlobalTimer(windowTimer)
         }
       } else {
         let me = this;
@@ -779,7 +777,7 @@
         getNewWork(proId,workerId).then((res) => {
           // token过期,清除定时器
           if (!res['headers']['token']) {
-            if(this.globalTimer) {window.clearInterval(this.globalTimer)}
+            if(windowTimer) {window.clearInterval(windowTimer)}
           };
           if (res && res.data.code == 200) {
             this.isTimeoutContinue = true;
