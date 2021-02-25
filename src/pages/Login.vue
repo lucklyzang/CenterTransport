@@ -215,18 +215,26 @@ export default {
       this.proId = userInfo['proId'];
       if (!IsPC()) {
         // 注册channel
-        if (window.android.getChannelId()) {
-          try {
-            await this.getChannel({proId:userInfo.proId,workerId:userInfo.id,type:userInfo["extendData"]['user_type_id'],channelId:window.android.getChannelId()});
-          } catch (err) {
-            this.$dialog.alert({
-              message: `${err.message}`,
-              closeOnPopstate: true
-            }).then(() => {})
+        if (userInfo["extendData"]['user_type_id'] != 1) {
+          if (window.android.getChannelId()) {
+            try {
+              await this.getChannel({
+                proId: userInfo.proId,
+                workerId: userInfo.id,
+                type: userInfo["extendData"]['user_type_id'],
+                channelId: window.android.getChannelId()
+              });
+            } catch (err) {
+              this.$dialog.alert({
+                message: `${err.message}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
+          } else {
+            this.$toast('未获取到channelId')
           }
-        } else {
-          this.$toast('未获取到channelId')
-        };
+        }
         // 向客户端发送信标服务器地址
         // try {
         //   let xinbiaoInfo = await this.postUrl(userInfo.id);
