@@ -33,7 +33,7 @@
         </div>
         <div class="choose-photo-box">
           <div class="choose-photo">
-            <input name="uploadImg1" id="demo1" @change="previewFileOne" type="file" accept="image/album"/>上传照片
+            <input name="uploadImg1" id="demo1" @change="previewFileOne" type="file" accept="image/album"/>相册选择
           </div>
           <div class="photo-graph">
             <input name="uploadImg2" id="demo2"  @change="previewFileTwo" type="file" accept="image/camera"/>拍照

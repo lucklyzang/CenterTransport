@@ -228,14 +228,14 @@ export default {
           this.$toast('未获取到channelId')
         };
         // 向客户端发送信标服务器地址
-        // try {
-        //   let xinbiaoInfo = await this.postUrl(userInfo.id);
-        // } catch (err) {
-        //   this.$dialog.alert({
-        //     message: `${err}`,
-        //     closeOnPopstate: true
-        //   }).then(() => {})
-        // }
+        try {
+          let xinbiaoInfo = await this.postUrl(userInfo.id);
+        } catch (err) {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        }
       };
       // 获取科室字典id
       await this.queryDepartmentList();

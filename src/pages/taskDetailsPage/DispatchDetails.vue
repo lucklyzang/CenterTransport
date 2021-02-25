@@ -6,7 +6,7 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
 <!--      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>-->
     </HeaderTop>
-    <div class="basic-message">
+    <div class="basic-message" ref="basicMessage">
       <p class="basic-message-title">基本信息</p>
        <div class="wait-handle-message">
         <div class="handle-message-line-wrapper">
@@ -65,20 +65,39 @@
         </div>
         <div class="handle-message-line-wrapper">
           <p class="describe-line-wrapper">
-            <span class="message-tit">任务描述:</span>
-            <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p class="describe-line-wrapper">
             <span class="message-tit">语音备注:</span>
             <span class="message-tit-real-audio" v-if="showChildrenComponent">
-              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
             </span>
             <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
               无语音信息
             </span>
           </p>
+        </div>
+        <div class="transport-type-wrapper">
+         <p class="transport-type-title">
+           运送类型:
+         </p>
+          <div class="transport-type-list-wrapper">
+            <div class="transport-type-list">
+              <p class="transport-type-list-title">标本</p>
+              <p class="transport-type-list-content">
+                <span class="serial">1</span>床号: a12,胡三省,女,标本✖3
+              </p>
+            </div>
+            <div class="transport-type-list">
+              <p class="transport-type-list-title">药物、文书</p>
+              <p class="transport-type-list-content">
+                <span class="serial">1</span>床号: a12,胡三省,女,标本✖3
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="handle-message-line-wrapper">
+         <p class="describe-line-wrapper">
+           <span class="message-tit">任务描述:</span>
+           <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
+         </p>
         </div>
       </div>
     </div>
@@ -224,6 +243,9 @@ export default {
 
 
   mounted () {
+    if (true) {
+      this.$refs['basicMessage'].style.height = "400px";
+    }
     // 控制设备物理按键返回
     if (!IsPC()) {
       let that = this;
@@ -668,20 +690,26 @@ export default {
       margin: 0 auto;
       margin-top: 6px;
       height: auto;
+      display: flex;
+      flex-flow: column wrap;
       background: #f3f3f3;
       position: relative;
       border: 1px solid #d6d6d6;
       .basic-message-title {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
+        width: 80px;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 6px;
         box-sizing: border-box;
         border-right: 1px solid #d6d6d6;
         border-bottom: 1px solid #d6d6d6;
       }
       .wait-handle-message {
-        margin-top: 35px;
+        width: 100%;
+        margin-top: 10px;
+        flex: 1;
+        overflow: auto;
         .handle-message-line-wrapper {
           margin: 0 5px;
           p {
@@ -705,7 +733,25 @@ export default {
               margin-left: 4px
             }
           }
-        }
+        };
+        .transport-type-wrapper {
+          margin: 0 5px;
+          .transport-type-title {
+          };
+          .transport-type-list {
+            margin: 5px 0;
+            > p {
+              line-height: 30px
+            };
+            .transport-type-list-title {
+              font-weight: bold;
+              color: black
+            };
+            .transport-type-list-content {
+
+            }
+          }
+        };
         .handle-message-line-wrapper-other {
           p {
             width: 100%;
@@ -779,6 +825,8 @@ export default {
     };
     .office-list {
       flex:1;
+      display: flex;
+      flex-flow: column nowrap;
       overflow: auto;
       width: 95%;
       margin: 0 auto;
@@ -788,20 +836,20 @@ export default {
       position: relative;
       border: 1px solid #d6d6d6;
       .basic-message-title {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
+        height: 30px;
+        line-height: 30px;
+        width: 80px;
+        text-align: center;
         box-sizing: border-box;
         border-right: 1px solid #d6d6d6;
         border-bottom: 1px solid #d6d6d6;
       }
       .office-list-inner-wrapper {
-        margin-top: 25px;
+        margin-top: 10px;
         box-sizing: border-box;
         width: 100%;
-        height: 90%;
-        padding: 10px;
+        flex: 1;
+        padding: 0 10px;
         overflow: auto;
         .track-name {
           span {
