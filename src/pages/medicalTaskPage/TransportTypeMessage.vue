@@ -13,106 +13,61 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="创建中,请稍候····" textColor="#2895ea"></loading>
     </div>
-    <div class="templateOne">
-      <div class="transport-type-title">
-        <h3>{{transportantTaskMessage.value}}</h3>
-      </div>
-      <div class="transport-type-area">
-        <div class="destination-box">
-          <div class="destination-title">优先级</div>
-            <div class="destination-content">
-              <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">
-                <van-radio name="1">正常</van-radio>
-                <van-radio name="2">重要</van-radio>
-                <van-radio name="3">紧急</van-radio>
-                <van-radio name="4">紧急重要</van-radio>
-              </van-radio-group>
-            </div>
-          </div>
-        <!-- <div class="destination-box">
-          <div class="destination-title">目的地</div>
-          <div class="destination-content">
-            <van-dropdown-menu>
-              <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>
-            </van-dropdown-menu>
-          </div>
-        </div> -->
-        <div class="transport-type-box">
-          <div class="transport-type-title-innner">运送类型:</div>
-          <div class="transport-type-list">
-            <span :class="{spanStyle:typeIndex === index}" v-for="(item,index) in typeOperationList" :key="`${item}-${index}`" @click="typeEvent(item,index)">
-              {{item.text}}
-            </span>
-          </div>
-        </div>
-        <div class="field-box">
-          <p>
-            <van-field v-model="bedNumber" label="床号" placeholder=""/>
-          </p>
-          <p>
-            <van-field v-model="patientName"  label="姓名" placeholder=""/>
-          </p>
-          <p>
-            <van-field v-model="patientNumber"  label="住院号" placeholder=""/>
-          </p>
-          <p>
-            <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>
-          </p>
-        </div>
-        <div class="tool-box" @click="toolEvent">
-          <div class="tool-title">
-            转运工具
-            <span>{{toolName}}</span>
-            </div>
-          <div class="tool-sign">
-            <van-icon name="arrow"/>
-          </div>
-          <!-- 运送工具弹框 -->
-        </div>
-        <div class="destination-box">
-          <div class="destination-title destination-title-inner">运送员是否返回</div>
-          <div class="destination-content destination-content-inner">
-            <van-radio-group v-model="judgeResult" direction="horizontal" checked-color="#afe897">
-              <van-radio name="0">否</van-radio>
-              <van-radio name="1">是</van-radio>
-            </van-radio-group>
-          </div>
-        </div>
-        <div class="describle-box">
-          <van-field v-model="taskDescribe"   type="textarea" rows="1"
-          autosize label="任务描述:" placeholder="请输入任务描述"/>
-        </div>
-      </div>
-      <div class="btn-area">
-        <span>
-          <img :src="taskSurePng" alt=""  @click="dispatchTaskSure">
-        </span>
-        <span>
-          <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">
-        </span>
-      </div>
-    </div>
-<!--    <div class="templateTwo">-->
+<!--    <div class="templateOne">-->
+<!--      <div class="transport-type-title">-->
+<!--        <h3>{{transportantTaskMessage.value}}</h3>-->
+<!--      </div>-->
 <!--      <div class="transport-type-area">-->
 <!--        <div class="destination-box">-->
 <!--          <div class="destination-title">优先级</div>-->
-<!--          <div class="destination-content">-->
-<!--            <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">-->
-<!--              <van-radio name="1">正常</van-radio>-->
-<!--              <van-radio name="2">重要</van-radio>-->
-<!--              <van-radio name="3">紧急</van-radio>-->
-<!--              <van-radio name="4">紧急重要</van-radio>-->
-<!--            </van-radio-group>-->
+<!--            <div class="destination-content">-->
+<!--              <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">-->
+<!--                <van-radio name="1">正常</van-radio>-->
+<!--                <van-radio name="2">重要</van-radio>-->
+<!--                <van-radio name="3">紧急</van-radio>-->
+<!--                <van-radio name="4">紧急重要</van-radio>-->
+<!--              </van-radio-group>-->
+<!--            </div>-->
 <!--          </div>-->
+<!--        &lt;!&ndash; <div class="destination-box">-->
+<!--          <div class="destination-title">目的地</div>-->
+<!--          <div class="destination-content">-->
+<!--            <van-dropdown-menu>-->
+<!--              <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>-->
+<!--            </van-dropdown-menu>-->
+<!--          </div>-->
+<!--        </div> &ndash;&gt;-->
+<!--        <div class="transport-type-box">-->
+<!--          <div class="transport-type-title-innner">运送类型:</div>-->
+<!--          <div class="transport-type-list">-->
+<!--            <span :class="{spanStyle:typeIndex === index}" v-for="(item,index) in typeOperationList" :key="`${item}-${index}`" @click="typeEvent(item,index)">-->
+<!--              {{item.text}}-->
+<!--            </span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="field-box">-->
+<!--          <p>-->
+<!--            <van-field v-model="bedNumber" label="床号" placeholder=""/>-->
+<!--          </p>-->
+<!--          <p>-->
+<!--            <van-field v-model="patientName"  label="姓名" placeholder=""/>-->
+<!--          </p>-->
+<!--          <p>-->
+<!--            <van-field v-model="patientNumber"  label="住院号" placeholder=""/>-->
+<!--          </p>-->
+<!--          <p>-->
+<!--            <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>-->
+<!--          </p>-->
 <!--        </div>-->
 <!--        <div class="tool-box" @click="toolEvent">-->
 <!--          <div class="tool-title">-->
 <!--            转运工具-->
 <!--            <span>{{toolName}}</span>-->
-<!--          </div>-->
+<!--            </div>-->
 <!--          <div class="tool-sign">-->
 <!--            <van-icon name="arrow"/>-->
 <!--          </div>-->
+<!--          &lt;!&ndash; 运送工具弹框 &ndash;&gt;-->
 <!--        </div>-->
 <!--        <div class="destination-box">-->
 <!--          <div class="destination-title destination-title-inner">运送员是否返回</div>-->
@@ -123,83 +78,9 @@
 <!--            </van-radio-group>-->
 <!--          </div>-->
 <!--        </div>-->
-<!--        <div class="destination-box destination-box-taskTotal">-->
-<!--          <div class="destination-title destination-title-inner">该任务运送总数</div>-->
-<!--          <div class="destination-content destination-content-inner">-->
-<!--            <van-field v-model="totalNumber" placeholder="" disabled />-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="field-box-wrapper">-->
-<!--            <div class="field-box" v-for="(item,index) in templatelistTwo">-->
-<!--              <div class="field-title">-->
-<!--                病人{{index+1}}-->
-<!--                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)" />-->
-<!--              </div>-->
-<!--              <div class="field-one">-->
-<!--                <p>-->
-<!--                  <van-field v-model="item.bedNumber" label="床号" placeholder="请输入病人床号"/>-->
-<!--                </p>-->
-<!--                <p>-->
-<!--                  <van-field v-model="item.patientName"  label="姓名" placeholder="请输入病人姓名"/>-->
-<!--                </p>-->
-<!--              </div>-->
-<!--              <div class="field-two">-->
-<!--                <p class="admission-number">-->
-<!--                  <van-field v-model="item.patientNumber"  label="住院号" placeholder="请输入病人住院号"/>-->
-<!--                </p>-->
-<!--                <p class="gender-list-box">-->
-<!--                  <span>性别</span>-->
-<!--                  <span>-->
-<!--                  <van-dropdown-menu>-->
-<!--                    <van-dropdown-item v-model="item.generValue" :options="item.generList" />-->
-<!--                  </van-dropdown-menu>-->
-<!--                </span>-->
-<!--                </p>-->
-<!--              </div>-->
-<!--              <div class="field-three">-->
-<!--                <p>-->
-<!--                  <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>-->
-<!--                </p>-->
-<!--              </div>-->
-<!--              <div class="field-four">-->
-<!--                <p class="sample-box">-->
-<!--                  <span>-->
-<!--                    <van-dropdown-menu>-->
-<!--                      <van-dropdown-item v-model="item.sampleValue" :options="item.sampleList" @change="sampleListValueChange(index,value)" />-->
-<!--                    </van-dropdown-menu>-->
-<!--                  </span>-->
-<!--                  <span>-->
-<!--                    <span>运送类型: </span>-->
-<!--                    <span>{{jointTransportMessage(index)}}</span>-->
-<!--                  </span>-->
-<!--                </p>-->
-<!--              </div>-->
-<!--              <div class="type-list-box" >-->
-<!--                <div class="type-list"  v-for="(innerItem, innerIndex) in item.typeSelectList" :key="innerItem"-->
-<!--                     @click.stop="sampleTypeEvent(index ,innerItem, innerIndex)"-->
-<!--                     :class="{ 'typeListStyle' : templatelistTwo[index]['typeSelectList'][innerIndex].checked }"-->
-<!--                >-->
-<!--                  <div class="type-value">-->
-<!--                    {{innerItem.text}}-->
-<!--                  </div>-->
-<!--                  <div class="type-number">-->
-<!--                    <van-stepper v-model="innerItem.typeNumber" input-width="50px" button-size="40px" min="0"-->
-<!--                                 @plus="plusNum(index)"-->
-<!--                                 @minus="minusNum(index)"-->
-<!--                                 @change="stepperChange(index)"-->
-<!--                                 integer default-value="0"-->
-<!--                    />-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="add-message" @click="addMessageEvent">-->
-<!--          点击添加病人信息-->
-<!--        </div>-->
 <!--        <div class="describle-box">-->
 <!--          <van-field v-model="taskDescribe"   type="textarea" rows="1"-->
-<!--                     autosize label="任务描述:" placeholder="请输入任务描述"/>-->
+<!--          autosize label="任务描述:" placeholder="请输入任务描述"/>-->
 <!--        </div>-->
 <!--      </div>-->
 <!--      <div class="btn-area">-->
@@ -211,6 +92,125 @@
 <!--        </span>-->
 <!--      </div>-->
 <!--    </div>-->
+    <div class="templateTwo">
+      <div class="transport-type-area">
+        <div class="destination-box">
+          <div class="destination-title">优先级</div>
+          <div class="destination-content">
+            <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">
+              <van-radio name="1">正常</van-radio>
+              <van-radio name="2">重要</van-radio>
+              <van-radio name="3">紧急</van-radio>
+              <van-radio name="4">紧急重要</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
+        <div class="tool-box" @click="toolEvent">
+          <div class="tool-title">
+            转运工具
+            <span>{{toolName}}</span>
+          </div>
+          <div class="tool-sign">
+            <van-icon name="arrow"/>
+          </div>
+        </div>
+        <div class="destination-box">
+          <div class="destination-title destination-title-inner">运送员是否返回</div>
+          <div class="destination-content destination-content-inner">
+            <van-radio-group v-model="judgeResult" direction="horizontal" checked-color="#afe897">
+              <van-radio name="0">否</van-radio>
+              <van-radio name="1">是</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
+        <div class="destination-box destination-box-taskTotal">
+          <div class="destination-title destination-title-inner">该任务运送总数</div>
+          <div class="destination-content destination-content-inner">
+            <van-field v-model="totalNumber" placeholder="" disabled />
+          </div>
+        </div>
+        <div class="field-box-wrapper">
+            <div class="field-box" v-for="(item,index) in templatelistTwo">
+              <div class="field-title">
+                病人{{index+1}}
+                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)" />
+              </div>
+              <div class="field-one">
+                <p>
+                  <van-field v-model="item.bedNumber" label="床号" placeholder="请输入病人床号"/>
+                </p>
+                <p>
+                  <van-field v-model="item.patientName"  label="姓名" placeholder="请输入病人姓名"/>
+                </p>
+              </div>
+              <div class="field-two">
+                <p class="admission-number">
+                  <van-field v-model="item.patientNumber"  label="住院号" placeholder="请输入病人住院号"/>
+                </p>
+                <p class="gender-list-box">
+                  <span>性别</span>
+                  <span>
+                  <van-dropdown-menu>
+                    <van-dropdown-item v-model="item.generValue" :options="item.generList" />
+                  </van-dropdown-menu>
+                </span>
+                </p>
+              </div>
+              <div class="field-three">
+                <p>
+                  <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
+                </p>
+              </div>
+              <div class="field-four">
+                <p class="sample-box">
+                  <span>
+                    <van-dropdown-menu>
+                      <van-dropdown-item v-model="item.sampleValue" :options="item.sampleList" @change="sampleListValueChange(index,value)" />
+                    </van-dropdown-menu>
+                  </span>
+                  <span>
+                    <span>运送类型: </span>
+                    <span>{{jointTransportMessage(index)}}</span>
+                  </span>
+                </p>
+              </div>
+              <div class="type-list-box" >
+                <div class="type-list"  v-for="(innerItem, innerIndex) in item.typeSelectList" :key="innerItem"
+                     @click.stop="sampleTypeEvent(index ,innerItem, innerIndex)"
+                     :class="{ 'typeListStyle' : templatelistTwo[index]['typeSelectList'][innerIndex].checked }"
+                >
+                  <div class="type-value">
+                    {{innerItem.text}}
+                  </div>
+                  <div class="type-number">
+                    <van-stepper v-model="innerItem.typeNumber" input-width="50px" button-size="40px" min="0"
+                                 @plus="plusNum(index)"
+                                 @minus="minusNum(index)"
+                                 @change="stepperChange(index)"
+                                 integer default-value="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="add-message" @click="addMessageEvent">
+          点击添加病人信息
+        </div>
+        <div class="describle-box">
+          <van-field v-model="taskDescribe"   type="textarea" rows="1"
+                     autosize label="任务描述:" placeholder="请输入任务描述"/>
+        </div>
+      </div>
+      <div class="btn-area">
+        <span>
+          <img :src="taskSurePng" alt=""  @click="dispatchTaskSure">
+        </span>
+        <span>
+          <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">
+        </span>
+      </div>
+    </div>
     <van-dialog v-model="toolShow" title="请选择运送工具" show-cancel-button width="92%"
           @confirm="toolSure" @cancel="toolCancel"
         >
