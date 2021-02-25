@@ -977,6 +977,10 @@
         if (getStore('userInfo')) {
           this.$store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
         };
+        // 重新存入模板信息
+        if (getStore('isTemplateOne')) {
+          this.$store.commit('changeIsTemplateOne', parseInt(getStore('isTemplateOne')));
+        };
         if (getStore('userType')) {
           this.$store.commit('changeUserType',getStore('userType'));
         };

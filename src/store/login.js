@@ -1,6 +1,8 @@
 export default {
   state:{
     userInfo: null,
+    // 判断模板类型
+    isTemplateOne: 0,
     routerFlag: true,
     token: null, //请求token
     // 是否扫码登录
@@ -19,6 +21,7 @@ export default {
   },
   getters:{
     userInfo : state => state.userInfo,
+    isTemplateOne : state => state.isTemplateOne,
     routerFlag : state => state.routerFlag,
     loginSweepCode : state => state.loginSweepCode,
     token : state => state.token,
@@ -47,6 +50,10 @@ export default {
       if (playLoad && playLoad != 'null') {
         state.token = playLoad
       }
+    },
+    // 修改模板状态
+    changeIsTemplateOne (state, playLoad) {
+        state.isTemplateOne = playLoad
     },
     // 修改用户状态
     changeUserType (state, playLoad) {

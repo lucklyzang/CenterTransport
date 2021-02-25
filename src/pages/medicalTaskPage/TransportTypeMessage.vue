@@ -316,7 +316,8 @@ export default {
       'navTopTitle',
       'transportantTaskMessage',
       'userInfo',
-      'globalTimer'
+      'globalTimer',
+      'isTemplateOne'
     ]),
     proId () {
       return this.userInfo.extendData.proId

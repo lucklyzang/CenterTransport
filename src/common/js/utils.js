@@ -510,6 +510,7 @@ export const removeAllLocalStorage = () => {
   // removeStore('userName');
   // removeStore('userPassword');
   removeStore('userInfo');
+  removeStore('isTemplateOne');
   removeStore('isLogin');
   removeStore('userType');
   removeStore('completAppointTaskSweepCodeDestinationInfo');

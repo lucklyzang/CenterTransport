@@ -53,6 +53,10 @@ new Vue({
     if (getStore('userInfo')) {
       store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
     };
+    // 页面刷新重新存入模板信息
+    if (getStore('isTemplateOne')) {
+      store.commit('changeIsTemplateOne', parseInt(getStore('isTemplateOne')))
+    };
     if (getStore('userType')) {
       store.commit('changeUserType',getStore('userType'));
     };

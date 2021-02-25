@@ -94,7 +94,8 @@ export default {
       'changeRouterFlag',
       'changeLoginMethod',
       'changeUserType',
-      'changeOverDueWay'
+      'changeOverDueWay',
+      'changeIsTemplateOne'
     ]),
 
 
@@ -247,6 +248,13 @@ export default {
       };
       this.$router.push({path:'/home'});
       this.changeTitleTxt({tit:'中央运送'});
+      if (userInfo.mobile == 'template_one') {
+        this.changeIsTemplateOne(0);
+        setStore('isTemplateOne', 0)
+      } else {
+        this.changeIsTemplateOne(1);
+        setStore('isTemplateOne', 1)
+      };
       window.location.reload()
     }
   }
