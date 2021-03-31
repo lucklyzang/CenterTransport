@@ -95,7 +95,8 @@ export default {
       'changeLoginMethod',
       'changeUserType',
       'changeOverDueWay',
-      'changeIsTemplateOne'
+      'changeIsTemplateOne',
+      'changeTemplateType'
     ]),
 
 
@@ -106,6 +107,11 @@ export default {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
               setStore('departmentInfo', res.data.data);
+            } else {
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {})
             }
           })
           .catch((err) => {
@@ -124,6 +130,11 @@ export default {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
               setStore('departmentInfoNo', res.data.data);
+            } else {
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {})
             }
           })
           .catch((err) => {
@@ -214,6 +225,11 @@ export default {
       setStore('userType', userInfo["extendData"]['user_type_id']);
       this.storeUserInfo(JSON.parse(getStore('userInfo')));
       this.proId = userInfo['proId'];
+      // 保存模板类型
+      if (userInfo.mobile) {
+        this.changeTemplateType(userInfo.mobile);
+        setStore('templateType', userInfo.mobile)
+      };
       if (!IsPC()) {
         // 注册channel
         if (window.android.getChannelId()) {
@@ -247,14 +263,7 @@ export default {
         removeStore('completeDepartmentMessage')
       };
       this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'中央运送'});
-      if (userInfo.mobile == 'template_one') {
-        this.changeIsTemplateOne(0);
-        setStore('isTemplateOne', 0)
-      } else {
-        this.changeIsTemplateOne(1);
-        setStore('isTemplateOne', 1)
-      };
+      this.changeTitleTxt({tit:'中央运送'})
       window.location.reload()
     }
   }

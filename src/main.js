@@ -53,10 +53,6 @@ new Vue({
     if (getStore('userInfo')) {
       store.commit('storeUserInfo',JSON.parse(getStore('userInfo')));
     };
-    // 页面刷新重新存入模板信息
-    if (getStore('isTemplateOne')) {
-      store.commit('changeIsTemplateOne', parseInt(getStore('isTemplateOne')))
-    };
     if (getStore('userType')) {
       store.commit('changeUserType',getStore('userType'));
     };
@@ -67,6 +63,10 @@ new Vue({
     // 页面刷新重新存入请求token
     if (getStore('questToken')) {
       store.commit('changeToken', getStore('questToken'));
+    };
+    // 重新存入模板信息
+    if (getStore('templateType')) {
+      store.commit('changeTemplateType', getStore('templateType'));
     };
     // 页面刷新重新存入调度任务具体信息
     if (getStore('currentDispatchTaskMessage')) {

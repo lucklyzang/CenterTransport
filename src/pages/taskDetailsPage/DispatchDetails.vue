@@ -9,7 +9,7 @@
     <div class="basic-message" ref="basicMessage">
       <p class="basic-message-title">基本信息</p>
        <div class="wait-handle-message">
-        <div class="handle-message-line-wrapper">
+        <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">任务类型:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.taskTypeName}}</span>
@@ -25,7 +25,7 @@
             <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
           </P>
         </div>
-        <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+        <div class="handle-message-line-wrapper handle-message-line-wrapper-other" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">任务终点:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
@@ -43,7 +43,7 @@
             <span class="message-tit-real">{{dispatchTaskMessage.planStartTime}}</span>
           </p>
         </div>
-        <div class="handle-message-line-wrapper">
+        <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">病人姓名:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
@@ -74,21 +74,21 @@
             </span>
           </p>
         </div>
-        <div class="transport-type-wrapper">
+        <div class="transport-type-wrapper" v-if="templateType === 'template_two'">
          <p class="transport-type-title">
            运送类型:
          </p>
-          <div class="transport-type-list-wrapper">
+          <div class="transport-type-list-wrapper" v-for="(item,index) in dispatchTaskMessage.patientInfoList">
             <div class="transport-type-list">
-              <p class="transport-type-list-title">标本</p>
+              <p class="transport-type-list-title">{{item.typeList[0].parentTypeName == '' ? '无': item.typeList[0].parentTypeName}}</p>
               <p class="transport-type-list-content">
-                <span class="serial">1</span>床号: a12,胡三省,女,标本✖3
-              </p>
-            </div>
-            <div class="transport-type-list">
-              <p class="transport-type-list-title">药物、文书</p>
-              <p class="transport-type-list-content">
-                <span class="serial">1</span>床号: a12,胡三省,女,标本✖3
+                <span class="serial">{{index+1}}、</span>
+                <span>
+                  床号:{{item.bedNumber}},{{item.patientName}},{{genderTransfer(item.sex)}},
+                </span>
+                <span v-for="(inneritem, innerIndex) in item.typeList">
+                  {{inneritem.taskTypeName}}×{{inneritem.quantity}}
+                </span>
               </p>
             </div>
           </div>
@@ -221,7 +221,8 @@ export default {
       'dispatchTaskId',
       'currentDepartmentNumber',
       'catch_components',
-      'isCompleteDispatchIssuePhotoList'
+      'isCompleteDispatchIssuePhotoList',
+      'templateType'
     ]),
 
     proId () {
@@ -429,7 +430,7 @@ export default {
           this.showChildrenComponent = true;
           // 改变调度具体某一任务的信息状态
           this.changeDispatchTaskMessage({DtMsg: res.data.data});
-          console.log('飒飒飒飒',this.dispatchTaskMessage.taskNumber)
+          console.log('飒飒飒飒',this.dispatchTaskMessage)
         }
       })
       .catch((err) => {
@@ -607,6 +608,19 @@ export default {
             break;
         }
       },
+    // 性别转换
+    genderTransfer (index) {
+      switch(index) {
+        case 1 :
+          return '男'
+          break;
+        case 2 :
+          return '女'
+          break;
+        default:
+          return '未知'
+      }
+    },
 
     // 取件
     fetchPiece () {
@@ -748,7 +762,6 @@ export default {
               color: black
             };
             .transport-type-list-content {
-
             }
           }
         };

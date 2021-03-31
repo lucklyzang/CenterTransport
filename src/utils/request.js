@@ -15,12 +15,16 @@ const service = axios.create({
   retryDelay: 1000, // 每次重试间隔时间
   shouldRetry: (err) => true // 重试条件
 });
-
+axios.defaults.withCredentials = true;
 // request interceptor
 service.interceptors.request.use(
   config => {
     if (store.getters.token) {
       config.headers['Authorization'] = store.getters.token
+    };
+    // 请求头添加模板信息
+    if (store.getters.templateType) {
+      config.headers['REQUEST_TEMPLATE'] = store.getters.templateType
     };
     return config
   },

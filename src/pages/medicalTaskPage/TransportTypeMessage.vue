@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper">
-    <van-overlay :show="overlayShow"/>
+    <van-overlay :show="overlayShow" style="z-index:10000"/>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -13,86 +13,86 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="创建中,请稍候····" textColor="#2895ea"></loading>
     </div>
-<!--    <div class="templateOne">-->
-<!--      <div class="transport-type-title">-->
-<!--        <h3>{{transportantTaskMessage.value}}</h3>-->
-<!--      </div>-->
-<!--      <div class="transport-type-area">-->
-<!--        <div class="destination-box">-->
-<!--          <div class="destination-title">优先级</div>-->
-<!--            <div class="destination-content">-->
-<!--              <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">-->
-<!--                <van-radio name="1">正常</van-radio>-->
-<!--                <van-radio name="2">重要</van-radio>-->
-<!--                <van-radio name="3">紧急</van-radio>-->
-<!--                <van-radio name="4">紧急重要</van-radio>-->
-<!--              </van-radio-group>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        &lt;!&ndash; <div class="destination-box">-->
-<!--          <div class="destination-title">目的地</div>-->
-<!--          <div class="destination-content">-->
-<!--            <van-dropdown-menu>-->
-<!--              <van-dropdown-item v-model="destinationAddress" :options="destinationList"/>-->
-<!--            </van-dropdown-menu>-->
-<!--          </div>-->
-<!--        </div> &ndash;&gt;-->
-<!--        <div class="transport-type-box">-->
-<!--          <div class="transport-type-title-innner">运送类型:</div>-->
-<!--          <div class="transport-type-list">-->
-<!--            <span :class="{spanStyle:typeIndex === index}" v-for="(item,index) in typeOperationList" :key="`${item}-${index}`" @click="typeEvent(item,index)">-->
-<!--              {{item.text}}-->
-<!--            </span>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="field-box">-->
-<!--          <p>-->
-<!--            <van-field v-model="bedNumber" label="床号" placeholder=""/>-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            <van-field v-model="patientName"  label="姓名" placeholder=""/>-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            <van-field v-model="patientNumber"  label="住院号" placeholder=""/>-->
-<!--          </p>-->
-<!--          <p>-->
-<!--            <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>-->
-<!--          </p>-->
-<!--        </div>-->
-<!--        <div class="tool-box" @click="toolEvent">-->
-<!--          <div class="tool-title">-->
-<!--            转运工具-->
-<!--            <span>{{toolName}}</span>-->
-<!--            </div>-->
-<!--          <div class="tool-sign">-->
-<!--            <van-icon name="arrow"/>-->
-<!--          </div>-->
-<!--          &lt;!&ndash; 运送工具弹框 &ndash;&gt;-->
-<!--        </div>-->
-<!--        <div class="destination-box">-->
-<!--          <div class="destination-title destination-title-inner">运送员是否返回</div>-->
-<!--          <div class="destination-content destination-content-inner">-->
-<!--            <van-radio-group v-model="judgeResult" direction="horizontal" checked-color="#afe897">-->
-<!--              <van-radio name="0">否</van-radio>-->
-<!--              <van-radio name="1">是</van-radio>-->
-<!--            </van-radio-group>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="describle-box">-->
-<!--          <van-field v-model="taskDescribe"   type="textarea" rows="1"-->
-<!--          autosize label="任务描述:" placeholder="请输入任务描述"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="btn-area">-->
-<!--        <span>-->
-<!--          <img :src="taskSurePng" alt=""  @click="dispatchTaskSure">-->
-<!--        </span>-->
-<!--        <span>-->
-<!--          <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">-->
-<!--        </span>-->
-<!--      </div>-->
-<!--    </div>-->
-    <div class="templateTwo">
+    <div class="templateOne" v-if="templateType === 'template_one'">
+      <div class="transport-type-title">
+        <h3>{{transportantTaskMessage.value}}</h3>
+      </div>
+      <div class="transport-type-area">
+        <div class="destination-box">
+          <div class="destination-title">优先级</div>
+            <div class="destination-content">
+              <van-radio-group v-model="checkResult" direction="horizontal" checked-color="#afe897">
+                <van-radio name="1">正常</van-radio>
+                <van-radio name="2">重要</van-radio>
+                <van-radio name="3">紧急</van-radio>
+                <van-radio name="4">紧急重要</van-radio>
+              </van-radio-group>
+            </div>
+          </div>
+        <div class="destination-box-department">
+          <div class="destination-title">科室选择</div>
+          <div class="destination-content creat-chooseHospital-content-two" v-if="destinListShow">
+            <Ldselect :list="destinationList"
+                       label-key="value" value-key="id"
+                       clearable
+                       placeholder="请选择"
+                       color="#333"
+                       selectColor="#43c3f3"
+                       bgColor="#f9f9f9"
+                       v-model="destinationListOneValue"
+                       @change="destinationOneChange">
+            </Ldselect>
+          </div>
+        </div>
+        <div class="transport-type-box">
+          <div class="transport-type-title-inner">运送类型</div>
+          <div class="transport-type-list">
+            <span :class="{spanStyle:typeIndex === index}" v-for="(item,index) in typeOperationList" :key="`${item}-${index}`" @click="typeEvent(item,index)">
+              {{item.text}}
+            </span>
+          </div>
+        </div>
+        <div class="field-box">
+          <p>
+            <van-field v-model="bedNumber" label="床号" placeholder=""/>
+          </p>
+          <p>
+            <van-field v-model="patientName"  label="姓名" placeholder=""/>
+          </p>
+          <p>
+            <van-field v-model="patientNumber"  label="住院号" placeholder=""/>
+          </p>
+          <p>
+            <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>
+          </p>
+        </div>
+        <div class="tool-box" @click="toolEvent">
+          <div class="tool-title">
+            转运工具
+          </div>
+          <div class="tool-name">
+            {{toolName}}
+          </div>
+          <div class="tool-sign">
+            <van-icon name="arrow"/>
+          </div>
+        </div>
+        <div class="destination-box">
+          <div class="destination-title destination-title-inner">运送员是否返回</div>
+          <div class="destination-content destination-content-inner">
+            <van-radio-group v-model="judgeResult" direction="horizontal" checked-color="#afe897">
+              <van-radio name="0">否</van-radio>
+              <van-radio name="1">是</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
+        <div class="describle-box">
+          <van-field v-model="taskDescribe"   type="textarea"
+          autosize label="任务描述:" placeholder="请输入任务描述"/>
+        </div>
+      </div>
+    </div>
+    <div class="templateTwo" v-else-if="templateType === 'template_two'">
       <div class="transport-type-area">
         <div class="destination-box">
           <div class="destination-title">优先级</div>
@@ -108,7 +108,9 @@
         <div class="tool-box" @click="toolEvent">
           <div class="tool-title">
             转运工具
-            <span>{{toolName}}</span>
+          </div>
+          <div class="tool-name">
+            {{toolName}}
           </div>
           <div class="tool-sign">
             <van-icon name="arrow"/>
@@ -123,6 +125,22 @@
             </van-radio-group>
           </div>
         </div>
+        <div class="destination-box-department">
+            <div class="destination-title">科室选择</div>
+            <div class="destination-content creat-chooseHospital-content-two" v-if="destinListShow">
+              <Ldselect :list="destinationList"
+                        :multiple="true"
+                         label-key="value" value-key="id"
+                         clearable
+                         placeholder="请选择"
+                         color="#333"
+                         selectColor="#43c3f3"
+                         bgColor="#f9f9f9"
+                         v-model="destinationListValue"
+                         @change="destinationChange">
+              </Ldselect>
+            </div>
+          </div>
         <div class="destination-box destination-box-taskTotal">
           <div class="destination-title destination-title-inner">该任务运送总数</div>
           <div class="destination-content destination-content-inner">
@@ -130,92 +148,69 @@
           </div>
         </div>
         <div class="field-box-wrapper">
-            <div class="field-box" v-for="(item,index) in templatelistTwo">
+            <div class="field-box-two" v-for="(item,index) in templatelistTwo">
               <div class="field-title">
-                病人{{index+1}}
-                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)" />
+                <div class="patient-name">病人{{index+1}}</div>
+                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)"/>
+                <van-icon name="records" @click="editMessage(index)"/>
               </div>
-              <div class="field-one">
-                <p>
-                  <van-field v-model="item.bedNumber" label="床号" placeholder="请输入病人床号"/>
-                </p>
-                <p>
-                  <van-field v-model="item.patientName"  label="姓名" placeholder="请输入病人姓名"/>
-                </p>
-              </div>
-              <div class="field-two">
-                <p class="admission-number">
-                  <van-field v-model="item.patientNumber"  label="住院号" placeholder="请输入病人住院号"/>
-                </p>
-                <p class="gender-list-box">
-                  <span>性别</span>
-                  <span>
-                  <van-dropdown-menu>
-                    <van-dropdown-item v-model="item.generValue" :options="item.generList" />
-                  </van-dropdown-menu>
-                </span>
-                </p>
-              </div>
-              <div class="field-three">
-                <p>
-                  <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
-                </p>
-              </div>
-              <div class="field-four">
-                <p class="sample-box">
-                  <span>
-                    <van-dropdown-menu>
-                      <van-dropdown-item v-model="item.sampleValue" :options="item.sampleList" @change="sampleListValueChange(index,value)" />
-                    </van-dropdown-menu>
-                  </span>
-                  <span>
-                    <span>运送类型: </span>
-                    <span>{{jointTransportMessage(index)}}</span>
-                  </span>
-                </p>
-              </div>
-              <div class="type-list-box" >
-                <div class="type-list"  v-for="(innerItem, innerIndex) in item.typeSelectList" :key="innerItem"
-                     @click.stop="sampleTypeEvent(index ,innerItem, innerIndex)"
-                     :class="{ 'typeListStyle' : templatelistTwo[index]['typeSelectList'][innerIndex].checked }"
-                >
-                  <div class="type-value">
-                    {{innerItem.text}}
-                  </div>
-                  <div class="type-number">
-                    <van-stepper v-model="innerItem.typeNumber" input-width="50px" button-size="40px" min="0"
-                                 @plus="plusNum(index)"
-                                 @minus="minusNum(index)"
-                                 @change="stepperChange(index)"
-                                 integer default-value="0"
-                    />
+              <div class="field-wrapper">
+                <div class="field-one">
+                  <p>
+                    <van-field v-model="item.bedNumber" label="床号" disabled/>
+                  </p>
+                  <p>
+                    <van-field v-model="item.patientName"  label="姓名" disabled/>
+                  </p>
+                  <p class="admission-number">
+                    <van-field v-model="item.patientNumber"  label="住院号" disabled/>
+                  </p>
+                </div>
+                <div class="field-two">
+                  <p>
+                    <van-field v-model="item.genderValue" label="性别" disabled/>
+                  </p>
+                  <p>
+                    <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
+                  </p>
+                </div>
+                <div class="field-three">
+                  <div class="sample-box">
+                    <p>运送类型</p>
+                    <p>
+                      {{item.sampleValue}}
+                    </p>
+                    <p>
+                    {{jointTransportMessage(index)}}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
         </div>
         <div class="add-message" @click="addMessageEvent">
-          点击添加病人信息
+          <span><van-icon name="plus" /></fa-icon></span>
+          <span>添加病人信息</span>
         </div>
         <div class="describle-box">
           <van-field v-model="taskDescribe"   type="textarea" rows="1"
-                     autosize label="任务描述:" placeholder="请输入任务描述"/>
+                     autosize label="任务描述" placeholder="请输入任务描述"/>
         </div>
       </div>
-      <div class="btn-area">
-        <span>
-          <img :src="taskSurePng" alt=""  @click="dispatchTaskSure">
-        </span>
-        <span>
-          <img :src="taskCancelPng" alt="" @click="dispatchTaskCancel">
-        </span>
-      </div>
     </div>
-    <van-dialog v-model="toolShow" title="请选择运送工具" show-cancel-button width="92%"
+    <div class="btn-area">
+        <span  @click="dispatchTaskSure">
+          确 认
+        </span>
+      <span @click="dispatchTaskCancel">
+          取 消
+        </span>
+    </div>
+    <div class="tool-show">
+      <van-dialog v-model="toolShow" title="请选择运送工具" show-cancel-button width="92%"
           @confirm="toolSure" @cancel="toolCancel"
         >
           <div class="tool-name-list">
-            <div class="tool-name-list-title-innner">转运工具:</div>
             <div class="tool-name-list-content">
               <span :class="{spanStyle:toolIndex === index}" v-for="(item,index) in vehicleOperationList" :key="`${item}-${index}`" @click="toolCheck(item,index)">
                 {{item.text}}
@@ -223,6 +218,76 @@
             </div>
           </div>
     </van-dialog>
+    </div>
+    <div class="patien-modal-box">
+      <van-dialog v-model="patienModalShow" title="病人" show-cancel-button width="92%"
+                  use-slot
+                  @confirm="patienModalSure"
+                  @cancel="patienModalCancel"
+      >
+      <div class="slot-content">
+        <div class="bedNumberBox">
+          <div>床号</div>
+          <div>
+            <van-field v-model="patienModalMessage.bedNumber" placeholder="请输入床号"/>
+          </div>
+        </div>
+        <div class="bedNumberBox">
+          <div>姓名</div>
+          <div>
+            <van-field v-model="patienModalMessage.patientName" placeholder="请输入姓名"/>
+          </div>
+        </div>
+        <div class="bedNumberBox">
+          <div>住院号</div>
+          <div>
+            <van-field v-model="patienModalMessage.patientNumber" placeholder="请输入住院号"/>
+          </div>
+        </div>
+        <div class="genderBox">
+          <div>性别</div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.genderValue" direction="horizontal">
+              <van-radio name="1" checked-color="#333">男</van-radio>
+              <van-radio name="2" checked-color="#333">女</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
+        <div class="bedNumberBox">
+          <div>运送数量</div>
+          <div>
+            <van-field v-model="patienModalMessage.actualData" disabled/>
+          </div>
+        </div>
+        <div class="transportBox">
+          <div>运送类型</div>
+          <div v-if="xflSelectShow">
+            <Vselect :list="patienModalMessage.sampleList" :clearable="false" :showItemNum="5" :isCanInput="true" :showList="transportParentControlListShow"
+                        :style_Container="'height: 50px; font-size: 16px;'" :initValue="patienModalMessage.sampleValue" @change="transportParentChange"
+                        @input="transportParentInputEvent" @visible-change="transportParentVisibleChange">
+            </Vselect>
+          </div>
+        </div>
+        <div class="transport-type-child-box">
+          <div class="transport-type-child-content" v-for="(innerItem,innerIndex) in patienModalMessage.transportList"
+                @click="sampleTypeEvent(innerItem,innerIndex)" :key="innerItem.text">
+            <div :class="{'transTypeListStyle': innerItem.checked }">
+              {{innerItem.text}}
+            </div>
+            <div>
+              <StepNumberBox v-model="innerItem.typerNumber"
+                 @plus="plusNum(arguments)"
+                 @inputBlur="inputBlurEvent(arguments)"
+                 :innerIndex="innerIndex"
+                 @minus="minusNum(arguments)"
+                 @change="stepperValChange(arguments)"
+              ></StepNumberBox>
+            </div>
+          </div>
+        </div>
+      </div>
+    </van-dialog>
+    </div>
   </div>
 </template>
 
@@ -230,10 +295,14 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType} from '@/api/medicalPort.js'
+import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
 import {userSignOut} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
+import Vselect from '@/components/Vselect'
+import Ldselect from '@/components/Ldselect'
 import Loading from '@/components/Loading'
+import _ from 'lodash'
+import StepNumberBox from '@/components/StepNumberBox'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
@@ -243,6 +312,15 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      destinListShow: false,
+      xflSelectShow: false,
+      isPressEdit: false,
+      updateIndex: 0,
+      transportParentControlListShow: false,
+      destinationId: '',
+      destinationName: '',
+      destinationListOneValue: '',
+      destinationListValue: [],
       transportTypeParent: [],
       transportTypeChild: [],
       templatelistTwo: [
@@ -250,17 +328,27 @@ export default {
           bedNumber: '',
           patientName: '',
           patientNumber: '',
-          generValue: 0,
+          genderValue: '男',
           actualData: 0,
-          sampleValue: this.transportTypeParentInitValue,
+          sampleValue: '',
           sampleList: [],
-          typeSelectList: [],
-          generList: [
-            { text: '男', value: 0 },
-            { text: '女', value: 1 }
-          ]
+          sampleId: '',
+          transportList: [],
+          generList: []
         }
       ],
+      patienModalMessage: {
+        bedNumber: '',
+        patientName: '',
+        patientNumber: '',
+        actualData: 0,
+        genderValue: '',
+        transportList: [],
+        sampleList: [],
+        sampleValue: '',
+        sampleId: ''
+      },
+      patienModalShow: false,
       showLoadingHint: false,
       overlayShow: false,
       liIndex: null,
@@ -295,6 +383,9 @@ export default {
     NoData,
     Loading,
     FooterBottom,
+    Vselect,
+    Ldselect,
+    StepNumberBox,
     VanFieldSelectPicker
   },
 
@@ -317,7 +408,7 @@ export default {
       'transportantTaskMessage',
       'userInfo',
       'globalTimer',
-      'isTemplateOne'
+      'templateType'
     ]),
     proId () {
       return this.userInfo.extendData.proId
@@ -375,28 +466,25 @@ export default {
         setStore('currentTitle','中央运送')
       },
 
-      // 阻止步进器冒泡
-      plusNum(index) {
-        event.stopPropagation()
+      // 步进器增加或减少事件
+      plusNum(msg) {
+        this.patienModalMessage.transportList[msg[2]]['typerNumber'] = msg[1];
+        this.reduceTotal(msg[2]);
       },
-      minusNum(index) {
-        event.stopPropagation()
-      },
-
-      // 步进器绑定值变化事件
-      stepperChange(index) {
-        this.reduceTotal(index)
+      minusNum(msg) {
+        this.patienModalMessage.transportList[msg[2]]['typerNumber'] = msg[1];
+        this.reduceTotal(msg[2])
       },
 
       // 求和函数
       reduceTotal(index) {
         // 求该病人信息对应的运送数量
-        let targetMsg = this.templatelistTwo[index].typeSelectList.filter((item) => {
+        let targetMsg = this.patienModalMessage.transportList.filter((item) => {
           return item.checked == true
         });
-        this.templatelistTwo[index].actualData = targetMsg.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.typeNumber
-        },0);
+        this.patienModalMessage.actualData = targetMsg.reduce((accumulator, currentValue) => {
+          return accumulator + currentValue.typerNumber
+        }, 0);
       },
 
       // 右边下拉框菜单点击
@@ -448,19 +536,68 @@ export default {
         console.log('飒飒',this.templatelistTwo[index].sampleValue)
       },
 
+      // 运送类型大类选择列表变化时
+      transportParentChange(val) {
+        this.querytransportChildByTransportParent(val.parentIndex, val.orignItem.id);
+        this.patienModalMessage.actualData = 0;
+        this.patienModalMessage.sampleValue = val.orignItem.value;
+        this.patienModalMessage.sampleId = val.orignItem.id;
+      },
+
+      // 运送类型大类下拉框隐藏或显示时事件
+      transportParentVisibleChange() {
+
+      },
+
+      // 运送类型大类input中的数据变化时触发
+      transportParentInputEvent(val) {},
+
+      inpuntClick () {
+
+      },
+
+      // 目的地模板一选择列表变化事件
+      destinationOneChange(val) {
+        this.destinationListOneValue = val;
+      },
+
+      // 目的地模板二选择列表变化事件
+      destinationChange(val) {
+        this.destinationListValue = val;
+      },
+
       // 拼接运送类型信息函数
       jointTransportMessage (index) {
         let finalMsg = '';
-        let targetMsg = this.templatelistTwo[index].typeSelectList.filter((item) => {
+        let targetMsg = this.templatelistTwo[index].transportList.filter((item) => {
           return item.checked == true
         });
         for (let item of targetMsg) {
-          finalMsg += `${item.text}${item.typeNumber}个,`
+          finalMsg += `${item.text}${item.typerNumber}个,`
         };
-        return finalMsg
+        if (targetMsg.length == 0) {
+          return finalMsg
+        };
+        return `(${finalMsg})`
       },
 
-      // 根据运送类型大类查询运送类型小类
+      // 模板二运送类型点击事件
+      sampleTypeEvent(innerItem, innerIndex) {
+        this.patienModalMessage.transportList[innerIndex].checked = !this.patienModalMessage.transportList[innerIndex].checked;
+        if (!this.patienModalMessage.transportList[innerIndex].checked) {
+          if (this.patienModalMessage.transportList[innerIndex]['typerNumber'] != 0) {
+            this.patienModalMessage.transportList[innerIndex]['typerNumber'] = 0
+          }
+        };
+        this.reduceTotal(0)
+      },
+
+      // 运送类型子类步进器值改变事件
+      stepperValChange(msg) {
+        this.reduceTotal(msg[1]);
+      },
+
+    // 根据运送类型大类查询运送类型小类
       querytransportChildByTransportParent (index,id, flag) {
         queryTransportType({
           proId: this.proId,
@@ -468,15 +605,16 @@ export default {
           parentId: id
         }).then((res) => {
           if (res && res.data.code == 200) {
-            this.templatelistTwo[index].typeSelectList = [];
+            this.patienModalMessage['transportList'] = [];
             for(let item of res.data.data) {
-              this.templatelistTwo[index].typeSelectList.push({
+              this.patienModalMessage['transportList'].push({
                 text: item.typeName,
                 value: item.id,
                 checked: false,
-                typeNumber: ''
-              });
-            }
+                typerNumber: 0
+              })
+            };
+            console.log('飒飒',this.patienModalMessage);
           }
         })
         .catch((err) => {
@@ -569,7 +707,7 @@ export default {
 
       // 转运工具弹框确认事件
       toolSure () {
-        this.toolShow = false
+        this.toolShow = false;
       },
 
       // 转运工具弹框取消事件
@@ -596,19 +734,19 @@ export default {
             this.destinationList = [];
             this.vehicleOperationList = [];
             this.typeOperationList = [];
-            this.destinationList.push({text: '无', value: 0});
             this.transportTypeParent = [];
             this.transportTypeChild = [];
             this.templatelistTwo[0].sampleList = [];
-            this.templatelistTwo[0].typeSelectList = [];
+            this.templatelistTwo[0].transportList = [];
             let [item1,item2,item3,item4] = res;
             if (item1) {
               Object.keys(item1).forEach((item) => {
                 this.destinationList.push({
-                  text: item1[item],
-                  value: item
+                  value: item1[item],
+                  id: item
                 })
-              })
+              });
+              this.destinListShow = true;
             };
             if (item2) {
               for (let item of item2) {
@@ -624,11 +762,17 @@ export default {
                   text: item.typeName,
                   value: item.id
                 });
-                this.templatelistTwo[0].typeSelectList.push({
+                this.templatelistTwo[0].transportList.push({
                   text: item.typeName,
                   value: item.id,
                   checked: false,
                   typeNumber: ''
+                });
+                this.patienModalMessage['transportList'].push({
+                  text: item.typeName,
+                  value: item.id,
+                  checked: false,
+                  typerNumber: 0
                 });
                 this.transportTypeChild.push({
                   text: item.typeName,
@@ -641,12 +785,16 @@ export default {
             if (item4) {
               for (let item of item4) {
                 this.transportTypeParent.push({
-                  value: item.id,
-                  text: item.typeName
+                  id: item.id,
+                  value: item.typeName
                 })
               };
               this.templatelistTwo[0].sampleList = this.transportTypeParent;
-              this.templatelistTwo[0].sampleValue = this.transportantTaskMessage.id
+              this.templatelistTwo[0].sampleValue = this.transportantTaskMessage.value;
+              this.templatelistTwo[0].sampleId = this.transportantTaskMessage.id;
+              this.patienModalMessage.sampleList = this.transportTypeParent;
+              this.patienModalMessage.sampleValue = this.transportantTaskMessage.value;
+              this.patienModalMessage.sampleId = this.transportantTaskMessage.id;
             }
           }
         })
@@ -687,41 +835,86 @@ export default {
         })
       },
 
-      // 运送类型点击事件
-      sampleTypeEvent (index ,innerItem, innerIndex) {
-        this.templatelistTwo[index]['typeSelectList'][innerIndex].checked = !this.templatelistTwo[index]['typeSelectList'][innerIndex].checked;
-        if (!this.templatelistTwo[index]['typeSelectList'][innerIndex].checked) {
-          this.templatelistTwo[index]['typeSelectList'][innerIndex].typeNumber = 0
-        };
-        this.reduceTotal(index)
-      },
 
       // 病人信息删除事件
       deletetMessage (index) {
         this.templatelistTwo.splice(index,1)
       },
 
+      // 病人信息编辑事件
+      editMessage(index) {
+        this.updateIndex = index;
+        this.isPressEdit = true;
+        this.xflSelectShow = true;
+        this.patienModalMessage = {};
+        this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
+        this.transferGenderTwo();
+        this.patienModalShow = true
+      },
+
+      // 转换性别
+      transferGenderOne (index) {
+        if (this.templatelistTwo[index].genderValue === '1') {
+          this.templatelistTwo[index].genderValue = '男'
+        } else if (this.templatelistTwo[index].genderValue === '2') {
+          this.templatelistTwo[index].genderValue = '女'
+        } else {
+          this.templatelistTwo[index].genderValue = ''
+        }
+      },
+      transferGenderTwo () {
+        if (this.patienModalMessage.genderValue == '男') {
+          this.patienModalMessage.genderValue = '1'
+        } else if (this.patienModalMessage.genderValue == '女') {
+          this.patienModalMessage.genderValue = '2'
+        } else {
+          this.patienModalMessage.genderValue = ''
+        }
+      },
+
       // 添加病人信息事件
       addMessageEvent () {
-        this.querytransportChildByTransportParent(this.transportantTaskMessage.id, true);
-        this.templatelistTwo.push({
+        this.isPressEdit = false;
+        this.patienModalShow = true;
+        this.xflSelectShow = true;
+        this.patienModalMessage = {};
+        this.patienModalMessage = _.cloneDeep({
           bedNumber: '',
           patientName: '',
           patientNumber: '',
-          generValue: 0,
           actualData: 0,
-          sampleValue: this.transportTypeParentInitValue,
+          transportList: this.transportTypeChild,
           sampleList: this.transportTypeParent,
-          typeSelectList: this.transportTypeChild,
-          generList: [
-            { text: '男', value: 0 },
-            { text: '女', value: 1 }
-          ]
+          sampleValue: this.transportantTaskMessage.value,
+          sampleId: this.transportantTaskMessage.id
         });
         console.log('病人信息',this.templatelistTwo)
       },
 
-      // 生成调度任务
+      // 病人模态框信息确认事件
+      patienModalSure () {
+        if (this.isPressEdit) {
+          this.templatelistTwo.splice(this.updateIndex, 1,_.cloneDeep(this.patienModalMessage));
+          this.transferGenderOne(this.updateIndex);
+          console.log('病人信息',this.templatelistTwo);
+        } else {
+          this.templatelistTwo.push(_.cloneDeep(this.patienModalMessage));
+          if (this.templatelistTwo[this.templatelistTwo.length-1].genderValue === '1') {
+            this.templatelistTwo[this.templatelistTwo.length-1].genderValue = '男'
+          } else if (this.templatelistTwo[this.templatelistTwo.length-1].genderValue === '2') {
+            this.templatelistTwo[this.templatelistTwo.length-1].genderValue = '女'
+          } else {
+            this.templatelistTwo[this.templatelistTwo.length-1].genderValue = ''
+          }
+        };
+        this.xflSelectShow = false
+      },
+      // 病人模态框信息取消事件
+      patienModalCancel() {
+        this.xflSelectShow = false;
+      },
+
+      // 生成调度任务(一个病人)
       postGenerateDispatchTask (data) {
         this.showLoadingHint = true;
         this.overlayShow = true;
@@ -752,36 +945,148 @@ export default {
         })
       },
 
+    // 根据科室id获取科室名称
+    getDepartmentNameById(id) {
+      return this.destinationList.filter((item) => {return item['id'] == id})[0]['value']
+    },
+
+    //生成调度任务(多个病人)
+    postGenerateDispatchTaskMany(data) {
+      this.showLoadingHint = true;
+      this.overlayShow = true;
+      generateDispatchTaskMany(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          setTimeout(() => {
+            this.backTo()
+          }, 1000)
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        };
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+    },
+
       // 运送类型信息确认事件
       dispatchTaskSure () {
-        let taskMessage = {
-          setOutPlaceId: this.userInfo.depId,  //出发地ID
-          setOutPlaceName: this.userInfo.depName,  //出发地名称
-          destinationId: '',   //目的地ID
-          destinationName: '',  //目的地名称
-          parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
-          parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
-          taskTypeId: this.typeValue,  //运送类型 ID
-          taskTypeName: this.typeText,  //运送类型 名 称
-          priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-          toolId: this.toolValue,   //运送工具ID
-          toolName: this.toolName,  //运送工具名称
-          actualCount: this.actualData,   //实际数量
-          patientName: this.patientName,  //病人姓名
-          sex: 0,    //病人性别  0-未指定,1-男, 2-女
-          age: "",   //年龄
-          number: this.patientNumber,   //住院号
-          bedNumber: this.bedNumber,  //床号
-          taskRemark: this.taskDescribe,   //备注
-          createId: this.workerId,   //创建者ID  当前登录者
-          createName: this.userName,   //创建者名称  当前登陆者
-          proId: this.proId,   //项目ID
-          proName: this.proName,   //项目名称
-          isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
-          createType: 1   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-        };
-        // 创建调度任务
-        this.postGenerateDispatchTask(taskMessage)
+        if (this.templateType === 'template_one') {
+          if (!this.destinationListOneValue) {
+            this.$dialog.alert({
+              message: '科室不能为空',
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            return
+          };
+          let taskMessage = {
+            setOutPlaceId: this.userInfo.depId,  //出发地ID
+            setOutPlaceName: this.userInfo.depName,  //出发地名称
+            destinationId: this.destinationListOneValue,   //目的地ID
+            destinationName: this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
+            parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
+            parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
+            taskTypeId: this.typeValue,  //运送类型 ID
+            taskTypeName: this.typeText,  //运送类型 名 称
+            priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+            toolId: this.toolValue,   //运送工具ID
+            toolName: this.toolName,  //运送工具名称
+            actualCount: this.actualData,   //实际数量
+            patientName: this.patientName,  //病人姓名
+            sex: 0,    //病人性别  0-未指定,1-男, 2-女
+            age: "",   //年龄
+            number: this.patientNumber,   //住院号
+            bedNumber: this.bedNumber,  //床号
+            taskRemark: this.taskDescribe,   //备注
+            createId: this.workerId,   //创建者ID  当前登录者
+            createName: this.userName,   //创建者名称  当前登陆者
+            proId: this.proId,   //项目ID
+            proName: this.proName,   //项目名称
+            isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
+            createType: 1   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
+          };
+          // 创建调度任务
+          this.postGenerateDispatchTask(taskMessage);
+        } else if (this.templateType === 'template_two') {
+          if (this.destinationListValue.length == 0) {
+            this.$dialog.alert({
+              message: '科室不能为空',
+              closeOnPopstate: true
+            }).then(() => {
+            });
+            return
+          };
+          let taskMessageTwo = {
+            setOutPlaceId: this.userInfo.depId, //出发地ID
+            setOutPlaceName: this.userInfo.depName, //出发地名称
+            destinations: [],//多个目的地列表
+            patientInfoList: [], //多个病人信息列表
+            priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+            toolId: this.toolValue == 0 ? '' : this.toolValue, //运送工具ID
+            toolName: this.toolName == '无工具' ? '' : this.toolName, //运送工具名称
+            actualCount: this.totalNumber, //实际数量
+            taskRemark: this.taskDescribe, //备注
+            createId: this.workerId,   //创建者ID  当前登录者
+            createName: this.userName,   //创建者名称  当前登陆者
+            proId: this.proId, //项目ID
+            proName: this.proName, //项目名称
+            isBack: this.judgeResult, //是否返回出发地  0-不返回，1-返回
+            createType: 1 //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
+          };
+          // 获取目的地列表数据
+          for (let item of this.destinationListValue) {
+            taskMessageTwo.destinations.push({
+              destinationId: item,
+              destinationName: this.getDepartmentNameById(item)
+            })
+          };
+          // 获取多个病人信息列表数据
+          for (let patientItem of this.templatelistTwo) {
+            taskMessageTwo.patientInfoList.push({
+              bedNumber: patientItem['bedNumber'],
+              patientName: patientItem['patientName'],
+              number: patientItem['patientNumber'],
+              sex:  patientItem['genderValue'] == '男' ? 1 : 2,
+              quantity: patientItem['actualData'],
+              typeList: []
+            })
+          };
+          // 获取每个病人的运送类型数据
+          for (let i = 0, len = this.templatelistTwo.length; i < len; i++) {
+            if (this.templatelistTwo[i]['transportList'].length > 0) {
+              // 获取选中的运送类型小类
+              let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.checked});
+              for (let innerItem of checkChildTypeList) {
+                taskMessageTwo.patientInfoList[i]['typeList'].push({
+                  quantity: innerItem['typerNumber'],
+                  parentTypeId: this.templatelistTwo[i]['sampleId'],
+                  parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                  taskTypeId: innerItem['value'],
+                  taskTypeName: innerItem['text']
+                })
+              }
+            }
+          };
+          this.postGenerateDispatchTaskMany(taskMessageTwo);
+          console.log('最终数据',taskMessageTwo)
+        }
       },
 
       // 运送类型信息取消事件
@@ -799,44 +1104,353 @@ export default {
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
-     /deep/ .van-dialog {
+    .btn-area {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 20px;
+      margin: 0 auto;
+      height: 80px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      span {
+        width: 47%;
+        height: 60px;
+        display: inline-block;
+        font-size: 18px;
+        text-align: center;
+        line-height: 60px;
+        &:first-child {
+          border-radius: 4px;
+          background-image: linear-gradient(to right, #37d5fc , #429bff);
+          color: #fff
+        };
+        &:last-child {
+          border-radius: 4px;
+          background: #e8e8e8;
+          border: none;
+          color: #666666
+        }
+      }
+    };
+    .tool-show {
+      /deep/ .van-dialog {
+        width: 90% !important;
         .van-dialog__content {
           margin-bottom: 6px;
           height: 300px;
           margin: 10px 0;
+
           .tool-name-list {
-            width: 94%;
-            height: 100%;
-            overflow: auto;
+            width: 90%;
             margin: 0 auto;
-            padding: 0;
-            border: 1px solid #b2b2b2;
-            .tool-name-list-title-innner {
-              padding: 10px;
-            }
+            display: flex;
+            height: 300px;
+            flex-flow: row wrap;
+            justify-content: space-between;
+            align-items: center;
+            overflow: auto;
+
             .tool-name-list-content {
+              width: 100%;
+              height: 100%;
               padding: 6px;
+
               .spanStyle {
-                color: #fff;
-                background: #2895ea
+                background: #d6f4ff;
+                color: #01a6ff;
+                border: 1px solid #4cc5f2;
               }
+
               span {
                 display: inline-block;
                 width: 45%;
                 height: 40px;
                 text-align: center;
                 margin-bottom: 8px;
+                margin-right: 10px;
                 line-height: 40px;
-                background: #f3f3f3;
-                margin-right: 10%;
+                background: #f9f9f9;
+                color: @color-text-right;
+
                 &:nth-child(even) {
                   margin-right: 0
                 }
               }
             }
           }
+        };
+        .van-dialog__footer {
+          justify-content: space-between;
+          padding: 6px;
+          .van-dialog__cancel {
+            border-radius: 30px;
+            flex: 0 0 45%;
+            margin-top: 8px;
+            background: #e8e8e8;
+            color: #666666
+          }
+        ;
+
+          .van-dialog__confirm {
+            border-radius: 30px;
+            flex: 0 0 45%;
+            margin-top: 8px;
+            background: #fff;
+            color: #43c3f4 !important;
+            border: 1px solid #43c3f4
+          }
         }
-      };
+      }
+    }
+    // 病人信息模态框样式
+    .patien-modal-box {
+      /deep/ .van-dialog {
+        padding: 16px;
+        width: 90% !important;
+        .van-dialog__header {
+          padding-top: 0;
+          text-align: left;
+          font-size: 18px;
+          color: #333;
+          font-weight: bold;
+        }
+      ;
+
+        .van-dialog__content {
+          max-height: 600px;
+          overflow: scroll;
+
+          .slot-content {
+            height: 600px;
+            padding: 16px;
+
+            .bedNumberBox {
+              height: 60px;
+
+              > div {
+                height: 60px;
+                line-height: 60px;
+
+                &:first-child {
+                  width: 25%;
+                  font-size: 16px;
+                  color: @color-text-left;
+                  float: left
+                }
+              ;
+
+                &:last-child {
+                  width: 75%;
+                  float: right;
+                  position: relative;
+
+                  .van-cell {
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    left: 0;
+                    transform: translateY(-50%);
+                    min-height: 59px !important;
+                    border-bottom: 1px solid #f9f9f9;
+
+                    .van-cell__value {
+                      min-height: 59px !important;
+
+                      .van-field__body {
+                        min-height: 59px !important;
+
+                        .van-field__control {
+                          font-size: 16px;
+                          color: @color-text-right;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ;
+
+            .genderBox {
+              height: 60px;
+
+              > div {
+                height: 60px;
+                line-height: 60px;
+
+                &:first-child {
+                  width: 25%;
+                  color: @color-text-left;
+                  font-size: 16px;
+                  float: left
+                }
+              ;
+
+                &:last-child {
+                  width: 75%;
+                  float: right;
+                  border-bottom: 1px solid #ececec;
+                  position: relative;
+
+                  .van-radio-group {
+                    width: 100%;
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    transform: translateY(-50%);
+                    font-size: 16px;
+                    color: @color-text-left;
+                  }
+                }
+              }
+            }
+          ;
+
+            .transportBox {
+              height: 60px;
+              line-height: 60px;
+
+              > div {
+                &:first-child {
+                  float: left;
+                  width: 25%;
+                  font-size: 16px;
+                  color: @color-text-left;
+                  box-sizing: border-box
+                }
+              ;
+
+                &:last-child {
+                  height: 60px;
+                  float: right;
+                  position: relative;
+                  width: 75%;
+                  z-index: 300;
+                  border-bottom: 1px solid #ececec;
+
+                  .show-box {
+                    color: @color-text-right;
+                    position: absolute;
+                    left: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    height: 40px !important;
+                    background: #f9f9f9;
+                    border: none;
+
+                    .input {
+                      font-size: 15px !important;
+                      background: #f9f9f9;
+                      font-size: 16px;
+                    }
+                  ;
+
+                    .right-arrow {
+                      color: @color-text-right !important
+                    }
+                  }
+                }
+              }
+            }
+          ;
+
+            .transport-type-child-box {
+              max-height: 100px;
+
+              .transTypeListStyle {
+                background: #44c4f3;
+                color: #fff !important;
+                border-radius: 4px;
+              }
+
+              .transport-type-child-content {
+                height: 60px;
+                line-height: 60px;
+
+                > div {
+                  &:first-child {
+                    float: left;
+                    width: 50%;
+                    height: 60px;
+                    font-size: 16px;
+                    color: @color-text-left;
+                    box-sizing: border-box;
+                    overflow-x: auto;
+                  }
+                ;
+
+                  &:last-child {
+                    height: 60px;
+                    float: right;
+                    position: relative;
+                    width: 50%;
+                    z-index: 100;
+                    border-bottom: 1px solid #f9f9f9;
+
+                    .num-box {
+                      align-items: center;
+
+                      .subtract-box {
+                        width: 26px;
+                        height: 26px;
+                        background: #d3d3d3;
+                        border-radius: 50%;
+                        color: #fff;
+                        text-align: center;
+                        line-height: 26px
+                      }
+                    ;
+
+                      .plus-box {
+                        width: 26px;
+                        height: 26px;
+                        background: #3d4864;
+                        border-radius: 50%;
+                        color: #fff;
+                        text-align: center;
+                        line-height: 26px
+                      }
+
+                      input {
+                        text-align: center;
+                        background: #fff
+                      }
+                    }
+                  }
+                }
+              ;
+              }
+            }
+          }
+        }
+      ;
+
+        .van-dialog__footer {
+          justify-content: space-between;
+
+          .van-dialog__cancel {
+            border-radius: 30px;
+            flex: 0 0 45%;
+            margin-top: 8px;
+            background: #e8e8e8;
+            color: #666666
+          }
+        ;
+
+          .van-dialog__confirm {
+            border-radius: 30px;
+            flex: 0 0 45%;
+            margin-top: 8px;
+            background: #fff;
+            color: #43c3f4 !important;
+            border: 1px solid #43c3f4
+          }
+        }
+      }
+    }
     .loading {
       position: absolute;
       top: 300px;
@@ -853,6 +1467,12 @@ export default {
       .rightDropDown
     };
     .templateOne {
+      flex:1;
+      overflow: auto;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-flow: column nowrap;
       .transport-type-title {
         height: 30px;
         line-height: 30px;
@@ -867,27 +1487,25 @@ export default {
         flex:1;
         overflow: auto;
         margin: 0 auto;
-        margin: 10px 0;
         width: 100%;
         .destination-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
           padding: 10px;
           box-sizing: border-box;
-          margin-bottom: 8px;
-          border: 1px solid #b2b2b2;
+          border-bottom: 12px solid #f6f6f6;
           > div {
               display: inline-block
             };
             .destination-title {
-              width: 18%;
-              color: black
+              width: 20%;
+              color: @color-text-left
             }
             .destination-title-inner {
               width: 27%
             }
           .destination-content {
-            width: 74%;
+            width: 79%;
             position: relative;
             .destination-content-tag {
               position: absolute;
@@ -947,66 +1565,139 @@ export default {
           &:last-child {
             margin-bottom: 0
           }
-        }
+        };
+        .destination-box-department {
+          width: 100%;
+          height: 60px;
+          padding: 0 12px;
+          box-sizing: border-box;
+          border-bottom: 1px solid  @color-underline;
+          > div {
+            display: inline-block;
+          };
+          .destination-title {
+            height: 59px;
+            width: 20%;
+            line-height: 59px;
+            color: @color-text-left;
+            box-sizing: border-box;
+            vertical-align: top;
+          };
+          .destination-content {
+            height: 60px;
+            float: right;
+            position: relative;
+            width: 79%;
+            z-index: 300;
+            .main {
+              color: @color-text-right;
+              position: absolute;
+              left: 0;
+              top: 10px;
+              width: 100%;
+              height: 40px !important;
+              background: #f9f9f9;
+              border: none;
+              /deep/ .input {
+                height: 40px !important;
+                padding: 0 4px !important;
+                border: none;
+                input {
+                  background: #f9f9f9;
+                  font-size: 15px !important
+                }
+              };
+              /deep/.text-blue {
+                color: #969696 !important
+              };
+              /deep/ .text-green {
+                color: #43c3f3 !important
+              }
+            }
+          }
+        };
         .tool-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
           padding: 10px;
           box-sizing: border-box;
-          border: 1px solid #b2b2b2;
+          border-bottom: 1px solid  @color-underline;
           position: relative;
-          margin-bottom: 8px;
+          > div {
+            display: inline-block
+          };
           .tool-title {
-
-          }
+            width: 20%;
+            color: @color-text-left
+          };
+          .tool-name {
+            width: 79%;
+            color: @color-text-right
+          };
           .tool-sign {
             position: absolute;
             right: 6px;
+            color: @color-text-right;
             top: 10px
           }
         }
         .transport-type-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
           max-height:320px;
           overflow: auto;
           padding: 10px;
           box-sizing: border-box;
-          margin-bottom: 8px;
-          border: 1px solid #b2b2b2;
+          border-top: 12px solid #f6f6f6;
+          border-bottom: 12px solid #f6f6f6;
+          overflow: auto;
+          display: flex;
+          flex: 1;
+          flex-direction: row;
           .transport-type-title-inner {
-
+            color: @color-text-left;
+            width: 20%;
+            height: 35px;
+            line-height: 35px
           }
           .transport-type-list {
-            padding: 6px;
-            margin-top: 10px;
-            z-index: 200;
+            flex: 1;
+            display: flex;
+            font-size: 15px;
+            color: @color-text-right;
+            width: 100%;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding:0;
+            box-sizing: border-box;
+            overflow: auto;
             .spanStyle {
-              color: #fff;
-              background: #2895ea
+              background: #d6f4ff;
+              color: #01a6ff;
+              border: 1px solid #4cc5f2;
             }
             span {
               display: inline-block;
-              width: 45%;
+              width: 30%;
               height: 40px;
               text-align: center;
-              margin-bottom: 8px;
               line-height: 40px;
-              background: #f3f3f3;
-              margin-right: 10%;
-              &:nth-child(even) {
-                margin-right: 0
-              }
+              background: #f9f9f9;
+              margin-bottom: 4px;
+              border-radius: 16px;
+              overflow-x: auto;
             }
           }
         }
         .field-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
           padding: 10px;
           box-sizing: border-box;
-          margin-bottom: 8px;
-          border: 1px solid #b2b2b2;
+          border-top: 6px solid #f6f6f6;
+          border-bottom: 12px solid #f6f6f6;
           > p {
             display: inline-block;
             width: 49%;
@@ -1016,56 +1707,50 @@ export default {
                 width: 70px;
                 text-align: left;
                 font-size: 14px;
-                color: black;
+                color:@color-text-left;
                 margin-top: 6px
               }
               .van-field__value {
-                border: 1px solid #bcbcbc;
+                border-bottom: 1px solid @color-underline;
                 height: 30px;
                 line-height: 30px;
                 padding-left: 4px;
                 font-size: 16px;
+                color:@color-text-right;
               }
             }
           }
         }
         .describle-box {
-          width: 96%;
+          width: 100%;
           box-sizing: border-box;
           margin: 0 auto;
           padding: 0 10px 0 0;
-          margin-bottom: 2px;
-          border: 1px solid #b2b2b2;
+          border-bottom: 12px solid #f6f6f6;
           /deep/ .van-cell {
             padding: 10px 10px;
             .van-field__label {
               width: 80px;
               text-align: left;
               font-size: 14px;
-              color: black;
+              color: @color-text-left;
               margin-top: 6px
             }
             .van-field__value {
-              .van-field__control {
-                border: 1px solid #bcbcbc;
-                height: 30px;
-                line-height: 30px;
-                padding-left: 4px
+              .van-field__body {
+                height: 100px;
+                padding-top: 6px;
+                background: #f9f9f9;
+                .van-field__control {
+                  height: 100% !important;
+                  background: #f9f9f9;
+                  height: 80px;
+                  color: @color-text-right;
+                  font-size: 15px;
+                  padding-left: 4px
+                }
               }
             }
-          }
-        }
-      }
-      .btn-area {
-        height: 58px;
-        text-align: center;
-        line-height: 58px;
-        span {
-          .bottomButton;
-          display: inline-block;
-          img {
-            width: 100%;
-            height: 100%
           }
         }
       }
@@ -1074,7 +1759,6 @@ export default {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      margin: 10px 0;
       width: 100%;
       display: flex;
       flex-flow: column nowrap;
@@ -1085,24 +1769,23 @@ export default {
         flex-flow: column nowrap;
         overflow: auto;
         .destination-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
-          padding: 10px;
+          padding: 12px;
           box-sizing: border-box;
-          margin-bottom: 8px;
-          border: 1px solid #b2b2b2;
+          border-bottom: 12px solid #f6f6f6;
           > div {
             display: inline-block
           };
           .destination-title {
-            width: 18%;
-            color: black
+            width: 27%;
+            color: @color-text-left
           }
           .destination-title-inner {
             width: 27%
           }
           .destination-content {
-            width: 74%;
+            width: 72%;
             position: relative;
             .destination-content-tag {
               position: absolute;
@@ -1157,18 +1840,87 @@ export default {
             }
           }
           .destination-content-inner {
-            width: 71%
+            width: 72%
           }
           &:last-child {
             margin-bottom: 0
           }
         };
+        .destination-box-department {
+          width: 100%;
+          height: 60px;
+          padding: 0 12px;
+          box-sizing: border-box;
+          border-bottom: 1px solid  @color-underline;
+          > div {
+            display: inline-block;
+          };
+          .destination-title {
+            height: 59px;
+            width: 27%;
+            line-height: 59px;
+            color: @color-text-left;
+            box-sizing: border-box;
+            vertical-align: top;
+          };
+          .destination-content {
+            height: 60px;
+            float: right;
+            position: relative;
+            width: 72%;
+            z-index: 300;
+            .main {
+              color: @color-text-right;
+              position: absolute;
+              left: 0;
+              top: 10px;
+              width: 100%;
+              height: 40px !important;
+              background: #f9f9f9;
+              border: none;
+              /deep/ .input {
+                height: 40px !important;
+                padding: 0 4px !important;
+                border: none;
+                input {
+                  background: #f9f9f9;
+                  font-size: 15px !important
+                }
+              };
+              /deep/.text-blue {
+                color: #969696 !important
+              };
+              /deep/ .text-green {
+                color: #43c3f3 !important
+              }
+            }
+          }
+        };
         .destination-box-taskTotal {
+          width: 100%;
+          height: 72px;
+          padding: 0 12px;
+          box-sizing: border-box;
+          .destination-title {
+            height: 60px;
+            width: 27%;
+            line-height: 60px;
+            color: @color-text-left;
+            box-sizing: border-box
+          };
           .destination-content {
             /deep/ .van-cell {
+              height: 40px;
+              padding: 0 4px;
+              background: #f9f9f9;
               .van-cell__value {
                 .van-field__body {
                   font-size: 18px;
+                  height: 40px;
+                  line-height: 40px;
+                  .van-field__control:disabled {
+                    color: @color-text-right !important;
+                  }
                 }
               }
             }
@@ -1176,26 +1928,243 @@ export default {
         };
         .field-box-wrapper {
           padding: 4px 0;
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
-          border: 1px solid #b2b2b2;
           flex:1;
           overflow: auto;
+          .field-box-two {
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 12px;
+            box-sizing: border-box;
+            span {
+
+            };
+            .field-title {
+              position: relative;
+              font-size: 18px;
+              color: @color-text-right;
+              line-height: 40px;
+              height: 50px;
+              font-weight: bold;
+              .patient-name {
+                position: absolute;
+                top: 0;
+                height: 100%;
+                font-size: 16px;
+                width: 100px;
+                left: 4px;
+                color: #000000
+              };
+              /deep/ .van-icon-delete {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                right: 6px;
+                color: #000000 !important;
+                font-size: 20px !important
+              };
+              .van-icon-records  {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                right: 50px;
+                color: #000000 !important;
+                font-size: 20px !important
+              }
+            };
+            .field-wrapper {
+              background: #f9f9f9;
+              padding: 14px;
+              border-radius: 4px;
+              > div {
+                > p {
+                  display: inline-block;
+                  /deep/ .van-cell {
+                    padding: 2px 0;
+                    background: #f9f9f9;
+                    .van-field__label {
+                      width: 70px;
+                      text-align: left;
+                      font-size: 14px;
+                      color: @color-text-left;
+                      margin-top: 6px
+                    }
+                    .van-field__value {
+                      height: 30px;
+                      line-height: 30px;
+                      padding-left: 4px;
+                      color: @color-text-right;
+                      font-size: 16px;
+                      .van-field__body {
+                        .van-field__control:disabled {
+                          color: @color-text-right !important;
+                        }
+                      }
+                    }
+                  }
+                }
+              };
+              .field-one {
+                position: relative;
+                > p {
+                  width: 30%;
+                }
+              };
+              .field-two {
+                position: relative;
+                > p {
+                  display: inline-block;
+                  height: 36px;
+                  width: 30%;
+                  line-height: 36px;
+                  &:first-child {
+                    color: @color-text-left;
+                    text-align: left;
+                  };
+                  &:last-child {
+                    /deep/ .van-cell {
+                      padding: 2px 0;
+                      background: #f9f9f9;
+                      .van-field__label {
+                        width: 70px;
+                        text-align: left;
+                        font-size: 14px;
+                        color: @color-text-left;
+                        margin-top: 6px
+                      }
+                      .van-field__value {
+                        height: 30px;
+                        line-height: 30px;
+                        padding-left: 4px;
+                        color: @color-text-right;
+                        font-size: 16px;
+                        .van-field__body {
+                          .van-field__control:disabled {
+                            color: @color-text-right !important;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              };
+              .field-three {
+                .sample-box {
+                  width: 100%;
+                  height: 40px;
+                  line-height: 40px;
+                  > p {
+                    display: inline-block;
+                    height: 100%;
+                    &:first-child {
+                      color: @color-text-left;
+                      font-size: 15px;
+                      vertical-align: top;
+                    };
+                    &:nth-child(2) {
+                      vertical-align: top;
+                      /deep/.van-dropdown-menu {
+                        height: 100%;
+                        .van-dropdown-menu__bar {
+                          height: 100%;
+                          box-shadow: none;
+                          .van-dropdown-menu__item {
+                            background: #f9f9f9;
+                            .van-dropdown-menu__title {
+                              color: @color-text-right;
+                              font-size: 15px;
+                              line-height: normal !important;
+                              :after {
+                                display: none
+                              }
+                            }
+                          }
+                        };
+                        /deep/ .van-dropdown-item {
+                          .van-popup {
+                            .van-cell {
+                              .van-cell__title {
+                                font-size: 18px;
+                              }
+                            }
+                          }
+                        }
+                      }
+                    };
+                    &:last-child {
+                      width: 53%;
+                      height: 40px;
+                      overflow-y: auto;
+                      > p {
+                        &:first-child {
+                          color: @color-text-right;
+                          font-size: 15px;
+                        };
+                      }
+                    }
+                  }
+                };
+              };
+            }
+            .type-list-box {
+              border: 1px solid #bcbcbc;
+              padding: 4px 4px 0 4px;
+              flex: 1;
+              overflow: auto;
+              display: flex;
+              flex-flow: row wrap;
+              justify-content: space-between;
+              align-items: top;
+              .type-list {
+                border: 1px solid #bcbcbc;
+                text-align: center;
+                width: 48%;
+                height: 40px;
+                line-height: 40px;
+                margin-bottom: 4px;
+                position: relative;
+                > div {
+                  position: absolute;
+                  top: 0;
+                  &:first-child {
+                    left: 2px
+                  };
+                  &:last-child {
+                    right: 2px
+                  }
+                }
+              };
+              .typeListStyle {
+                border: none;
+                color: #fff;
+                background: #2895ea
+              }
+            };
+          };
         };
         .tool-box {
-          width: 96%;
+          width: 100%;
           margin: 0 auto;
-          padding: 10px;
+          padding: 12px;
           box-sizing: border-box;
-          border: 1px solid #b2b2b2;
+          border-bottom: 1px solid  @color-underline;
           position: relative;
-          margin-bottom: 8px;
+          > div {
+            display: inline-block
+          };
           .tool-title {
-
-          }
+            width: 27%;
+            color: @color-text-left
+          };
+          .tool-name {
+            width: 72%;
+            color: @color-text-right
+          };
           .tool-sign {
             position: absolute;
             right: 6px;
+            color: @color-text-right;
             top: 10px
           }
         }
@@ -1234,257 +2203,85 @@ export default {
             }
           }
         }
-        .field-box {
+        .add-message {
           width: 96%;
-          height: 100%;
+          height: 40px;
           margin: 0 auto;
-          padding: 2px;
-          box-sizing: border-box;
-          margin-bottom: 8px;
-          border: 1px solid #b2b2b2;
-          display: flex;
-          flex-flow: column nowrap;
-          > div {
-            > p {
-              display: inline-block;
-              width: 49%;
-              /deep/ .van-cell {
-                padding: 10px 0;
-                .van-field__label {
-                  width: 70px;
-                  text-align: center;
-                  font-size: 14px;
-                  color: black;
-                  margin-top: 6px
-                }
-                .van-field__value {
-                  border: 1px solid #bcbcbc;
-                  height: 30px;
-                  line-height: 30px;
-                  padding-left: 4px;
-                  font-size: 16px;
-                }
-              }
+          line-height: 40px;
+          text-align: center;
+          color: #43c3f3;
+          border: 1px solid #44c3f3;
+          border-radius: 20px;
+          font-size: 16px;
+          span {
+            &:first-child {
+              margin-right: 6px;
+              vertical-align: middle;
             }
           }
-          .field-title {
-            position: relative;
-            font-size: 20px;
-            color: black;
-            line-height: 30px;
-            font-weight: bold;
-            .van-icon {
-              position: absolute;
-              top: 50%;
-              transform: translateY(-50%);
-              right: 0;
-              color: red;
-              font-size: 22px;
-            }
-          };
-          .field-one {
-            position: relative;
-            > p {
-              &:first-child {
-                //position: absolute;
-                //top:0;
-                //left: 0
-              };
-              &:last-child {
-                position: absolute;
-                top:0;
-                right: 1%
-              }
-            };
-          };
-          .field-two {
-            position: relative;
-            height: 50px;
-            > p {
-              position: absolute;
-              top:0;
-            };
-            .admission-number {
-              vertical-align: top;
-              left: 0
-            };
-            .gender-list-box {
-              top: 8px;
-              height: 36px;
-              right: 1%;
-              display: flex;
-              flex-flow: row nowrap;
-              > span {
-                display: inline-block;
-                height: 36px;
-                line-height: 36px;
-                &:first-child {
-                  width: 70px;
-                  text-align: center;
-                };
-                &:last-child {
-                  flex: 1;
-                  height: 30px;
-                  margin-top: 2px;
-                  /deep/.van-dropdown-menu {
-                    height: 100%;
-                    border: 1px solid #bcbcbc;
-                    .van-dropdown-menu__bar {
-                      height: 100%;
-                      .van-dropdown-menu__item {
-                        .van-dropdown-menu__title {
-                          font-size: 18px;
-                          line-height: normal !important;
-                        }
-                      }
-                    };
-                    /deep/ .van-dropdown-item {
-                      .van-popup {
-                        .van-cell {
-                          .van-cell__title {
-                            font-size: 18px;
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            };
-          };
-          .field-four {
-            .sample-box {
-              width: 100%;
-              position: relative;
-              height: 40px;
-              line-height: 40px;
-              > span {
-                display: inline-block;
-                position: absolute;
-                height: 100%;
-                top: 0;
-                &:first-child {
-                  width: 30%;
-                  left: 0;
-                  /deep/.van-dropdown-menu {
-                    height: 100%;
-                    border: 1px solid #bcbcbc;
-                    .van-dropdown-menu__bar {
-                      height: 100%;
-                      .van-dropdown-menu__item {
-                        .van-dropdown-menu__title {
-                          font-size: 18px;
-                          line-height: normal !important;
-                        }
-                      }
-                    };
-                    /deep/ .van-dropdown-item {
-                      .van-popup {
-                        .van-cell {
-                          .van-cell__title {
-                            font-size: 18px;
-                          }
-                        }
-                      }
-                    }
-                  }
-                };
-                &:last-child {
-                  width: 68%;
-                  right: 0;
-                  height: 40px;
-                  overflow-y: auto;
-                  > span {
-                    &:first-child {
-                      font-size: 16px;
-                      font-weight: bold;
-                      color: black
-                    };
-                  }
-                }
-              }
-            };
-          };
-          .type-list-box {
-            border: 1px solid #bcbcbc;
-            padding: 4px 4px 0 4px;
-            flex: 1;
-            overflow: auto;
-            display: flex;
-            flex-flow: row wrap;
-            justify-content: space-between;
-            align-items: top;
-            .type-list {
-              border: 1px solid #bcbcbc;
-              text-align: center;
-              width: 48%;
-              height: 40px;
-              line-height: 40px;
-              margin-bottom: 4px;
-              position: relative;
-              > div {
-                position: absolute;
-                top: 0;
-                &:first-child {
-                  left: 2px
-                };
-                &:last-child {
-                  right: 2px
-                }
-              }
-            };
-            .typeListStyle {
-              border: none;
-              color: #fff;
-              background: #2895ea
-            }
-          };
-        };
-        .add-message {
-          margin: 0 auto;
-          margin-top: 6px;
-          margin-bottom: 6px;
-          width: 140px;
-          text-align: center;
-          line-height: 30px;
-          background: #2895ea;
-          color: white;
         };
         .describle-box {
-          width: 96%;
+          width: 100%;
           box-sizing: border-box;
           margin: 0 auto;
           padding: 0 10px 0 0;
-          border: 1px solid #b2b2b2;
+          border-top: 12px solid #f6f6f6;
+          border-bottom: 12px solid #f6f6f6;
           /deep/ .van-cell {
             padding: 10px 10px;
             .van-field__label {
               width: 80px;
               text-align: left;
               font-size: 14px;
-              color: black;
+              color: @color-text-left;
               margin-top: 6px
             }
             .van-field__value {
-              .van-field__control {
-                border: 1px solid #bcbcbc;
-                height: 30px;
-                line-height: 30px;
-                padding-left: 4px
+              .van-field__body {
+                height: 60px;
+                padding-top: 6px;
+                background: #f9f9f9;
+                .van-field__control {
+                  height: 100% !important;
+                  background: #f9f9f9;
+                  height: 80px;
+                  color: @color-text-right;
+                  font-size: 15px;
+                  padding-left: 4px
+                }
               }
             }
           }
         }
       }
       .btn-area {
-        text-align: center;
-        margin-top: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 20px;
+        margin: 0 auto;
+        height: 80px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
         span {
-          .bottomButton;
+          width: 47%;
+          height: 60px;
           display: inline-block;
-          img {
-            width: 100%;
-            height: 100%
+          font-size: 18px;
+          text-align: center;
+          line-height: 60px;
+          &:first-child {
+            border-radius: 4px;
+            background-image: linear-gradient(to right, #37d5fc , #429bff);
+            color: #fff
+          };
+          &:last-child {
+            border-radius: 4px;
+            background: #e8e8e8;
+            border: none;
+            color: #666666
           }
         }
       }
