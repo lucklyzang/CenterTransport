@@ -31,6 +31,12 @@
             <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
           </P>
         </div>
+       <div class="handle-message-line-wrapper handle-message-line-wrapper-other handle-message-line-wrapper-other-two" v-else-if="templateType === 'template_two'">
+         <P>
+           <span class="message-tit">任务终点:</span>
+           <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}},</span>
+         </P>
+       </div>
         <div class="handle-message-line-wrapper">
           <p>
             <span class="message-tit">任务状态:</span>
@@ -462,9 +468,16 @@ export default {
 
     // 结束任务
     endTask () {
-      if (this.dispatchTaskMessage.distName.length == 0) {
-        this.$toast('至少完成一个目的地时,才能结束任务');
-        return
+      if (this.templateType == 'template_one') {
+        if (this.dispatchTaskMessage.distName.length == 0) {
+          this.$toast('至少完成一个目的地时,才能结束任务');
+          return
+        };
+      } else if (this.templateType == 'template_two') {
+        if (this.dispatchTaskMessage.distName.length < this.dispatchTaskMessage.destinations.length) {
+          this.$toast('扫完全部目的地时,才能结束任务');
+          return
+        };
       };
       if (this.dispatchTaskMessage.state == 4) {
         this.$toast('请再次扫描出发地结束任务');
@@ -768,6 +781,13 @@ export default {
         .handle-message-line-wrapper-other {
           p {
             width: 100%;
+          }
+        };
+        .handle-message-line-wrapper-other-two {
+          > p {
+            .message-tit-real-destinationList {
+              margin-right: 4px
+            }
           }
         }
       }

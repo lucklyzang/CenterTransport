@@ -354,6 +354,7 @@
         'globalTimer',
         'isFreshDispatchTaskPage',
         'catch_components',
+        'templateType',
         'templateType'
       ]),
       proId () {
@@ -600,29 +601,53 @@
             if (res.data.data.length > 0) {
               this.noDataShow = false;
               for (let item of res.data.data) {
-                this.stateCompleteList.push({
-                  createTime: item.createTime,
-                  planUseTime: item.planUseTime,
-                  planStartTime: item.planStartTime,
-                  state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
-                  destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  id: item.id,
-                  parentTypeName: item.parentTypeName,
-                  finishTime: item.finishTime,
-                  patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto,
-                  isBack: item.isBack,
-                  isSign: item.isSign,
-                  number: item.number,
-                  actualCount: item.actualCount,
-                  distName: item.distName
-                })
+                if (this.templateType === 'template_one') {
+                  this.stateCompleteList.push({
+                    createTime: item.createTime,
+                    planUseTime: item.planUseTime,
+                    planStartTime: item.planStartTime,
+                    state: item.state,
+                    setOutPlaceName: item.setOutPlaceName,
+                    destinationName: item.destinationName,
+                    taskTypeName: item.taskTypeName,
+                    toolName: item.toolName,
+                    priority: item.priority,
+                    id: item.id,
+                    parentTypeName: item.parentTypeName,
+                    finishTime: item.finishTime,
+                    patientName: item.patientName,
+                    bedNumber: item.bedNumber,
+                    startPhoto: item.startPhoto,
+                    endPhoto: item.endPhoto,
+                    isBack: item.isBack,
+                    isSign: item.isSign,
+                    number: item.number,
+                    actualCount: item.actualCount,
+                    distName: item.distName
+                  })
+                } else if (this.templateType === 'template_two') {
+                  this.stateCompleteList.push({
+                    createTime: item.createTime,
+                    planUseTime: item.planUseTime,
+                    planStartTime: item.planStartTime,
+                    state: item.state,
+                    setOutPlaceName: item.setOutPlaceName,
+                    setOutPlaceId: item.setOutPlaceId,
+                    toolName: item.toolName,
+                    priority: item.priority,
+                    id: item.id,
+                    startPhoto: item.startPhoto,
+                    endPhoto: item.endPhoto,
+                    isBack: item.isBack,
+                    isSign: item.isSign,
+                    number: item.number,
+                    actualCount: item.actualCount,
+                    distName: item.distName,
+                    destinations: item.destinations,
+                    hasSanOut: item.hasSanOut,
+                    patientInfoList: item.patientInfoList
+                  })
+                }
               };
               console.log('完成',this.stateCompleteList);
             } else {
@@ -793,7 +818,7 @@
         .then((res) => {
           this.vehicleOperationList = [];
           if (res && res.data.code == 200) {
-            if (res.data.data.length > 0) {
+            if (res.data.data && res.data.data.length > 0) {
               for (let item of res.data.data) {
                 this.vehicleOperationList.push({
                   text: item.name,
@@ -870,11 +895,19 @@
           //是否需要签字
           this.changeIsSign(item.isSign);
           //判断是否为单一目的地
-          if (item.destinationName == "") {
-            this.changeIsSingleDestination(false)
-          } else {
-            this.changeIsSingleDestination(true)
-          };
+          if (this.templateType == 'template_one') {
+            if (item.destinationName == "") {
+              this.changeIsSingleDestination(false)
+            } else {
+              this.changeIsSingleDestination(true)
+            }
+          }  else if (this.templateType == 'template_two') {
+            if (item.destinations.length > 0) {
+              this.changeIsSingleDestination(false)
+            } else {
+              this.changeIsSingleDestination(true)
+            }
+          }
         };
         //储存任务id状态
         this.changeDispatchTaskId(item.id);
