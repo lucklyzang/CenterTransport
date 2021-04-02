@@ -902,7 +902,7 @@
               this.changeIsSingleDestination(true)
             }
           }  else if (this.templateType == 'template_two') {
-            if (item.destinations.length > 0) {
+            if (item.destinations.length > 1 || item.destinations.length == 0) {
               this.changeIsSingleDestination(false)
             } else {
               this.changeIsSingleDestination(true)

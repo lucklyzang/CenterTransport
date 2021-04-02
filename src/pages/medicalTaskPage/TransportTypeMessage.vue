@@ -988,14 +988,14 @@ export default {
       // 运送类型信息确认事件
       dispatchTaskSure () {
         if (this.templateType === 'template_one') {
-          if (!this.destinationListOneValue) {
-            this.$dialog.alert({
-              message: '科室不能为空',
-              closeOnPopstate: true
-            }).then(() => {
-            });
-            return
-          };
+          // if (!this.destinationListOneValue) {
+          //   this.$dialog.alert({
+          //     message: '科室不能为空',
+          //     closeOnPopstate: true
+          //   }).then(() => {
+          //   });
+          //   return
+          // };
           let taskMessage = {
             setOutPlaceId: this.userInfo.depId,  //出发地ID
             setOutPlaceName: this.userInfo.depName,  //出发地名称
@@ -1025,14 +1025,14 @@ export default {
           // 创建调度任务
           this.postGenerateDispatchTask(taskMessage);
         } else if (this.templateType === 'template_two') {
-          if (this.destinationListValue.length == 0) {
-            this.$dialog.alert({
-              message: '科室不能为空',
-              closeOnPopstate: true
-            }).then(() => {
-            });
-            return
-          };
+          // if (this.destinationListValue.length == 0) {
+          //   this.$dialog.alert({
+          //     message: '科室不能为空',
+          //     closeOnPopstate: true
+          //   }).then(() => {
+          //   });
+          //   return
+          // };
           let taskMessageTwo = {
             setOutPlaceId: this.userInfo.depId, //出发地ID
             setOutPlaceName: this.userInfo.depName, //出发地名称
@@ -1051,11 +1051,13 @@ export default {
             createType: 1 //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
           };
           // 获取目的地列表数据
-          for (let item of this.destinationListValue) {
-            taskMessageTwo.destinations.push({
-              destinationId: item,
-              destinationName: this.getDepartmentNameById(item)
-            })
+          if (this.destinationListValue.length > 0) {
+            for (let item of this.destinationListValue) {
+              taskMessageTwo.destinations.push({
+                destinationId: item,
+                destinationName: this.getDepartmentNameById(item)
+              })
+            }
           };
           // 获取多个病人信息列表数据
           for (let patientItem of this.templatelistTwo) {

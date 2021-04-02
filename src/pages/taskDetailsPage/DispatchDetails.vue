@@ -150,7 +150,7 @@
         <span @click="fetchPiece">取件</span>
         <span @click="sendPiece">送件</span>
       </p>
-      <p class="circultion-task-btn-bottom" v-show="!isSingleDestination && dispatchTaskMessage.state != 7">
+      <p class="circultion-task-btn-bottom" v-show="!isSingleDestination && dispatchTaskMessage.state != 7 && dispatchTaskMessage.state != 2">
         <span @click="endTask">完成任务</span>
       </p>
       <p class="circultion-task-btn-bottom" v-show="dispatchTaskMessage.state == 7">
@@ -474,10 +474,17 @@ export default {
           return
         };
       } else if (this.templateType == 'template_two') {
-        if (this.dispatchTaskMessage.distName.length < this.dispatchTaskMessage.destinations.length) {
-          this.$toast('扫完全部目的地时,才能结束任务');
-          return
-        };
+        if (this.dispatchTaskMessage.destinations.length > 0) {
+          if (this.dispatchTaskMessage.distName.length < this.dispatchTaskMessage.destinations.length) {
+            this.$toast('扫完规定的目的地时,才能结束任务');
+            return
+          }
+        }  else {
+          if (this.dispatchTaskMessage.distName.length == 0) {
+            this.$toast('至少完成一个目的地时,才能结束任务');
+            return
+          }
+        }
       };
       if (this.dispatchTaskMessage.state == 4) {
         this.$toast('请再次扫描出发地结束任务');
@@ -886,7 +893,6 @@ export default {
         overflow: auto;
         .track-name {
           span {
-            display: inline-block;
             line-height: 24px
           }
           .collect-parcel {

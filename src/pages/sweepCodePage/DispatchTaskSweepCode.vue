@@ -593,8 +593,10 @@ export default {
             this.judgeIsSignature()
           } else {
             this.changePhotoAreaBoxShow(true);
+            this.changeTitleTxt({tit:'上传照片'});
+            setStore('currentTitle','上传照片');
             this.appointAreaShow = false;
-            this.showSignature = false
+            this.showSignature = false;
           }
         } else {
           this.backTo();
@@ -663,6 +665,8 @@ export default {
         this.judgeSubProcess()
       } else if (this.isSign == 1) {
         this.showSignature = true;
+        this.changeTitleTxt({tit:'签名'});
+        setStore('currentTitle','签名');
         this.changePhotoAreaBoxShow(false);
         this.appointAreaShow = false
       }
@@ -747,6 +751,8 @@ export default {
             // 回显拍照照片
             this.echoPhoto();
             this.changePhotoAreaBoxShow(true);
+            this.changeTitleTxt({tit:'上传照片'});
+            setStore('currentTitle','上传照片');
             this.appointAreaShow = false
           } else if (this.isSign == 1) {
             this.$dialog.alert({
@@ -756,7 +762,9 @@ export default {
             });
             this.changePhotoAreaBoxShow(false)
             this.appointAreaShow = false;
-            this.showSignature = true
+            this.showSignature = true;
+            this.changeTitleTxt({tit:'签名'});
+            setStore('currentTitle','签名')
           } else {
             this.sweepAstoffice()
           }
