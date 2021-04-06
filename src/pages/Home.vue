@@ -116,20 +116,37 @@
                           <span class="message-tit">出发地:</span>
                           <span class="message-tit-real message-tit-real-style">{{item.setOutPlaceName}}</span>
                         </p>
-                        <P class="destiname-line">
+                        <P class="destiname-line" v-if="templateType === 'template_one'">
                           <span class="message-tit">目的地:</span>
-                          <span v-show="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
+                          <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
                             class="message-tit-real message-tit-real-style">
                             {{itemInner}}
                           </span>
-                          <span v-show="item.state == 0 || item.state == 1"
+                          <span v-else-if="item.state == 0 || item.state == 1"
                             class="message-tit-real message-tit-real-style">
                             {{item.destinationName}}
                           </span>
                         </P>
-                        <p>
+                        <P class="destiname-line" v-else-if="templateType == 'template_two'">
+                          <span class="message-tit">目的地:</span>
+                          <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
+                                class="message-tit-real message-tit-real-style">
+                            {{itemInner}}
+                          </span>
+                          <span v-show="item.state == 0 || item.state == 1"
+                                v-for="(itemInner,indexInner) in item.destinationName"
+                                :key="`${itemInner}-${indexInner}`"
+                                class="message-tit-real message-tit-real-style">
+                            {{itemInner.destinationName}}
+                          </span>
+                        </P>
+                        <p v-if="templateType == 'template_one'">
                           <span class="message-tit">运送类型:</span>
                           <span class="message-tit-real">{{item.taskTypeName}}</span>
+                        </p>
+                        <p v-else-if="templateType == 'template_two'">
+                          <span class="message-tit">运送类型:</span>
+                          <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
                         </p>
                         <P>
                           <span class="message-tit">状态:</span>
@@ -139,14 +156,22 @@
                           <span class="message-tit">运送人:</span>
                           <span class="message-tit-real">{{item.workerName}}</span>
                         </p>
-                        <P>
+                        <P v-if="templateType == 'template_one'">
                           <span class="message-tit">床号:</span>
                           <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
                         </P>
-                        <p>
+                        <P v-else-if="templateType == 'template_two'">
+                          <span class="message-tit">床号:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                        </P>
+                        <p v-if="templateType == 'template_one'">
                           <span class="message-tit">病人:</span>
                           <span class="message-tit-real">{{item.patientName}}</span>
                         </p>
+                        <P v-else-if="templateType == 'template_two'">
+                          <span class="message-tit">病人:</span>
+                          <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
+                        </P>
                         <P>
                           <span class="message-tit">转运工具:</span>
                           <span class="message-tit-real message-tit-real-style">{{item.toolName}}</span>
@@ -180,18 +205,18 @@
                   </div>
                   <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
                     <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
-                    @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+                    @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
                   </van-popup>
                   <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
                     <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
-                    @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
+                    @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
                   </van-popup>
                 </div>
-                <p class="middle-top-search">
-                  <span>
-                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
-                  </span>
-                </p>
+<!--                <p class="middle-top-search">-->
+<!--                  <span>-->
+<!--                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">-->
+<!--                  </span>-->
+<!--                </p>-->
                 <van-tabs v-model="activetask" @click="onClickTab">
                   <van-tab name="0">
                     <div slot="title">
@@ -231,9 +256,13 @@
                             </p>
                           </div>
                           <div class="handle-message-line-wrapper">
-                            <p>
+                            <p v-if="templateType == 'template_one'">
                               <span class="message-tit">运送类型:</span>
                               <span class="message-tit-real">{{item.taskTypeName}}</span>
+                            </p>
+                            <p v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">运送类型:</span>
+                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
                             </p>
                             <p>
                               <span class="message-tit">优先级:</span>
@@ -261,14 +290,22 @@
                             </p>
                           </div>
                           <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">病人名字:</span>
-                              <span class="message-tit-real">{{item.patientName ? item.patientName : '无'}}</span>
+                            <p v-if="templateType == 'template_one'">
+                              <span class="message-tit">病人:</span>
+                              <span class="message-tit-real">{{item.patientName}}</span>
                             </p>
-                            <p>
+                            <P v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">病人:</span>
+                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
+                            </P>
+                            <P v-if="templateType == 'template_one'">
                               <span class="message-tit">床号:</span>
-                              <span class="message-tit-real">{{item.bedNumber ? item.bedNumber : '无'}}</span>
-                            </p>
+                              <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                            </P>
+                            <P v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">床号:</span>
+                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                            </P>
                           </div>
                           <p class="wait-handle-check" v-show="item.state == 2 ">
                             <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -310,9 +347,15 @@
                             </P>
                           </div>
                           <div class="handle-message-line-wrapper">
-                            <p>
+                            <p v-if="templateType == 'template_one'">
                               <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
+                              <span style="margin-right: 4px;" class="message-tit-real">{{item.destinationName}}</span>
+                            </p>
+                            <p v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">终点:</span>
+                              <span style="margin-right: 4px;" v-for="(itemInner,indexInner) in item.destinationName" :key="`${itemInner}-${indexInner}`" class="message-tit-real">
+                                {{itemInner.destinationName}}
+                              </span>
                             </p>
                             <p>
                               <span class="message-tit">转运工具:</span>
@@ -320,9 +363,13 @@
                             </p>
                           </div>
                           <div class="handle-message-line-wrapper">
-                            <p>
+                            <p v-if="templateType == 'template_one'">
                               <span class="message-tit">运送类型:</span>
                               <span class="message-tit-real">{{item.taskTypeName}}</span>
+                            </p>
+                            <p v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">运送类型:</span>
+                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
                             </p>
                             <p>
                               <span class="message-tit">优先级:</span>
@@ -350,14 +397,22 @@
                             </p>
                           </div>
                           <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">病人名字:</span>
-                              <span class="message-tit-real">{{item.patientName ? item.patientName : '无'}}</span>
+                            <p v-if="templateType == 'template_one'">
+                              <span class="message-tit">病人:</span>
+                              <span class="message-tit-real">{{item.patientName}}</span>
                             </p>
-                            <p>
+                            <P v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">病人:</span>
+                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
+                            </P>
+                            <P v-if="templateType == 'template_one'">
                               <span class="message-tit">床号:</span>
-                              <span class="message-tit-real">{{item.bedNumber ? item.bedNumber : '无'}}</span>
-                            </p>
+                              <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                            </P>
+                            <P v-else-if="templateType == 'template_two'">
+                              <span class="message-tit">床号:</span>
+                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                            </P>
                           </div>
                           <p class="wait-handle-check" v-show="item.state == 2 ">
                             <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -402,6 +457,7 @@
   import medicalMessagePng from '@/common/images/home/medical-message.png'
   import medicalCallPng from '@/common/images/home/medical-call.png'
   import taskTailPng from '@/common/images/home/task-tail.png'
+  import SOtime from '@/common/js/SOtime.js'
   import historyTaskPng from '@/common/images/home/history-task.png'
   import medicalCollectPng from '@/common/images/home/medical-collect.png'
   import medicalMessageCheckedPng from '@/common/images/home/medical-message-checked.png'
@@ -585,7 +641,8 @@
         'newTaskName',
         'globalTimer',
         'catch_components',
-        'isFreshHomePage'
+        'isFreshHomePage',
+        'templateType'
       ]),
       userName () {
        return this.userInfo.userName
@@ -1103,6 +1160,32 @@
         this.endTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
       },
 
+      // 开始时间确定事件
+      confirmEvent () {
+        this.startTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
+      },
+
+      // 结束时间确定事件
+      endConfirmEvent () {
+        this.endTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
+      },
+
       // 点击标签按钮事件
       onClickTab (name, title) {
         this.currentIndex = name;
@@ -1326,7 +1409,7 @@
                     planStartTime: item.planStartTime,
                     state: item.state,
                     setOutPlaceName: item.setOutPlaceName,
-                    destinationName: item.destinationName,
+                    destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
                     taskTypeName: item.taskTypeName,
                     toolName: item.toolName,
                     priority: item.priority,
@@ -1337,14 +1420,15 @@
                     startPhoto: item.startPhoto,
                     endPhoto: item.endPhoto,
                     isBack: item.isBack,
-                    isSign: item.isSign
+                    isSign: item.isSign,
+                    patientInfoList: item.patientInfoList
                   });
                   this.taskCount = this.stateCompleteList.length;
                 } else if (type == "任务跟踪") {
                   this.taskTraceList.push({
                     state: item.state,
                     setOutPlaceName: item.setOutPlaceName,
-                    destinationName: item.destinationName,
+                    destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
                     taskTypeName: item.taskTypeName,
                     toolName: item.toolName,
                     priority: item.priority,
@@ -1352,8 +1436,10 @@
                     patientName: item.patientName,
                     bedNumber: item.bedNumber,
                     workerName: item.workerName,
-                    distName: item.distName
-                  })
+                    distName: item.distName,
+                    patientInfoList: item.patientInfoList
+                  });
+                  console.log('122',this.taskTraceList[0]['destinationName'][0]['destinationName']);
                 }
               }
             } else {
@@ -1926,9 +2012,11 @@
                       .handle-message-line-wrapper {
                         margin-left: 30px;
                         p {
-                          margin-bottom: 10px;
                           width: 47%;
+                          height: 40px;
+                          line-height: 40px;
                           display: inline-block;
+                          overflow: auto;
                           vertical-align: top;
                           .message-tit {
                             color: #7f7d7d
@@ -1998,10 +2086,12 @@
                       .handle-message-line-wrapper {
                         padding-left: 10px;
                         p {
-                          margin-bottom: 10px;
                           width: 24%;
                           display: inline-block;
                           text-align: left;
+                          height: 60px;
+                          line-height: 60px;
+                          overflow: auto;
                           vertical-align: top;
                           span {
                             &:last-child {

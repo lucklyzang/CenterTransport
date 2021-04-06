@@ -354,7 +354,6 @@
         'globalTimer',
         'isFreshDispatchTaskPage',
         'catch_components',
-        'templateType',
         'templateType'
       ]),
       proId () {
