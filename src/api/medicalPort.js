@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import store from '@/store';
 
 // 查询运送类型
 export function queryTransportType(data) {
@@ -41,10 +42,18 @@ export function quereDeviceMessage(data) {
     params: data
   })
 };
-// 生成调度任务
+// 生成调度任务(一个病人)
 export function generateDispatchTask(data) {
   return request({
     url: 'task/add',
+    method: 'post',
+    data
+  })
+};
+// 生成调度任务(多个个病人)
+export function generateDispatchTaskMany(data) {
+  return request({
+    url: 'dispatch/app/save',
     method: 'post',
     data
   })
@@ -59,7 +68,7 @@ export function collectDispatchTask() {
 // 调度任务催单
 export function taskReminder(proId,taskId) {
   return request({
-    url: `task/reminder/${proId}/${taskId}`,
+    url: store.getters.templateType == 'template_one' ? `task/reminder/${proId}/${taskId}` : `dispatch/reminder/${proId}/${taskId}`,
     method: 'get'
   })
 };

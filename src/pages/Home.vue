@@ -6,7 +6,7 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
     </div>
-    <!-- 工作人员操作区域 -->
+    <!-- 工作人员操作区域 v-if="workerShow-->
     <div class="worker-show" v-if="workerShow">
       <!-- 顶部导航栏 -->
       <HeaderTop :title="navTopTitle">
@@ -984,6 +984,10 @@
         if (getStore('currentTitle')) {
           this.$store.commit('changeTitleTxt', {tit: getStore('currentTitle')});
         };
+        // 重新存入模板信息
+        if (getStore('templateType')) {
+          this.$store.commit('changeTemplateType', getStore('templateType'));
+        };
         // 重新存入请求token
         if (getStore('questToken')) {
           this.$store.commit('changeToken', getStore('questToken'));
@@ -1202,6 +1206,12 @@
         taskReminder(this.proId,item.id).then((res) => {
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.data}`);
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
           }
         })
         .catch((err) => {
@@ -1678,7 +1688,7 @@
               display: flex;
               height: 97%;
               flex-direction: column;
-              background: #f4f4f4;
+              background: #fff;
               > p {
                 height: 30px;
                 font-size: 14px;
@@ -1978,7 +1988,7 @@
                   flex: 1;
                   overflow: auto;
                   .task-list-inner {
-                    background: #eee;
+                    background: #f7f7f7;
                     padding-bottom: 10px;
                     margin-bottom: 6px;
                     .wait-handle-message {

@@ -6,10 +6,10 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
 <!--      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>-->
     </HeaderTop>
-    <div class="basic-message">
+    <div class="basic-message" ref="basicMessage">
       <p class="basic-message-title">基本信息</p>
        <div class="wait-handle-message">
-        <div class="handle-message-line-wrapper">
+        <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">任务类型:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.taskTypeName}}</span>
@@ -25,12 +25,18 @@
             <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
           </P>
         </div>
-        <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+        <div class="handle-message-line-wrapper handle-message-line-wrapper-other" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">任务终点:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
           </P>
         </div>
+       <div class="handle-message-line-wrapper handle-message-line-wrapper-other handle-message-line-wrapper-other-two" v-else-if="templateType === 'template_two'">
+         <P>
+           <span class="message-tit">任务终点:</span>
+           <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}},</span>
+         </P>
+       </div>
         <div class="handle-message-line-wrapper">
           <p>
             <span class="message-tit">任务状态:</span>
@@ -43,7 +49,7 @@
             <span class="message-tit-real">{{dispatchTaskMessage.planStartTime}}</span>
           </p>
         </div>
-        <div class="handle-message-line-wrapper">
+        <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
           <P>
             <span class="message-tit">病人姓名:</span>
             <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
@@ -65,20 +71,39 @@
         </div>
         <div class="handle-message-line-wrapper">
           <p class="describe-line-wrapper">
-            <span class="message-tit">任务描述:</span>
-            <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p class="describe-line-wrapper">
             <span class="message-tit">语音备注:</span>
             <span class="message-tit-real-audio" v-if="showChildrenComponent">
-              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+              <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
             </span>
             <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
               无语音信息
             </span>
           </p>
+        </div>
+        <div class="transport-type-wrapper" v-if="templateType === 'template_two'">
+         <p class="transport-type-title">
+           运送类型:
+         </p>
+          <div class="transport-type-list-wrapper" v-for="(item,index) in dispatchTaskMessage.patientInfoList">
+            <div class="transport-type-list">
+              <p class="transport-type-list-title">{{item.typeList[0].parentTypeName == '' ? '无': item.typeList[0].parentTypeName}}</p>
+              <p class="transport-type-list-content">
+                <span class="serial">{{index+1}}、</span>
+                <span>
+                  床号:{{item.bedNumber}},{{item.patientName}},{{genderTransfer(item.sex)}},
+                </span>
+                <span v-for="(inneritem, innerIndex) in item.typeList">
+                  {{inneritem.taskTypeName}}×{{inneritem.quantity}}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="handle-message-line-wrapper">
+         <p class="describe-line-wrapper">
+           <span class="message-tit">任务描述:</span>
+           <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
+         </p>
         </div>
       </div>
     </div>
@@ -125,7 +150,7 @@
         <span @click="fetchPiece">取件</span>
         <span @click="sendPiece">送件</span>
       </p>
-      <p class="circultion-task-btn-bottom" v-show="!isSingleDestination && dispatchTaskMessage.state != 7">
+      <p class="circultion-task-btn-bottom" v-show="!isSingleDestination && dispatchTaskMessage.state != 7 && dispatchTaskMessage.state != 2">
         <span @click="endTask">完成任务</span>
       </p>
       <p class="circultion-task-btn-bottom" v-show="dispatchTaskMessage.state == 7">
@@ -202,7 +227,8 @@ export default {
       'dispatchTaskId',
       'currentDepartmentNumber',
       'catch_components',
-      'isCompleteDispatchIssuePhotoList'
+      'isCompleteDispatchIssuePhotoList',
+      'templateType'
     ]),
 
     proId () {
@@ -224,6 +250,9 @@ export default {
 
 
   mounted () {
+    if (true) {
+      this.$refs['basicMessage'].style.height = "400px";
+    }
     // 控制设备物理按键返回
     if (!IsPC()) {
       let that = this;
@@ -407,7 +436,7 @@ export default {
           this.showChildrenComponent = true;
           // 改变调度具体某一任务的信息状态
           this.changeDispatchTaskMessage({DtMsg: res.data.data});
-          console.log('飒飒飒飒',this.dispatchTaskMessage.taskNumber)
+          console.log('飒飒飒飒',this.dispatchTaskMessage)
         }
       })
       .catch((err) => {
@@ -439,9 +468,23 @@ export default {
 
     // 结束任务
     endTask () {
-      if (this.dispatchTaskMessage.distName.length == 0) {
-        this.$toast('至少完成一个目的地时,才能结束任务');
-        return
+      if (this.templateType == 'template_one') {
+        if (this.dispatchTaskMessage.distName.length == 0) {
+          this.$toast('至少完成一个目的地时,才能结束任务');
+          return
+        };
+      } else if (this.templateType == 'template_two') {
+        if (this.dispatchTaskMessage.destinations.length > 0) {
+          if (this.dispatchTaskMessage.distName.length < this.dispatchTaskMessage.destinations.length) {
+            this.$toast('扫完规定的目的地时,才能结束任务');
+            return
+          }
+        }  else {
+          if (this.dispatchTaskMessage.distName.length == 0) {
+            this.$toast('至少完成一个目的地时,才能结束任务');
+            return
+          }
+        }
       };
       if (this.dispatchTaskMessage.state == 4) {
         this.$toast('请再次扫描出发地结束任务');
@@ -585,6 +628,19 @@ export default {
             break;
         }
       },
+    // 性别转换
+    genderTransfer (index) {
+      switch(index) {
+        case 1 :
+          return '男'
+          break;
+        case 2 :
+          return '女'
+          break;
+        default:
+          return '未知'
+      }
+    },
 
     // 取件
     fetchPiece () {
@@ -668,20 +724,26 @@ export default {
       margin: 0 auto;
       margin-top: 6px;
       height: auto;
+      display: flex;
+      flex-flow: column wrap;
       background: #f3f3f3;
       position: relative;
       border: 1px solid #d6d6d6;
       .basic-message-title {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
+        width: 80px;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 6px;
         box-sizing: border-box;
         border-right: 1px solid #d6d6d6;
         border-bottom: 1px solid #d6d6d6;
       }
       .wait-handle-message {
-        margin-top: 35px;
+        width: 100%;
+        margin-top: 10px;
+        flex: 1;
+        overflow: auto;
         .handle-message-line-wrapper {
           margin: 0 5px;
           p {
@@ -705,10 +767,34 @@ export default {
               margin-left: 4px
             }
           }
-        }
+        };
+        .transport-type-wrapper {
+          margin: 0 5px;
+          .transport-type-title {
+          };
+          .transport-type-list {
+            margin: 5px 0;
+            > p {
+              line-height: 30px
+            };
+            .transport-type-list-title {
+              font-weight: bold;
+              color: black
+            };
+            .transport-type-list-content {
+            }
+          }
+        };
         .handle-message-line-wrapper-other {
           p {
             width: 100%;
+          }
+        };
+        .handle-message-line-wrapper-other-two {
+          > p {
+            .message-tit-real-destinationList {
+              margin-right: 4px
+            }
           }
         }
       }
@@ -779,6 +865,8 @@ export default {
     };
     .office-list {
       flex:1;
+      display: flex;
+      flex-flow: column nowrap;
       overflow: auto;
       width: 95%;
       margin: 0 auto;
@@ -788,24 +876,23 @@ export default {
       position: relative;
       border: 1px solid #d6d6d6;
       .basic-message-title {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
+        height: 30px;
+        line-height: 30px;
+        width: 80px;
+        text-align: center;
         box-sizing: border-box;
         border-right: 1px solid #d6d6d6;
         border-bottom: 1px solid #d6d6d6;
       }
       .office-list-inner-wrapper {
-        margin-top: 25px;
+        margin-top: 10px;
         box-sizing: border-box;
         width: 100%;
-        height: 90%;
-        padding: 10px;
+        flex: 1;
+        padding: 0 10px;
         overflow: auto;
         .track-name {
           span {
-            display: inline-block;
             line-height: 24px
           }
           .collect-parcel {

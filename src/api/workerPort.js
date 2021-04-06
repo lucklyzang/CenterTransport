@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-
+import store from '@/store';
 // 查询总量和排序
 export function queryAllTaskMessage(data) {
   return request({
@@ -17,7 +17,7 @@ export function userSignOut(proId,workerId) {
   })
 };
 
-// 获取是否有新任务 
+// 获取是否有新任务
 export function getNewWork(proId,workerId) {
   return request({
     url: `worker/getNew/${proId}/${workerId}`,
@@ -40,14 +40,14 @@ export function getAllTaskNumber(proID,workerId) {
 // 查询调度任务(分配给本人的)
 export function getDispatchTaskMessage(proID,workerId) {
   return request({
-    url: `task/allTask/${proID}/${workerId}`,
+    url: store.getters.templateType == 'template_one' ? `task/allTask/${proID}/${workerId}` : `dispatch/allTask/${proID}/${workerId}`,
     method: 'get',
   })
 };
 // 查询调度任务(分配给本人的已完成)
 export function getDispatchTaskComplete(data) {
   return request({
-    url: 'task/queryTask',
+    url: store.getters.templateType == 'template_one' ? 'task/queryTask':'dispatch/queryTask',
     method: 'get',
     params: data
   })
@@ -55,14 +55,14 @@ export function getDispatchTaskComplete(data) {
 // 查询调度任务(根据id)
 export function getDispatchTaskMessageById(taskId) {
   return request({
-    url: `task/query/${taskId}`,
+    url: store.getters.templateType == 'template_one' ? `task/query/${taskId}` : `dispatch/app/query/${taskId}`,
     method: 'get'
   })
 };
 // 调度任务的操作(更新、延迟、取消)
 export function updateDispatchTask(data) {
   return request({
-    url: 'task/update',
+    url: store.getters.templateType == 'template_one' ? 'task/update':'dispatch/update',
     method: 'put',
     data
   })
@@ -70,7 +70,7 @@ export function updateDispatchTask(data) {
 // 获取调度任务的操作
 export function getDispatchTask(taskId,workerId) {
   return request({
-    url: `task/getTransTask/${taskId}/${workerId}`,
+    url: store.getters.templateType == 'template_one' ? `task/getTransTask/${taskId}/${workerId}` : `dispatch/getTransTask/${taskId}/${workerId}`,
     method: 'get'
   })
 };
@@ -87,14 +87,14 @@ export function querySendBackDispatchTaskReason(proId) {
 // 调度任务退回接口
 export function sendBackDispatchTask(proId,taskId,reason) {
   return request({
-    url: `task/sendBack/${proId}/${taskId}?reason=${reason}`,
+    url: store.getters.templateType == 'template_one' ? `task/sendBack/${proId}/${taskId}?reason=${reason}` : `dispatch/sendBack/${proId}/${taskId}?reason=${reason}`,
     method: 'get'
   })
 };
 // 调度任务批量取消
 export function cancelDispatchTaskBatch(data) {
   return request({
-    url: 'task/batchCancel',
+    url: store.getters.templateType == 'template_one' ? 'task/batchCancel' : 'dispatch/batchCancel',
     method: 'put',
     data
   })
@@ -111,7 +111,7 @@ export function queryDispatchTaskCancelReason(data) {
 // 调度任务的转移
 export function transferDispatchTask(data) {
   return request({
-    url: 'task/transfer',
+    url: store.getters.templateType == 'template_one' ? 'task/transfer' : 'dispatch/transfer',
     method: 'put',
     data
   })
@@ -136,7 +136,7 @@ export function queryTaskDelayReason(data) {
 // 校验调度任务扫描科室信息
 export function judgeDispatchTaskDepartment(data) {
   return request({
-    url: 'task/checkTransTask',
+    url: store.getters.templateType == 'template_one' ? 'task/checkTransTask' : 'dispatch/checkTransTask',
     method: 'post',
     data
   })
@@ -154,7 +154,7 @@ export function dispatchTaskUploadMsg(data) {
 // 根据ID查询调度任务详情
 export function queryDispatchTaskMessage(taskId) {
   return request({
-    url: `task/query/${taskId}`,
+    url: store.getters.templateType == 'template_one' ? `task/query/${taskId}` : `dispatch/queryOne/${taskId}`,
     method: 'get'
   })
 };

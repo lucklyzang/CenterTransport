@@ -94,7 +94,9 @@ export default {
       'changeRouterFlag',
       'changeLoginMethod',
       'changeUserType',
-      'changeOverDueWay'
+      'changeOverDueWay',
+      'changeIsTemplateOne',
+      'changeTemplateType'
     ]),
 
 
@@ -105,6 +107,11 @@ export default {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
               setStore('departmentInfo', res.data.data);
+            } else {
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {})
             }
           })
           .catch((err) => {
@@ -123,6 +130,11 @@ export default {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
               setStore('departmentInfoNo', res.data.data);
+            } else {
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {})
             }
           })
           .catch((err) => {
@@ -213,6 +225,11 @@ export default {
       setStore('userType', userInfo["extendData"]['user_type_id']);
       this.storeUserInfo(JSON.parse(getStore('userInfo')));
       this.proId = userInfo['proId'];
+      // 保存模板类型
+      if (userInfo.mobile) {
+        this.changeTemplateType(userInfo.mobile);
+        setStore('templateType', userInfo.mobile)
+      };
       if (!IsPC()) {
         // 注册channel
         if (userInfo["extendData"]['user_type_id'] != 1) {
@@ -236,14 +253,14 @@ export default {
           }
         }
         // 向客户端发送信标服务器地址
-        // try {
-        //   let xinbiaoInfo = await this.postUrl(userInfo.id);
-        // } catch (err) {
-        //   this.$dialog.alert({
-        //     message: `${err}`,
-        //     closeOnPopstate: true
-        //   }).then(() => {})
-        // }
+        try {
+          let xinbiaoInfo = await this.postUrl(userInfo.id);
+        } catch (err) {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        }
       };
       // 获取科室字典id
       await this.queryDepartmentList();
@@ -254,7 +271,7 @@ export default {
         removeStore('completeDepartmentMessage')
       };
       this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'中央运送'});
+      this.changeTitleTxt({tit:'中央运送'})
       window.location.reload()
     }
   }

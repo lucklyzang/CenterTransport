@@ -64,6 +64,10 @@ new Vue({
     if (getStore('questToken')) {
       store.commit('changeToken', getStore('questToken'));
     };
+    // 重新存入模板信息
+    if (getStore('templateType')) {
+      store.commit('changeTemplateType', getStore('templateType'));
+    };
     // 页面刷新重新存入调度任务具体信息
     if (getStore('currentDispatchTaskMessage')) {
       store.commit('changeDispatchTaskMessage', {DtMsg: getStore('currentDispatchTaskMessage')});
