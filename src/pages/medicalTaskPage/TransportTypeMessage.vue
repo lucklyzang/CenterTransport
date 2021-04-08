@@ -220,7 +220,7 @@
     </van-dialog>
     </div>
     <div class="patien-modal-box">
-      <van-dialog v-model="patienModalShow" title="病人" show-cancel-button width="92%"
+      <van-dialog v-model="patienModalShow" :title="isPressEdit ? `病人${updateIndex+1}`: `病人${templatelistTwo.length+1}`" show-cancel-button width="92%"
                   use-slot
                   @confirm="patienModalSure"
                   @cancel="patienModalCancel"
