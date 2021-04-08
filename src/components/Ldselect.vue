@@ -8,15 +8,24 @@
       <div class="select-dialog" @click.stop="" :style="{backgroundColor:bgColor}">
         <div class="select-bar bg-white">
           <div class="action text-blue" @click="cancelClick">{{cancelText}}</div>
+          <div class="action search-box">
+            <van-field right-icon="search"
+                     @input="searchEvent"
+                     v-model="searchText"
+                     placeholder="请输入搜索关键字"
+                     :clearable="false"
+            ></van-field>
+          </div>
           <div class="action text-green" @click="confirmClick">{{confirmText}}</div>
         </div>
         <div class="select-content">
-          <div class="select-item" v-for="(item,index) in list" :key="index"
+          <div class="select-item" v-for="(item,index) in listData" :key="index"
                 :style="valueIndexOf(item)?'color:'+selectColor+';background-color:'+selectBgColor+';':'color:'+color+';'"
                 @click="select(item)">
             <div class="title">{{getLabelKeyValue(item)}}</div>
             <span class="selectIcon icongou" v-if="valueIndexOf(item)"></span>
           </div>
+          <div class="no-data" v-show="listData.length == 0">暂无数据 !</div>
         </div>
       </div>
     </div>
@@ -28,6 +37,8 @@ export default {
   data() {
     return {
       isShowModal:false,
+      listData: this.list,
+      searchText: ''
     };
   },
   props: {
@@ -98,13 +109,22 @@ export default {
       }
     }
   },
+  watch: {
+    searchText (newVal, oldVal) {
+      let temporaryArray = _.cloneDeep(this.list);
+      this.listData = temporaryArray.filter((item) => { return item.value.indexOf(newVal) != -1});
+      if (newVal === '') {
+        this.listData = _.cloneDeep(this.list)
+      }
+    }
+  },
   methods: {
     get_value(val){ // 将数组值转换为以,隔开的字符串
       if(val || val===0){
         if(Array.isArray(val)){
           let chooseAttr = []
           val.forEach(item=>{
-            let choose = this.list.find(temp => {
+            let choose = this.listData.find(temp => {
               let val_val = this.getValueKeyValue(temp)
               return item === val_val
             })
@@ -113,7 +133,7 @@ export default {
           let values = chooseAttr.map(temp => this.getLabelKeyValue(temp)).join(',')
           return values
         } else {
-          let choose = this.list.find(temp => {
+          let choose = this.listData.find(temp => {
             let val_val = this.getValueKeyValue(temp)
             return val === val_val
           })
@@ -149,10 +169,16 @@ export default {
       }
     },
     getLabelKeyValue(item){ // 获取label
-      return item[this.labelKey]
+      if (item && item.hasOwnProperty('value')) {
+        return item[this.labelKey]
+      }
     },
     getValueKeyValue(item){ // 获取value
-      return item[this.valueKey]
+      if (item && item.hasOwnProperty('id')) {
+        return item[this.valueKey]
+      }
+    },
+    searchEvent (value) { // 搜索框值变化事件
     },
     empty(){ // 清空
       if(this.multiple){
@@ -172,11 +198,15 @@ export default {
     showModal(){ // 显示model
       if(!this.disabled){
         this.isShowModal = true;
+        this.searchText = '';
+        this.listData = this.list
         this.$refs.inputElement.blur()
       }
     },
     hideModal(){ // 隐藏model
-      this.isShowModal = false
+      this.isShowModal = false;
+      this.searchText = '';
+      this.listData = this.list
     }
   }
 }
@@ -210,7 +240,7 @@ export default {
 </style>
 <style lang="less" scoped>
 .main{
-  font-size: 28px;
+  font-size: 20px;
 }
 .bg-white{
   background-color: #FFFFFF;
@@ -278,7 +308,14 @@ export default {
         .title{
           flex: 1;
         }
-      }
+      };
+      .no-data {
+        width: 100%;
+        height: 200px;
+        line-height: 200px;
+        text-align: center;
+        color: #43c3f3
+      };
     }
   }
 }
@@ -305,6 +342,16 @@ export default {
     height: 100%;
     justify-content: center;
     max-width: 100%;
+  };
+  .search-box {
+    width: 50%;
+    /deep/ .van-field {
+      .van-field__right-icon {
+        .van-icon-search {
+          font-size: 20px
+        }
+      }
+    }
   }
 }
 </style>
