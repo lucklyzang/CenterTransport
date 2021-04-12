@@ -25,7 +25,9 @@
           <span class="real-name">{{name}}</span>
         </div>
         <div class="wait-dask-wrapper">
-          <p class="wait-dask-title">待办任务：</p>
+          <div class="wait-dask-img-box">
+            <img :src="defaultPersonPng" alt="">
+          </div>
           <ul class="wait-dask-list">
             <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">
               {{item.text}}
@@ -1493,17 +1495,19 @@
       .content-wrapper();
       overflow: auto;
       .content-top {
-        padding: 15px 0;
+        padding: 0 0 15px 0;
         font-size: 14px;
         color: #fff;
         background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .content-top-userName {
           padding-left: 10px;
-          height: 60px;
+          height: 50px;
+          display: flex;
+          align-items: center;
           .content-top-userName-img {
             display: inline-block;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             vertical-align: middle;
             margin-right: 8px;
             img {
@@ -1512,31 +1516,52 @@
             }
           }
           .real-name {
+            font-size: 17px
           }
         };
         .wait-dask-wrapper {
-          padding-left: 10px;
-          .wait-dask-title {
-             font-size: 16px;
-          }
+          padding:0 10px;
+          display: flex;
+          flex-flow: row nowrap;
+          height: 55px;
+          align-items: center;
+          .wait-dask-img-box {
+            width: 45px;
+            height: 45px;
+            padding: 4px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-right: 8px;
+            background: #4e70f8;
+            img {
+              width: 100%;
+              height: 100%
+            }
+          };
           .wait-dask-list {
-            margin-top : 6px;
-            height: 50px;
-            line-height: 50px;
-            font-size: 18px;
+            flex: 1;
+            border-radius: 4px;
+            display: flex;
+            padding: 0 4px;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background-image: linear-gradient(to right, #4e70f8,#5662f6);
             .listTaskStyle {
               color: #eb0000
             };
             li {
-              display: inline-block;
-              width: 33.3%;
-              text-align: left;
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center;
+              height: 45px;
               position: relative;
               .dask-list-sign {
-                .status-sign(50px,50px,-8px,orange)
+                box-shadow: 0px 0px 4px 4px #747474;
+                .status-sign(40px,40px,0,orange)
               }
               .daskListSignStyle {
-                .status-sign(50px,50px,-8px, #eb0000)
+                .status-sign(40px,40px,0, #eb0000)
               }
             }
           }
@@ -1583,7 +1608,7 @@
                 };
                 &:last-child {
                   bottom: 0;
-                  font-size: 22px;
+                  font-size: 28px;
                   color: #2499e9
                 }
               }
@@ -1604,7 +1629,7 @@
                 };
                 &:last-child {
                   bottom: 0;
-                  font-size: 22px;
+                  font-size: 28px;
                   color: #fa8118;
                   right: 0;
                 }
@@ -1625,16 +1650,16 @@
           padding: 0 10px;
           li {
             width:49.5%;
-            height: 120px;
+            height: 130px;
             border-radius: 4px;
             display:inline-block;
             text-align: center;
-            padding-top: 30px;
+            padding-top: 25px;
             box-sizing: border-box;
             position: relative;
             .task-button-wrapper {
               width: 100%;
-              height: 120px;
+              height: 130px;
               position: absolute;
               top: 0;
               left: 0;
@@ -1654,9 +1679,9 @@
               }
             };
             .task-btn-tit {
-              color: #1d221e;
-              font-size: 13px;
-              margin-top: 10px;
+              color: black;
+              font-size: 16px;
+              margin-top: 15px;
             }
             &:nth-child(3) {
               margin-top: 4px

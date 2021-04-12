@@ -38,9 +38,9 @@ export function getAllTaskNumber(proID,workerId) {
 */
 
 // 查询调度任务(分配给本人的)
-export function getDispatchTaskMessage(proID,workerId) {
+export function getDispatchTaskMessage(proID,workerId,state) {
   return request({
-    url: store.getters.templateType == 'template_one' ? `task/allTask/${proID}/${workerId}` : `dispatch/allTask/${proID}/${workerId}`,
+    url: store.getters.templateType == 'template_one' ? `task/allTask/${proID}/${workerId}/?state=${state}` : `dispatch/allTask/${proID}/${workerId}/?state=${state}`,
     method: 'get',
   })
 };

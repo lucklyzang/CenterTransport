@@ -28,10 +28,15 @@
           </span>
          </p>
         <p class="status-name-box">
-          <span class="status-name-title" @click.stop="statusScreenEvent">{{stateScreenVal}}</span>
-          <ul class="status-name" v-show="stateListShow">
-            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index, item)">{{item}}</li>
-          </ul>
+          <van-field v-model="valueStatus" readonly  :right-icon="statusShow == true ? 'arrow-up' : 'arrow-down'" @click="statusShow = true"/>
+          <van-popup v-model="statusShow" position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="columns"
+              @cancel="statusShow = false"
+              @confirm="onConfirm"
+            />
+          </van-popup>
         </p>
       </div>
     </div>
@@ -41,37 +46,52 @@
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
-              <p class="wait-handle-message-top" v-if="templateType === 'template_one'">
-                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
-                <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
-              </p>
-              <div class="wait-handle-message-top-two" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one">
+                <span>开始时间: </span>
+                <span>{{item.planStartTime}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>{{item.setOutPlaceName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
+                <p>运送类型: </p>
+                <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
+              </div>
+              <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
+                <p>运送类型: </p>
                 <p>
-                  <span>{{item.patientInfoList[0].typeList[0].parentTypeName}}</span>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">-
-                    {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}
-                  </span>
-                </p>
-                <p>
-                  <span>
-                    {{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}-{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}
+                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
+                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
                   </span>
                 </p>
               </div>
-              <p class="wait-handle-message-bottom">
-                <span>时间: ({{item.planStartTime}})</span>
-                <span>起点: {{item.setOutPlaceName}}</span>
-              </p>
             </div>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
                <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
-                退回
+                退&nbsp;&nbsp;回
               </span>
             </p>
           </div>
@@ -82,37 +102,52 @@
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
-              <p class="wait-handle-message-top" v-if="templateType === 'template_one'">
-                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
-                <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
-              </p>
-              <div class="wait-handle-message-top-two" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one">
+                <span>开始时间: </span>
+                <span>{{item.planStartTime}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>{{item.setOutPlaceName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
+                <p>运送类型: </p>
+                <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
+              </div>
+              <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
+                <p>运送类型: </p>
                 <p>
-                  <span>{{item.patientInfoList[0].typeList[0].parentTypeName}}</span>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">-
-                    {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}
-                  </span>
-                </p>
-                <p>
-                  <span>
-                    {{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}-{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}
+                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
+                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
                   </span>
                 </p>
               </div>
-              <p class="wait-handle-message-bottom">
-                <span>时间: ({{item.planStartTime}})</span>
-                <span>起点: {{item.setOutPlaceName}}</span>
-              </p>
             </div>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-               <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
-                退回
+              <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
+                退&nbsp;&nbsp;回
               </span>
             </p>
           </div>
@@ -123,37 +158,52 @@
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
-              <p class="wait-handle-message-top" v-if="templateType === 'template_one'">
-                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
-                <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
-              </p>
-              <div class="wait-handle-message-top-two" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one">
+                <span>开始时间: </span>
+                <span>{{item.planStartTime}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>{{item.setOutPlaceName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
+                <p>运送类型: </p>
+                <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
+              </div>
+              <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
+                <p>运送类型: </p>
                 <p>
-                  <span>{{item.patientInfoList[0].typeList[0].parentTypeName}}</span>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">-
-                    {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}
-                  </span>
-                </p>
-                <p>
-                  <span>
-                    {{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}-{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}
+                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
+                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
                   </span>
                 </p>
               </div>
-              <p class="wait-handle-message-bottom">
-                <span>时间: ({{item.planStartTime}})</span>
-                <span>起点: {{item.setOutPlaceName}}</span>
-              </p>
             </div>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-               <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
-                退回
+              <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
+                退&nbsp;&nbsp;回
               </span>
             </p>
           </div>
@@ -164,37 +214,52 @@
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
             <div class="wait-handle-message">
-              <p class="wait-handle-message-top" v-if="templateType === 'template_one'">
-                <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
-                <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
-              </p>
-              <div class="wait-handle-message-top-two" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one">
+                <span>开始时间: </span>
+                <span>{{item.planStartTime}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>{{item.setOutPlaceName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+              </div>
+              <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
+                <p>运送类型: </p>
+                <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
+              </div>
+              <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
+                <p>运送类型: </p>
                 <p>
-                  <span>{{item.patientInfoList[0].typeList[0].parentTypeName}}</span>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">-
-                    {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}
-                  </span>
-                </p>
-                <p>
-                  <span>
-                    {{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}-{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}
+                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
+                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
                   </span>
                 </p>
               </div>
-              <p class="wait-handle-message-bottom">
-                <span>时间: ({{item.planStartTime}})</span>
-                <span>起点: {{item.setOutPlaceName}}</span>
-              </p>
             </div>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-               <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
-                退回
+              <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
+                退&nbsp;&nbsp;回
               </span>
             </p>
           </div>
@@ -214,55 +279,68 @@
         </div>
         <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
-          @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+          @cancel="startTimePop = false"  @confirm="confirmEvent" @change="startTimeChange"/>
         </van-popup>
         <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
-          @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
+          @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
         </van-popup>
       </div>
-      <p class="middle-top-search">
-        <span>
-          <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
-        </span>
-      </p>
+      <div class="content-top-time-fask">
+        <span v-for="(item,index) in timeList" :key="index" :class="{timeFastStyle: timeFastindex === index}" @click="timeFasleEvent(item,index)">{{item}}</span>
+      </div>
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateCompleteList"  :key="`${item}-${index}`">
           <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
           <div class="wait-handle-message">
-            <p class="wait-handle-message-top" v-if="templateType === 'template_one'">
-              <span>{{item.parentTypeName}}-{{item.taskTypeName}}</span>
-              <span>{{item.patientName == "" ? '无' : item.patientName}}-{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
-            </p>
-            <div class="wait-handle-message-top-two" v-else-if="templateType === 'template_two'">
+            <div class="wait-handle-message-one">
+              <span>开始时间: </span>
+              <span>{{item.planStartTime}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+              <span>{{item.setOutPlaceName}}</span>
+            </div>
+            <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+              <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+            </div>
+            <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+              <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+            </div>
+            <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+              <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
+            </div>
+            <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+              <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+            </div>
+            <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
+              <p>运送类型: </p>
+              <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
+            </div>
+            <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
+              <p>运送类型: </p>
               <p>
-                <span>{{item.patientInfoList[0].typeList[0].parentTypeName}}</span>
-                <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">-
-                    {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}
-                  </span>
-              </p>
-              <p>
-                  <span>
-                    {{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}-{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}
+                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
+                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
                   </span>
               </p>
             </div>
-            <p class="wait-handle-message-bottom">
-              <span>时间: ({{item.planStartTime}})</span>
-              <span>起点: {{item.setOutPlaceName}}</span>
-            </p>
           </div>
           <p class="get-wait-task">
-           <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item)">
+                获&nbsp;&nbsp;取
               </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+            <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-               <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
-                退回
+            <span v-show="item.state == '1' || item.state == '2'" @click.stop="sendBack(item)">
+                退&nbsp;&nbsp;回
               </span>
-            </p>
+          </p>
         </div>
       </div>
     </div>
@@ -289,6 +367,7 @@
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
   import store from '@/store'
+  import SOtime from '@/common/js/SOtime.js'
   import { formatTime, setStore, getStore, removeStore, IsPC, judgeOverTime, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
@@ -300,10 +379,13 @@
         showLoadingHint: false,
         noDataShow: false,
         stateListShow: false,
-        stateIndex: 0,
-        stateList: ['全部','未获取','已获取', '进行中'],
-        stateScreenVal: '全部',
+        timeFastindex: '',
+        stateIndex: '',
+        columns: ['全部','未获取','已获取', '进行中'],
+        timeList: ['近一周','近一月','近三月'],
+        valueStatus: '全部',
         startTime: '',
+        statusShow: false,
         endTime: '',
         toolIndex: '',
         toolText: '',
@@ -470,16 +552,50 @@
         this.endTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
       },
 
+      // 开始时间确定事件
+      confirmEvent () {
+        this.startTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
+      },
+
+      // 结束时间确定事件
+      endConfirmEvent () {
+        this.endTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
+      },
+
       // 搜索完成的任务
       searchCompleteTask () {
         this.queryCompleteDispatchTask({proId:this.proId, workerId:this.workerId,state:7, startDate: this.startTime, endDate: this.endTime})
+      },
+
+      // 状态框确定事件
+      onConfirm(value) {
+        this.valueStatus = value;
+        this.statusShow = false;
+        this.stateIndex = this.stateTransfernumber(value);
+        this.stateListEvent(this.stateIndex)
       },
 
     // 查询调度任务(状态筛选点击专用)
       queryStateFilterDispatchTask (proID, workerId, index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
-        getDispatchTaskMessage (proID, workerId)
+        getDispatchTaskMessage (proID, workerId,index)
         .then((res) => {
           this.showLoadingHint = false;
           this.noDataShow = false;
@@ -732,6 +848,24 @@
       },
 
       // 任务状态转换
+      stateTransfernumber (item) {
+        switch(item) {
+          case '全部' :
+            return ''
+            break;
+          case '未获取' :
+            return 1
+            break;
+          case '已获取' :
+            return 2
+            break;
+          case '进行中' :
+            return 3
+            break;
+        }
+      },
+
+      // 任务状态转换
       stateTransfer (index) {
         switch(index) {
           case 0 :
@@ -788,8 +922,8 @@
         this.cancelTask = false;
         this.noDataShow = false;
         if (index == '0') {
-          this.stateIndex = 0;
-          this.stateScreenVal = '全部';
+          this.stateIndex = '';
+          this.valueStatus = '全部';
           this.waitHandleBox = true;
           this.taskQueryShow = false;
           this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
@@ -802,10 +936,13 @@
         }
       },
 
+      // 时间查询快捷键点击事件
+      timeFasleEvent (item,index) {
+        this.timeFastindex = index
+      },
+
       // 状态筛选列表点击
-      stateListEvent (index, item) {
-        this.stateIndex = index;
-        this.stateScreenVal = item;
+      stateListEvent (index) {
         this.queryStateFilterDispatchTask(this.proId, this.workerId, index)
       },
 
@@ -874,16 +1011,6 @@
         this.toolIndex = '';
         this.toolName = '';
         this.toolShow = false
-      },
-
-      // 状态筛选按钮点击
-      statusScreenEvent () {
-        this.taskQueryShow = false;
-        this.stateListShow = !this.stateListShow;
-        if (this.stateScreenVal == '状态筛选') {
-          this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
-          this.stateIndex = 0;
-        }
       },
 
       // 点击具体任务事件
@@ -1017,20 +1144,17 @@
         .task-line-one-wrapper {
           font-size: 17px;
           height: 36px;
-          background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .task-line-one {
-          width: 70%;
+          width: 80%;
           margin: 0 auto;
           .taskLineOneStyle {
-            color: #2895ea;
-            background: #ffff;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px
+            color: black;
+            border-bottom: 2px solid #2895ea
           }
           li {
             display: inline-block;
             margin-top: 1px;
-            color: #fff;
+            color: #999999;
             width: 46%;
             height: 36px;
             line-height: 36px;
@@ -1039,21 +1163,24 @@
         };
       }
       .status-box {
-        position: relative;
+        display: flex;
+        box-sizing: border-box;
+        padding: 0 10px;
         width: 100%;
+        flex-flow: row nowrap;
         margin-top: 6px;
-        height: 40px;
+        height: 60px;
+        justify-content: space-between;
+        align-items: center;
         background: #f6f6f6;
         .task-line-two {
           height: 40px;
+          width: 80px;
           font-size: 0;
           box-sizing: border-box;
-          color: #000000;
-          position: absolute;
-          top: 0;
-          left: 7px;
+          color: black;
           span {
-            font-size: 18px;
+            font-size: 15px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -1065,37 +1192,11 @@
           }
         }
         .status-name-box {
-          position: absolute;
-          width: 100px;
-          top: 0;
-          right: 0;
           font-size: 18px;
-          .status-name-title {
-            width: 100%;
-            color: #3996f3;
-            background: #fff;
-            height: 40px;
-            line-height: 40px;
-            text-align: center;
-            display: inline-block;
-          }
-          .status-name {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 1px 6px 2px #d1d1d1;
-            width: 100%;
-            background: #fff;
-            li {
-              width: 100%;
-              line-height: 40px;
-              text-align: center
-            }
-            .stateListStyle {
-              color: #fff;
-              background: #2895ea
-            }
+          flex: 1;
+          /deep/ .van-cell {
+            border-radius: 8px;
+            color: black
           }
         }
       }
@@ -1121,16 +1222,16 @@
       overflow: auto;
       margin: 0 auto;
       width: 100%;
+      background: #f6f6f6;
       .wait-handle-one {
         .wait-handle-list {
           box-sizing: border-box;
           position: relative;
-          border: 1px solid #cecece;
-          width: 96%;
+          width: 94%;
           margin:0 auto;
-          margin-top: 6px;
-          height: 200px;
-          padding-left: 8px;
+          background: #fff;
+          padding: 10px;
+          margin-bottom: 10px;
           box-sizing: border-box;
           .list-status {
             position: absolute;
@@ -1140,9 +1241,7 @@
             width: 80px;
             text-align: center;
             height: 30px;
-            line-height: 30px;
-            border-bottom: 1px solid #cecece;
-            border-left: 1px solid #cecece;
+            line-height: 30px
           }
           .listStatusStyleOne {
             color: red
@@ -1151,7 +1250,7 @@
             color: #85dc85
           }
           .wait-handle-message {
-            font-size: 18px;
+            font-size: 16px;
             padding: 14px 0;
             box-sizing: border-box;
             .wait-handle-message-top {
@@ -1184,16 +1283,47 @@
                 }
               }
             };
-            .wait-handle-message-bottom {
-              height: 50px;
-              margin-top: 8px;
+            .wait-handle-message-one {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
               margin-left: -4px;
               span {
-                display: block;
+                display: inline-block;
                 padding-left: 5px;
                 box-sizing: border-box;
+                color: #a0a0a0;
                 &:first-child {
-                  margin-bottom: 15px
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
+                }
+              };
+              p {
+                display: inline-block;
+                span {
+                  color: black !important
+                }
+              }
+            };
+            .wait-handle-message-two {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
+              margin-left: -4px;
+              p {
+                display: inline-block;
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
                 }
               }
             }
@@ -1205,28 +1335,20 @@
             span {
               vertical-align: top;
               display: inline-block;
-              width: 110px;
-              line-height: 40px;
-              height: 40px;
-              margin-right: 4px;
-              img {
-                width: 100%;
-                height: 100%
-              };
-              &:nth-child(2) {
-                color: #fff;
-                font-size: 13px;
-                background: #2895ea;
-                text-align: center;
-                border-radius: 4px
-              }
+              width: 120px;
+              background: #1b88ff;
+              line-height: 35px;
+              height: 35px;
+              font-size: 15px;
+              color: #fff;
+              margin-right: 20px;
+              border-radius: 20px;
               &:last-child {
                 margin-right: 0;
-                color: #fff;
-                font-size: 13px;
-                background: #cccccc;
-                text-align: center;
-                border-radius: 4px
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
               }
             }
           }
@@ -1243,12 +1365,11 @@
       .wait-handle-list {
         box-sizing: border-box;
         position: relative;
-        border: 1px solid #cecece;
-        width: 96%;
+        width: 94%;
         margin:0 auto;
-        height: 200px;
-        margin-top: 6px;
-        padding-left: 8px;
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
         box-sizing: border-box;
         .list-status {
           position: absolute;
@@ -1258,64 +1379,94 @@
           width: 80px;
           text-align: center;
           height: 30px;
-          line-height: 30px;
-          border-bottom: 1px solid #cecece;
-          border-left: 1px solid #cecece;
-        };
+          line-height: 30px
+        }
         .listStatusStyleOne {
           color: red
         }
         .listStyleStatusTwo {
           color: #85dc85
         }
-       .wait-handle-message {
-            font-size: 18px;
-            padding: 14px 0;
-            box-sizing: border-box;
-            .wait-handle-message-top {
-              height: 60px;
-              border-left: 6px solid #2895ea;
-              span {
-                display: inline-block;
-                width: 75%;
-                padding-left: 5px;
-                height: 28px;
-                box-sizing: border-box;
-                &:first-child {
-                  margin-bottom: 10px;
-                  overflow: auto
-                }
-              }
-            };
-             .wait-handle-message-top-two {
-               height: 54px;
-               border-left: 6px solid #2895ea;
-               p {
-                 display: inline-block;
-                 width: 75%;
-                 height: 20px;
-                 overflow: auto;
-                 padding-left: 5px;
-                 box-sizing: border-box;
-                 &:first-child {
-                   margin-bottom: 15px
-                 }
-               }
-             };
-            .wait-handle-message-bottom {
-              height: 50px;
-              margin-top: 8px;
-              margin-left: -4px;
-              span {
-                display: block;
-                padding-left: 5px;
-                box-sizing: border-box;
-                &:first-child {
-                  margin-bottom: 15px
-                }
+        .wait-handle-message {
+          font-size: 16px;
+          padding: 14px 0;
+          box-sizing: border-box;
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
+              display: inline-block;
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
               }
             }
           };
+          .wait-handle-message-top-two {
+            height: 54px;
+            border-left: 6px solid #2895ea;
+            p {
+              display: inline-block;
+              width: 75%;
+              height: 20px;
+              overflow: auto;
+              padding-left: 5px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 15px
+              }
+            }
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            };
+            p {
+              display: inline-block;
+              span {
+                color: black !important
+              }
+
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            }
+          }
+        };
         .get-wait-task {
           margin-top: 4px;
           width: 100%;
@@ -1323,28 +1474,20 @@
           span {
             vertical-align: top;
             display: inline-block;
-            width: 110px;
-            line-height: 40px;
-            height: 40px;
-            margin-right: 4px;
-            img {
-              width: 100%;
-              height: 100%
-            };
-            &:nth-child(2) {
-              color: #fff;
-              font-size: 13px;
-              background: #2895ea;
-              text-align: center;
-              border-radius: 4px
-            }
+            width: 120px;
+            background: #1b88ff;
+            line-height: 35px;
+            height: 35px;
+            font-size: 15px;
+            color: #fff;
+            margin-right: 20px;
+            border-radius: 20px;
             &:last-child {
               margin-right: 0;
-              color: #fff;
-              font-size: 13px;
-              background: #cccccc;
-              text-align: center;
-              border-radius: 4px
+              color: #1b88ff;
+              background: #fff;
+              border: 1px solid #1b88ff;
+              text-align: center
             }
           }
         }
@@ -1353,51 +1496,68 @@
     .task-complete {
       display: flex;
       flex-direction: column;
-      .middle-top-search {
-        width: auto;
-        margin: 0 auto;
-        line-height: 30px;
-        height: 40px;
-        span {
-          display: inline-block;
-          width: 90px;
-          height: 40px;
-          img {
-            width: 100%;
-            height: 100%
-          }
-        }
-      }
+      background: #f6f6f6;
+      margin-top: 4px;
       .content-middle-top {
-        background: #fff;
-        margin-top: 3%;
-        height: 52px;
+        background: #f6f6f6;
+        width: 94%;
+        margin: 0 auto;
+        padding: 10px 0;
+        height: 40px;
         position: relative;
-        box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
-        0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
+        //box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
+        //0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
         /deep/ .van-cell {
           width: 100%;
           display: inline-block;
           padding: 10px 24px;
-          border: 1px solid #d8d5d5;
           border-radius: 4px;
           line-height: 0;
         }
         .time-between {
           color: black;
           position: absolute;
+          display: inline-block;
+          height: 40px;
+          line-height: 60px;
+          top: 0;
+          left: 0
         }
         .content-middle-top-content {
           position: relative;
           height: 100%;
-          width: 98%;
           margin: 0 auto;
           > div {
             width: 44%;
             position: absolute;
-            top: 14%;
+            top: 50%;
+            transform: translateY(-50%);
           }
         }
+      };
+      .content-top-time-fask {
+        background: #f6f6f6;
+        width: 94%;
+        margin: 0 auto;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        margin-bottom: 10px;
+        span {
+          display: inline-block;
+          color: #fff;
+          margin-right: 10px;
+          width: 60px;
+          height: 25px;
+          text-align: center;
+          line-height: 25px;
+          border-radius: 4px;
+          background: #d9d9d9
+        };
+        .timeFastStyle {
+          background: #fff;
+          color: black
+        };
       };
       .task-status-list {
         flex: 1;
@@ -1405,17 +1565,16 @@
       }
     }
     .status-handle-screen {
-       .wait-handle-list {
-          box-sizing: border-box;
-          position: relative;
-          border: 1px solid #cecece;
-          width: 96%;
-          margin:0 auto;
-          height: 200px;
-          margin-top: 6px;
-          padding-left: 8px;
-          box-sizing: border-box;
-      .list-status {
+      .wait-handle-list {
+        box-sizing: border-box;
+        position: relative;
+        width: 94%;
+        margin:0 auto;
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        .list-status {
           position: absolute;
           top: 0;
           right: 0;
@@ -1423,64 +1582,94 @@
           width: 80px;
           text-align: center;
           height: 30px;
-          line-height: 30px;
-          border-bottom: 1px solid #cecece;
-          border-left: 1px solid #cecece;
-        };
+          line-height: 30px
+        }
         .listStatusStyleOne {
           color: red
         }
         .listStyleStatusTwo {
           color: #85dc85
         }
-       .wait-handle-message {
-            font-size: 18px;
-            padding: 14px 0;
-            box-sizing: border-box;
-            .wait-handle-message-top {
-              height: 60px;
-              border-left: 6px solid #2895ea;
-              span {
-                display: inline-block;
-                width: 75%;
-                padding-left: 5px;
-                height: 28px;
-                box-sizing: border-box;
-                &:first-child {
-                  margin-bottom: 10px;
-                  overflow: auto
-                }
-              }
-            };
-           .wait-handle-message-top-two {
-             height: 54px;
-             border-left: 6px solid #2895ea;
-             p {
-               display: inline-block;
-               width: 75%;
-               height: 20px;
-               overflow: auto;
-               padding-left: 5px;
-               box-sizing: border-box;
-               &:first-child {
-                 margin-bottom: 15px
-               }
-             }
-           };
-            .wait-handle-message-bottom {
-              height: 50px;
-              margin-top: 8px;
-              margin-left: -4px;
-              span {
-                display: block;
-                padding-left: 5px;
-                box-sizing: border-box;
-                &:first-child {
-                  margin-bottom: 15px
-                }
+        .wait-handle-message {
+          font-size: 16px;
+          padding: 14px 0;
+          box-sizing: border-box;
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
+              display: inline-block;
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
               }
             }
           };
+          .wait-handle-message-top-two {
+            height: 54px;
+            border-left: 6px solid #2895ea;
+            p {
+              display: inline-block;
+              width: 75%;
+              height: 20px;
+              overflow: auto;
+              padding-left: 5px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 15px
+              }
+            }
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            };
+            p {
+              display: inline-block;
+              span {
+                color: black !important
+              }
+
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            }
+          }
+        };
         .get-wait-task {
           margin-top: 4px;
           width: 100%;
@@ -1488,28 +1677,20 @@
           span {
             vertical-align: top;
             display: inline-block;
-            width: 110px;
-            line-height: 40px;
-            height: 40px;
-            margin-right: 4px;
-            img {
-              width: 100%;
-              height: 100%
-            };
-            &:nth-child(2) {
-              color: #fff;
-              font-size: 13px;
-              background: #2895ea;
-              text-align: center;
-              border-radius: 4px
-            }
+            width: 120px;
+            background: #1b88ff;
+            line-height: 35px;
+            height: 35px;
+            font-size: 16px;
+            color: #fff;
+            margin-right: 20px;
+            border-radius: 20px;
             &:last-child {
               margin-right: 0;
-              color: #fff;
-              font-size: 13px;
-              background: #cccccc;
-              text-align: center;
-              border-radius: 4px
+              color: #1b88ff;
+              background: #fff;
+              border: 1px solid #1b88ff;
+              text-align: center
             }
           }
         }

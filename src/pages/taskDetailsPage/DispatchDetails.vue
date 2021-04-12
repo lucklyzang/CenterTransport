@@ -184,6 +184,7 @@ import { mergeMethods } from '@/common/js/utils'
 import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import MyAudio from '@/components/MyAudio'
+import Ldselect from '@/components/Ldselect'
 import { mapGetters, mapMutations } from 'vuex'
 import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, compress, repeArray} from '@/common/js/utils'
 import {getDictionaryData} from '@/api/login.js'
@@ -209,6 +210,7 @@ export default {
   components: {
     HeaderTop,
     NoData,
+    Ldselect,
     FooterBottom,
     MyAudio
   },
@@ -439,7 +441,7 @@ export default {
           // 改变调度具体某一任务的信息状态
           this.changeDispatchTaskMessage({DtMsg: res.data.data});
           this.transportList = mergeMethods(this.dispatchTaskMessage['patientInfoList']);
-          console.log('飒飒飒飒',mergeMethods(this.dispatchTaskMessage))
+          console.log('飒飒飒飒',res.data.data)
         }
       })
       .catch((err) => {

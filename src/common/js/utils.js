@@ -540,7 +540,7 @@ export const  mergeMethods =  (testData) => {
         }
       } else {
         // 判断病人是否存在于已有运送大类的typelist中
-        var patientIndex = mergeData[tragetIndex]['typeList'].findIndex(function(item) { return item.patientName == temporaryObj['typeList'][0]['patientName']});
+        var patientIndex = mergeData[tragetIndex]['typeList'].findIndex(function(item) { return item.bedNumber == temporaryObj['typeList'][0]['bedNumber']});
         if (patientIndex == -1) {
           mergeData[tragetIndex]['typeList'].push({
             patientName: testData[i]['patientName'],
