@@ -84,16 +84,16 @@
          <p class="transport-type-title">
            运送类型:
          </p>
-          <div class="transport-type-list-wrapper" v-for="(item,index) in dispatchTaskMessage.patientInfoList">
+          <div class="transport-type-list-wrapper" v-for="(item,index) in transportList">
             <div class="transport-type-list">
-              <p class="transport-type-list-title">{{item.typeList[0].parentTypeName == '' ? '无': item.typeList[0].parentTypeName}}</p>
-              <p class="transport-type-list-content">
-                <span class="serial">{{index+1}}、</span>
+              <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
+              <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList">
+                <span class="serial">{{indexInner+1}}、</span>
                 <span>
-                  床号:{{item.bedNumber}},{{item.patientName}},{{genderTransfer(item.sex)}},
+                  床号:{{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
                 </span>
-                <span v-for="(inneritem, innerIndex) in item.typeList">
-                  {{inneritem.taskTypeName}}×{{inneritem.quantity}}
+                <span v-for="(targetItem, targetIndex) in itemInner.typeChildList">
+                  {{targetItem.taskTypeName}}×{{targetItem.quantity}}
                 </span>
               </p>
             </div>
@@ -180,6 +180,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import {} from '@/api/medicalPort.js'
+import { mergeMethods } from '@/common/js/utils'
 import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import MyAudio from '@/components/MyAudio'
@@ -193,6 +194,7 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      transportList: [],
       trackList: [],
       showChildrenComponent: false,
       overlayShow: false,
@@ -436,7 +438,8 @@ export default {
           this.showChildrenComponent = true;
           // 改变调度具体某一任务的信息状态
           this.changeDispatchTaskMessage({DtMsg: res.data.data});
-          console.log('飒飒飒飒',this.dispatchTaskMessage)
+          this.transportList = mergeMethods(this.dispatchTaskMessage['patientInfoList']);
+          console.log('飒飒飒飒',mergeMethods(this.dispatchTaskMessage))
         }
       })
       .catch((err) => {
