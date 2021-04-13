@@ -44,7 +44,9 @@
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 0">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
-            <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间: </span>
@@ -100,7 +102,9 @@
       <div class="state-filter-no-get wait-handle-one" v-show="stateIndex == 1">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
-            <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间: </span>
@@ -156,7 +160,9 @@
       <div class="state-filter-get wait-handle-one" v-show="stateIndex == 2">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
-            <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间: </span>
@@ -212,7 +218,9 @@
       <div class="state-filter-going wait-handle-one" v-show="stateIndex == 3">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
-            <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间: </span>
@@ -291,7 +299,9 @@
       </div>
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateCompleteList"  :key="`${item}-${index}`">
-          <span class="list-status" :class="{'listStatusStyleOne':item.state == 1,'listStyleStatusTwo':item.state == 2}">{{stateTransfer(item.state)}}</span>
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
+          </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
               <span>开始时间: </span>
@@ -348,7 +358,6 @@
           @confirm="toolSure" @cancel="toolCancel"
         >
           <div class="tool-name-list">
-            <div class="tool-name-list-title-innner">退回原因:</div>
             <div class="tool-name-list-content">
               <span :class="{spanStyle:toolIndex === index}" v-for="(item,index) in vehicleOperationList" :key="`${item}-${index}`" @click="toolCheck(item,index)">
                 {{item.text}}
@@ -417,7 +426,13 @@
         isRefresh: false,
         waitBaskList: [],
         taskGetPng: require('@/components/images/task-get.png'),
-        taskSearchPng: require('@/components/images/task-search.png')
+        taskSearchPng: require('@/components/images/task-search.png'),
+        noEndPng: require('@/common/images/home/no-end.png'),
+        noReferPng: require('@/common/images/home/no-refer.png'),
+        noStartPng: require('@/common/images/home/no-start.png'),
+        taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+        taskGoingPng: require('@/common/images/home/task-going.png'),
+        waitSurePng: require('@/common/images/home/wait-sure.png')
       };
     },
 
@@ -512,7 +527,7 @@
       });
       // 查询调度任务(分配给自己的)
       if (this.isFreshDispatchTaskPage) {
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, 0)
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, '')
       }
     },
 
@@ -829,6 +844,27 @@
         })
       },
 
+      // 任务状态转换图片
+      stateTransferImg (index) {
+        switch(index) {
+          case 1 :
+            return this.noReferPng
+            break;
+          case 2 :
+            return  this.noStartPng
+            break;
+          case 3 :
+            return  this.taskGoingPng
+            break;
+          case 4 :
+            return  this.noEndPng
+            break;
+          case 7 :
+            return  this.taskFinshedPng
+            break;
+        }
+      },
+
       // 任务优先级转换
       priorityTransfer (index) {
         switch(index) {
@@ -1092,15 +1128,12 @@
           overflow: auto;
           margin: 0 auto;
           padding: 0;
-          border: 1px solid #b2b2b2;
-          .tool-name-list-title-innner {
-            padding: 10px;
-          }
           .tool-name-list-content {
             padding: 6px;
             .spanStyle {
-              color: #fff;
-              background: #2895ea
+              color: #2895ea;
+              background: #fff;
+              border: 1px solid #2895ea
             }
             span {
               display: inline-block;
@@ -1108,9 +1141,10 @@
               height: 40px;
               text-align: center;
               margin-bottom: 8px;
+              border-radius: 20px;
               line-height: 40px;
               background: #f3f3f3;
-              margin-right: 4%;
+              margin-right: 3%;
               &:nth-child(even) {
                 margin-right: 0
               }
@@ -1234,14 +1268,17 @@
           margin-bottom: 10px;
           box-sizing: border-box;
           .list-status {
-            position: absolute;
-            top: 0;
-            right: 0;
-            display: inline-block;
             width: 80px;
-            text-align: center;
             height: 30px;
-            line-height: 30px
+            position: absolute;
+            text-align: center;
+            line-height: 30px;
+            top: 8px;
+            right: -12px;
+            img {
+              width: 100%;
+              height: 100%
+            }
           }
           .listStatusStyleOne {
             color: red
@@ -1372,14 +1409,17 @@
         margin-bottom: 10px;
         box-sizing: border-box;
         .list-status {
-          position: absolute;
-          top: 0;
-          right: 0;
-          display: inline-block;
           width: 80px;
-          text-align: center;
           height: 30px;
-          line-height: 30px
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 8px;
+          right: -12px;
+          img {
+            width: 100%;
+            height: 100%
+          }
         }
         .listStatusStyleOne {
           color: red
@@ -1575,14 +1615,17 @@
         margin-bottom: 10px;
         box-sizing: border-box;
         .list-status {
-          position: absolute;
-          top: 0;
-          right: 0;
-          display: inline-block;
           width: 80px;
-          text-align: center;
           height: 30px;
-          line-height: 30px
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 8px;
+          right: -12px;
+          img {
+            width: 100%;
+            height: 100%
+          }
         }
         .listStatusStyleOne {
           color: red

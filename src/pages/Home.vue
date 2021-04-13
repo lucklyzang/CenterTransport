@@ -20,13 +20,13 @@
       <div class="content-top">
         <div class="content-top-userName">
           <span class="content-top-userName-img">
-            <img :src="defaultPersonPng" alt="">
+            <img :src="defaultPersonManPng" alt="">
           </span>
           <span class="real-name">{{name}}</span>
         </div>
         <div class="wait-dask-wrapper">
           <div class="wait-dask-img-box">
-            <img :src="defaultPersonPng" alt="">
+            <img :src="taskInfoPng" alt="">
           </div>
           <ul class="wait-dask-list">
             <li v-show="item.number !== 0" :class="{listTaskStyle: index == 0 && isHaveTask != ''}" @click="taskEvent(item)" v-for="(item,index) in taskTypeList" :key="`${item}-${index}`">
@@ -529,7 +529,9 @@
         taskCancelReason: '',
         taskSurePng: require('@/components/images/task-sure.png'),
         taskCancelPng: require('@/components/images/task-cancel.png'),
-        defaultPersonPng: require('@/common/images/home/default-person.png'),
+        defaultPersonManPng: require('@/common/images/home/man-person-default.png'),
+        taskInfoPng: require('@/common/images/home/task-info.png'),
+        defaultPersonWomanPng: require('@/common/images/home/woman-person-default.png'),
         homeBannerPng: require('@/common/images/home/home-banner.png'),
         btnTaskWrapperPng: require('@/common/images/home/btn-background.png'),
         taskSearchPng: require('@/components/images/task-search.png'),
@@ -1528,7 +1530,6 @@
           .wait-dask-img-box {
             width: 45px;
             height: 45px;
-            padding: 4px;
             border-radius: 4px;
             box-sizing: border-box;
             margin-right: 8px;

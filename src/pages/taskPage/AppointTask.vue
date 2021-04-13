@@ -28,10 +28,15 @@
           </span>
          </p>
          <p class="status-name-box">
-          <span class="status-name-title" @click.stop="statusScreenEvent">{{stateScreenVal}}</span>
-          <ul class="status-name" v-show="stateListShow">
-            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index, item)">{{item}}</li>
-          </ul>
+          <van-field v-model="valueStatus" readonly  :right-icon="statusShow == true ? 'arrow-up' : 'arrow-down'" @click="statusShow = true"/>
+          <van-popup v-model="statusShow" position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="columns"
+              @cancel="statusShow = false"
+              @confirm="onConfirm"
+            />
+          </van-popup>
         </p>
       </div>
       <div class="task-operate-box" v-show="cancelTaskBtnShow || transferTaskBtnShow">
@@ -409,12 +414,14 @@
         reasonName: '',
         reasonValue: '',
         stateIndex: 0,
+        valueStatus: '全部',
+        statusShow: false,
         taskQueryShow: false,
         leftDropdownDataList: ['退出登录'],
         stateListShow: false,
         stateScreenVal: '全部',
         leftDownShow: false,
-        stateList:['全部','未获取','已获取', '进行中', '未结束'],
+        columns:['全部','未获取','已获取', '进行中', '未结束'],
         startTime: '',
         endTime: '',
         startTimePop: false,
@@ -614,6 +621,7 @@
         });
         this.reasonIndex = ''
       },
+
 
       // 退回原因确定
       reasonSure () {
@@ -946,6 +954,23 @@
         })
       },
 
+      // 任务状态转换
+      stateTransfernumber (item) {
+        switch(item) {
+          case '全部' :
+            return '-1'
+            break;
+          case '未获取' :
+            return 1
+            break;
+          case '已获取' :
+            return 2
+            break;
+          case '进行中' :
+            return 3
+            break;
+        }
+      },
 
       // 阻止change事件冒泡
       emptyHandle () {},
@@ -981,22 +1006,18 @@
       },
 
        // 状态筛选列表点击
-      stateListEvent (index,item) {
-        this.stateIndex = index;
-        this.stateScreenVal = item;
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: -1,startDate: '',endDate: ''}, this.stateIndex)
+      stateListEvent (index) {
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: index ,startDate: '',endDate: ''}, this.stateIndex)
       },
 
-      // 状态筛选按钮点击
-      statusScreenEvent () {
-        this.statusScreen = true;
-        this.taskQueryShow = false;
-        this.stateListShow = !this.stateListShow;
-        if (this.stateScreenVal == '状态筛选') {
-          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: -1,startDate: '',endDate: ''}, 0);
-          this.stateIndex = 0;
-        }
+      // 状态框确定事件
+      onConfirm(value) {
+        this.valueStatus = value;
+        this.statusShow = false;
+        this.stateIndex = this.stateTransfernumber(value);
+        this.stateListEvent(this.stateIndex)
       },
+
 
       // 转移任务按钮点击
       transferTaskEvent () {
@@ -1116,48 +1137,45 @@
     }
     .dispatch-task-title {
       .task-line-one-wrapper {
-          height: 36px;
-          font-size: 17px;
-          background-image: linear-gradient(to bottom, #2895ea, #5173f8);
+        font-size: 17px;
+        height: 36px;
         .task-line-one {
-          width: 70%;
+          width: 80%;
           margin: 0 auto;
           .taskLineOneStyle {
-            color: #2895ea;
-            background: #ffff;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px
+            color: black;
+            border-bottom: 2px solid #2895ea
           }
           li {
             display: inline-block;
             margin-top: 1px;
-            color: #fff;
+            color: #999999;
             width: 46%;
             height: 36px;
             line-height: 36px;
             text-align: center
           }
         };
-      }
+      };
       .status-box {
-        position: relative;
+        display: flex;
+        box-sizing: border-box;
+        padding: 0 10px;
         width: 100%;
+        flex-flow: row nowrap;
         margin-top: 6px;
-        height: 40px;
+        height: 60px;
+        justify-content: space-between;
+        align-items: center;
         background: #f6f6f6;
         .task-line-two {
           height: 40px;
+          width: 80px;
           font-size: 0;
           box-sizing: border-box;
           color: black;
-          position: absolute;
-          top: 0;
-          left: 10px;
-          .taskLineTwoStyle {
-            color: #2895ea
-          }
           span {
-            font-size: 18px;
+            font-size: 15px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -1169,37 +1187,11 @@
           }
         }
         .status-name-box {
-          position: absolute;
-          width: 100px;
-          top: 0;
-          right: 0;
           font-size: 18px;
-          .status-name-title {
-            width: 100%;
-            color: #3996f3;
-            background: #fff;
-            height: 40px;
-            line-height: 40px;
-            text-align: center;
-            display: inline-block;
-          }
-          .status-name {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 1px 6px 2px #d1d1d1;
-            width: 100%;
-            background: #fff;
-            li {
-              width: 100%;
-              line-height: 40px;
-              text-align: center
-            }
-            .stateListStyle {
-              color: #fff;
-              background: #2895ea
-            }
+          flex: 1;
+          /deep/ .van-cell {
+            border-radius: 8px;
+            color: black
           }
         }
       }

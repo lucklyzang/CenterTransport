@@ -23,7 +23,7 @@
         v-on:oversize="oversize"
       >
         <img
-          :src="defaultPersonPng"
+          :src="defaultPersonManPng"
           alt=""
           class="imgPreview"
         />
@@ -43,7 +43,7 @@ export default {
   data () {
     return {
       postData: [],
-      defaultPersonPng: require('@/common/images/home/default-person.png'),
+      defaultPersonManPng: require('@/common/images/home/man-person-default.png')
     }
   },
   mounted () {
