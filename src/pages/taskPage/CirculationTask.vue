@@ -28,29 +28,20 @@
           </span>
          </p>
          <p class="status-name-box">
-          <span class="status-name-title" @click.stop="statusScreenEvent">{{stateScreenVal}}</span>
-          <ul class="status-name" v-show="stateListShow">
-            <li class="state-li" :class="{stateListStyle:stateIndex == index}" v-for="(item, index) in stateList" :key="index" @click.stop="stateListEvent(index, item)">{{item}}</li>
-          </ul>
+           <van-field v-model="stateScreenVal" readonly  :right-icon="statusShow == true ? 'arrow-up' : 'arrow-down'" @click="stateListShow = true"/>
+           <van-popup v-model="stateListShow" position="bottom">
+             <van-picker
+               show-toolbar
+               :columns="stateList"
+               @cancel="stateListShow = false"
+               @confirm="onConfirm"
+             />
+           </van-popup>
         </p>
       </div>
     </div>
     <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
-      <div class="circulation-task-list" v-show="stateIndex == 0">
-        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
-         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
-          <p class="wait-handle-message-createTime">
-            任务名称：{{item.taskTypeName}}
-          </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <p class="wait-handle-message-createTime wait-handle-message-style">
-            任务状态：{{stateTransfer(item.state)}}
-          </p>
-        </div>
-      </div>
-      <div class="circulation-task-list" v-show="stateIndex == 1">
+      <div class="circulation-task-list" v-show="stateIndex == -1">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
          <div class="view-office" @click.stop="startTask(item)">进入任务</div>
           <p class="wait-handle-message-createTime">
@@ -65,6 +56,20 @@
         </div>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 2">
+        <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
+          <p class="wait-handle-message-createTime">
+            任务名称：{{item.taskTypeName}}
+          </p>
+          <p class="wait-handle-message-createTime">
+            开始时间：{{item.startTime}}
+          </p>
+          <p class="wait-handle-message-createTime wait-handle-message-style">
+            任务状态：{{stateTransfer(item.state)}}
+          </p>
+        </div>
+      </div>
+      <div class="circulation-task-list" v-show="stateIndex == 3">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
          <div class="view-office" @click.stop="startTask(item)">进入任务</div>
           <p class="wait-handle-message-createTime">
@@ -94,9 +99,9 @@
       </div>
     </van-pull-refresh>
     <div class="circultion-task-btn">
-      <span>
-        <img :src="taskConditionPng" alt=""  @click="circulationConditionEvent">
-      </span>
+      <p class="circultion-task-btn-bottom">
+        <span @click="circulationConditionEvent">循环情况</span>
+      </p>
     </div>
   </div>
 </template>
@@ -117,11 +122,10 @@
     data () {
       return {
         showLoadingHint: false,
-        stateListShow: false,
         statusScreen: false,
         taskQueryShow: false,
         noDataShow: false,
-        stateIndex: 0,
+        stateIndex: -1,
         stateListShow: false,
         taskListBoxShow: true,
         isRefresh: false,
@@ -138,7 +142,13 @@
         drawCompleteTaskIdList: [],
         currentOfficeName: '',
         taskConditionPng: require('@/components/images/task-condition.png'),
-        taskArrivedPng: require('@/components/images/task-arrived.png')
+        taskArrivedPng: require('@/components/images/task-arrived.png'),
+        noEndPng: require('@/common/images/home/no-end.png'),
+        noReferPng: require('@/common/images/home/no-refer.png'),
+        noStartPng: require('@/common/images/home/no-start.png'),
+        taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+        taskGoingPng: require('@/common/images/home/task-going.png'),
+        waitSurePng: require('@/common/images/home/wait-sure.png')
       };
     },
 
@@ -179,14 +189,14 @@
           setStore('currentTitle','中央运送')
         })
       };
-      document.addEventListener('click', (e) => {
-        if(e.target.className!='status-name'){
-          this.stateListShow = false;
-        };
-        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
-          this.leftDownShow = false;
-        }
-      });
+      // document.addEventListener('click', (e) => {
+      //   if(e.target.className!='status-name'){
+      //     this.stateListShow = false;
+      //   };
+      //   if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+      //     this.leftDownShow = false;
+      //   }
+      // });
       // 轮询是否有新任务
       windowTimer = window.setInterval(() => {
         setTimeout(
@@ -219,14 +229,14 @@
           setStore('currentTitle','中央运送')
         })
       };
-      document.addEventListener('click', (e) => {
-        if(e.target.className!='status-name'){
-          this.stateListShow = false;
-        };
-        if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
-          this.leftDownShow = false;
-        }
-      });
+      // document.addEventListener('click', (e) => {
+      //   if(e.target.className!='status-name'){
+      //     this.stateListShow = false;
+      //   };
+      //   if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
+      //     this.leftDownShow = false;
+      //   }
+      // });
       // 轮询是否有新任务
       windowTimer = window.setInterval(() => {
         setTimeout(
@@ -357,6 +367,21 @@
       },
 
       // 任务状态转换
+      stateTransfernumber (item) {
+        switch(item) {
+          case '全部' :
+            return -1
+            break;
+          case '未开始' :
+            return 2
+            break;
+          case '进行中' :
+            return 3
+            break;
+        }
+      },
+
+      // 任务状态转换
       stateTransfer (index) {
         switch(index) {
           case 0 :
@@ -386,6 +411,27 @@
         }
       },
 
+      // 任务状态转换图片
+      stateTransferImg (index) {
+        switch(index) {
+          case 1 :
+            return this.noReferPng
+            break;
+          case 2 :
+            return  this.noStartPng
+            break;
+          case 3 :
+            return  this.taskGoingPng
+            break;
+          case 4 :
+            return  this.noEndPng
+            break;
+          case 7 :
+            return  this.taskFinshedPng
+            break;
+        }
+      },
+
       // 历史任务点击事件
       itemClick (item) {
         this.$router.push({'path':'/taskDetailsMessage'});
@@ -401,7 +447,7 @@
         this.taskLlineOneIndex = index;
         this.noDataShow = false;
         if (index == '0') {
-          this.stateIndex = 0;
+          this.stateIndex = -1;
           this.taskQueryShow = false;
           this.stateScreenVal = '全部';
           this.getCirculationTask({
@@ -425,9 +471,8 @@
       },
 
       // 状态筛选列表点击
-      stateListEvent (index, item) {
+      stateListEvent (index) {
         this.stateIndex = index;
-        this.stateScreenVal = item;
         this.getCirculationTask ({
           proId: this.proId,  //医院ID，必输
           workerId: this.workerId,   //运送员ID
@@ -446,6 +491,14 @@
           this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
           this.stateIndex = 0;
         }
+      },
+
+      // 状态框确定事件
+      onConfirm(value) {
+        this.stateScreenVal = value;
+        this.stateListShow = false;
+        this.stateIndex = this.stateTransfernumber(value);
+        this.stateListEvent(this.stateIndex)
       },
 
       // 开始任务
@@ -542,19 +595,19 @@
                 })
               };
               if (this.stateIndex !== null) {
-                if (index == 0) {
+                if (index == -1) {
                   this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state !== 7});
                   if (this.circulationTaskList.length == 0) {
                     this.noDataShow = true;
                     return
                   };
-                } else if (index == 1) {
+                } else if (index == 2) {
                   this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 2});
                   if (this.circulationTaskList.length == 0) {
                     this.noDataShow = true;
                     return
                   }
-                } else if (index == 2) {
+                } else if (index == 3) {
                   this.circulationTaskList = temporaryTaskListFirst.filter((item) => { return item.state == 3});
                   if (this.circulationTaskList.length == 0) {
                     this.noDataShow = true;
@@ -714,20 +767,17 @@
       .task-line-one-wrapper {
         font-size: 17px;
         height: 36px;
-        background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .task-line-one {
-          width: 70%;
+          width: 80%;
           margin: 0 auto;
           .taskLineOneStyle {
-            color: #2895ea;
-            background: #ffff;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px
+            color: black;
+            border-bottom: 2px solid #2895ea
           }
           li {
             display: inline-block;
             margin-top: 1px;
-            color: #fff;
+            color: #999999;
             width: 46%;
             height: 36px;
             line-height: 36px;
@@ -736,24 +786,24 @@
         };
       }
       .status-box {
-        position: relative;
+        display: flex;
+        box-sizing: border-box;
+        padding: 0 10px;
         width: 100%;
+        flex-flow: row nowrap;
         margin-top: 6px;
-        height: 40px;
+        height: 60px;
+        justify-content: space-between;
+        align-items: center;
         background: #f6f6f6;
         .task-line-two {
           height: 40px;
+          width: 80px;
           font-size: 0;
           box-sizing: border-box;
-          position: absolute;
-          top: 0;
-          left: 7px;
-          .taskLineTwoStyle {
-            color: #2895ea
-          }
+          color: black;
           span {
-            color: #000000;
-            font-size: 18px;
+            font-size: 15px;
             height: 40px;
             display: inline-block;
             text-align: center;
@@ -765,38 +815,28 @@
           }
         }
         .status-name-box {
-          position: absolute;
-          width: 100px;
-          top: 0;
-          right: 0;
           font-size: 18px;
-          .status-name-title {
-            width: 100%;
-            color: #3996f3;
-            background: #fff;
-            height: 40px;
-            line-height: 40px;
-            text-align: center;
-            display: inline-block;
+          flex: 1;
+          /deep/ .van-cell {
+            border-radius: 8px;
+            color: black
           }
-          .status-name {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 1px 6px 2px #d1d1d1;
-            width: 100%;
-            background: #fff;
-            li {
-              width: 100%;
-              line-height: 40px;
-              text-align: center
-            }
-            .stateListStyle {
-              color: #fff;
-              background: #2895ea
-            }
-          }
+        }
+      }
+      .task-operate-box {
+        height: 40px;
+        line-height: 30px;
+        padding-left: 10px;
+        span {
+          font-size: 13px;
+          display: inline-block;
+          margin-top: 5px;
+          width: 70px;
+          height: 30px;
+          color: #fff;
+          background: #2895ea;
+          text-align: center;
+          border-radius: 2px
         }
       }
     };
@@ -812,16 +852,17 @@
       overflow: auto;
       margin: 0 auto;
       width: 100%;
+      background: #f6f6f6;
       .circulation-task-list {
         .wait-handle-list {
-          width: 96%;
-          margin: 0 auto;
-          margin-top: 6px;
           box-sizing: border-box;
           position: relative;
-          padding-bottom: 4px;
+          width: 94%;
+          margin:0 auto;
+          background: #fff;
+          padding: 10px;
+          margin-bottom: 10px;
           box-sizing: border-box;
-          border: 1px solid #e1e1e1;
           .sample-type-check {
             position: absolute;
             top: 4px;
@@ -862,10 +903,12 @@
       .wait-handle-list {
         box-sizing: border-box;
         position: relative;
-        margin-top: 6px;
-        padding-bottom: 10px;
+        width: 94%;
+        margin:0 auto;
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
         box-sizing: border-box;
-        border-bottom: 1px solid #e1e1e1;
         .wait-handle-message-createTime {
           padding-left: 10px;
           height: 27px;
@@ -890,16 +933,45 @@
       }
     };
     .circultion-task-btn {
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
+      width: 95%;
+      margin: 0 auto;
+      padding: 10px;
+      height: auto;
+      background: #f6f6f6;
       span {
-        .bottomButton;
+        vertical-align: top;
         display: inline-block;
-        margin-top: 15px;
-        img {
+        line-height: 40px;
+        height: 40px;
+        background-image: linear-gradient(to right, #37d4fd , #429bff);
+        color: #fff;
+        text-align: center
+      }
+      .circultion-task-btn-top {
+        position: relative;
+        height: 40px;
+        span {
+          width: 47%;
+          border-radius: 4px;
+          &:first-child {
+            position: absolute;
+            top: 0;
+            left: 0
+          }
+          &:last-child {
+            position: absolute;
+            top: 0;
+            right: 0
+          }
+        }
+      };
+      .circultion-task-btn-bottom {
+        position: relative;
+        height: 40px;
+        margin-top: 10px;
+        span {
           width: 100%;
-          height: 100%
+          border-radius: 4px
         }
       }
     }

@@ -1522,7 +1522,6 @@
           }
         };
         .wait-dask-wrapper {
-          padding:0 10px;
           display: flex;
           flex-flow: row nowrap;
           height: 55px;
@@ -1543,8 +1542,8 @@
             flex: 1;
             border-radius: 4px;
             display: flex;
-            padding: 0 4px;
             align-items: center;
+            flex-flow: row nowrap;
             justify-content: center;
             font-size: 16px;
             background-image: linear-gradient(to right, #4e70f8,#5662f6);
@@ -1555,6 +1554,7 @@
               display: flex;
               flex-flow: row nowrap;
               align-items: center;
+              justify-content: center;
               height: 45px;
               position: relative;
               .dask-list-sign {

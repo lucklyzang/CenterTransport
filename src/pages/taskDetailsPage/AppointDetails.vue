@@ -5,39 +5,62 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
     <div class="basic-message">
-      <p class="basic-message-title">基本信息</p>
+        <p class="basic-mesage-state">
+          <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
+        </p>
+        <p class="basic-message-title">
+          <span>
+            <img :src="taskInfoPng" alt="">
+          </span>
+          基本信息
+        </p>
        <div class="wait-handle-message">
-        <div class="handle-message-line-wrapper">
-          <P>
-            <span class="message-tit">病人床号:</span>
-            <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
-          </P>
-          <p>
-            <span class="message-tit">优先级:</span>
-            <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p class="p-other">
-            <span class="message-tit">预计开始时间: {{appointDetailsMessage.planStartTime}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p>
-            <span class="message-tit">任务起点:</span>
-            <span class="message-tit-real">{{appointDetailsMessage.setOutPlaceName}}</span>
-          </p>
-          <p>
-            <span class="message-tit">转运工具:</span>
-            <span class="message-tit-real">{{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p>
-            <span class="message-tit">任务描述:</span>
-            <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
-          </p>
-        </div>
+         <div class="wait-handle-message-top">
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">病人床号:</span>
+               <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+               <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+             <p>
+               <span class="message-tit">预计开始时间:</span>
+               <span class="message-tit-real">
+                 {{appointDetailsMessage.planStartTime}}
+               </span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">任务起点:</span>
+               <span class="message-tit-real message-tit-real-style">
+                 {{appointDetailsMessage.setOutPlaceName}}
+               </span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">转运工具:</span>
+               <span class="message-tit-real message-tit-real-style">
+                 {{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}
+               </span>
+             </p>
+           </div>
+         </div>
+         <div class="wait-handle-message-bottom">
+            <div class="handle-message-line-wrapper">
+              <p>
+                <span class="message-tit">任务描述:</span>
+                <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
+              </p>
+            </div>
+         </div>
       </div>
     </div>
     <div class="office-list-item-start-point" :class="{listItemStyle: isPatienVerified == true || isStartPonitVerified == true}">
@@ -46,21 +69,36 @@
         <p>{{appointDetailsMessage.setOutPlaceName}}</p>
       </div>
       <div class="office-list-right">
-        <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">病人扫码</p>
-        <p :class="{listRightStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">科室扫码</p>
+        <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
+          <span>病人</span>
+          <span>扫码</span>
+        </p>
+        <p :class="{listRightStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
+          <span>科室</span>
+          <span>扫码</span>
+        </p>
       </div>
     </div>
     <div class="office-list">
       <div class="office-list-inner-wrapper">
         <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.checkItems" :key="`${item}-${index}`" class="office-list-item">
+          <span class="quadrant">
+            {{index + 1}}
+          </span>
           <div class="office-list-left">
             <p>{{item.bookTime}}</p>
             <p v-show="!item.checkDepName || !item.room">{{item.depName}}</p>
             <p v-show="item.checkDepName != null && item.room != null">{{item.checkDepName}}-{{item.room}}</p>
           </div>
           <div class="office-list-right">
-            <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">科室扫码</p>
-            <p :class="{listRightStyle: item.isCompleted == true}" @click="checkCompleted(item)">检查完成</p>
+            <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
+              <span>科室</span>
+              <span>扫码</span>
+            </p>
+            <p :class="{listRightStyle: item.isCompleted == true}" @click="checkCompleted(item)">
+              <span>检查</span>
+              <span>完成</span>
+            </p>
           </div>
         </div>
       </div>
@@ -70,7 +108,10 @@
         <p>{{appointDetailsMessage.setOutPlaceName}}</p>
       </div>
       <div class="office-list-right">
-        <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">科室扫码</p>
+        <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
+          <span>科室</span>
+          <span>扫码</span>
+        </p>
       </div>
     </div>
     <div class="circultion-task-btn">
@@ -104,7 +145,14 @@ export default {
       isBackStartPonitVerified: false,
       drawCompleteTaskIdList: [],
       appointDetailsMessage: '',
-      taskSweepCodePng: require('@/components/images/task-sweep-code.png')
+      taskSweepCodePng: require('@/components/images/task-sweep-code.png'),
+      taskInfoPng: require('@/common/images/home/basic-message.png'),
+      noEndPng: require('@/common/images/home/no-end.png'),
+      noReferPng: require('@/common/images/home/no-refer.png'),
+      noStartPng: require('@/common/images/home/no-start.png'),
+      taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+      taskGoingPng: require('@/common/images/home/task-going.png'),
+      waitSurePng: require('@/common/images/home/wait-sure.png')
     }
   },
 
@@ -181,6 +229,27 @@ export default {
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
+    },
+
+    // 任务状态转换图片
+    stateTransferImg (index) {
+      switch(index) {
+        case 1 :
+          return this.noReferPng
+          break;
+        case 2 :
+          return  this.noStartPng
+          break;
+        case 3 :
+          return  this.taskGoingPng
+          break;
+        case 4 :
+          return  this.noEndPng
+          break;
+        case 7 :
+          return  this.taskFinshedPng
+          break;
+      }
     },
 
     // 任务状态转换
@@ -617,90 +686,207 @@ export default {
   .content-wrapper {
     .content-wrapper();
       font-size: 16px;
+      background: #f6f6f6;
     .basic-message {
-      width: 95%;
+      width: 93%;
       margin: 0 auto;
-      margin-top: 6px;
+      margin-top: 14px;
       height: auto;
-      background: #f3f3f3;
+      display: flex;
+      flex-flow: column wrap;
       position: relative;
-      border: 1px solid #d6d6d6;
-      .basic-message-title {
+      background: #fff;
+      padding: 10px;
+      box-sizing: border-box;
+      .basic-mesage-state {
+        width: 80px;
+        height: 30px;
         position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
-        box-sizing: border-box;
-        border-right: 1px solid #d6d6d6;
-        border-bottom: 1px solid #d6d6d6;
+        text-align: center;
+        line-height: 30px;
+        top: 8px;
+        right: -12px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      };
+      .basic-message-title {
+        font-size: 18px;
+        color: #1a89fd;
+        height: 40px;
+        line-height: 40px;
+        span {
+          display: inline-block;
+          height: 15px;
+          width: 15px;
+          vertical-align: top;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        }
       }
       .wait-handle-message {
-        margin-top: 35px;
+        width: 100%;
+        margin-top: 5px;
+        flex: 1;
+        overflow: auto;
+        .wait-handle-message-middle {
+          margin: 10px 0
+        };
+        .wait-handle-message-bottom {
+          margin-top: 10px
+        };
         .handle-message-line-wrapper {
-          margin-left: 5px;
           p {
-            margin-bottom: 12px;
-            width: 49%;
-            display: inline-block;
-            vertical-align: top;
-            span:first-child {
-              color: black
-            };
+            display: flex;
+            overflow: auto;
+            height: 30px;
+            line-height: 30px;
+            flex-flow: row nowrap;
+            color: #a0a0a0;
             .natureNormalStyle {
-              color: #1faaff !important;
+              color: #b1d676 !important
             };
             .natureImportantStyle {
-              color: red !important;
-              font-weight:bold !important;
+              color: #ff5b5a !important
+            };
+            span {
+              display: inline-block;
+            };
+            span:first-child {
+              width: 25%
             };
             .message-tit-real-style {
               color: #2895ea;
             }
             span:last-child {
-              line-height: 22px
+              flex: 1;
+              color: black
             }
           };
-          .p-other {
+          .describe-line-wrapper {
             width: 100%;
+            .message-tit-real-audio {
+              margin-left: 4px
+            }
+          }
+        };
+        .transport-type-wrapper {
+          display: flex;
+          flex-flow: row nowrap;
+          .transport-type-title {
+            color: #a0a0a0;
+            width: 25%
+          };
+          .transport-type-content {
+            color: black;
+            flex: 1;
+            > div:not(:first-child) {
+              .transport-type-list-title {
+                margin-top: 6px
+              }
+            };
+            .transport-type-list-wrapper {
+              .transport-type-list {
+                > p {
+                };
+                .transport-type-list-title {
+                  font-weight: bold;
+                  color: black
+                };
+                .transport-type-list-content {
+                  line-height: 30px
+                }
+              }
+            }
+          }
+        };
+        .handle-message-line-wrapper-other {
+          > p {
             span {
-              display: inline-block;
-              width: 100%
+              &:first-child {
+                width: 35%
+              }
+            }
+          }
+        };
+        .handle-message-line-wrapper-other-two {
+          display: flex;
+          flex-flow: row now;
+          height: 35px;
+          line-height: 35px;
+          overflow: auto;
+          >p:first-child {
+            width: 25%;
+            span {
+              color: #a0a0a0;
+            }
+          };
+          > p:last-child {
+            flex: 1;
+            span {
+              color: black
+            };
+            .message-tit-real-destinationList {
+              margin-right: 4px
             }
           }
         }
       }
     }
     .office-list-item-start-point {
-      width: 95%;
+      width: 93%;
       margin: 0 auto;
-      font-size: 16px;
+      font-size: 15px;
+      background: #fff;
       height: 90px;
-      padding: 6px;
-      margin-top: 12px;
+      padding: 10px;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      margin-top: 14px;
       box-sizing: border-box;
-      border: 1px solid #d6d6d6;
       .office-list-left {
-        float: left;
-        height: 78px;
-        width: 76%;
+        width: 60%;
+        margin-right: 4px;
         p {
-          height: 39px;
+          height: 25px;
           width: 76%;
           overflow: auto;
-          line-height: 39px
+          line-height: 25px;
+          &:first-child {
+            font-size: 13px
+          }
         }
       };
       .office-list-right {
-        float: right;
         height: 78px;
-        width: 24%;
+        width: 40%;
+        display: flex;
+        font-size: 14px;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
         p {
-          height: 34px;
+          height: 55px;
+          width: 55px;
+          border-radius: 50%;
           text-align: center;
-          line-height: 34px;
-          background: #2895ea;
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          background: #88d354;
+          > span {
+            &:first-child {
+              margin-bottom: 2px
+            }
+          }
           &:last-child {
-            margin-top: 8px
+            background: #217dfc
           }
         };
         .listRightStyle {
@@ -715,10 +901,9 @@ export default {
     .office-list {
       flex:1;
       overflow: auto;
-      width: 95%;
+      width: 93%;
       margin: 0 auto;
       .office-list-inner-wrapper {
-        padding-top: 10px;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
@@ -727,34 +912,71 @@ export default {
         .office-list-item {
           font-size: 16px;
           height: 90px;
-          padding: 6px;
+          padding: 10px;
+          display: flex;
+          flex-flow: row nowrap;
+          background: #fff;
+          align-items: center;
           box-sizing: border-box;
-          margin-bottom: 12px;
-          border: 1px solid #d6d6d6;
+          margin-top: 14px;
+          position: relative;
+          &:last-child {
+            margin-bottom: 14px
+          }
+          .quadrant{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 22px;
+            height: 22px;
+            text-align: center;
+            line-height: 22px;
+            color: #fff;
+            font-size: 13px;
+            background-color: #bcd8ff;
+            -webkit-border-radius: 0 0 20px 0;
+          }
           .office-list-left {
-            float: left;
-            height: 78px;
-            width: 76%;
+            width: 60%;
+            margin-right: 4px;
             p {
-              height: 39px;
+              height: 25px;
               width: 76%;
               overflow: auto;
-              line-height: 39px
+              line-height: 25px;
+              &:first-child {
+                font-size: 13px
+              }
             }
           };
           .office-list-right {
-            float: right;
+            width: 40%;
             height: 78px;
-            width: 24%;
+            display: flex;
+            font-size: 14px;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: center;
             p {
-              height: 34px;
+              height: 55px;
+              width: 55px;
+              border-radius: 50%;
               text-align: center;
-              line-height: 34px;
-              background: #2895ea;
-              &:last-child {
-                margin-top: 8px
+              display: flex;
+              flex-flow: column;
+              justify-content: center;
+              align-items: center;
+              color: #fff;
+              background: #88d354;
+              > span {
+                &:first-child {
+                  margin-bottom: 2px
+                }
               }
-            }
+              &:last-child {
+                background: #217dfc
+              }
+            };
             .listRightStyle {
               background: #0ee883
             }
@@ -767,35 +989,54 @@ export default {
       }
     }
     .office-list-item-end-point {
-      width: 95%;
+      width: 93%;
       margin: 0 auto;
-      font-size: 16px;
-      padding: 0 6px;
+      font-size: 15px;
+      background: #fff;
+      height: 90px;
+      padding: 10px;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      margin-top: 14px;
       box-sizing: border-box;
-      height: 45px;
-      // margin-top: 12px;
-      border: 1px solid #d6d6d6;
       .office-list-left {
-        float: left;
-        height: 45px;
-        width: 76%;
+        width: 60%;
+        margin-right: 4px;
         p {
-          height: 45px;
+          height: 25px;
           width: 76%;
           overflow: auto;
-          line-height: 45px
+          line-height: 25px
         }
       };
       .office-list-right {
-        float: right;
         height: 78px;
-        width: 24%;
+        width: 40%;
+        display: flex;
+        font-size: 14px;
+        flex-flow: row nowrap;
+        justify-content: flex-end;
+        align-items: center;
         p {
-          height: 34px;
+          height: 55px;
+          width: 55px;
+          border-radius: 50%;
           text-align: center;
-          line-height: 34px;
-          background: #2895ea;
-          margin-top: 4px
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          background: #88d354;
+          > span {
+            &:first-child {
+              margin-bottom: 2px
+            }
+          }
+          &:last-child {
+            background: #217dfc
+          }
         };
         .listRightStyle {
           background: #0ee883
@@ -816,7 +1057,7 @@ export default {
         display: inline-block;
         line-height: 40px;
         height: 40px;
-        background: #2895ea;
+        background-image: linear-gradient(to right, #37d4fd , #429bff);
         color: #fff;
         text-align: center
       }

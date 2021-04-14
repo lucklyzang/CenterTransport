@@ -40,57 +40,69 @@
         </p>
       </div>
       <div class="task-operate-box" v-show="cancelTaskBtnShow || transferTaskBtnShow">
-        <span v-show="transferTaskBtnShow" @click="transferTaskEvent">转移任务</span>
+        <p>
+          <span v-show="transferTaskBtnShow" @click="transferTaskEvent">转移任务</span>
+        </p>
+        <p>
+          <van-popup v-model="transferShow" position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="transerColumns"
+              @cancel="transferShow = false"
+              @confirm="transferConfirm"
+            />
+          </van-popup>
+        </p>
       </div>
     </div>
     <van-pull-refresh v-model="isRefresh" class="wait-handle-box" @refresh="onRefresh" v-show="waitHandleBox" success-text="刷新成功">
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 0">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
+              <div class="wait-handle-message-one">
+                <span>开始时间:</span>
+                <span>{{item.createTime}}</span>
+              </div>
+              <div class="wait-handle-message-two">
+                <p>任务描述:</p>
                 <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
+                  {{item.taskRemark}}
                 </p>
               </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
+              <div class="wait-handle-message-one">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>{{item.bedNumber}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>转运工具:</span>
+                <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
             </p>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">取消</span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
             </p>
           </div>
         </div>
@@ -98,50 +110,50 @@
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 1">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
+              <div class="wait-handle-message-one">
+                <span>开始时间:</span>
+                <span>{{item.createTime}}</span>
+              </div>
+              <div class="wait-handle-message-two">
+                <p>任务描述:</p>
                 <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
+                  {{item.taskRemark}}
                 </p>
               </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
+              <div class="wait-handle-message-one">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>{{item.bedNumber}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>转运工具:</span>
+                <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
             </p>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
             </p>
           </div>
         </div>
@@ -149,50 +161,50 @@
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 2">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
+              <div class="wait-handle-message-one">
+                <span>开始时间:</span>
+                <span>{{item.createTime}}</span>
+              </div>
+              <div class="wait-handle-message-two">
+                <p>任务描述:</p>
                 <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
+                  {{item.taskRemark}}
                 </p>
               </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
+              <div class="wait-handle-message-one">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>{{item.bedNumber}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>转运工具:</span>
+                <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
             </p>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
             </p>
           </div>
         </div>
@@ -200,50 +212,50 @@
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 3">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
+              <div class="wait-handle-message-one">
+                <span>开始时间:</span>
+                <span>{{item.createTime}}</span>
+              </div>
+              <div class="wait-handle-message-two">
+                <p>任务描述:</p>
                 <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
+                  {{item.taskRemark}}
                 </p>
               </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
+              <div class="wait-handle-message-one">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>{{item.bedNumber}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>转运工具:</span>
+                <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
             </p>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
             </p>
           </div>
         </div>
@@ -251,50 +263,50 @@
       <div class="state-filter-all wait-handle-one" v-show="stateIndex == 4">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
-           <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
+            <div class="wait-handle-message">
+              <div class="wait-handle-message-one">
+                <span>开始时间:</span>
+                <span>{{item.createTime}}</span>
+              </div>
+              <div class="wait-handle-message-two">
+                <p>任务描述:</p>
                 <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
+                  {{item.taskRemark}}
                 </p>
               </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
+              <div class="wait-handle-message-one">
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>{{item.bedNumber}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span>转运工具:</span>
+                <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
             <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
               <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
             </p>
             <p class="get-wait-task">
-              <span v-show="item.state == '1'">
-                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
               </span>
               <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
             </p>
           </div>
         </div>
@@ -313,64 +325,62 @@
         </div>
         <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
-          @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+                                @cancel="startTimePop = false"  @confirm="confirmEvent" @change="startTimeChange"/>
         </van-popup>
         <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
           <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
-          @cancel="endTimePop = false"  @confirm="endTimePop = false"  @change="endTimeChange"/>
+                                @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
         </van-popup>
       </div>
-      <p class="middle-top-search">
-        <span>
-          <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">
-        </span>
-      </p>
+      <div class="content-top-time-fask">
+        <span v-for="(item,index) in timeList" :key="index" :class="{timeFastStyle: timeFastindex === index}" @click="timeFasleEvent(item,index)">{{item}}</span>
+      </div>
       <div class="task-status-list">
         <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
-         <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">开始时间: {{item.createTime}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">任务描述: {{item.taskRemark}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <P>
-                  <span class="message-tit">起点: {{item.setOutPlaceName}}</span>
-                </P>
-                <p>
-                  <span class="message-tit">床号: {{item.bedNumber}}</span>
-                </p>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
-                </p>
-                <P class="p-other">
-                  <span class="message-tit">转运工具: {{item.toolName ? item.toolName : '无'}}</span>
-                </P>
-              </div>
-              <div class="handle-message-line-wrapper">
-                <p class="p-other">
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{ stateTransfer(item.state) }}</span>
-                </p>
-              </div>
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
+          </p>
+          <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>开始时间:</span>
+              <span>{{item.createTime}}</span>
             </div>
+            <div class="wait-handle-message-two">
+              <p>任务描述:</p>
+              <p>
+                {{item.taskRemark}}
+              </p>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+              <span>{{item.setOutPlaceName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+              <span>{{item.bedNumber}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+              <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>转运工具:</span>
+              <span>{{item.toolName ? item.toolName : '无'}}</span>
+            </div>
+          </div>
           <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
             <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
           </p>
           <p class="get-wait-task">
-            <span v-show="item.state == '1'">
-              <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
-            </span>
+              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                获&nbsp;&nbsp;取
+              </span>
             <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-              进入任务
-            </span>
-            <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent">取消</span>
+                进入任务
+              </span>
+            <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                取&nbsp;&nbsp;消
+              </span>
           </p>
         </div>
       </div>
@@ -380,7 +390,6 @@
       @confirm="reasonSure" @cancel="reasonCancel"
     >
       <div class="tool-name-list">
-        <div class="tool-name-list-title-innner">退回原因:</div>
         <div class="tool-name-list-content">
           <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
             {{item.text}}
@@ -394,12 +403,14 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut, queryDispatchTaskCancelReason} from '@/api/workerPort.js'
+  import {getWorkerMessage} from '@/api/login.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut, transferAppointTask,queryDispatchTaskCancelReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import store from '@/store'
   import Loading from '@/components/Loading'
+  import SOtime from '@/common/js/SOtime.js'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
   import {getDictionaryData} from '@/api/login.js'
   export default {
     name: 'appointTask',
@@ -408,20 +419,23 @@
         showLoadingHint: false,
         noDataShow: false,
         reasonShow: false,
+        transferShow:  false,
         reasonOperationList: [],
+        transerColumns: [],
         reasonIndex: '',
+        timeFastindex: '',
         reasonText: '',
         reasonName: '',
         reasonValue: '',
-        stateIndex: 0,
+        stateIndex: -1,
         valueStatus: '全部',
         statusShow: false,
         taskQueryShow: false,
         leftDropdownDataList: ['退出登录'],
         stateListShow: false,
-        stateScreenVal: '全部',
         leftDownShow: false,
         columns:['全部','未获取','已获取', '进行中', '未结束'],
+        timeList: ['近一周','近一月','近三月'],
         startTime: '',
         endTime: '',
         startTimePop: false,
@@ -433,6 +447,8 @@
         liIndex: null,
         transferWorkerShow: false,
         taskOneList: ['待办任务', '历史任务'],
+        onlinePersonLlist: [],
+        currentPerson: [],
         taskLlineOneIndex: '0',
         cancelTask: false,
         transferTask: false,
@@ -449,7 +465,13 @@
         transferTaskIdList: [],
         drawCompleteTaskIdList: [],
         taskGetPng: require('@/components/images/task-get.png'),
-        taskSearchPng: require('@/components/images/task-search.png')
+        taskSearchPng: require('@/components/images/task-search.png'),
+        noEndPng: require('@/common/images/home/no-end.png'),
+        noReferPng: require('@/common/images/home/no-refer.png'),
+        noStartPng: require('@/common/images/home/no-start.png'),
+        taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+        taskGoingPng: require('@/common/images/home/task-going.png'),
+        waitSurePng: require('@/common/images/home/wait-sure.png')
       };
     },
 
@@ -466,14 +488,19 @@
         'userInfo',
         'completeSweepcodeDestinationInfo',
         'globalTimer',
+        'completeCheckedItemInfo',
         'catch_components',
-        'isFreshAppointTaskPage'
+        'isFreshAppointTaskPage',
+        'appointTaskTransferIdList'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
       },
       workerId () {
         return JSON.parse(getStore('userInfo')).extendData.userId
+      },
+      workerName () {
+        return this.userInfo.name
       }
     },
 
@@ -583,7 +610,9 @@
         'changeTaskDetailsMessage',
         'changeTaskType',
         'changeOverDueWay',
-        'changeCatchComponent'
+        'changeCatchComponent',
+        'changeCompleteCheckedItemInfo',
+        'changeCompleteSweepcodeDestinationInfo'
       ]),
 
       // 右边下拉框菜单点击
@@ -592,7 +621,7 @@
         this.userLoginOut(this.proId, this.userInfo.userName)
       },
 
-       // 任务退回
+      // 任务退回
       cancelTaskEvent (item) {
         this.taskId = item.id;
         this.reasonShow = true;
@@ -622,6 +651,10 @@
         this.reasonIndex = ''
       },
 
+      // 时间查询快捷键点击事件
+      timeFasleEvent (item,index) {
+        this.timeFastindex = index
+      },
 
       // 退回原因确定
       reasonSure () {
@@ -731,6 +764,27 @@
         }
       },
 
+      // 任务状态转换图片
+      stateTransferImg (index) {
+        switch(index) {
+          case 1 :
+            return this.noReferPng
+            break;
+          case 2 :
+            return  this.noStartPng
+            break;
+          case 3 :
+            return  this.taskGoingPng
+            break;
+          case 4 :
+            return  this.noEndPng
+            break;
+          case 7 :
+            return  this.taskFinshedPng
+            break;
+        }
+      },
+
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
@@ -744,6 +798,32 @@
       endTimeChange(e) {
         let endTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.endTime = `${endTimeArr[0]}-${endTimeArr[1]}-${endTimeArr[2]}`
+      },
+
+      // 开始时间确定事件
+      confirmEvent () {
+        this.startTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
+      },
+
+      // 结束时间确定事件
+      endConfirmEvent () {
+        this.endTimePop = false;
+        if (SOtime.time6(this.endTime) < SOtime.time6(this.startTime)) {
+          this.$toast({
+            message: `结束日期不能小于开始日期`,
+            type: 'fail'
+          });
+          return
+        };
+        this.searchCompleteTask()
       },
 
       // 初始化时间显示框
@@ -824,7 +904,7 @@
                   taskRemark: item.taskRemark
                 })
               };
-              if (index == 0) {
+              if (index == -1) {
                 this.stateFilterList = temporaryTaskListFirst;
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
@@ -880,7 +960,7 @@
 
       // 下拉刷新
       onRefresh () {
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, this.stateIndex)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: this.stateIndex,startDate: '',endDate: ''}, this.stateIndex)
       },
 
       // 提取存储已完成采集任务科室所属任务id
@@ -969,6 +1049,9 @@
           case '进行中' :
             return 3
             break;
+          case '未结束' :
+            return 4
+            break;
         }
       },
 
@@ -990,11 +1073,11 @@
         this.noDataShow = false;
         this.initDate();
         if (index == '0') {
-          this.stateIndex = 0;
+          this.stateIndex = -1;
           this.taskQueryShow = false;
           this.waitHandleBox = true;
-          this.stateScreenVal = '全部';
-          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, this.stateIndex);
+          this.valueStatus = '全部';
+          this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''}, -1);
         } else if (index == '1') {
           this.stateIndex = null;
           this.taskQueryShow = true;
@@ -1007,7 +1090,7 @@
 
        // 状态筛选列表点击
       stateListEvent (index) {
-        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: index ,startDate: '',endDate: ''}, this.stateIndex)
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1,state: index ,startDate: '',endDate: ''}, index)
       },
 
       // 状态框确定事件
@@ -1018,6 +1101,81 @@
         this.stateListEvent(this.stateIndex)
       },
 
+      // 转移任务弹框确定事件
+      transferConfirm(value) {
+        this.currentPerson = value;
+        this.transferShow = false;
+        if (this.currentPerson == this.workerName) {
+          this.$toast(`任务不能转移给自己`);
+          return
+        };
+        this.sureTransferDispatchTask ({
+          taskId: this.appointTaskTransferIdList[0],
+          afterWorkerId: this.getTransferPersonId(this.currentPerson),   //任务接受者ID
+          beforeWorkerId: this.workerId,      //转移者ID
+        })
+      },
+
+      // 获取转移人员的id
+      getTransferPersonId (name) {
+        let id = this.onlinePersonLlist.filter((item) => {return item.text == name})[0]['value'];
+        return id
+      },
+
+      // 获取在线工作人员
+      queryOnlineWorker (data) {
+        this.onlinePersonLlist = [];
+        this.transerColumns = [];
+        getWorkerMessage(data).then((res) => {
+          if (res && res.data.code == 200) {
+            this.onlinePersonLlist = [{text: '请选择',value: ''}];
+            for (let item of res.data.data) {
+              let temporaryWorkerMessageArray = [];
+              for (let innerItem in item) {
+                if (innerItem == 'id') {
+                  temporaryWorkerMessageArray.push(item[innerItem])
+                };
+                if (innerItem == 'workerName') {
+                  temporaryWorkerMessageArray.push(item[innerItem]);
+                  this.transerColumns.push(item[innerItem])
+                }
+              };
+              this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0]})
+            };
+          }
+        })
+          .catch((err) => {
+            console.log(err)
+          })
+      },
+
+      // 转移任务
+      sureTransferDispatchTask (data) {
+        transferAppointTask(data)
+          .then((res) => {
+            if (res && res.data.code == 200) {
+              this.$toast(`${ res.data.msg}`);
+              this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1);
+              this.emptyCompleteCheckedItem();
+              this.emptyCompleteDestinationDepartment();
+              this.emptyCompleteDepartureDepartment();
+            } else {
+              this.$dialog.alert({
+                message: res.data.msg,
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          })
+          .catch((err) => {
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          })
+      },
+
 
       // 转移任务按钮点击
       transferTaskEvent () {
@@ -1025,6 +1183,7 @@
         let temporaryTransferTaskCheckList = [];
         temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
         if (temporaryTransferTaskCheckList.length == 1) {
+          this.transferShow = true;
           for (let item of temporaryTransferTaskCheckList)  {
             for (let key in item) {
               if (key == 'id')
@@ -1035,12 +1194,34 @@
           this.cancelTask = false;
           this.transferWorkerShow = true;
           this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList});
-          this.$router.push({path:'/appointTaskForm'});
-          this.changeTitleTxt({tit:'转移人员选择'});
-          setStore('currentTitle','转移人员选择')
+          this.queryOnlineWorker({proId: this.proId, state:''});
         } else {
           this.$toast('只能同时转移一个任务')
         }
+      },
+
+      // 清空该完成任务存储的已完成检查的信息
+      emptyCompleteCheckedItem () {
+        let temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
+      },
+
+      // 清空该完成任务存储的已扫过目的地科室信息
+      emptyCompleteDestinationDepartment () {
+        let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+      },
+
+      // 清空该完成任务存储的已扫过起始地科室信息
+      emptyCompleteDepartureDepartment () {
+        let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
       },
 
       // 复选框选择事件
@@ -1056,7 +1237,7 @@
         })
         .then(res => {
           if (res && res.data.code == 200) {
-            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},0)
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1)
           }
         })
         .catch(err => {
@@ -1087,15 +1268,12 @@
           overflow: auto;
           margin: 0 auto;
           padding: 0;
-          border: 1px solid #b2b2b2;
-          .tool-name-list-title-innner {
-            padding: 10px;
-          }
           .tool-name-list-content {
             padding: 6px;
             .spanStyle {
-              color: #fff;
-              background: #2895ea
+              color: #2895ea;
+              background: #fff;
+              border: 1px solid #2895ea
             }
             span {
               display: inline-block;
@@ -1103,9 +1281,10 @@
               height: 40px;
               text-align: center;
               margin-bottom: 8px;
+              border-radius: 20px;
               line-height: 40px;
               background: #f3f3f3;
-              margin-right: 4%;
+              margin-right: 3%;
               &:nth-child(even) {
                 margin-right: 0
               }
@@ -1198,6 +1377,7 @@
       .task-operate-box {
         height: 40px;
         line-height: 30px;
+        background: #f6f6f6;
         padding-left: 10px;
         span {
           font-size: 13px;
@@ -1205,8 +1385,9 @@
           margin-top: 5px;
           width: 70px;
           height: 30px;
+          border-radius: 4px;
           color: #fff;
-          background: #2895ea;
+          background-image: linear-gradient(to right, #37d4fd , #429bff);
           text-align: center;
           border-radius: 2px
         }
@@ -1217,104 +1398,149 @@
       overflow: auto;
       margin: 0 auto;
       width: 100%;
-      margin-top: 6px;
+      background: #f6f6f6;
       .wait-handle-one {
         .wait-handle-list {
-          margin: 0 auto;
           box-sizing: border-box;
           position: relative;
+          width: 94%;
+          margin:0 auto;
+          background: #fff;
+          padding: 10px;
           margin-bottom: 10px;
           box-sizing: border-box;
-          border: 1px solid #cecece;
-          width: 96%;
+          .list-status {
+            width: 80px;
+            height: 30px;
+            position: absolute;
+            text-align: center;
+            line-height: 30px;
+            top: 8px;
+            right: -12px;
+            img {
+              width: 100%;
+              height: 100%
+            }
+          }
+          .listStatusStyleOne {
+            color: red
+          }
+          .listStyleStatusTwo {
+            color: #85dc85
+          }
           .wait-handle-message {
-            font-size: 18px;
-            padding: 8px;
+            font-size: 16px;
+            padding: 14px 0;
             box-sizing: border-box;
-            .handle-message-line-wrapper {
+            .wait-handle-message-top {
+              height: 60px;
+              border-left: 6px solid #2895ea;
+              span {
+                display: inline-block;
+                width: 75%;
+                padding-left: 5px;
+                height: 28px;
+                box-sizing: border-box;
+                &:first-child {
+                  margin-bottom: 10px;
+                  overflow: auto
+                }
+              }
+            };
+            .wait-handle-message-top-two {
+              height: 54px;
+              border-left: 6px solid #2895ea;
               p {
-                margin-bottom: 12px;
-                span {
-                  display: block
-                };
-                .message-tit {
-                  color: black
-                };
-                .message-tit-real {
-                  color: black
-                };
-                .natureNormalStyle {
-                  color: #1faaff !important;
-                };
-                .natureImportantStyle {
-                  color: red !important;
-                  font-weight:bold !important;
-                };
-                .message-tit-real-style {
-                  color: #2895ea
+                display: inline-block;
+                width: 75%;
+                height: 20px;
+                overflow: auto;
+                padding-left: 5px;
+                box-sizing: border-box;
+                &:first-child {
+                  margin-bottom: 15px
                 }
-                .message-tit-real-bdeNumber {
-                  line-height: 24px
-                }
-                .message-tit-destination-real {
-                  padding: 4px;
-                  margin-right:2px;
-                  line-height: 24px
-                }
-                .destinationRealStyle {
-                  background: #2895ea;
-                  color: #fff
+              }
+            };
+            .wait-handle-message-one {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
+              margin-left: -4px;
+              .natureNormalStyle {
+                color: #b1d676 !important
+              };
+              .natureImportantStyle {
+                color: #ff5b5a !important
+              };
+              span {
+                display: inline-block;
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
                 }
               };
-              .p-other {
-                width: 49%;
+              p {
                 display: inline-block;
                 span {
-                  display: inline-block
+                  color: black !important
+                }
+              }
+            };
+            .wait-handle-message-two {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
+              margin-left: -4px;
+              p {
+                display: inline-block;
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
                 }
               }
             }
           };
           .wait-handle-check {
             position: absolute;
-            top: 6px;
-            right: 6px
+            left: 10px;
+            bottom: 20px;
+            width: 20px;
+            height: 20px
           };
           .get-wait-task {
+            margin-top: 4px;
             width: 100%;
             text-align: center;
-            padding: 6px;
-            box-sizing: border-box;
             span {
-              display: inline-block;
-              width: 90px;
-              height: 40px;
-              line-height: 40px;
               vertical-align: top;
-              img {
-                width: 100%;
-                height: 100%
-              }
-              &:nth-child(1) {
-                color: #fff;
-                font-size: 13px;
-                background: #2895ea;
-                text-align: center;
-                border-radius: 4px
-              }
-              &:nth-child(2) {
-                color: #fff;
-                font-size: 13px;
-                background: #2895ea;
-                text-align: center;
-                border-radius: 4px
-              }
-              &:nth-child(3) {
-                color: #fff;
-                font-size: 13px;
-                background: #b4b4b4;
-                text-align: center;
-                border-radius: 4px
+              display: inline-block;
+              width: 120px;
+              background: #1b88ff;
+              line-height: 35px;
+              height: 35px;
+              font-size: 15px;
+              color: #fff;
+              margin-right: 20px;
+              border-radius: 20px;
+              &:last-child {
+                margin-right: 0;
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
               }
             }
           }
@@ -1328,156 +1554,211 @@
       width: 100%;
     };
      .task-complete {
-      display: flex;
-      flex-direction: column;
-      .middle-top-search {
-        width: auto;
-        margin: 0 auto;
-        line-height: 30px;
-        height: 40px;
-        span {
-          display: inline-block;
-          width: 90px;
-          height: 40px;
+       display: flex;
+       flex-direction: column;
+       background: #f6f6f6;
+       margin-top: 4px;
+       .content-middle-top {
+         background: #f6f6f6;
+         width: 94%;
+         margin: 0 auto;
+         padding: 10px 0;
+         height: 40px;
+         position: relative;
+         //box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
+         //0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
+         /deep/ .van-cell {
+           width: 100%;
+           display: inline-block;
+           padding: 10px 24px;
+           border-radius: 4px;
+           line-height: 0;
+         }
+         .time-between {
+           color: black;
+           position: absolute;
+           display: inline-block;
+           height: 40px;
+           line-height: 60px;
+           top: 0;
+           left: 0
+         }
+         .content-middle-top-content {
+           position: relative;
+           height: 100%;
+           margin: 0 auto;
+           > div {
+             width: 44%;
+             position: absolute;
+             top: 50%;
+             transform: translateY(-50%);
+           }
+         }
+       };
+       .content-top-time-fask {
+         background: #f6f6f6;
+         width: 94%;
+         margin: 0 auto;
+         display: flex;
+         flex-flow: row nowrap;
+         align-items: center;
+         margin-bottom: 10px;
+         span {
+           display: inline-block;
+           color: #fff;
+           margin-right: 10px;
+           width: 60px;
+           height: 25px;
+           text-align: center;
+           line-height: 25px;
+           border-radius: 4px;
+           background: #d9d9d9
+         };
+         .timeFastStyle {
+           background: #fff;
+           color: black
+         };
+       };
+       .task-status-list {
+         flex: 1;
+         overflow: auto
+       }
+      }
+    .wait-handle {
+      .wait-handle-list {
+        box-sizing: border-box;
+        position: relative;
+        width: 94%;
+        margin:0 auto;
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        .list-status {
+          width: 80px;
+          height: 30px;
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 8px;
+          right: -12px;
           img {
             width: 100%;
             height: 100%
           }
         }
-      }
-      .content-middle-top {
-        background: #fff;
-        margin-top: 3%;
-        height: 52px;
-        position: relative;
-        box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
-        0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
-        /deep/ .van-cell {
-          width: 100%;
-          display: inline-block;
-          padding: 10px 24px;
-          border: 1px solid #d8d5d5;
-          border-radius: 4px;
-          line-height: 0;
+        .listStatusStyleOne {
+          color: red
         }
-        .time-between {
-          color: black;
-          position: absolute;
+        .listStyleStatusTwo {
+          color: #85dc85
         }
-        .content-middle-top-content {
-          position: relative;
-          height: 100%;
-          width: 98%;
-          margin: 0 auto;
-          > div {
-            width: 44%;
-            position: absolute;
-            top: 14%;
-          }
-        }
-      };
-      .task-status-list {
-        flex: 1;
-        overflow: auto
-      }
-    }
-    .wait-handle {
-      .wait-handle-list {
-        margin: 0 auto;
-        box-sizing: border-box;
-        position: relative;
-        margin-bottom: 10px;
-        box-sizing: border-box;
-        border: 1px solid #cecece;
-        width: 96%;
         .wait-handle-message {
-          font-size: 18px;
-          padding: 8px;
+          font-size: 16px;
+          padding: 14px 0;
           box-sizing: border-box;
-          .handle-message-line-wrapper {
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
+              display: inline-block;
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
+              }
+            }
+          };
+          .wait-handle-message-top-two {
+            height: 54px;
+            border-left: 6px solid #2895ea;
             p {
-              margin-bottom: 12px;
-              span {
-                display: block
-              };
-              .message-tit {
-                color: black
-              };
-              .message-tit-real {
-                color: black
-              };
-              .natureNormalStyle {
-                color: #1faaff !important;
-              };
-              .natureImportantStyle {
-                color: red !important;
-                font-weight:bold !important;
-              };
-              .message-tit-real-style {
-                color: #2895ea
+              display: inline-block;
+              width: 75%;
+              height: 20px;
+              overflow: auto;
+              padding-left: 5px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 15px
               }
-              .message-tit-real-bdeNumber {
-                line-height: 24px
-              }
-              .message-tit-destination-real {
-                padding: 4px;
-                margin-right:2px;
-                line-height: 24px
-              };
-              .destinationRealStyle {
-                background: #2895ea;
-                color: #fff
-              };
+            }
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            .natureNormalStyle {
+              color: #b1d676 !important
             };
-            .p-other {
-              width: 49%;
+            .natureImportantStyle {
+              color: #ff5b5a !important
+            };
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            };
+            p {
               display: inline-block;
               span {
-                display: inline-block
+                color: black !important
+              }
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
               }
             }
           }
         };
-        .wait-handle-check {
-          position: absolute;
-          top: 6px;
-          left: 6px
-        };
         .get-wait-task {
+          margin-top: 4px;
           width: 100%;
           text-align: center;
-          padding: 6px;
-          box-sizing: border-box;
           span {
-            display: inline-block;
-            width: 90px;
-            height: 40px;
-            line-height: 40px;
             vertical-align: top;
-            img {
-              width: 100%;
-              height: 100%
-            };
-            &:nth-child(1) {
-              color: #fff;
-              font-size: 13px;
-              background: #2895ea;
-              text-align: center;
-              border-radius: 4px
-            }
-            &:nth-child(2) {
-              color: #fff;
-              font-size: 13px;
-              background: #2895ea;
-              text-align: center;
-              border-radius: 4px
-            }
-            &:nth-child(3) {
-              color: #fff;
-              font-size: 13px;
-              background: #b4b4b4;
-              text-align: center;
-              border-radius: 4px
+            display: inline-block;
+            width: 120px;
+            background: #1b88ff;
+            line-height: 35px;
+            height: 35px;
+            font-size: 15px;
+            color: #fff;
+            margin-right: 20px;
+            border-radius: 20px;
+            &:last-child {
+              margin-right: 0;
+              color: #1b88ff;
+              background: #fff;
+              border: 1px solid #1b88ff;
+              text-align: center
             }
           }
         }
@@ -1485,101 +1766,139 @@
     };
     .status-handle-screen {
       .wait-handle-list {
-        margin: 0 auto;
         box-sizing: border-box;
         position: relative;
+        width: 94%;
+        margin:0 auto;
+        background: #fff;
+        padding: 10px;
         margin-bottom: 10px;
         box-sizing: border-box;
-        border: 1px solid #cecece;
-        width: 96%;
+        .list-status {
+          width: 80px;
+          height: 30px;
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 8px;
+          right: -12px;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        }
+        .listStatusStyleOne {
+          color: red
+        }
+        .listStyleStatusTwo {
+          color: #85dc85
+        }
         .wait-handle-message {
-          font-size: 18px;
-          padding: 8px;
+          font-size: 16px;
+          padding: 14px 0;
           box-sizing: border-box;
-          .handle-message-line-wrapper {
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
+              display: inline-block;
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
+              }
+            }
+          };
+          .wait-handle-message-top-two {
+            height: 54px;
+            border-left: 6px solid #2895ea;
             p {
-              margin-bottom: 12px;
-              span {
-                display: block
-              };
-              .message-tit {
-                color: black
-              };
-              .message-tit-real {
-                color: black
-              };
-              .natureNormalStyle {
-                color: #1faaff !important;
-              };
-              .natureImportantStyle {
-                color: red !important;
-                font-weight:bold !important;
-              };
-              .message-tit-real-style {
-                color: #2895ea
+              display: inline-block;
+              width: 75%;
+              height: 20px;
+              overflow: auto;
+              padding-left: 5px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 15px
               }
-              .message-tit-real-bdeNumber {
-                line-height: 24px
-              }
-              .message-tit-destination-real {
-                padding: 4px;
-                margin-right:2px;
-                line-height: 24px;
+            }
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            .natureNormalStyle {
+              color: #b1d676 !important
+            };
+            .natureImportantStyle {
+              color: #ff5b5a !important
+            };
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
               };
-              .destinationRealStyle {
-                background: #2895ea;
-                color: #fff
+              &:last-child {
+                width: 70%;
+                color: black;
               }
             };
-            .p-other {
-              width: 49%;
+            p {
               display: inline-block;
               span {
-                display: inline-block
+                color: black !important
+              }
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
               }
             }
           }
         };
-        .wait-handle-check {
-          position: absolute;
-          top: 6px;
-          left: 6px
-        };
         .get-wait-task {
+          margin-top: 4px;
           width: 100%;
           text-align: center;
-          padding: 6px;
-          box-sizing: border-box;
           span {
-            display: inline-block;
-            width: 90px;
-            height: 40px;
-            line-height: 40px;
             vertical-align: top;
-            img {
-              width: 100%;
-              height: 100%
-            };
-           &:nth-child(1) {
+            display: inline-block;
+            width: 120px;
+            background: #1b88ff;
+            line-height: 35px;
+            height: 35px;
+            font-size: 15px;
             color: #fff;
-            font-size: 13px;
-            background: #2895ea;
-            text-align: center;
-            border-radius: 4px
-            }
-            &:nth-child(2) {
-              color: #fff;
-              font-size: 13px;
-              background: #2895ea;
-              text-align: center;
-              border-radius: 4px
-            }
-            &:nth-child(3) {
-              color: #fff;
-              font-size: 13px;
-              background: #b4b4b4;
-              text-align: center;
-              border-radius: 4px
+            margin-right: 20px;
+            border-radius: 20px;
+            &:last-child {
+              margin-right: 0;
+              color: #1b88ff;
+              background: #fff;
+              border: 1px solid #1b88ff;
+              text-align: center
             }
           }
         }

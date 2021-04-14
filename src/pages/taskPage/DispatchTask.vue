@@ -41,7 +41,7 @@
       </div>
     </div>
     <van-pull-refresh class="wait-handle-box" v-show="waitHandleBox" v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 0">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <p class="list-status">
@@ -389,7 +389,7 @@
         noDataShow: false,
         stateListShow: false,
         timeFastindex: '',
-        stateIndex: '',
+        stateIndex: -1,
         columns: ['全部','未获取','已获取', '进行中'],
         timeList: ['近一周','近一月','近三月'],
         valueStatus: '全部',
@@ -527,7 +527,7 @@
       });
       // 查询调度任务(分配给自己的)
       if (this.isFreshDispatchTaskPage) {
-        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, '')
+        this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, -1)
       }
     },
 
@@ -670,7 +670,7 @@
                   })
                 }
               };
-              if (index == 0) {
+              if (index == -1) {
                 this.stateFilterList = temporaryTaskListFirst;
                 if (this.stateFilterList.length == 0) {
                   this.noDataShow = true;
@@ -887,7 +887,7 @@
       stateTransfernumber (item) {
         switch(item) {
           case '全部' :
-            return ''
+            return -1
             break;
           case '未获取' :
             return 1
@@ -958,7 +958,7 @@
         this.cancelTask = false;
         this.noDataShow = false;
         if (index == '0') {
-          this.stateIndex = '';
+          this.stateIndex = -1;
           this.valueStatus = '全部';
           this.waitHandleBox = true;
           this.taskQueryShow = false;
