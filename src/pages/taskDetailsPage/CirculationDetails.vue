@@ -5,44 +5,50 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
     <div class="basic-message">
-      <p class="basic-message-title">基本信息</p>
+      <p class="basic-mesage-state">
+        <img :src="stateTransferImg(circulationDetails.state)" alt="">
+      </p>
+      <p class="basic-message-title">
+        <span>
+          <img :src="taskInfoPng" alt="">
+        </span>
+        基本信息
+      </p>
        <div class="wait-handle-message">
-        <div class="handle-message-line-wrapper">
-          <P>
-            <span class="message-tit">任务名称:</span>
-            <span class="message-tit-real message-tit-real-style">{{circulationDetails.taskTypeName}}</span>
-          </P>
-          <p>
-            <span class="message-tit">任务状态:</span>
-            <span class="message-tit-real" style="color:red">{{stateTransfer(circulationDetails.state)}}</span>
-          </p>
-        </div>
-        <div class="handle-message-line-wrapper">
-          <p>
-            <span class="message-tit">预计开始时间:</span>
-            <span class="message-tit-real">{{circulationDetails.startTime}}</span>
-          </p>
-          <P>
-            <span class="message-tit">实际开始时间:</span>
-            <span class="message-tit-real message-tit-real-style">{{circulationDetails.startUpTime}}</span>
-          </P>
-        </div>
+         <div class="wait-handle-message-top">
+           <div class="handle-message-line-wrapper">
+             <P>
+               <span class="message-tit">任&nbsp;&nbsp;务&nbsp;&nbsp;名&nbsp;&nbsp;&nbsp;称 :&nbsp;</span>
+               <span class="message-tit-real">{{circulationDetails.taskTypeName}}</span>
+             </P>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <P>
+               <span class="message-tit">预计开始时间 :&nbsp;</span>
+               <span class="message-tit-real">{{circulationDetails.startTime}}</span>
+             </P>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <P>
+               <span class="message-tit">实际开始时间 :&nbsp;</span>
+               <span class="message-tit-real">{{circulationDetails.startUpTime}}</span>
+             </P>
+           </div>
+         </div>
       </div>
     </div>
     <div class="office-list">
-      <p class="office-list-inner-wrapper">
-        <span :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(circulationDetails.id) != -1 && item.check == true}" v-for="(item,index) in circulationDetails.spaces" :key="`${item}-${index}`">
+      <div class="office-list-inner-wrapper">
+        <p :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(circulationDetails.id) != -1 && item.check == true}" v-for="(item,index) in circulationDetails.spaces" :key="`${item}-${index}`">
           {{item.text}}
-        </span>
-      </p>
+        </p>
+      </div>
     </div>
     <div class="circultion-task-btn">
-      <span v-show="circulationDetails.state != 7">
-        <img :src="taskSweepCodePng" alt="" @click="joinSweepCode">
-      </span>
-      <span v-show="circulationDetails.state != 7">
-        <img :src="taskArrivedPng" alt="" @click="circulationTaskArrived">
-      </span>
+      <p class="circultion-task-btn-top" v-show="circulationDetails.state != 7">
+        <span @click="joinSweepCode">扫描二维码</span>
+        <span @click="circulationTaskArrived">送达</span>
+      </p>
       <p class="circultion-task-btn-bottom" v-show="circulationDetails.state == 7">
         <span @click="backTo">返回</span>
       </p>
@@ -69,7 +75,14 @@ export default {
       circulationTaskList: [],
       drawCompleteTaskIdList: [],
       taskArrivedPng: require('@/components/images/task-arrived.png'),
-      taskSweepCodePng: require('@/components/images/task-sweep-code.png')
+      taskSweepCodePng: require('@/components/images/task-sweep-code.png'),
+      taskInfoPng: require('@/common/images/home/basic-message.png'),
+      noEndPng: require('@/common/images/home/no-end.png'),
+      noReferPng: require('@/common/images/home/no-refer.png'),
+      noStartPng: require('@/common/images/home/no-start.png'),
+      taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+      taskGoingPng: require('@/common/images/home/task-going.png'),
+      waitSurePng: require('@/common/images/home/wait-sure.png')
     }
   },
 
@@ -175,6 +188,27 @@ export default {
       }
     },
 
+    // 任务状态转换图片
+    stateTransferImg (index) {
+      switch(index) {
+        case 1 :
+          return this.noReferPng
+          break;
+        case 2 :
+          return  this.noStartPng
+          break;
+        case 3 :
+          return  this.taskGoingPng
+          break;
+        case 4 :
+          return  this.noEndPng
+          break;
+        case 7 :
+          return  this.taskFinshedPng
+          break;
+      }
+    },
+
     // 获取任务详情
     getTaskMessage () {
       getCirculationTaskMessageById(this.circulationTaskId)
@@ -270,7 +304,7 @@ export default {
     drawTaskId () {
       this.drawCompleteTaskIdList = [];
       if (this.completeDeparnmentInfo.length > 0) {
-        for (let item of this.completeDeparnmentInfo) { 
+        for (let item of this.completeDeparnmentInfo) {
           for (let innerItem in item) {
             if (innerItem == 'taskId') {
               this.drawCompleteTaskIdList.push(item[innerItem])
@@ -282,7 +316,7 @@ export default {
 
     // 循环任务送达
     circulationTaskArrived () {
-      if (this.circulationDetails.state == 7) { 
+      if (this.circulationDetails.state == 7) {
         this.$dialog.alert({
           message: '该条循环任务已完成,不能进行送达',
           closeOnPopstate: true
@@ -307,19 +341,22 @@ export default {
 
     // 进入扫码页
     joinSweepCode () {
-      if (this.circulationDetails.state == 7) { 
-        this.$dialog.alert({
-          message: '该条循环任务已完成,不能进行扫码',
-          closeOnPopstate: true
-        }).then(() => {
-        })
-      } else {
-        this.changeArriveDepartmentId(false);
-        this.changeIsCollectEnterSweepCodePage(true);
-        this.$router.push({'path':'/circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码')
-      }
+      this.$router.push({path:'/circulationTaskCollectMessage'});
+      this.changeTitleTxt({tit:'循环信息采集'});
+      setStore('currentTitle','循环信息采集')
+      // if (this.circulationDetails.state == 7) {
+      //   this.$dialog.alert({
+      //     message: '该条循环任务已完成,不能进行扫码',
+      //     closeOnPopstate: true
+      //   }).then(() => {
+      //   })
+      // } else {
+      //   this.changeArriveDepartmentId(false);
+      //   this.changeIsCollectEnterSweepCodePage(true);
+      //   this.$router.push({'path':'/circulationTaskSweepCode'});
+      //   this.changeTitleTxt({tit:'扫码'});
+      //   setStore('currentTitle','扫码')
+      // }
     }
   }
 }
@@ -332,41 +369,120 @@ export default {
   .content-wrapper {
     .content-wrapper();
       font-size: 16px;
+      background: #f6f6f6;
     .basic-message {
-      width: 95%;
+      width: 93%;
       margin: 0 auto;
-      margin-top: 6px;
+      margin-top: 14px;
       height: auto;
-      background: #f3f3f3;
+      display: flex;
+      flex-flow: column wrap;
       position: relative;
-      border: 1px solid #d6d6d6;
-      .basic-message-title {
+      background: #fff;
+      padding: 10px;
+      box-sizing: border-box;
+      .basic-mesage-state {
+        width: 80px;
+        height: 30px;
         position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px 6px;
-        box-sizing: border-box;
-        border-right: 1px solid #d6d6d6;
-        border-bottom: 1px solid #d6d6d6;
+        text-align: center;
+        line-height: 30px;
+        top: 8px;
+        right: -12px;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      };
+      .basic-message-title {
+        font-size: 18px;
+        color: #1a89fd;
+        height: 40px;
+        line-height: 40px;
+        span {
+          display: inline-block;
+          height: 15px;
+          width: 15px;
+          vertical-align: top;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        }
       }
       .wait-handle-message {
-        margin-top: 35px;
+        width: 100%;
+        margin-top: 5px;
+        flex: 1;
+        overflow: auto;
+        .wait-handle-message-middle {
+          margin: 10px 0
+        };
+        .wait-handle-message-bottom {
+          margin-top: 10px
+        };
         .handle-message-line-wrapper {
-          margin-left: 5px;
           p {
-            margin-bottom: 12px;
-            width: 49%;
-            display: inline-block;
-            vertical-align: top;
+            display: flex;
+            overflow: auto;
+            height: 30px;
+            line-height: 30px;
+            flex-flow: row nowrap;
+            color: #a0a0a0;
+            span {
+              display: inline-block;
+            };
             span:first-child {
-              color: black
+              width: 35%
             };
             .message-tit-real-style {
               color: #2895ea;
             }
             span:last-child {
-              line-height: 18px
+              flex: 1;
+              color: black
             }
+          };
+          .describe-line-wrapper {
+            width: 100%;
+            .message-tit-real-audio {
+              margin-left: 4px
+            }
+          }
+        };
+        .transport-type-wrapper {
+          display: flex;
+          flex-flow: row nowrap;
+          .transport-type-title {
+            color: #a0a0a0;
+            width: 35%
+          };
+          .transport-type-content {
+            color: black;
+            flex: 1;
+            > div:not(:first-child) {
+              .transport-type-list-title {
+                margin-top: 6px
+              }
+            };
+            .transport-type-list-wrapper {
+              .transport-type-list {
+                > p {
+                };
+                .transport-type-list-title {
+                  font-weight: bold;
+                  color: black
+                };
+                .transport-type-list-content {
+                  line-height: 30px
+                }
+              }
+            }
+          }
+        };
+        .handle-message-line-wrapper-other {
+          p {
+            width: 100%;
           }
         }
       }
@@ -374,62 +490,83 @@ export default {
     .office-list {
       flex:1;
       overflow: auto;
-      width: 95%;
+      width: 93%;
+      background: #fff;
       margin: 0 auto;
+      margin-top: 14px;
       .office-list-inner-wrapper {
-        padding-top: 10px;
+        padding: 10px;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
-        font-size: 0;
-        span {
-          font-size: 16px;
+        p {
+          font-size: 14px;
           display: inline-block;
           width: 48%;
-          line-height: 50px;
+          height: 40px;
+          line-height: 40px;
           text-align: center;
           margin-right: 4%;
-          margin-bottom: 12px;
-          background: #f5f5f5;
+          border-radius: 16px;
+          background: #f9f9f9;
+          color: #666666;
+          margin-bottom: 4%;
+          overflow: auto;
           &:nth-child(even) {
             margin-right: 0
           }
         }
         .officeCheckStyle {
-          background: #2895ea;
+          background: #1b88ff;
           color: #fff
         }
       }
     }
     .circultion-task-btn {
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
-      >span {
-        .bottomButton;
+      width: 93%;
+      margin: 0 auto;
+      padding: 10px;
+      height: auto;
+      span {
+        vertical-align: top;
         display: inline-block;
-        margin-top: 15px;
-        img {
-          width: 100%;
-          height: 100%
-        }
-      }
-      .circultion-task-btn-bottom {
-        position: relative;
+        line-height: 40px;
         height: 40px;
-        width: 96%;
-        margin: 0 auto;
-        margin-top: 30px;
+        background: #2895ea;
+        color: #fff;
+        text-align: center
+      }
+      .circultion-task-btn-top {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
         span {
-          width: 100%;
           border-radius: 4px;
-          vertical-align: top;
-          display: inline-block;
-          line-height: 40px;
-          height: 40px;
-          background: #2895ea;
-          color: #fff;
-          text-align: center
+          &:first-child {
+            width: 60%;
+            margin-right: 10px;
+            background-image: linear-gradient(to right, #37d4fd , #429bff);
+          }
+          &:last-child {
+            width: 40%;
+            height: 38px;
+            line-height: 38px;
+            background: #fff;
+            color: #1b88ff;
+            border: 1px solid #1b88ff;
+          }
+        }
+      };
+      .circultion-task-btn-bottom {
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        span {
+          border-radius: 4px;
+          width: 100%;
+          background-image: linear-gradient(to right, #37d4fd, #429bff);
         }
       }
     }

@@ -2,44 +2,68 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <div class="sweep-code-title">
-      <h3>科室信息采集</h3>
-    </div>
-    <div class="form-two">
-      <van-field v-model="bedNumber" label="床号" placeholder="请输入"/>
-      <van-field v-model="patientName" label="姓名" placeholder="请输入"/>
-    </div>
-    <div class="sample-number-box">
-      <van-field v-model="sampleAmount" disabled type="number" label="标本总数"/>
-    </div>
-    <div class="sweep-code-area">
-      <div class="circulation-area-title">
-        <span>标本名称</span>
-        <span>数量</span>
-      </div>
-      <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
-        <p v-for="(innerItem, innerIndex) in item.sampleTypeList" :key="`${innerItem}-${innerIndex}`">
-          <span>{{innerItem.text}}</span>
+     <div class="basic-message">
+       <p class="basic-message-title">
           <span>
-            <van-stepper @change="stepperEvent" v-model="innerItem.sampleNumber" min="0"/>
+            <img :src="collectMessagePng" alt="">
           </span>
-        </p>
-      </div>
-    </div>
+         科室信息采集
+       </p>
+       <div class="wait-handle-message">
+         <div class="wait-handle-message-top">
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+               <span class="message-tit-real">
+                 <van-field v-model="bedNumber" placeholder="请输入"/>
+               </span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</span>
+               <span class="message-tit-real">
+                 <van-field v-model="patientName" placeholder="请输入"/>
+               </span>
+             </p>
+           </div>
+           <div class="handle-message-line-wrapper">
+             <p>
+               <span class="message-tit">标本总数</span>
+               <span class="message-tit-real">
+                 <van-field v-model="sampleAmount" disabled type="number"/>
+               </span>
+             </p>
+           </div>
+         </div>
+       </div>
+     </div>
+     <div class="wait-handle-message-middle">
+       <div class="circulation-area-title">
+         <span>标本名称</span>
+         <span>数量</span>
+       </div>
+       <div class="circulation-area" v-for="(item,index) in sampleMessageList" :key="`${item}-${index}`">
+         <p v-for="(innerItem, innerIndex) in item.sampleTypeList" :key="`${innerItem}-${innerIndex}`">
+           <span>{{innerItem.text}}</span>
+           <span>
+                  <van-stepper @change="stepperEvent" v-model="innerItem.sampleNumber" min="0"/>
+                </span>
+         </p>
+       </div>
+     </div>
     <div class="btn-area">
-      <span>
-        <img :src="taskSurePng" alt=""  @click="collectMessageSure">
-      </span>
-      <span>
-        <img :src="taskCancelPng" alt="" @click="collectMessageCancel">
-      </span>
+      <p class="circultion-task-btn-top">
+        <span @click="collectMessageSure">确 认</span>
+        <span @click="collectMessageCancel">取 消</span>
+      </p>
     </div>
      <van-dialog
         v-model="collectMessaheSureShow"
@@ -86,6 +110,7 @@ export default {
       ],
       temporaryInfo: [],
       temporarySampleTypeList: [],
+      collectMessagePng: require('@/common/images/home/collect-message.png'),
       taskIncreasePng: require('@/components/images/task-increase.png'),
       taskDeletePng: require('@/components/images/task-delete.png'),
       taskSurePng: require('@/components/images/task-sure.png'),
@@ -185,7 +210,7 @@ export default {
           })
         };
       },
-      
+
       // 丢失数据提示
       loseDataInfo () {
         this.isDialogShow = false;
@@ -194,7 +219,7 @@ export default {
         this.$dialog.alert({
           message: '返回上页后,将丢失本科室采集数据!',
           closeOnPopstate: false,
-          showCancelButton: true   
+          showCancelButton: true
         }).then(() => {
           this.temporaryInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
           this.changeCirculationCollectMessageList({DtMsg: this.temporaryInfo});
@@ -202,14 +227,14 @@ export default {
           this.isDialogShow = true;
           this.isNoSampleDialogShow = true;
           this.isNoBedInfoShow = true;
-          this.collectMessaheSureShow = false  
+          this.collectMessaheSureShow = false
           this.skipSweepCode();
         })
         .catch((err) => {
           this.isDialogShow = false;
           this.isNoBedInfoShow = true;
           this.isNoSampleDialogShow = true;
-          this.collectMessaheSureShow = false  
+          this.collectMessaheSureShow = false
         })
       },
 
@@ -221,7 +246,7 @@ export default {
         this.$dialog.alert({
           message: '该科室没有需要采集的标本?',
           closeOnPopstate: false,
-          showCancelButton: true   
+          showCancelButton: true
         }).then(() => {
           // 存储完成采集任务的科信息
           let temporaryDepartmentId = [];
@@ -236,7 +261,7 @@ export default {
             } else {
               temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo.push(
-                { 
+                {
                   departmentIdList: temporaryDepartmentId,
                   taskId: this.circulationTaskId
                 }
@@ -245,7 +270,7 @@ export default {
           } else {
             temporaryDepartmentId.push(this.verifyCirculationOfficeId);
             temporaryCompleteInfo.push(
-              { 
+              {
                 departmentIdList: temporaryDepartmentId,
                 taskId: this.circulationTaskId
               }
@@ -256,7 +281,7 @@ export default {
           this.isNoSampleDialogShow = true;
           this.isDialogShow = true;
           this.isNoBedInfoShow = true;
-          this.collectMessaheSureShow = false;  
+          this.collectMessaheSureShow = false;
           this.$router.push({'path':'/circulationDetails'});
           this.changeTitleTxt({tit:'任务详情'});
           setStore('currentTitle','任务详情')
@@ -265,7 +290,7 @@ export default {
           this.isNoSampleDialogShow = true;
           this.isNoBedInfoShow = true;
           this.isDialogShow = false;
-          this.collectMessaheSureShow = false  
+          this.collectMessaheSureShow = false
         });
       },
 
@@ -366,7 +391,7 @@ export default {
       this.isDialogShow = true;
       this.isNoBedInfoShow = true;
       this.isNoSampleDialogShow = true;
-      this.collectMessaheSureShow = true  
+      this.collectMessaheSureShow = true
     },
 
     // 采集信息确认事件
@@ -662,128 +687,179 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    background: #f6f6f6;
     font-size: 14px;
       .left-dropDown {
       .rightDropDown
-    }
-    .sweep-code-title {
-      height: 30px;
-      line-height: 30px;
-      padding-left: 10px;
-      h3 {
-        font-size: 14px;
-        color: #1699e8
-      }
     };
-    .form-two {
-      padding: 2px;
-    };
-    .increase-btn {
-      height: 10px;
-      line-height: 10px;
-      background: #f6f6f6;
-      span {
-        display: inline-block;
-        width: 70px;
-        height: 30px;
-        margin-top: 5px;
-        img {
-          width: 100%;
-          height: 100%
-        }
-      }
-    };
-    .inner-sample--number-box {
-       > div {
-          display: inline-block
-        };
-      .inner-sample--number-title {
-        width: 30%
-      };
-      .inner-sample--number-content {
-        width: 60%;
-        /deep/ .van-cell{
-          padding-left: 0
-        }
-      }
-    }
-    .sweep-code-area {
-      flex:1;
-      overflow: auto;
+    .basic-message {
+      width: 93%;
       margin: 0 auto;
-      margin: 10px 0 0 0;
-      width: 100%;
-      .circulation-area {
-        max-height: 90%;
-        width: 96%;
-        margin: 0 auto;
-        overflow: auto;
-        font-size: 16px;
-        > p {
-          position: relative;
-          height: 30px;
-          border:1px solid #d6d6d6;
-          margin-bottom:4px;
-          &:last-child {
-            margin-bottom:0
+      margin-top: 14px;
+      height: auto;
+      display: flex;
+      flex-flow: column;
+      position: relative;
+      background: #fff;
+      padding: 10px;
+      box-sizing: border-box;
+      .basic-message-title {
+        font-size: 18px;
+        color: #1a89fd;
+        height: 40px;
+        line-height: 40px;
+        span {
+          display: inline-block;
+          height: 15px;
+          width: 15px;
+          vertical-align: top;
+          img {
+            width: 100%;
+            height: 100%
           }
-          span {
+        }
+      }
+      .wait-handle-message {
+        width: 100%;
+        display: flex;
+        flex: 1;
+        flex-flow: column wrap;
+        .wait-handle-message-top {
+        };
+        .handle-message-line-wrapper {
+          height: 50px;
+          p {
+            display: flex;
+            height: 50px;
+            line-height: 50px;
+            flex-flow: row nowrap;
+            color: #a0a0a0;
+            .natureNormalStyle {
+              color: #b1d676 !important
+            };
+            .natureImportantStyle {
+              color: #ff5b5a !important
+            };
+            span {
+              height: 40px;
+              display: inline-block;
+            };
+            span:first-child {
+              width: 25%
+            };
+            .message-tit-real-style {
+              color: #2895ea;
+            }
+            span:last-child {
+              flex: 1;
+              color: black
+            }
+          }
+        };
+      }
+    };
+    .wait-handle-message-middle {
+      width: 93%;
+      margin: 0 auto;
+      margin-top: 14px;
+      background: #fff;
+      overflow: auto;
+      flex: 1;
+      .circulation-area {
+          max-height: 90%;
+          width: 96%;
+          margin: 0 auto;
+          overflow: auto;
+          font-size: 16px;
+          > p {
+            position: relative;
             height: 30px;
-            line-height: 30px;
-            position: absolute;
+            border:1px solid #d6d6d6;
+            margin-bottom:4px;
+            &:last-child {
+              margin-bottom:0
+            }
+            span {
+              height: 30px;
+              line-height: 30px;
+              position: absolute;
+              display: inline-block;
+              text-align: center;
+              width: 50%;
+              &:first-child {
+                top: 0;
+                left:0;
+                background: #f7f7f7;
+                text-align: left;
+                padding-left: 12px
+              }
+              &:last-child {
+                top: 0;
+                right:0;
+                text-align: right
+              }
+            }
+          }
+        };
+        .circulation-area-title {
+          height: 10%;
+          font-size: 18px;
+          position: relative;
+          span {
             display: inline-block;
-            text-align: center;
             width: 50%;
+            position: absolute;
+            text-align: center;
             &:first-child {
               top: 0;
               left:0;
-              background: #f7f7f7;
               text-align: left;
-              padding-left: 12px
+              padding-left: 16px
             }
             &:last-child {
               top: 0;
               right:0;
-              text-align: right
+              text-align: right;
+              padding-right: 20px
             }
           }
         }
-      };
-      .circulation-area-title {
-        height: 10%;
-        font-size: 18px;
-        position: relative;
-        span {
-          display: inline-block;
-          width: 50%;
-          position: absolute;
-          text-align: center;
-          &:first-child {
-            top: 0;
-            left:0;
-            text-align: left;
-            padding-left: 16px
-          }
-          &:last-child {
-            top: 0;
-            right:0;
-            text-align: right;
-            padding-right: 20px
-          }
-        }
-      }
     };
     .btn-area {
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
+      width: 93%;
+      margin: 0 auto;
+      margin-top: 14px;
+      height: auto;
       span {
-        .bottomButton;
+        vertical-align: top;
         display: inline-block;
-        margin-top: 15px;
-        img {
-          width: 100%;
-          height: 100%
+        line-height: 40px;
+        height: 40px;
+        background: #2895ea;
+        color: #fff;
+        text-align: center
+      }
+      .circultion-task-btn-top {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        span {
+          border-radius: 4px;
+          &:first-child {
+            width: 50%;
+            margin-right: 10px;
+            background-image: linear-gradient(to right, #37d4fd , #429bff);
+          }
+          &:last-child {
+            width: 50%;
+            height: 38px;
+            line-height: 38px;
+            background: #fff;
+            color: #1b88ff;
+            border: 1px solid #1b88ff;
+          }
         }
       }
     }

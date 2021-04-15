@@ -8,7 +8,7 @@
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
@@ -17,266 +17,265 @@
     </ul>
     <div class="circulation-task-condition-title">
       <div class="content-middle-top-content">
-        <div class="create-date">创建日期:</div>
+        <div class="create-date">创建日期</div>
         <div class="date-wrapper">
           <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
         </div>
-        <div class="search-btn">
-          <img :src="taskSearchPng" alt="" @click="searchTask">
-        </div>
       </div>
-      <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true"> 
+      <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
         <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
-          @cancel="startTimePop = false"  @confirm="startTimePop = false"  @change="startTimeChange"/>
+          @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
         </van-popup>
     </div>
     <div class="content-middle-content">
-      <van-tabs v-model="activeName" @click="onClickTab">
+      <van-tabs v-model="activeName" @click="onClickTab" line-width="20px">
         <van-tab name="0">
           <div slot="title">
             <span class="title">已完成</span>
-            <span class="right-sign sign-not-in" v-show="currentIndex == 0">{{taskCount}}</span>
+            <span class="right-sign sign-not-in" v-show="currentIndex == 0">{{`(${taskCount})`}}</span>
           </div>
           <div class="wait-handle-list" :key="`${item}-${index}`" v-for="(item,index) in completedTasksList">
-            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
             <p class="wait-handle-message-createTime">
-              创建时间: {{item.createTime}}
+              创建时间 : {{item.createTime}}
             </p>
-            <p class="wait-handle-message-createTime">
-              完成时间: {{item.finishTime}}
-            </p>     
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
+            </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">开始时间 :</span>
+                <span class="message-tit-real">{{item.startTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span>完成时间 : </span>
+                <span>{{item.finishTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">开始时间:</span>
-                  <span class="message-tit-real">{{item.startTime}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">医&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;院 :</span>
+                <span>{{item.proName}}</span>
               </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem.name}}</li>
-              </ul>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 :</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">任务名称 :</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">工作人员 :</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </div>
+              <div class="handle-message-line-wrapper-other-two" :class="[item.show && item.spaces.length > 0 ? 'departmentWrapperOne': 'departmentWrapperTwo']" ref="departmentList">
+                <p class="department-tit">
+                  <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
+                </p>
+                <p class="department-list-omit" v-show="!item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-list-all" v-show="item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
+              </div>
             </div>
           </div>
         </van-tab>
         <van-tab name="1">
           <div slot="title">
             <span class="title">未完成</span>
-            <span class="right-sign sign-in" v-show="currentIndex == 1">{{taskCount}}</span>
+            <span class="right-sign sign-in" v-show="currentIndex == 1">{{`(${taskCount})`}}</span>
           </div>
           <div class="wait-handle-list" :key="`${item}-${index}`" v-for="(item,index) in unfinishedTasksList">
-            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
             <p class="wait-handle-message-createTime">
-              创建时间: {{item.createTime}}
+              创建时间 : {{item.createTime}}
             </p>
-            <p class="wait-handle-message-createTime">
-              开始时间: {{item.startTime}}
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">开始时间:</span>
+                <span class="message-tit-real">{{item.startTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">医&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;院 :</span>
+                <span>{{item.proName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 :</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
               </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem}}</li>
-              </ul>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">任务名称 :</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">工作人员 :</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </div>
+              <div class="handle-message-line-wrapper-other-two" :class="[item.show && item.spaces.length > 0 ? 'departmentWrapperOne': 'departmentWrapperTwo']" ref="departmentList">
+                <p class="department-tit">
+                  <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
+                </p>
+                <p class="department-list-omit" v-show="!item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-list-all" v-show="item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
+              </div>
             </div>
           </div>
         </van-tab>
         <van-tab  name="2">
           <div slot="title">
             <span class="title">已过期</span>
-            <span class="right-sign sign-out" v-show="currentIndex == 2">{{taskCount}}</span>
+            <span class="right-sign sign-out" v-show="currentIndex == 2">{{`(${taskCount})`}}</span>
           </div>
           <div class="wait-handle-list" :key="`${item}-${index}`" v-for="(item,index) in expiredTasksList">
-            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
             <p class="wait-handle-message-createTime">
-              创建时间: {{item.createTime}}
+              创建时间 : {{item.createTime}}
             </p>
-            <p class="wait-handle-message-createTime">
-              开始时间: {{item.startTime}}
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">开始时间 :</span>
+                <span class="message-tit-real">{{item.startTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">医&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;院 :</span>
+                <span>{{item.proName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 :</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
               </div>
-             </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem}}</li>
-              </ul>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">任务名称 :</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">工作人员 :</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </div>
+              <div class="handle-message-line-wrapper-other-two" :class="[item.show ? 'departmentWrapperOne': 'departmentWrapperTwo']" ref="departmentList">
+                <p class="department-tit">
+                  <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
+                </p>
+                <p class="department-list-omit" v-show="!item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-list-all" v-show="item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
+              </div>
             </div>
           </div>
         </van-tab>
         <van-tab  name="3">
           <div slot="title">
             <span class="title">进行中</span>
-            <span class="right-sign sign-finish" v-show="currentIndex == 3">{{taskCount}}</span>
+            <span class="right-sign sign-finish" v-show="currentIndex == 3">{{`(${taskCount})`}}</span>
           </div>
           <div class="wait-handle-list" :key="`${item}-${index}`" v-for="(item,index) in inServiceTasksList">
-            <div class="view-office" @click.stop="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
             <p class="wait-handle-message-createTime">
-              创建时间: {{item.createTime}}
+              创建时间 : {{item.createTime}}
             </p>
-            <p class="wait-handle-message-createTime">
-              开始时间: {{item.startTime}}
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">开始时间 :</span>
+                <span class="message-tit-real">{{item.startTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.taskTypeName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">医&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;院 :</span>
+                <span>{{item.proName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 :</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
               </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem.name}}</li>
-              </ul>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">任务名称 :</span>
+                <span class="message-tit-real">{{item.taskTypeName}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">工作人员 :</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </div>
+              <div class="handle-message-line-wrapper-other-two" :class="[item.show && item.spaces.length > 0 ? 'departmentWrapperOne': 'departmentWrapperTwo']" ref="departmentList">
+                <p class="department-tit">
+                  <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
+                </p>
+                <p class="department-list-omit" v-show="!item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-list-all" v-show="item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
+              </div>
             </div>
           </div>
         </van-tab>
+<!--        <span class="message-tit">循环频率:</span>-->
+<!--        <span class="message-tit-real">{{item.circleRate}}</span>-->
         <van-tab  name="4">
           <div slot="title">
             <span class="title">循环配置</span>
-            <span class="right-sign sign-finish" v-show="currentIndex == 4">{{taskCount}}</span>
+            <span class="right-sign sign-finish" v-show="currentIndex == 4">{{`(${taskCount})`}}</span>
           </div>
           <div class="wait-handle-list" :key="`${item}-${index}`" v-for="(item,index) in circleSettingList">
-            <div class="view-office" @click="viewOfficeHandle(item)">{{item.show == true ? '隐藏科室' : '显示科室'}}</div>
             <p class="wait-handle-message-createTime">
               创建日期: {{item.modifyTime}}
             </p>
-            <p class="wait-handle-message-createTime">
-              开始时间: {{item.circleStartTime}}
+            <p class="list-status">
+              <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="wait-handle-message">
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">医院:</span>
-                  <span class="message-tit-real">{{item.proName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">优先级:</span>
-                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">开始时间 :</span>
+                <span class="message-tit-real">{{item.circleStartTime}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">任务名称:</span>
-                  <span class="message-tit-real">{{item.circleName}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">工作人员:</span>
-                  <span class="message-tit-real">{{item.workerName}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">医&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;院 :</span>
+                <span>{{item.proName}}</span>
               </div>
-              <div class="handle-message-line-wrapper">
-                <p>
-                  <span class="message-tit">状态:</span>
-                  <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                </p>
-                <p>
-                  <span class="message-tit">循环频率:</span>
-                  <span class="message-tit-real">{{item.circleRate}}</span>
-                </p>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">循环频率 :</span>
+                <span>{{item.circleRate}}</span>
               </div>
-            </div>
-            <div class="wait-handle-office-list" v-show="item.show">
-              <ul>
-                <li v-for="(innerItem, index) in JSON.parse(item.spaces)" :key="index">{{innerItem}}</li>
-              </ul>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 :</span>
+                <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">任务名称 :</span>
+                <span class="message-tit-real">{{item.circleName}}</span>
+              </div>
+              <div class="wait-handle-message-one">
+                <span class="message-tit">工作人员 :</span>
+                <span class="message-tit-real">{{item.workerName}}</span>
+              </div>
+              <div class="handle-message-line-wrapper-other-two" :class="[item.show ? 'departmentWrapperOne': 'departmentWrapperTwo']" ref="departmentList">
+                <p class="department-tit">
+                  <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
+                </p>
+                <p class="department-list-omit" v-show="!item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-list-all" v-show="item.show">
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                </p>
+                <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
+              </div>
             </div>
           </div>
         </van-tab>
@@ -316,7 +315,14 @@ export default {
       expiredTasksList: [],
       inServiceTasksList: [],
       circleSettingList: [],
-      taskSearchPng: require('@/components/images/task-search.png')
+      noEndPng: require('@/common/images/home/no-end.png'),
+      noReferPng: require('@/common/images/home/no-refer.png'),
+      noStartPng: require('@/common/images/home/no-start.png'),
+      taskFinshedPng: require('@/common/images/home/task-finshed.png'),
+      taskGoingPng: require('@/common/images/home/task-going.png'),
+      waitSurePng: require('@/common/images/home/wait-sure.png'),
+      noAllotPng: require('@/common/images/home/no-allot.png'),
+      taskDelayPng: require('@/common/images/home/task-delay.png')
     };
   },
 
@@ -425,13 +431,40 @@ export default {
         }
       },
 
+    // 任务状态转换图片
+    stateTransferImg (index) {
+      switch(index) {
+        case 0 :
+          return this.noAllotPng
+          break
+        case 1 :
+          return this.noReferPng
+          break;
+        case 2 :
+          return  this.noStartPng
+          break;
+        case 3 :
+          return  this.taskGoingPng
+          break;
+        case 4 :
+          return  this.noEndPng
+          break;
+        case 5 :
+          return  this.taskDelayPng
+          break;
+        case 7 :
+          return  this.taskFinshedPng
+          break;
+      }
+    },
+
       // 跳转到我的页
       skipMyInfo () {
         this.leftDownShow = !this.leftDownShow;
       },
 
-      startTimeChange(e) { 
-        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"] 
+      startTimeChange(e) {
+        let startTimeArr = e.getValues();//["2019", "03", "22", "17", "28"]
         this.startTime = `${startTimeArr[0]}-${startTimeArr[1]}-${startTimeArr[2]}`
       },
 
@@ -439,6 +472,12 @@ export default {
       initDate () {
         let currentDateList = formatTime('YYYY-MM-DD').split('-');
         this.startTime = `${currentDateList[0]}-${currentDateList[1]}-${currentDateList[2]}`
+      },
+
+      // 开始时间确定事件
+      confirmEvent () {
+        this.startTimePop = false;
+        this.searchTask()
       },
 
       initData () {
@@ -488,6 +527,9 @@ export default {
                 for (let item of res.data.data.completedTasks) {
                   if (item.hasAccess == "{}") {
                     item.hasAccess = '{"无":"无"}'
+                    item.hasDepartments = false
+                  } else {
+                    item.hasDepartments = true
                   };
                   this.completedTasksList.push({
                     createTime: item.createTime,
@@ -500,6 +542,7 @@ export default {
                     priority: item.priority,
                     taskNumber: item.taskNumber,
                     spaces: item.hasAccess,
+                    hasDepartments: item.hasDepartments,
                     id: item.id,
                     show: false
                   })
@@ -516,6 +559,9 @@ export default {
                 for (let item of res.data.data.unfinishedTasks) {
                   if (item.hasAccess == "{}") {
                     item.hasAccess = '{"无":"无"}'
+                    item.hasDepartments = false
+                  } else {
+                    item.hasDepartments = true
                   };
                   this.unfinishedTasksList.push({
                     createTime: item.createTime,
@@ -528,6 +574,7 @@ export default {
                     priority: item.priority,
                     taskNumber: item.taskNumber,
                     spaces: item.hasAccess,
+                    hasDepartments: item.hasDepartments,
                     id: item.id,
                     show: false
                   })
@@ -543,6 +590,9 @@ export default {
                 for (let item of res.data.data.expiredTasks) {
                   if (item.hasAccess == "{}") {
                     item.hasAccess = '{"无":"无"}'
+                    item.hasDepartments = false
+                  } else {
+                    item.hasDepartments = true
                   };
                   this.expiredTasksList.push({
                     createTime: item.createTime,
@@ -555,11 +605,13 @@ export default {
                     priority: item.priority,
                     taskNumber: item.taskNumber,
                     spaces: item.hasAccess,
+                    hasDepartments: item.hasDepartments,
                     id: item.id,
                     show: false
                   })
                 };
                 this.taskCount = this.expiredTasksList.length;
+                console.log('配置',this.expiredTasksList);
               } else {
                 this.taskCount = 0;
                 this.noDataShow = true
@@ -570,6 +622,9 @@ export default {
                 for (let item of res.data.data.inServiceTasks) {
                   if (item.hasAccess == "{}") {
                     item.hasAccess = '{"无":"无"}'
+                    item.hasDepartments = false
+                  } else {
+                    item.hasDepartments = true
                   };
                   this.inServiceTasksList.push({
                     createTime: item.createTime,
@@ -582,6 +637,7 @@ export default {
                     priority: item.priority,
                     taskNumber: item.taskNumber,
                     spaces: item.hasAccess,
+                    hasDepartments: item.hasDepartments,
                     id: item.id,
                     show: false
                   })
@@ -595,8 +651,11 @@ export default {
               if (res.data.data.circleSettingList != null && JSON.stringify(res.data.data.circleSettingList) != "[]") {
                 this.noDataShow = false;
                 for (let item of res.data.data.circleSettingList) {
-                  if (item.spaces == "{}") {
-                    item.spaces = '{"无":"无"}'
+                  if (item.hasAccess == "{}") {
+                    item.hasAccess = '{"无":"无"}'
+                    item.hasDepartments = false
+                  } else {
+                    item.hasDepartments = true
                   };
                   this.circleSettingList.push({
                     modifyTime: item.modifyTime,
@@ -609,11 +668,12 @@ export default {
                     priority: item.priority,
                     circleName: item.circleName,
                     spaces: item.spaces,
+                    hasDepartments: item.hasDepartments,
                     id: item.id,
                     show: false
-                  })
+                  });
                 };
-                this.taskCount = this.circleSettingList.length
+                this.taskCount = this.circleSettingList.length;
               } else {
                 this.taskCount = 0;
                 this.noDataShow = true
@@ -655,6 +715,7 @@ export default {
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    background: #f6f6f6;
     .content-wrapper();
     font-size: 14px;
     position: relative;
@@ -678,11 +739,10 @@ export default {
     };
     .circulation-task-condition-title {
       background: #fff;
-      margin-top: 3%;
-      height: 52px;
+      padding: 10px 0;
+      box-sizing: border-box;
+      height: 60px;
       position: relative;
-      box-shadow: 0px 1px 3px 1px #e4e4e4,  /*下边阴影*/
-      0px -1px 3px 0px #e4e4e4;   /*上边阴影*/
       /deep/ .van-cell {
         width: 100%;
         display: inline-block;
@@ -692,33 +752,27 @@ export default {
         line-height: 0;
       }
       .content-middle-top-content {
-        position: relative;
+        position: absolute;
+        left: 3.5%;
+        top: 50%;
+        transform: translateY(-50%);
         height: 100%;
-        width: 98%;
-        margin: 0 auto;
+        width: 93%;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-between;
         .create-date {
-          position: absolute;
-          top: 17px;
-          left: 4px;
-          color: #3893e4;
-          font-size: 18px
+          width: 90px;
+          color: black;
+          font-size: 16px
         }
         .date-wrapper {
-          position: absolute;
-          top: 7px;
-          width: 44%;
-          left: 90px;
-        }
-        .search-btn {
-          position: absolute;
-          top: 10px;
-          right: 0;
-          width: 70px;
-          height: 60px;
-          img {
-            width: 100%;
-            height: 100%ss
-          }
+          flex: 1;
+         /deep/ .van-field {
+           border: none;
+           background: #f6f6f6
+         }
         }
       }
     };
@@ -726,53 +780,163 @@ export default {
       flex:1;
       overflow: auto;
       /deep/ .van-tabs--line {
-        margin-top: 4px;
         .van-tabs__line {
           background-color: @color-theme;
         }
       };
       /deep/ .van-tabs {
+        .title {
+          margin-right: 4px;
+        }
         .right-sign {
-          .status-sign
+          .circulation-status-sign
         };
         .van-tabs__nav {
           .van-tab {
             font-size: 18px;
+            color: #b0b0b0 !important;
             flex-basis: 33% !important;
+          };
+          .van-tab--active {
+            color: black !important;
+            font-weight: bold !important;
           }
         }
       };
       .wait-handle-list {
         box-sizing: border-box;
         position: relative;
-        padding-bottom: 10px;
         box-sizing: border-box;
+        width: 93%;
+        margin:0 auto;
+        .list-status {
+          width: 80px;
+          height: 30px;
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 60px;
+          right: -12px;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        };
         .wait-handle-message-createTime {
-          border-top: 1px solid #e3ece9;
-          padding-left: 10px;
-          background: #ececec;
-          height: 27px;
-          line-height: 27px;
-          font-size: 18px;
-          color: #7f7d7d
+          padding-left: 14px;
+          background: #f6f6f6;
+          height: 50px;
+          line-height: 50px;
+          font-size: 13px;
+          color: #c7c7c7
         };
         .wait-handle-message {
-          margin-left: 10px;
-          font-size: 18px;
-          padding-top: 15px;
-          padding-bottom: 15px;
+          font-size: 16px;
+          padding: 14px;
           box-sizing: border-box;
-          .handle-message-line-wrapper {
-            p {
-              margin-bottom: 10px;
-              width: 47%;
+          background: #fff;
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
               display: inline-block;
-              vertical-align: top;
-              .message-tit {
-                color: #7f7d7d
-              };
-              .message-tit-real {
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
+              }
+            }
+          };
+          .departmentWrapperOne {
+            height: auto;
+            line-height: 35px;
+          };
+          .departmentWrapperTwo {
+            height: 35px;
+            line-height: 35px;
+          }
+          .handle-message-line-wrapper-other-two {
+            display: flex;
+            flex-flow: row now;
+            > p {
+              &:nth-child(2) {
+                padding-left: 5px;
+              }
+            };
+            .department-tit {
+              width: 25%;
+              span {
+                color: #a0a0a0;
+              }
+            };
+            .department-list-omit {
+              flex: 1;
+              overflow: hidden;
+              span {
                 color: black
+              };
+              .message-tit-real-destinationList {
+                margin-right: 6px
+              }
+            };
+            .department-list-all {
+              flex: 1;
+              span {
+                color: black
+              };
+              .message-tit-real-destinationList {
+                margin-right: 4px
+              }
+            };
+            .department-drop {
+              width: 30%;
+              color: #3764a5;
+            };
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            };
+            p {
+              display: inline-block;
+              span {
+                color: black !important
+              }
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
               }
             }
           }

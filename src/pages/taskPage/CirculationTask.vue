@@ -43,57 +43,89 @@
     <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
       <div class="circulation-task-list" v-show="stateIndex == -1">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
-         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
-          <p class="wait-handle-message-createTime">
-            任务名称：{{item.taskTypeName}}
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
           </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <p class="wait-handle-message-createTime wait-handle-message-style">
-            任务状态：{{stateTransfer(item.state)}}
+          <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>任务名称: </span>
+              <span>{{item.taskTypeName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>开始时间: </span>
+              <span>{{item.startTime}}</span>
+            </div>
+          </div>
+          <p class="get-wait-task">
+            <span @click.stop="startTask(item)">
+                进入任务
+            </span>
           </p>
         </div>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 2">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
-         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
-          <p class="wait-handle-message-createTime">
-            任务名称：{{item.taskTypeName}}
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
           </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <p class="wait-handle-message-createTime wait-handle-message-style">
-            任务状态：{{stateTransfer(item.state)}}
+          <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>任务名称: </span>
+              <span>{{item.taskTypeName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>开始时间: </span>
+              <span>{{item.startTime}}</span>
+            </div>
+          </div>
+          <p class="get-wait-task">
+            <span @click.stop="startTask(item)">
+                进入任务
+            </span>
           </p>
         </div>
       </div>
       <div class="circulation-task-list" v-show="stateIndex == 3">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
-         <div class="view-office" @click.stop="startTask(item)">进入任务</div>
-          <p class="wait-handle-message-createTime">
-            任务名称：{{item.taskTypeName}}
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
           </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <p class="wait-handle-message-createTime wait-handle-message-style">
-            任务状态：{{stateTransfer(item.state)}}
+          <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>任务名称: </span>
+              <span>{{item.taskTypeName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>开始时间: </span>
+              <span>{{item.startTime}}</span>
+            </div>
+          </div>
+          <p class="get-wait-task">
+            <span @click.stop="startTask(item)">
+                进入任务
+            </span>
           </p>
         </div>
       </div>
       <div class="circulation-task-list">
         <div class="wait-handle-list"  v-show="taskQueryShow" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
-          <div class="view-office" @click.stop="startTask(item)">进入任务</div>
-          <p class="wait-handle-message-createTime">
-            任务名称：{{item.taskTypeName}}
+          <p class="list-status">
+            <img :src="stateTransferImg(item.state)" alt="">
           </p>
-          <p class="wait-handle-message-createTime">
-            开始时间：{{item.startTime}}
-          </p>
-          <p class="wait-handle-message-createTime wait-handle-message-style">
-            任务状态：{{stateTransfer(item.state)}}
+          <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>任务名称: </span>
+              <span>{{item.taskTypeName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span>开始时间: </span>
+              <span>{{item.startTime}}</span>
+            </div>
+          </div>
+          <p class="get-wait-task">
+            <span @click.stop="startTask(item)">
+                进入任务
+            </span>
           </p>
         </div>
       </div>
@@ -208,14 +240,14 @@
           endDate: ''  //终止日期  格式 YYYY-MM-dd
         }, this.stateIndex), 0)
         }, 600000);
-      this.getCirculationTask({
-        proId: this.proId,  //医院ID，必输
-        workerId: this.workerId,   //运送员ID
-        states: [], //查询状态
-        startDate: '',  //起始日期  YYYY-MM-dd
-        endDate: ''  //终止日期  格式 YYYY-MM-dd
-      }, this.stateIndex);
-      this.drawTaskId()
+        this.getCirculationTask({
+          proId: this.proId,  //医院ID，必输
+          workerId: this.workerId,   //运送员ID
+          states: [], //查询状态
+          startDate: '',  //起始日期  YYYY-MM-dd
+          endDate: ''  //终止日期  格式 YYYY-MM-dd
+        }, this.stateIndex);
+        this.drawTaskId();
     },
 
     activated () {
@@ -255,9 +287,9 @@
           states: [], //查询状态
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
-        },0);
+        },this.stateIndex);
       };
-      this.drawTaskId()
+      this.drawTaskId();
     },
 
     beforeDestroy() {
@@ -480,17 +512,6 @@
           startDate: '',  //起始日期  YYYY-MM-dd
           endDate: ''  //终止日期  格式 YYYY-MM-dd
         }, index)
-      },
-
-      // 状态筛选按钮点击
-      statusScreenEvent () {
-        this.statusScreen = true;
-        this.taskQueryShow = false;
-        this.stateListShow = !this.stateListShow;
-        if (this.stateScreenVal == '状态筛选') {
-          this.queryStateFilterDispatchTask(this.proId, this.workerId, 0);
-          this.stateIndex = 0;
-        }
       },
 
       // 状态框确定事件
@@ -766,7 +787,7 @@
     .circultion-task-title {
       .task-line-one-wrapper {
         font-size: 17px;
-        height: 36px;
+        height: 38px;
         .task-line-one {
           width: 80%;
           margin: 0 auto;
@@ -776,7 +797,6 @@
           }
           li {
             display: inline-block;
-            margin-top: 1px;
             color: #999999;
             width: 46%;
             height: 36px;
@@ -863,32 +883,121 @@
           padding: 10px;
           margin-bottom: 10px;
           box-sizing: border-box;
-          .sample-type-check {
+          .list-status {
+            width: 80px;
+            height: 30px;
             position: absolute;
-            top: 4px;
-            left: 5px
-          };
-          .wait-handle-message-createTime {
-            padding-left: 10px;
-            height: 27px;
-            line-height: 27px;
-            font-size: 18px;
-            color: #7f7d7d
-          };
-          .wait-handle-message-style {
+            text-align: center;
+            line-height: 30px;
+            top: 8px;
+            right: -12px;
+            img {
+              width: 100%;
+              height: 100%
+            }
+          }
+          .listStatusStyleOne {
             color: red
+          }
+          .listStyleStatusTwo {
+            color: #85dc85
+          }
+          .wait-handle-message {
+            font-size: 16px;
+            padding: 14px 0;
+            box-sizing: border-box;
+            .wait-handle-message-top {
+              height: 60px;
+              border-left: 6px solid #2895ea;
+              span {
+                display: inline-block;
+                width: 75%;
+                padding-left: 5px;
+                height: 28px;
+                box-sizing: border-box;
+                &:first-child {
+                  margin-bottom: 10px;
+                  overflow: auto
+                }
+              }
+            };
+            .wait-handle-message-top-two {
+              height: 54px;
+              border-left: 6px solid #2895ea;
+              p {
+                display: inline-block;
+                width: 75%;
+                height: 20px;
+                overflow: auto;
+                padding-left: 5px;
+                box-sizing: border-box;
+                &:first-child {
+                  margin-bottom: 15px
+                }
+              }
+            };
+            .wait-handle-message-one {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
+              margin-left: -4px;
+              span {
+                display: inline-block;
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
+                }
+              };
+              p {
+                display: inline-block;
+                span {
+                  color: black !important
+                }
+              }
+            };
+            .wait-handle-message-two {
+              height: 35px;
+              line-height: 35px;
+              overflow: auto;
+              margin-left: -4px;
+              p {
+                display: inline-block;
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
+                };
+                &:last-child {
+                  width: 70%;
+                  color: black;
+                }
+              }
+            }
           };
-        }
-        .view-office {
-          position: absolute;
-          top: 22px;
-          right: 16px;
-          padding: 15px 12px;
-          background: #2895ea;
-          font-size: 13px;
-          color: #fff;
-          border-radius: 3px;
-          box-sizing: border-box
+          .get-wait-task {
+            margin-top: 4px;
+            width: 100%;
+            text-align: center;
+            span {
+              vertical-align: top;
+              display: inline-block;
+              width: 120px;
+              background: #1b88ff;
+              line-height: 35px;
+              height: 35px;
+              font-size: 15px;
+              color: #fff;
+              margin-right: 20px;
+              border-radius: 20px;
+            }
+          }
         }
       }
     };
@@ -909,27 +1018,121 @@
         padding: 10px;
         margin-bottom: 10px;
         box-sizing: border-box;
-        .wait-handle-message-createTime {
-          padding-left: 10px;
-          height: 27px;
-          line-height: 27px;
-          font-size: 18px;
-          color: #7f7d7d
-        };
-        .wait-handle-message-style {
+        .list-status {
+          width: 80px;
+          height: 30px;
+          position: absolute;
+          text-align: center;
+          line-height: 30px;
+          top: 8px;
+          right: -12px;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        }
+        .listStatusStyleOne {
           color: red
         }
-      }
-      .view-office {
-        position: absolute;
-        top: 22px;
-        right: 16px;
-        padding: 15px 12px;
-        background: #2895ea;
-        font-size: 13px;
-        color: #fff;
-        border-radius: 3px;
-        box-sizing: border-box
+        .listStyleStatusTwo {
+          color: #85dc85
+        }
+        .wait-handle-message {
+          font-size: 16px;
+          padding: 14px 0;
+          box-sizing: border-box;
+          .wait-handle-message-top {
+            height: 60px;
+            border-left: 6px solid #2895ea;
+            span {
+              display: inline-block;
+              width: 75%;
+              padding-left: 5px;
+              height: 28px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 10px;
+                overflow: auto
+              }
+            }
+          };
+          .wait-handle-message-top-two {
+            height: 54px;
+            border-left: 6px solid #2895ea;
+            p {
+              display: inline-block;
+              width: 75%;
+              height: 20px;
+              overflow: auto;
+              padding-left: 5px;
+              box-sizing: border-box;
+              &:first-child {
+                margin-bottom: 15px
+              }
+            }
+          };
+          .wait-handle-message-one {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            span {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            };
+            p {
+              display: inline-block;
+              span {
+                color: black !important
+              }
+            }
+          };
+          .wait-handle-message-two {
+            height: 35px;
+            line-height: 35px;
+            overflow: auto;
+            margin-left: -4px;
+            p {
+              display: inline-block;
+              padding-left: 5px;
+              box-sizing: border-box;
+              color: #a0a0a0;
+              &:first-child {
+                vertical-align: top;
+              };
+              &:last-child {
+                width: 70%;
+                color: black;
+              }
+            }
+          }
+        };
+        .get-wait-task {
+          margin-top: 4px;
+          width: 100%;
+          text-align: center;
+          span {
+            vertical-align: top;
+            display: inline-block;
+            width: 120px;
+            background: #1b88ff;
+            line-height: 35px;
+            height: 35px;
+            font-size: 15px;
+            color: #fff;
+            margin-right: 20px;
+            border-radius: 20px;
+          }
+        }
       }
     };
     .circultion-task-btn {

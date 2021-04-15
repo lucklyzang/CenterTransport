@@ -46,7 +46,6 @@
   text-align: center;
   .no-wrap()
 }
-//循环情况标签数量提示框
 .status-sign (@width:44px, @height:44px, @right:-20px,@backgroundColor:@color-theme) {
   transform: scale(.5);
   //transform-origin: 0% top;
@@ -63,6 +62,22 @@
   //right: @right;
   //top: 0;
   .no-wrap()
+}
+//循环情况标签数量提示框
+.circulation-status-sign (@width:20px, @height:20px, @right:2px,@backgroundColor:@color-theme) {
+  transform: scale(.5);
+  transform-origin: 0% top;
+  color: black;
+  width: @width;
+  height: @height;
+  display: inline-block;
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: @height;
+  text-align: center;
 }
 .content-wrapper () {
   display: flex;
