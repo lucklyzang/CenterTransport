@@ -54,7 +54,7 @@
          <p v-for="(innerItem, innerIndex) in item.sampleTypeList" :key="`${innerItem}-${innerIndex}`">
            <span>{{innerItem.text}}</span>
            <span>
-                  <van-stepper @change="stepperEvent" v-model="innerItem.sampleNumber" min="0"/>
+                  <van-stepper @change="stepperEvent" theme="round" button-size="22px" v-model="innerItem.sampleNumber" min="0"/>
                 </span>
          </p>
        </div>
@@ -701,17 +701,17 @@ export default {
       flex-flow: column;
       position: relative;
       background: #fff;
-      padding: 10px;
+      padding: 20px;
       box-sizing: border-box;
       .basic-message-title {
         font-size: 18px;
         color: #1a89fd;
-        height: 40px;
-        line-height: 40px;
+        margin-top: 8px;
+        margin-bottom: 16px;
         span {
           display: inline-block;
-          height: 15px;
-          width: 15px;
+          height: 14px;
+          width: 14px;
           vertical-align: top;
           img {
             width: 100%;
@@ -734,25 +734,24 @@ export default {
             line-height: 50px;
             flex-flow: row nowrap;
             color: #a0a0a0;
-            .natureNormalStyle {
-              color: #b1d676 !important
-            };
-            .natureImportantStyle {
-              color: #ff5b5a !important
-            };
             span {
-              height: 40px;
+              height: 36px;
+              line-height: 36px;
               display: inline-block;
+              margin-top: 7px;
             };
             span:first-child {
               width: 25%
             };
-            .message-tit-real-style {
-              color: #2895ea;
-            }
             span:last-child {
               flex: 1;
-              color: black
+              color: black;
+              /deep/ .van-cell {
+                background: #f9f9f9;
+                line-height: 36px;
+                height: 36px;
+                padding: 0 8px;
+              }
             }
           }
         };
@@ -762,48 +761,63 @@ export default {
       width: 93%;
       margin: 0 auto;
       margin-top: 14px;
+      padding: 20px;
+      box-sizing: border-box;
       background: #fff;
       overflow: auto;
       flex: 1;
+      display: flex;
+      flex-flow: column;
       .circulation-area {
-          max-height: 90%;
-          width: 96%;
-          margin: 0 auto;
+          flex: 1;
           overflow: auto;
-          font-size: 16px;
+          font-size: 15px;
+          color: #656565;
           > p {
             position: relative;
-            height: 30px;
-            border:1px solid #d6d6d6;
+            height: 40px;
             margin-bottom:4px;
             &:last-child {
               margin-bottom:0
             }
             span {
-              height: 30px;
-              line-height: 30px;
+              height: 40px;
+              line-height: 40px;
               position: absolute;
               display: inline-block;
               text-align: center;
               width: 50%;
+              overflow: auto;
               &:first-child {
                 top: 0;
                 left:0;
-                background: #f7f7f7;
-                text-align: left;
-                padding-left: 12px
               }
               &:last-child {
                 top: 0;
                 right:0;
-                text-align: right
+                /deep/ .van-stepper {
+                  .van-stepper__minus {
+                    background: #505050;
+                    color: #fff;
+                    border: none
+                  };
+                  .van-stepper__plus {
+                    background: #505050;
+                    color: #fff;
+                    border: none
+                  }
+                }
               }
             }
           }
         };
         .circulation-area-title {
-          height: 10%;
-          font-size: 18px;
+          font-size: 15px;
+          height: 36px;
+          line-height: 36px;
+          color: black;
+          margin-bottom: 10px;
+          background: #ececec;
           position: relative;
           span {
             display: inline-block;
@@ -813,14 +827,12 @@ export default {
             &:first-child {
               top: 0;
               left:0;
-              text-align: left;
-              padding-left: 16px
+              text-align: center;
             }
             &:last-child {
               top: 0;
               right:0;
-              text-align: right;
-              padding-right: 20px
+              text-align: center
             }
           }
         }
@@ -828,8 +840,7 @@ export default {
     .btn-area {
       width: 93%;
       margin: 0 auto;
-      margin-top: 14px;
-      height: auto;
+      height: 60px;
       span {
         vertical-align: top;
         display: inline-block;
@@ -840,6 +851,7 @@ export default {
         text-align: center
       }
       .circultion-task-btn-top {
+        margin-top: 10px;
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-between;

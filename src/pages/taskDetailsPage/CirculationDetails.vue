@@ -341,22 +341,19 @@ export default {
 
     // 进入扫码页
     joinSweepCode () {
-      this.$router.push({path:'/circulationTaskCollectMessage'});
-      this.changeTitleTxt({tit:'循环信息采集'});
-      setStore('currentTitle','循环信息采集')
-      // if (this.circulationDetails.state == 7) {
-      //   this.$dialog.alert({
-      //     message: '该条循环任务已完成,不能进行扫码',
-      //     closeOnPopstate: true
-      //   }).then(() => {
-      //   })
-      // } else {
-      //   this.changeArriveDepartmentId(false);
-      //   this.changeIsCollectEnterSweepCodePage(true);
-      //   this.$router.push({'path':'/circulationTaskSweepCode'});
-      //   this.changeTitleTxt({tit:'扫码'});
-      //   setStore('currentTitle','扫码')
-      // }
+      if (this.circulationDetails.state == 7) {
+        this.$dialog.alert({
+          message: '该条循环任务已完成,不能进行扫码',
+          closeOnPopstate: true
+        }).then(() => {
+        })
+      } else {
+        this.changeArriveDepartmentId(false);
+        this.changeIsCollectEnterSweepCodePage(true);
+        this.$router.push({'path':'/circulationTaskSweepCode'});
+        this.changeTitleTxt({tit:'扫码'});
+        setStore('currentTitle','扫码')
+      }
     }
   }
 }

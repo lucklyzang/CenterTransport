@@ -49,35 +49,35 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间: </span>
+                <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
               </div>
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>
                   <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
                       {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
@@ -107,27 +107,27 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间: </span>
+                <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
@@ -165,35 +165,35 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间: </span>
+                <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
               </div>
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>
                   <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
                       {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
@@ -223,35 +223,35 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间: </span>
+                <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+                <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
               </div>
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
-                <p>运送类型: </p>
+                <p>运送类型 : </p>
                 <p>
                   <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
                       {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
@@ -304,35 +304,35 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>开始时间: </span>
+              <span>开始时间 : </span>
               <span>{{item.planStartTime}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点: </span>
+              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
               <span>{{item.setOutPlaceName}}</span>
             </div>
             <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
             </div>
             <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名: </span>
+              <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
             </div>
             <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
-              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.bedNumber == "" ? '无' : item.bedNumber}}</span>
             </div>
             <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
-              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号: </span>
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
             </div>
             <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
-              <p>运送类型: </p>
+              <p>运送类型 : </p>
               <p>{{item.parentTypeName}}-{{item.taskTypeName}}</p>
             </div>
             <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
-              <p>运送类型: </p>
+              <p>运送类型 : </p>
               <p>
                   <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
                       {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
@@ -432,6 +432,7 @@
         noStartPng: require('@/common/images/home/no-start.png'),
         taskFinshedPng: require('@/common/images/home/task-finshed.png'),
         taskGoingPng: require('@/common/images/home/task-going.png'),
+        taskCancelPng: require('@/common/images/home/task-cancel.png'),
         waitSurePng: require('@/common/images/home/wait-sure.png')
       };
     },
@@ -859,6 +860,9 @@
           case 4 :
             return  this.noEndPng
             break;
+          case 6 :
+            return this.taskCancelPng
+            break;
           case 7 :
             return  this.taskFinshedPng
             break;
@@ -974,7 +978,20 @@
 
       // 时间查询快捷键点击事件
       timeFasleEvent (item,index) {
-        this.timeFastindex = index
+        this.timeFastindex = index;
+        this.timeFastindex = index;
+        let dateList = formatTime('YYYY-MM-DD').split('-');
+        let endDate = `${dateList[0]}-${dateList[1]}-${dateList[2]}`
+        let startDate = '';
+        if (item == '近一周') {
+          startDate = this.$moment().subtract(1, 'weeks').format('YYYY-MM-DD')
+        } else if (item == '近一月') {
+          startDate = this.$moment().subtract(1, 'months').format('YYYY-MM-DD')
+        } else if (item == '近三月') {
+          startDate = this.$moment().subtract(3, 'months').format('YYYY-MM-DD')
+        };
+        this.queryCompleteDispatchTask({proId: this.proId, workerId: this.workerId, state: 7,
+          startDate: startDate,endDate: endDate})
       },
 
       // 状态筛选列表点击

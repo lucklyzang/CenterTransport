@@ -18,19 +18,19 @@
          <div class="wait-handle-message-top">
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">病人床号:</span>
+               <span class="message-tit">病人床号 : </span>
                <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
              </p>
            </div>
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
              </p>
            </div>
            <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
              <p>
-               <span class="message-tit">预计开始时间:</span>
+               <span class="message-tit">预计开始时间 : </span>
                <span class="message-tit-real">
                  {{appointDetailsMessage.planStartTime}}
                </span>
@@ -38,7 +38,7 @@
            </div>
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">任务起点:</span>
+               <span class="message-tit">任务起点 : </span>
                <span class="message-tit-real message-tit-real-style">
                  {{appointDetailsMessage.setOutPlaceName}}
                </span>
@@ -46,7 +46,7 @@
            </div>
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">转运工具:</span>
+               <span class="message-tit">转运工具 : </span>
                <span class="message-tit-real message-tit-real-style">
                  {{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}
                </span>
@@ -56,7 +56,7 @@
          <div class="wait-handle-message-bottom">
             <div class="handle-message-line-wrapper">
               <p>
-                <span class="message-tit">任务描述:</span>
+                <span class="message-tit">任务描述 : </span>
                 <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
               </p>
             </div>
@@ -152,6 +152,7 @@ export default {
       noStartPng: require('@/common/images/home/no-start.png'),
       taskFinshedPng: require('@/common/images/home/task-finshed.png'),
       taskGoingPng: require('@/common/images/home/task-going.png'),
+      taskCancelPng: require('@/common/images/home/task-cancel.png'),
       waitSurePng: require('@/common/images/home/wait-sure.png')
     }
   },
@@ -245,6 +246,9 @@ export default {
           break;
         case 4 :
           return  this.noEndPng
+          break;
+        case 6 :
+          return this.taskCancelPng
           break;
         case 7 :
           return  this.taskFinshedPng

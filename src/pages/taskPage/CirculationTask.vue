@@ -28,7 +28,7 @@
           </span>
          </p>
          <p class="status-name-box">
-           <van-field v-model="stateScreenVal" readonly  :right-icon="statusShow == true ? 'arrow-up' : 'arrow-down'" @click="stateListShow = true"/>
+           <van-field v-model="stateScreenVal" readonly  :right-icon="stateListShow == true ? 'arrow-up' : 'arrow-down'" @click="stateListShow = true"/>
            <van-popup v-model="stateListShow" position="bottom">
              <van-picker
                show-toolbar
@@ -48,11 +48,11 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>任务名称: </span>
+              <span>任务名称 : </span>
               <span>{{item.taskTypeName}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>开始时间: </span>
+              <span>开始时间 : </span>
               <span>{{item.startTime}}</span>
             </div>
           </div>
@@ -70,11 +70,11 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>任务名称: </span>
+              <span>任务名称 : </span>
               <span>{{item.taskTypeName}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>开始时间: </span>
+              <span>开始时间 : </span>
               <span>{{item.startTime}}</span>
             </div>
           </div>
@@ -92,11 +92,11 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>任务名称: </span>
+              <span>任务名称 : </span>
               <span>{{item.taskTypeName}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>开始时间: </span>
+              <span>开始时间 : </span>
               <span>{{item.startTime}}</span>
             </div>
           </div>
@@ -114,11 +114,11 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>任务名称: </span>
+              <span>任务名称 : </span>
               <span>{{item.taskTypeName}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>开始时间: </span>
+              <span>开始时间 : </span>
               <span>{{item.startTime}}</span>
             </div>
           </div>

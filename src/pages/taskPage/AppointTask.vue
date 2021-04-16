@@ -64,29 +64,29 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间:</span>
+                <span>开始时间 : </span>
                 <span>{{item.createTime}}</span>
               </div>
               <div class="wait-handle-message-two">
-                <p>任务描述:</p>
+                <p>任务描述 : </p>
                 <p>
                   {{item.taskRemark}}
                 </p>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>转运工具:</span>
+                <span>转运工具 : </span>
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
@@ -115,29 +115,29 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间:</span>
+                <span>开始时间 : </span>
                 <span>{{item.createTime}}</span>
               </div>
               <div class="wait-handle-message-two">
-                <p>任务描述:</p>
+                <p>任务描述 : </p>
                 <p>
                   {{item.taskRemark}}
                 </p>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>转运工具:</span>
+                <span>转运工具 : </span>
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
@@ -166,29 +166,29 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间:</span>
+                <span>开始时间 : </span>
                 <span>{{item.createTime}}</span>
               </div>
               <div class="wait-handle-message-two">
-                <p>任务描述:</p>
+                <p>任务描述 : </p>
                 <p>
                   {{item.taskRemark}}
                 </p>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>转运工具:</span>
+                <span>转运工具 : </span>
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
@@ -217,29 +217,29 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间:</span>
+                <span>开始时间 : </span>
                 <span>{{item.createTime}}</span>
               </div>
               <div class="wait-handle-message-two">
-                <p>任务描述:</p>
+                <p>任务描述 : </p>
                 <p>
                   {{item.taskRemark}}
                 </p>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>转运工具:</span>
+                <span>转运工具 : </span>
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
@@ -268,29 +268,29 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>开始时间:</span>
+                <span>开始时间 : </span>
                 <span>{{item.createTime}}</span>
               </div>
               <div class="wait-handle-message-two">
-                <p>任务描述:</p>
+                <p>任务描述 : </p>
                 <p>
                   {{item.taskRemark}}
                 </p>
               </div>
               <div class="wait-handle-message-one">
-                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+                <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+                <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
-                <span>转运工具:</span>
+                <span>转运工具 : </span>
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
@@ -342,29 +342,29 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>开始时间:</span>
+              <span>开始时间 : </span>
               <span>{{item.createTime}}</span>
             </div>
             <div class="wait-handle-message-two">
-              <p>任务描述:</p>
+              <p>任务描述 : </p>
               <p>
                 {{item.taskRemark}}
               </p>
             </div>
             <div class="wait-handle-message-one">
-              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点:</span>
+              <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
               <span>{{item.setOutPlaceName}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</span>
+              <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.bedNumber}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级:</span>
+              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
               <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
             </div>
             <div class="wait-handle-message-one">
-              <span>转运工具:</span>
+              <span>转运工具 : </span>
               <span>{{item.toolName ? item.toolName : '无'}}</span>
             </div>
           </div>
@@ -471,6 +471,7 @@
         noStartPng: require('@/common/images/home/no-start.png'),
         taskFinshedPng: require('@/common/images/home/task-finshed.png'),
         taskGoingPng: require('@/common/images/home/task-going.png'),
+        taskCancelPng: require('@/common/images/home/task-cancel.png'),
         waitSurePng: require('@/common/images/home/wait-sure.png')
       };
     },
@@ -653,7 +654,19 @@
 
       // 时间查询快捷键点击事件
       timeFasleEvent (item,index) {
-        this.timeFastindex = index
+        this.timeFastindex = index;
+        let dateList = formatTime('YYYY-MM-DD').split('-');
+        let endDate = `${dateList[0]}-${dateList[1]}-${dateList[2]}`
+        let startDate = '';
+        if (item == '近一周') {
+          startDate = this.$moment().subtract(1, 'weeks').format('YYYY-MM-DD')
+        } else if (item == '近一月') {
+          startDate = this.$moment().subtract(1, 'months').format('YYYY-MM-DD')
+        } else if (item == '近三月') {
+          startDate = this.$moment().subtract(3, 'months').format('YYYY-MM-DD')
+        };
+        this.queryCompleteDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -2,
+          startDate: startDate,endDate: endDate})
       },
 
       // 退回原因确定
@@ -778,6 +791,9 @@
             break;
           case 4 :
             return  this.noEndPng
+            break;
+          case 6 :
+            return  this.taskCancelPng
             break;
           case 7 :
             return  this.taskFinshedPng

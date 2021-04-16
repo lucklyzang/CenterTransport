@@ -20,31 +20,31 @@
          <div class="wait-handle-message-top">
           <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
             <P>
-              <span class="message-tit">任务类型:&nbsp;</span>
+              <span class="message-tit">任务类型 :&nbsp;</span>
               <span class="message-tit-real">{{dispatchTaskMessage.taskTypeName}}</span>
             </P>
           </div>
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级:&nbsp;</span>
+               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
                <span class="message-tit-real" style="color:#b1d676">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
              </p>
            </div>
           <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
             <P>
-              <span class="message-tit">任务起点:&nbsp;</span>
+              <span class="message-tit">任务起点 :&nbsp;</span>
               <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
             </P>
           </div>
           <div class="handle-message-line-wrapper handle-message-line-wrapper-other" v-if="templateType === 'template_one'">
             <P>
-              <span class="message-tit">任务终点:&nbsp;</span>
+              <span class="message-tit">任务终点 :&nbsp;</span>
               <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
             </P>
           </div>
          <div class="handle-message-line-wrapper-other-two" v-else-if="templateType === 'template_two'">
            <P>
-             <span class="message-tit">任务终点:&nbsp;</span>
+             <span class="message-tit">任务终点 :&nbsp;</span>
            </P>
            <p>
              <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}}</span>
@@ -52,7 +52,7 @@
          </div>
           <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
             <p>
-              <span class="message-tit">任务时间:&nbsp;</span>
+              <span class="message-tit">任务时间 :&nbsp;</span>
               <span class="message-tit-real">{{dispatchTaskMessage.planStartTime}}</span>
             </p>
           </div>
@@ -60,31 +60,31 @@
          <div class="wait-handle-message-middle">
             <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
               <P>
-                <span class="message-tit">病人姓名:&nbsp;</span>
+                <span class="message-tit">病人姓名 :&nbsp;</span>
                 <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
               </P>
             </div>
            <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
              <p>
-               <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:&nbsp;</span>
+               <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
                <span class="message-tit-real">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
              </p>
            </div>
             <div class="handle-message-line-wrapper">
               <p>
-                <span class="message-tit">数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量:&nbsp;</span>
+                <span class="message-tit">数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量 :&nbsp;</span>
                 <span class="message-tit-real">{{dispatchTaskMessage.actualCount == "" ? "无" : dispatchTaskMessage.actualCount}}</span>
               </p>
             </div>
            <div class="handle-message-line-wrapper">
              <p>
-               <span class="message-tit">转运工具:&nbsp;</span>
+               <span class="message-tit">转运工具 :&nbsp;</span>
                <span class="message-tit-real">{{dispatchTaskMessage.toolName == "" ? '无' : dispatchTaskMessage.toolName}}</span>
              </p>
            </div>
             <div class="handle-message-line-wrapper">
               <p class="describe-line-wrapper">
-                <span class="message-tit">语音备注:&nbsp;</span>
+                <span class="message-tit">语音备注 :&nbsp;</span>
                 <span class="message-tit-real-audio" v-if="showChildrenComponent">
                   <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
                 </span>
@@ -97,7 +97,7 @@
          <div class="wait-handle-message-content">
            <div class="transport-type-wrapper" v-if="templateType === 'template_two'">
              <div class="transport-type-title">
-               运送类型:&nbsp;
+               运送类型 :&nbsp;
              </div>
              <div class="transport-type-content">
                <div class="transport-type-list-wrapper" v-for="(item,index) in transportList">
@@ -106,7 +106,7 @@
                     <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList">
                       <span class="serial">{{indexInner+1}}、</span>
                       <span>
-                        床号:{{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
+                        床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
                       </span>
                       <span v-for="(targetItem, targetIndex) in itemInner.typeChildList">
                         {{targetItem.taskTypeName}}×{{targetItem.quantity}}
@@ -120,7 +120,7 @@
          <div class="wait-handle-message-bottom">
             <div class="handle-message-line-wrapper">
              <p class="describe-line-wrapper">
-               <span class="message-tit">任务描述:&nbsp;</span>
+               <span class="message-tit">任务描述 :&nbsp;</span>
                <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
              </p>
             </div>
@@ -252,6 +252,7 @@ export default {
       noStartPng: require('@/common/images/home/no-start.png'),
       taskFinshedPng: require('@/common/images/home/task-finshed.png'),
       taskGoingPng: require('@/common/images/home/task-going.png'),
+      taskCancelPng: require('@/common/images/home/task-cancel.png'),
       waitSurePng: require('@/common/images/home/wait-sure.png')
     }
   },
@@ -679,6 +680,9 @@ export default {
           break;
         case 4 :
           return  this.noEndPng
+          break;
+        case 6 :
+          return this.taskCancelPng
           break;
         case 7 :
           return  this.taskFinshedPng

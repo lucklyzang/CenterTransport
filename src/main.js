@@ -16,6 +16,7 @@ Vue.prototype.Base64 = require('js-base64').Base64;
 Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(dataStr).format(pattern)
 });
+moment.locale('zh-cn');
 Vue.prototype.$moment = moment;
 // 全局挂载监听设备物理返回按键的方法
 function gotoURL(callback){

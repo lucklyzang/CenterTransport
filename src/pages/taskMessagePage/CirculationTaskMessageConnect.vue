@@ -15,9 +15,18 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <div class="sweep-code-title">
-      <h3>采集信息交接</h3>
+    <div class="basic-message-title">
+      <span>
+        <img :src="connectMessagePng" alt="">
+      </span>
+     采集信息交接
     </div>
+     <div class="connect-message-checked-all">
+       <p class="checked-all-box">
+         <van-checkbox v-model="checkAll" @click="checkAllEvent" checked-color="#4f4f4f">全选</van-checkbox>
+       </p>
+       <p class="total-number">数量 {{totalNumber}}</p>
+     </div>
     <div class="sweep-code-area" v-show="connectMessageArea">
       <div class="sample-type-list" v-for="(item,index) in manageSampleDataList" :key="`${item}-${index}`">
         <div class="sample-type-title-wrapper">
@@ -25,38 +34,32 @@
             <van-stepper @change="stepperEvent" v-model="item.sampleNumber" min="1"  :max="`${item.sampleTotal}`"/>
           </div> -->
           <div class="sample-type-check">
-            <van-checkbox v-model="item.check" @click="checkBoxEvent"></van-checkbox>
+            <van-checkbox v-model="item.check" @click="checkBoxEvent" checked-color="#4f4f4f">{{item.sampleTypeName}}</van-checkbox>
           </div>
-          <div class="sample-type-title">{{item.sampleTypeName}}</div>
-          <div class="sample-type-total">{{item.sampleTotal}}</div>
+          <div class="sample-type-total">数量 {{item.sampleTotal}}</div>
         </div>
         <div class="sample-type-message-wrapper">
           <div class="sample-type-message-list" v-for="(innerItem,innerIndex) in item.sampleList" :key="`${innerItem}-${innerIndex}`">
-            <div class="sample-type-message-list-inner-erapper">
-              <p>
-                <span class="message-tit">科室:</span>
-                <span class="message-tit-real">{{innerItem.spaceName}}</span>
-              </p>
-              <P>
-                <span class="message-tit">收集时间:</span>
-                <span class="message-tit-real">{{innerItem.collectionTime}}</span>
-              </P>
+            <div class="wait-handle-message-one">
+              <span class="message-tit">科室 :</span>
+              <span class="message-tit-real">{{innerItem.spaceName}}</span>
             </div>
-            <div class="sample-type-message-list-inner-erapper">
-              <p>
-                <span class="message-tit">病人姓名:</span>
-                <span class="message-tit-real">{{innerItem.patientName}}</span>
-              </p>
-              <P>
-                <span class="message-tit">病人床号:</span>
-                <span class="message-tit-real">{{innerItem.bedNumber}}</span>
-              </P>
+            <div class="wait-handle-message-one">
+              <span class="message-tit">收集时间 :</span>
+              <span class="message-tit-real">{{innerItem.collectionTime}}</span>
             </div>
-            <div class="sample-type-message-list-inner-erapper">
-              <p>
-                <span class="message-tit">标本数量:</span>
-                <span class="message-tit-real">{{innerItem.quantity}}</span>
-              </p>
+            <div class="wait-handle-message-one">
+              <span class="message-tit">病人姓名 :</span>
+              <span class="message-tit-real">{{innerItem.patientName}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span class="message-tit">病人床号 :</span>
+              <span class="message-tit-real">{{innerItem.bedNumber}}</span>
+            </div>
+            <div class="wait-handle-message-one">
+              <span class="message-tit">标本数量 :</span>
+              <span class="message-tit-real">{{innerItem.quantity}}</span>
+            </div>
               <!-- <P>
                 <span class="message-tit">检查项:</span>
                 <span class="message-tit-real">
@@ -72,18 +75,15 @@
                     </van-checkbox-group>
                 </span>
               </P> -->
-            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="btn-area">
-      <span>
-        <img :src="taskSurePng" alt=""  @click="ConnectSure">
-      </span>
-      <span>
-        <img :src="taskCancelPng" alt="" @click="ConnectCancel">
-      </span>
+      <p class="circultion-task-btn-top">
+        <span @click="ConnectSure">确 认</span>
+        <span @click="ConnectCancel">取 消</span>
+      </p>
     </div>
   </div>
 </template>
@@ -104,6 +104,8 @@ export default {
     return {
       showLoadingHint: false,
       noDataShow: false,
+      checkAll: false,
+      totalNumber: 0,
       noConnectSampleShow: false,
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
@@ -114,6 +116,7 @@ export default {
       manageSampleDataList: [],
       taskSurePng: require('@/components/images/task-sure.png'),
       taskCancelPng: require('@/components/images/task-cancel.png'),
+      connectMessagePng: require('@/common/images/home/connect-message.png')
     };
   },
 
@@ -365,9 +368,38 @@ export default {
       this.showLoadingHint = false;
     },
 
-    // 复选框点击事件
+    // 复选框点击事件(单个标本)
     checkBoxEvent () {
-      console.log(this.manageSampleDataList)
+      let flagOne = this.manageSampleDataList.some((item) => {
+        return item.check == false
+      });
+      let flagTwo = this.manageSampleDataList.every((item) => {
+        return item.check == true
+      });
+      if (flagOne) {
+        this.checkAll = false;
+      };
+      if (flagTwo) {
+        this.checkAll = true
+      };
+      this.reduceTotal()
+    },
+
+    // 复选框点击事件(全选)
+    checkAllEvent (event) {
+      this.manageSampleDataList.forEach((item) => {
+        this.checkAll ? item.check = true : item.check = false
+      });
+      this.reduceTotal()
+    },
+
+    // 求和函数
+    reduceTotal () {
+      let temporaryDataList = [];
+      temporaryDataList = this.manageSampleDataList.filter((item) => {return item.check == true});
+      this.totalNumber = temporaryDataList.reduce((prev, cur) => {
+        return prev + cur.sampleTotal
+      },0)
     },
 
     // 交接信息确认事件
@@ -383,6 +415,7 @@ export default {
         });
         return
       };
+      circulationMessageListSure[0]['totalNumber'] = this.totalNumber;
       this.changeCirculationConnectMessageList({DtMsg: circulationMessageListSure});
       setStore('currentCirculationConnectMessage',{innerMessage: circulationMessageListSure});
       this.$router.push({path:'/circulationTaskConnectMessageSure'})
@@ -406,6 +439,7 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    background: #f6f6f6;
     font-size: 14px;
     position: relative;
     .left-dropDown {
@@ -426,45 +460,92 @@ export default {
       height: 50px;
       text-align: center;
     }
-    .sweep-code-title {
-      height: 30px;
-      line-height: 30px;
-      padding-left: 10px;
-      h3 {
-        font-size: 14px;
-        color: #1699e8
+    .basic-message-title {
+      font-size: 18px;
+      color: #1a89fd;
+      width: 93%;
+      margin: 0 auto;
+      margin-top: 10px;
+      background: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      span {
+        display: inline-block;
+        height: 14px;
+        width: 14px;
+        vertical-align: top;
+        img {
+          width: 100%;
+          height: 100%
+        }
+      }
+    };
+    .connect-message-checked-all {
+      padding: 8px 20px;
+      background: #ececec;
+      width: 93%;
+      margin: 0 auto;
+      display: flex;
+      box-sizing: border-box;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+      > p {
+        color: black;
+        font-size: 16px;
+      };
+      .checked-all-box {
+        /deep/ .van-checkbox {
+          .van-checkbox__icon {
+            font-size: 16px;
+          };
+          .van-checkbox__label {
+            color: black;
+            font-size: 16px;
+          }
+        }
+      };
+      .total-number {
+        font-size: 15px
       }
     };
     .sweep-code-area {
       flex:1;
       overflow: auto;
       margin: 0 auto;
-      width: 100%;
+      width: 93%;
+      background: #fff;
       .sample-type-list {
-        max-height: 80%;
         position: relative;
-        overflow: auto;
+        padding: 6px 20px;
+        box-sizing: border-box;
         .sample-type-title-wrapper {
           position: relative;
-          height: 40px;
-          background: #f7f7f7;
-          line-height: 40px;
+          height: 36px;
+          line-height: 36px;
+          font-size: 16px;
           color: #2895ea;
           .sample-type-check {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            left: 10px
+            left: 0;
+            /deep/ .van-checkbox {
+              .van-checkbox__icon {
+                font-size: 16px;
+              };
+              .van-checkbox__label {
+                color: black;
+                font-size: 16px;
+              }
+            }
           }
-          .sample-type-title {
-            position: absolute;
-            top: 0;
-            left: 40px;
-          };
           .sample-type-total {
             position: absolute;
             top: 0;
-            right: 10px;
+            right: 0;
+            font-size: 15px;
+            color: #9a9a9a
           };
           .sample-type-stepper {
             position: absolute;
@@ -474,43 +555,80 @@ export default {
         }
         .sample-type-message-wrapper{
           box-sizing: border-box;
-          padding: 10px;
+          padding: 0 0 16px 24px;
+          font-size: 16px;
+          border-bottom: 1px solid #d5d5d5;
           .sample-type-message-list {
             width: 100%;
-            border-bottom: 1px solid #d5d5d5;
-            padding: 4px 0;
             box-sizing: border-box;
-            .sample-type-message-list-inner-erapper {
-              p {
-                height: 46px;
-                vertical-align: top;
-                overflow: auto;
+            padding-bottom: 8px;
+            &:last-child {
+              padding-bottom: 0
+            };
+            .wait-handle-message-one {
+              height: 28px;
+              line-height: 28px;
+              overflow: auto;
+              margin-left: -4px;
+              span {
                 display: inline-block;
-                line-height: 20px;
-                width: 47%;
-                .message-tit {
-                  color: #7f7d7d
+                padding-left: 5px;
+                box-sizing: border-box;
+                color: #a0a0a0;
+                &:first-child {
+                  vertical-align: top;
                 };
-                .message-tit-real {
-                  color: black
+                &:last-child {
+                  width: 70%;
+                  color: black;
+                }
+              };
+              p {
+                display: inline-block;
+                span {
+                  color: black !important
                 }
               }
-            }
+            };
           }
         }
       }
     };
     .btn-area {
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
+      width: 93%;
+      margin: 0 auto;
+      height: 60px;
       span {
-        .bottomButton;
+        vertical-align: top;
         display: inline-block;
-        margin-top: 15px;
-        img {
-          width: 100%;
-          height: 100%
+        line-height: 40px;
+        height: 40px;
+        background: #2895ea;
+        color: #fff;
+        text-align: center
+      }
+      .circultion-task-btn-top {
+        margin-top: 10px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        span {
+          border-radius: 4px;
+          &:first-child {
+            width: 50%;
+            margin-right: 10px;
+            background-image: linear-gradient(to right, #37d4fd , #429bff);
+          }
+          &:last-child {
+            width: 50%;
+            height: 38px;
+            line-height: 38px;
+            background: #fff;
+            color: #1b88ff;
+            border: 1px solid #1b88ff;
+          }
         }
       }
     }

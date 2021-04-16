@@ -2,7 +2,7 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
@@ -10,16 +10,40 @@
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
     <div class="sweep-code-title">
-      <h3>科室信息采集确认</h3>
+        <span>
+          <img :src="collectMessagePng" alt="">
+        </span>
+     科室信息采集确认
     </div>
     <div class="bed-number-list-outer">
-      <div class="bed-number-list" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
-        <div class="form-two">
-          <van-field v-model="outerItem.bedNumber" disabled label="床号"/>
-          <van-field v-model="outerItem.patientName" disabled type="tel" label="姓名"/>
-          <van-field v-model="outerItem.sampleAmount" disabled type="number" label="标本总数"/>
+      <div class="wait-handle-message" v-for="(outerItem,index) in allcirculationCollectMessageList" :key="`${outerItem}-${index}`">
+        <div class="wait-handle-message-top">
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+              <span class="message-tit-real">
+                 <van-field v-model="outerItem.bedNumber" disabled/>
+               </span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</span>
+              <span class="message-tit-real">
+                 <van-field v-model="outerItem.patientName" disabled />
+               </span>
+            </p>
+          </div>
+          <div class="handle-message-line-wrapper">
+            <p>
+              <span class="message-tit">标本总数</span>
+              <span class="message-tit-real">
+                 <van-field v-model="outerItem.sampleAmount" disabled  type="number"/>
+               </span>
+            </p>
+          </div>
         </div>
-        <div class="sweep-code-area">
+        <div class="wait-handle-message-middle">
           <div class="circulation-area-title">
             <span>标本名称</span>
             <span>数量</span>
@@ -28,8 +52,8 @@
             <p v-for="(innerItem,innerIndex) in outerItem.sampleMessageList" :key="`${innerItem}-${innerIndex}`">
               <span>{{innerItem.text}}</span>
               <span>
-                <van-stepper v-model="innerItem.sampleNumber" min="0" disabled />
-              </span>
+              <van-stepper v-model="innerItem.sampleNumber" theme="round" button-size="22px" min="0" disabled />
+            </span>
             </p>
           </div>
         </div>
@@ -42,12 +66,10 @@
       <span @click="rewrite">重写</span>
     </div>
     <div class="btn-area">
-      <span>
-        <img :src="taskSurePng" alt=""  @click="collectMessageSure">
-      </span>
-      <span>
-        <img :src="taskCancelPng" alt="" @click="collectMessageCancel">
-      </span>
+      <p class="circultion-task-btn-top">
+        <span @click="collectMessageSure">确 认</span>
+        <span @click="collectMessageCancel">取 消</span>
+      </p>
     </div>
   </div>
 </template>
@@ -88,7 +110,8 @@ export default {
       ],
       temporaryCollectInfo: [],
       taskSurePng: require('@/components/images/task-sure.png'),
-      taskCancelPng: require('@/components/images/task-cancel.png')
+      taskCancelPng: require('@/components/images/task-cancel.png'),
+      collectMessagePng: require('@/common/images/home/collect-message.png')
     };
   },
 
@@ -146,7 +169,7 @@ export default {
     // 我的页面
     skipMyInfo () {
     },
-    
+
     // 丢失数据提示
     loseDataInfo () {
       this.isDialogShow = false;
@@ -154,7 +177,7 @@ export default {
       this.$dialog.alert({
         message: '返回上级后,将丢失本页及本科室的数据',
         closeOnPopstate: false,
-        showCancelButton: true   
+        showCancelButton: true
         }).then(() => {
           this.temporaryCollectInfo = deepClone(this.circulationCollectMessageList.filter((item) => {return item['taskId'] != this.circulationTaskId}));
           // 清空本次签名信息
@@ -234,7 +257,7 @@ export default {
             } else {
               temporaryDepartmentId.push(this.verifyCirculationOfficeId);
               temporaryCompleteInfo.push(
-                { 
+                {
                   departmentIdList: temporaryDepartmentId,
                   taskId: this.circulationTaskId
                 }
@@ -243,7 +266,7 @@ export default {
           } else {
             temporaryDepartmentId.push(this.verifyCirculationOfficeId);
             temporaryCompleteInfo.push(
-              { 
+              {
                 departmentIdList: temporaryDepartmentId,
                 taskId: this.circulationTaskId
               }
@@ -285,7 +308,7 @@ export default {
       let submitCollectMsg = {
         proId: this.proId,   //项目ID
         taskId: this.circulationTaskId,   //任务ID
-        departmentId: this.verifyCirculationOfficeId,  //科室ID
+        departmentId: this.verifyCirculationOfficeId, //科室ID
         singImg: '', //签名照片this.currentElectronicSignature
         specList: []
       };
@@ -324,7 +347,7 @@ export default {
       this.$dialog.alert({
         message: '取消确认后,将丢失本页及本科室的采集数据',
         closeOnPopstate: false,
-        showCancelButton: true   
+        showCancelButton: true
         })
         .then(() => {
           // 当前页面回显数据
@@ -350,92 +373,110 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
    .content-wrapper {
     .content-wrapper();
+     background: #f6f6f6;
     font-size: 14px;
       .left-dropDown {
       .rightDropDown
     }
     .sweep-code-title {
-      height: 30px;
-      padding-left: 10px;
-      position: relative;
-      h3 {
-        width: auto;
-        height: 30px;
-        line-height: 30px;
-        font-size: 14px;
-        color: #1699e8;
-        position: absolute;
-        top: 0;
-        left: 8px      
-        };
-      .control-signature {
-        font-size: 14px;
-        height: 30px;
-        line-height: 30px;
-        color: #1699e8;
+      font-size: 18px;
+      color: #1a89fd;
+      width: 93%;
+      margin: 0 auto;
+      margin-top: 10px;
+      background: #fff;
+      padding: 14px;
+      box-sizing: border-box;
+      span {
         display: inline-block;
-        position: absolute;
-        top: 0;
-        right: 8px
+        height: 14px;
+        width: 14px;
+        vertical-align: top;
+        img {
+          width: 100%;
+          height: 100%
+        }
       }
     };
     .bed-number-list-outer {
       flex:1;
       overflow: auto;
-      margin: 0 auto;
-      margin: 10px 0;
-      .bed-number-list {
-        border-bottom: 2px solid #f2f2f2;
-        .form-two {
-          padding: 2px;
-          box-sizing: border-box;
+      padding: 14px;
+      box-sizing: border-box;
+      width: 93%;
+      margin-top: 10px;
+      margin-left: 3.5%;
+      background: #fff;
+      .wait-handle-message {
+        width: 100%;
+        display: flex;
+        flex: 1;
+        flex-flow: column wrap;
+        border-bottom: 1px solid #dddddd;
+        &:last-child {
+          border: none;
         };
-        .sweep-code-area {
-          flex:1;
-          overflow: auto;
-          margin: 0 auto;
-          margin: 10px 0 0 0;
+        .wait-handle-message-top {
+        };
+        .wait-handle-message-middle {
           width: 100%;
+          margin: 0 auto;
+          margin-top: 14px;
+          background: #fff;
+          overflow: auto;
+          flex: 1;
+          display: flex;
+          flex-flow: column;
           .circulation-area {
-            max-height: 90%;
-            width: 96%;
-            margin: 0 auto;
+            flex: 1;
             overflow: auto;
-            font-size: 16px;
+            font-size: 15px;
+            color: #656565;
             > p {
               position: relative;
-              height: 30px;
-              border:1px solid #d6d6d6;
+              height: 40px;
               margin-bottom:4px;
               &:last-child {
                 margin-bottom:0
               }
               span {
-                height: 30px;
-                line-height: 30px;
+                height: 40px;
+                line-height: 40px;
                 position: absolute;
                 display: inline-block;
                 text-align: center;
+                overflow: auto;
                 width: 50%;
                 &:first-child {
                   top: 0;
                   left:0;
-                  background: #f7f7f7;
-                  text-align: left;
-                  padding-left: 12px
                 }
                 &:last-child {
                   top: 0;
                   right:0;
-                  text-align: right
+                  /deep/ .van-stepper {
+                    .van-stepper__minus {
+                      background: #505050;
+                      color: #fff;
+                      border: none
+                    };
+                    .van-stepper__plus {
+                      background: #505050;
+                      color: #fff;
+                      border: none
+                    }
+                  }
                 }
               }
             }
           };
           .circulation-area-title {
-            height: 40px;
-            line-height: 40px;
-            font-size: 18px;
+            font-size: 15px;
+            height: 36px;
+            line-height: 36px;
+            color: black;
+            margin-bottom: 10px;
+            background: #ececec;
             position: relative;
             span {
               display: inline-block;
@@ -445,14 +486,41 @@ export default {
               &:first-child {
                 top: 0;
                 left:0;
-                text-align: left;
-                padding-left: 16px
-              }
+                text-align: center;
+              };
               &:last-child {
                 top: 0;
                 right:0;
-                text-align: right;
-                padding-right: 20px
+                text-align: center
+              }
+            }
+          }
+        };
+        .handle-message-line-wrapper {
+          height: 50px;
+          p {
+            display: flex;
+            height: 50px;
+            line-height: 50px;
+            flex-flow: row nowrap;
+            color: #a0a0a0;
+            span {
+              height: 36px;
+              line-height: 36px;
+              display: inline-block;
+              margin-top: 7px;
+            };
+            span:first-child {
+              width: 25%
+            };
+            span:last-child {
+              flex: 1;
+              color: black;
+              /deep/ .van-cell {
+                background: #f9f9f9;
+                line-height: 36px;
+                height: 36px;
+                padding: 0 8px;
               }
             }
           }
@@ -479,16 +547,38 @@ export default {
       }
     };
     .btn-area {
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
+      width: 93%;
+      margin: 0 auto;
+      padding: 10px 0;
       span {
-        .bottomButton;
+        vertical-align: top;
         display: inline-block;
-        margin-top: 15px;
-        img {
-          width: 100%;
-          height: 100%
+        line-height: 40px;
+        height: 40px;
+        background: #2895ea;
+        color: #fff;
+        text-align: center
+      }
+      .circultion-task-btn-top {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        span {
+          border-radius: 4px;
+          &:first-child {
+            width: 50%;
+            margin-right: 10px;
+            background-image: linear-gradient(to right, #37d4fd , #429bff);
+          }
+          &:last-child {
+            width: 50%;
+            height: 38px;
+            line-height: 38px;
+            background: #fff;
+            color: #1b88ff;
+            border: 1px solid #1b88ff;
+          }
         }
       }
     }
