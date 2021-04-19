@@ -64,7 +64,7 @@
   .no-wrap()
 }
 //循环情况标签数量提示框
-.circulation-status-sign (@width:20px, @height:20px, @right:2px,@backgroundColor:@color-theme) {
+.circulation-status-sign (@width:20px, @height:20px, @right:10px,@backgroundColor:@color-theme) {
   transform: scale(.5);
   transform-origin: 0% top;
   color: black;
@@ -78,6 +78,7 @@
   font-size: 20px;
   line-height: @height;
   text-align: center;
+  right: @right
 }
 .content-wrapper () {
   display: flex;

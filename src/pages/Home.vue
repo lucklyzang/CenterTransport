@@ -20,7 +20,7 @@
       <div class="content-top">
         <div class="content-top-userName">
           <span class="content-top-userName-img">
-            <img :src="defaultPersonManPng" alt="">
+            <img :src="sex == 1 ? defaultPersonManPng : defaultPersonWomanPng" alt="">
           </span>
           <span class="real-name">{{name}}</span>
         </div>
@@ -650,6 +650,9 @@
       ]),
       userName () {
        return this.userInfo.userName
+      },
+      sex () {
+        return this.userInfo.sex
       },
       userTypeId () {
         return this.userInfo.extendData.user_type_id
@@ -1544,7 +1547,7 @@
             display: flex;
             align-items: center;
             flex-flow: row nowrap;
-            justify-content: center;
+            justify-content: space-around;
             font-size: 16px;
             background-image: linear-gradient(to right, #4e70f8,#5662f6);
             .listTaskStyle {
@@ -1599,6 +1602,15 @@
               width: 50%;
               display: inline-block;
               position: relative;
+              ::after {
+                content:"";
+                background: #e3e3e3;
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 1px;
+                height: 25px
+              };
               span {
                 position: absolute;
                 left: 0;

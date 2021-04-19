@@ -107,7 +107,7 @@
           </p>
         </div>
       </div>
-      <div class="circulation-task-list">
+      <div class="circulation-task-list" style="margin-top:10px">
         <div class="wait-handle-list"  v-show="taskQueryShow" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
           <p class="list-status">
             <img :src="stateTransferImg(item.state)" alt="">

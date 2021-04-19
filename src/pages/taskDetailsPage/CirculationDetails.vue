@@ -4,44 +4,46 @@
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
-    <div class="basic-message">
-      <p class="basic-mesage-state">
-        <img :src="stateTransferImg(circulationDetails.state)" alt="">
-      </p>
-      <p class="basic-message-title">
-        <span>
-          <img :src="taskInfoPng" alt="">
-        </span>
-        基本信息
-      </p>
-       <div class="wait-handle-message">
-         <div class="wait-handle-message-top">
-           <div class="handle-message-line-wrapper">
-             <P>
-               <span class="message-tit">任&nbsp;&nbsp;务&nbsp;&nbsp;名&nbsp;&nbsp;&nbsp;称 :&nbsp;</span>
-               <span class="message-tit-real">{{circulationDetails.taskTypeName}}</span>
-             </P>
-           </div>
-           <div class="handle-message-line-wrapper">
-             <P>
-               <span class="message-tit">预计开始时间 :&nbsp;</span>
-               <span class="message-tit-real">{{circulationDetails.startTime}}</span>
-             </P>
-           </div>
-           <div class="handle-message-line-wrapper">
-             <P>
-               <span class="message-tit">实际开始时间 :&nbsp;</span>
-               <span class="message-tit-real">{{circulationDetails.startUpTime}}</span>
-             </P>
-           </div>
-         </div>
-      </div>
-    </div>
-    <div class="office-list">
-      <div class="office-list-inner-wrapper">
-        <p :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(circulationDetails.id) != -1 && item.check == true}" v-for="(item,index) in circulationDetails.spaces" :key="`${item}-${index}`">
-          {{item.text}}
+    <div class="content">
+      <div class="basic-message">
+        <p class="basic-mesage-state">
+          <img :src="stateTransferImg(circulationDetails.state)" alt="">
         </p>
+        <p class="basic-message-title">
+          <span>
+            <img :src="taskInfoPng" alt="">
+          </span>
+          基本信息
+        </p>
+         <div class="wait-handle-message">
+           <div class="wait-handle-message-top">
+             <div class="handle-message-line-wrapper">
+               <P>
+                 <span class="message-tit">任&nbsp;&nbsp;务&nbsp;&nbsp;名&nbsp;&nbsp;&nbsp;称 :&nbsp;</span>
+                 <span class="message-tit-real">{{circulationDetails.taskTypeName}}</span>
+               </P>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <P>
+                 <span class="message-tit">预计开始时间 :&nbsp;</span>
+                 <span class="message-tit-real">{{circulationDetails.startTime}}</span>
+               </P>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <P>
+                 <span class="message-tit">实际开始时间 :&nbsp;</span>
+                 <span class="message-tit-real">{{circulationDetails.startUpTime}}</span>
+               </P>
+             </div>
+           </div>
+        </div>
+      </div>
+      <div class="office-list">
+        <div class="office-list-inner-wrapper">
+          <p :class="{officeCheckStyle: drawCompleteTaskIdList.indexOf(circulationDetails.id) != -1 && item.check == true}" v-for="(item,index) in circulationDetails.spaces" :key="`${item}-${index}`">
+            {{item.text}}
+          </p>
+        </div>
       </div>
     </div>
     <div class="circultion-task-btn">
@@ -367,13 +369,16 @@ export default {
     .content-wrapper();
       font-size: 16px;
       background: #f6f6f6;
+    .content {
+      flex: 1;
+      width: 100%;
+      overflow: auto;
+    };
     .basic-message {
       width: 93%;
       margin: 0 auto;
       margin-top: 14px;
       height: auto;
-      display: flex;
-      flex-flow: column wrap;
       position: relative;
       background: #fff;
       padding: 10px;
@@ -410,7 +415,6 @@ export default {
       .wait-handle-message {
         width: 100%;
         margin-top: 5px;
-        flex: 1;
         overflow: auto;
         .wait-handle-message-middle {
           margin: 10px 0
@@ -485,8 +489,6 @@ export default {
       }
     }
     .office-list {
-      flex:1;
-      overflow: auto;
       width: 93%;
       background: #fff;
       margin: 0 auto;

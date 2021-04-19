@@ -4,114 +4,116 @@
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
-    <div class="basic-message">
-        <p class="basic-mesage-state">
-          <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
-        </p>
-        <p class="basic-message-title">
-          <span>
-            <img :src="taskInfoPng" alt="">
-          </span>
-          基本信息
-        </p>
-       <div class="wait-handle-message">
-         <div class="wait-handle-message-top">
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">病人床号 : </span>
-               <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
-             </p>
+    <div class="content">
+      <div class="basic-message">
+          <p class="basic-mesage-state">
+            <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
+          </p>
+          <p class="basic-message-title">
+            <span>
+              <img :src="taskInfoPng" alt="">
+            </span>
+            基本信息
+          </p>
+         <div class="wait-handle-message">
+           <div class="wait-handle-message-top">
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">病人床号 : </span>
+                 <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                 <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+               <p>
+                 <span class="message-tit">预计开始时间 : </span>
+                 <span class="message-tit-real">
+                   {{appointDetailsMessage.planStartTime}}
+                 </span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">任务起点 : </span>
+                 <span class="message-tit-real message-tit-real-style">
+                   {{appointDetailsMessage.setOutPlaceName}}
+                 </span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">转运工具 : </span>
+                 <span class="message-tit-real message-tit-real-style">
+                   {{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}
+                 </span>
+               </p>
+             </div>
            </div>
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-               <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
-             </p>
+           <div class="wait-handle-message-bottom">
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">任务描述 : </span>
+                  <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
+                </p>
+              </div>
            </div>
-           <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
-             <p>
-               <span class="message-tit">预计开始时间 : </span>
-               <span class="message-tit-real">
-                 {{appointDetailsMessage.planStartTime}}
-               </span>
-             </p>
-           </div>
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">任务起点 : </span>
-               <span class="message-tit-real message-tit-real-style">
-                 {{appointDetailsMessage.setOutPlaceName}}
-               </span>
-             </p>
-           </div>
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">转运工具 : </span>
-               <span class="message-tit-real message-tit-real-style">
-                 {{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}
-               </span>
-             </p>
-           </div>
-         </div>
-         <div class="wait-handle-message-bottom">
-            <div class="handle-message-line-wrapper">
-              <p>
-                <span class="message-tit">任务描述 : </span>
-                <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
+        </div>
+      </div>
+      <div class="office-list-item-start-point" :class="{listItemStyle: isPatienVerified == true || isStartPonitVerified == true}">
+        <div class="office-list-left">
+          <p>{{appointDetailsMessage.planStartTime}}</p>
+          <p>{{appointDetailsMessage.setOutPlaceName}}</p>
+        </div>
+        <div class="office-list-right">
+          <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
+            <span>病人</span>
+            <span>扫码</span>
+          </p>
+          <p :class="{listRightStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
+            <span>科室</span>
+            <span>扫码</span>
+          </p>
+        </div>
+      </div>
+      <div class="office-list">
+        <div class="office-list-inner-wrapper">
+          <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.checkItems" :key="`${item}-${index}`" class="office-list-item">
+            <span class="quadrant">
+              {{index + 1}}
+            </span>
+            <div class="office-list-left">
+              <p>{{item.bookTime}}</p>
+              <p v-show="!item.checkDepName || !item.room">{{item.depName}}</p>
+              <p v-show="item.checkDepName != null && item.room != null">{{item.checkDepName}}-{{item.room}}</p>
+            </div>
+            <div class="office-list-right">
+              <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
+                <span>科室</span>
+                <span>扫码</span>
+              </p>
+              <p :class="{listRightStyle: item.isCompleted == true}" @click="checkCompleted(item)">
+                <span>检查</span>
+                <span>完成</span>
               </p>
             </div>
-         </div>
-      </div>
-    </div>
-    <div class="office-list-item-start-point" :class="{listItemStyle: isPatienVerified == true || isStartPonitVerified == true}">
-      <div class="office-list-left">
-        <p>{{appointDetailsMessage.planStartTime}}</p>
-        <p>{{appointDetailsMessage.setOutPlaceName}}</p>
-      </div>
-      <div class="office-list-right">
-        <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
-          <span>病人</span>
-          <span>扫码</span>
-        </p>
-        <p :class="{listRightStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
-          <span>科室</span>
-          <span>扫码</span>
-        </p>
-      </div>
-    </div>
-    <div class="office-list">
-      <div class="office-list-inner-wrapper">
-        <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.checkItems" :key="`${item}-${index}`" class="office-list-item">
-          <span class="quadrant">
-            {{index + 1}}
-          </span>
-          <div class="office-list-left">
-            <p>{{item.bookTime}}</p>
-            <p v-show="!item.checkDepName || !item.room">{{item.depName}}</p>
-            <p v-show="item.checkDepName != null && item.room != null">{{item.checkDepName}}-{{item.room}}</p>
-          </div>
-          <div class="office-list-right">
-            <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
-              <span>科室</span>
-              <span>扫码</span>
-            </p>
-            <p :class="{listRightStyle: item.isCompleted == true}" @click="checkCompleted(item)">
-              <span>检查</span>
-              <span>完成</span>
-            </p>
           </div>
         </div>
       </div>
-    </div>
-    <div class="office-list-item-end-point" :class="{listItemStyle: isBackStartPonitVerified == true}">
-      <div class="office-list-left">
-        <p>{{appointDetailsMessage.setOutPlaceName}}</p>
-      </div>
-      <div class="office-list-right">
-        <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
-          <span>科室</span>
-          <span>扫码</span>
-        </p>
+      <div class="office-list-item-end-point" :class="{listItemStyle: isBackStartPonitVerified == true}">
+        <div class="office-list-left">
+          <p>{{appointDetailsMessage.setOutPlaceName}}</p>
+        </div>
+        <div class="office-list-right">
+          <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
+            <span>科室</span>
+            <span>扫码</span>
+          </p>
+        </div>
       </div>
     </div>
     <div class="circultion-task-btn">
@@ -691,13 +693,16 @@ export default {
     .content-wrapper();
       font-size: 16px;
       background: #f6f6f6;
+    .content {
+      flex: 1;
+      width: 100%;
+      overflow: auto;
+    };
     .basic-message {
       width: 93%;
       margin: 0 auto;
       margin-top: 14px;
-      height: auto;
-      display: flex;
-      flex-flow: column wrap;
+      flex-direction: column;
       position: relative;
       background: #fff;
       padding: 10px;
@@ -734,8 +739,6 @@ export default {
       .wait-handle-message {
         width: 100%;
         margin-top: 5px;
-        flex: 1;
-        overflow: auto;
         .wait-handle-message-middle {
           margin: 10px 0
         };
@@ -903,14 +906,11 @@ export default {
       border: none
     };
     .office-list {
-      flex:1;
-      overflow: auto;
       width: 93%;
       margin: 0 auto;
       .office-list-inner-wrapper {
         box-sizing: border-box;
         width: 100%;
-        height: 100%;
         font-size: 0;
         box-sizing: border-box;
         .office-list-item {

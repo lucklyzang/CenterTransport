@@ -71,10 +71,10 @@
                   <span class="message-tit">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;室 :</span>
                 </p>
                 <p class="department-list-omit" v-show="!item.show">
-                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem.name}}</span>
                 </p>
                 <p class="department-list-all" v-show="item.show">
-                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem}}</span>
+                  <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in JSON.parse(item.spaces)">{{innerItem.name}}</span>
                 </p>
                 <p class="department-drop" @click="viewOfficeHandle(item)" v-show="item.hasDepartments">{{!item.show ? '...[展开全部]' : '[收起]'}}</p>
               </div>

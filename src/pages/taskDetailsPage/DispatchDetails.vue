@@ -6,180 +6,182 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
 <!--      <span class="right-text" slot="right" @click="takePhoto">自主拍照</span>-->
     </HeaderTop>
-    <div class="basic-message" ref="basicMessage">
-      <p class="basic-mesage-state">
-        <img :src="stateTransferImg(dispatchTaskMessage.state)" alt="">
-      </p>
-      <p class="basic-message-title">
-        <span>
-          <img :src="taskInfoPng" alt="">
-        </span>
-        基本信息
-      </p>
-       <div class="wait-handle-message">
-         <div class="wait-handle-message-top">
-          <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
-            <P>
-              <span class="message-tit">任务类型 :&nbsp;</span>
-              <span class="message-tit-real">{{dispatchTaskMessage.taskTypeName}}</span>
-            </P>
-          </div>
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
-               <span class="message-tit-real" style="color:#b1d676">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
-             </p>
-           </div>
-          <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
-            <P>
-              <span class="message-tit">任务起点 :&nbsp;</span>
-              <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
-            </P>
-          </div>
-          <div class="handle-message-line-wrapper handle-message-line-wrapper-other" v-if="templateType === 'template_one'">
-            <P>
-              <span class="message-tit">任务终点 :&nbsp;</span>
-              <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
-            </P>
-          </div>
-         <div class="handle-message-line-wrapper-other-two" v-else-if="templateType === 'template_two'">
-           <P>
-             <span class="message-tit">任务终点 :&nbsp;</span>
-           </P>
-           <p>
-             <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}}</span>
-           </p>
-         </div>
-          <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
-            <p>
-              <span class="message-tit">任务时间 :&nbsp;</span>
-              <span class="message-tit-real">{{dispatchTaskMessage.planStartTime}}</span>
-            </p>
-          </div>
-         </div>
-         <div class="wait-handle-message-middle">
+    <div class="content">
+      <div class="basic-message" ref="basicMessage">
+        <p class="basic-mesage-state">
+          <img :src="stateTransferImg(dispatchTaskMessage.state)" alt="">
+        </p>
+        <p class="basic-message-title">
+          <span>
+            <img :src="taskInfoPng" alt="">
+          </span>
+          基本信息
+        </p>
+         <div class="wait-handle-message">
+           <div class="wait-handle-message-top">
             <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
               <P>
-                <span class="message-tit">病人姓名 :&nbsp;</span>
-                <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
+                <span class="message-tit">任务类型 :&nbsp;</span>
+                <span class="message-tit-real">{{dispatchTaskMessage.taskTypeName}}</span>
               </P>
             </div>
-           <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
+                 <span class="message-tit-real" style="color:#b1d676">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
+               </p>
+             </div>
+            <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
+              <P>
+                <span class="message-tit">任务起点 :&nbsp;</span>
+                <span class="message-tit-real">{{dispatchTaskMessage.setOutPlaceName}}</span>
+              </P>
+            </div>
+            <div class="handle-message-line-wrapper handle-message-line-wrapper-other" v-if="templateType === 'template_one'">
+              <P>
+                <span class="message-tit">任务终点 :&nbsp;</span>
+                <span class="message-tit-real">{{dispatchTaskMessage.destinationName}}</span>
+              </P>
+            </div>
+           <div class="handle-message-line-wrapper-other-two" v-else-if="templateType === 'template_two'">
+             <P>
+               <span class="message-tit">任务终点 :&nbsp;</span>
+             </P>
              <p>
-               <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
-               <span class="message-tit-real">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
+               <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}}</span>
              </p>
            </div>
-            <div class="handle-message-line-wrapper">
+            <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
               <p>
-                <span class="message-tit">数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量 :&nbsp;</span>
-                <span class="message-tit-real">{{dispatchTaskMessage.actualCount == "" ? "无" : dispatchTaskMessage.actualCount}}</span>
+                <span class="message-tit">任务时间 :&nbsp;</span>
+                <span class="message-tit-real">{{dispatchTaskMessage.planStartTime}}</span>
               </p>
             </div>
-           <div class="handle-message-line-wrapper">
-             <p>
-               <span class="message-tit">转运工具 :&nbsp;</span>
-               <span class="message-tit-real">{{dispatchTaskMessage.toolName == "" ? '无' : dispatchTaskMessage.toolName}}</span>
-             </p>
            </div>
-            <div class="handle-message-line-wrapper">
-              <p class="describe-line-wrapper">
-                <span class="message-tit">语音备注 :&nbsp;</span>
-                <span class="message-tit-real-audio" v-if="showChildrenComponent">
-                  <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
-                </span>
-                <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
-                  无语音信息
+           <div class="wait-handle-message-middle">
+              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
+                <P>
+                  <span class="message-tit">病人姓名 :&nbsp;</span>
+                  <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
+                </P>
+              </div>
+             <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
+               <p>
+                 <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
+                 <span class="message-tit-real">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
+               </p>
+             </div>
+              <div class="handle-message-line-wrapper">
+                <p>
+                  <span class="message-tit">数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量 :&nbsp;</span>
+                  <span class="message-tit-real">{{dispatchTaskMessage.actualCount == "" ? "无" : dispatchTaskMessage.actualCount}}</span>
+                </p>
+              </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">转运工具 :&nbsp;</span>
+                 <span class="message-tit-real">{{dispatchTaskMessage.toolName == "" ? '无' : dispatchTaskMessage.toolName}}</span>
+               </p>
+             </div>
+              <div class="handle-message-line-wrapper">
+                <p class="describe-line-wrapper">
+                  <span class="message-tit">语音备注 :&nbsp;</span>
+                  <span class="message-tit-real-audio" v-if="showChildrenComponent">
+                    <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://blink.blinktech.cn/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+                  </span>
+                  <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
+                    无语音信息
+                  </span>
+                </p>
+              </div>
+           </div>
+           <div class="wait-handle-message-content">
+             <div class="transport-type-wrapper" v-if="templateType === 'template_two'">
+               <div class="transport-type-title">
+                 运送类型 :&nbsp;
+               </div>
+               <div class="transport-type-content">
+                 <div class="transport-type-list-wrapper" v-for="(item,index) in transportList">
+                    <div class="transport-type-list">
+                      <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
+                      <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList">
+                        <span class="serial">{{indexInner+1}}、</span>
+                        <span>
+                          床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
+                        </span>
+                        <span v-for="(targetItem, targetIndex) in itemInner.typeChildList">
+                          {{targetItem.taskTypeName}}×{{targetItem.quantity}}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+               </div>
+              </div>
+           </div>
+           <div class="wait-handle-message-bottom">
+              <div class="handle-message-line-wrapper">
+               <p class="describe-line-wrapper">
+                 <span class="message-tit">任务描述 :&nbsp;</span>
+                 <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
+               </p>
+              </div>
+           </div>
+        </div>
+      </div>
+  <!--    <div class="content-middle">-->
+  <!--      <p class="issue-photo">-->
+  <!--        <span>问题拍照</span>-->
+  <!--        <ul class="photo-list">-->
+  <!--          <li v-for="(item,index) in issueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state !== 7">-->
+  <!--            <img width="100" height="130" :src="item" @click="enlargeCompleteImgEvent(item)"/>-->
+  <!--            <van-icon name="cross" @click="issueDelete(index)"/>-->
+  <!--          </li>-->
+  <!--          <li v-for="(item,index) in historyIssueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state == 7">-->
+  <!--            <img width="100" height="130" :src="Base64.decode(item)" @click="enlargeCompleteImgEvent(Base64.decode(item))"/>-->
+  <!--          </li>-->
+  <!--        </ul>-->
+  <!--        <span @click="issueClickEvent" class="icon-wrapper" v-show="dispatchTaskMessage.state !== 7">-->
+  <!--              <van-icon name="plus"/>-->
+  <!--        </span>-->
+  <!--      </p>-->
+  <!--    </div>-->
+      <div class="office-list">
+        <div class="basic-message-title">
+          <span>
+            <img :src="siteTractPng" alt="">
+          </span>
+          地点轨迹
+        </div>
+        <div class="office-list-inner-wrapper">
+          <div class="track-name" v-if="dispatchTaskMessage.state !== 7">
+            <div class="track-name-top">
+              <span>{{dispatchTaskMessage.hasSanOut ? dispatchTaskMessage.hasSanOut.split(';')[0] : ''}}</span>
+              <span v-show="dispatchTaskMessage.hasSanOut!=''" class="collect-parcel">(取件)</span>
+            </div>
+            <div class="track-name-bottom">
+              <p v-for="(item,index) in dispatchTaskMessage.distName" :key="`we${item}-${index}`">
+                <span>{{item}}</span>
+                <span class="send-parcel">(送件)</span>
+                <span>
+                  <img :src="nextStepPng" alt="">
                 </span>
               </p>
             </div>
-         </div>
-         <div class="wait-handle-message-content">
-           <div class="transport-type-wrapper" v-if="templateType === 'template_two'">
-             <div class="transport-type-title">
-               运送类型 :&nbsp;
-             </div>
-             <div class="transport-type-content">
-               <div class="transport-type-list-wrapper" v-for="(item,index) in transportList">
-                  <div class="transport-type-list">
-                    <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
-                    <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList">
-                      <span class="serial">{{indexInner+1}}、</span>
-                      <span>
-                        床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
-                      </span>
-                      <span v-for="(targetItem, targetIndex) in itemInner.typeChildList">
-                        {{targetItem.taskTypeName}}×{{targetItem.quantity}}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-             </div>
+          </div>
+          <div class="track-name" v-else>
+            <div class="track-name-top">
+              <span>{{dispatchTaskMessage.setOutPlaceName}}</span>
+              <span class="collect-parcel">(取件)</span>
             </div>
-         </div>
-         <div class="wait-handle-message-bottom">
-            <div class="handle-message-line-wrapper">
-             <p class="describe-line-wrapper">
-               <span class="message-tit">任务描述 :&nbsp;</span>
-               <span class="message-tit-real">{{dispatchTaskMessage.taskRemark ? dispatchTaskMessage.taskRemark : '无'}}</span>
-             </p>
+            <div class="track-name-bottom">
+              <p v-for="(item,index) in dispatchTaskMessage.distName" :key="`we${item}-${index}`">
+                <span>{{item}}</span>
+                <span class="send-parcel">(送件)</span>
+                <span>
+                  <img :src="nextStepPng" alt="">
+                </span>
+              </p>
             </div>
-         </div>
-      </div>
-    </div>
-<!--    <div class="content-middle">-->
-<!--      <p class="issue-photo">-->
-<!--        <span>问题拍照</span>-->
-<!--        <ul class="photo-list">-->
-<!--          <li v-for="(item,index) in issueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state !== 7">-->
-<!--            <img width="100" height="130" :src="item" @click="enlargeCompleteImgEvent(item)"/>-->
-<!--            <van-icon name="cross" @click="issueDelete(index)"/>-->
-<!--          </li>-->
-<!--          <li v-for="(item,index) in historyIssueImageList" :key="`${item}-${index}`" v-show="dispatchTaskMessage.state == 7">-->
-<!--            <img width="100" height="130" :src="Base64.decode(item)" @click="enlargeCompleteImgEvent(Base64.decode(item))"/>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--        <span @click="issueClickEvent" class="icon-wrapper" v-show="dispatchTaskMessage.state !== 7">-->
-<!--              <van-icon name="plus"/>-->
-<!--        </span>-->
-<!--      </p>-->
-<!--    </div>-->
-    <div class="office-list">
-      <div class="basic-message-title">
-        <span>
-          <img :src="siteTractPng" alt="">
-        </span>
-        地点轨迹
-      </div>
-      <div class="office-list-inner-wrapper">
-        <div class="track-name" v-if="dispatchTaskMessage.state !== 7">
-          <div class="track-name-top">
-            <span>{{dispatchTaskMessage.hasSanOut ? dispatchTaskMessage.hasSanOut.split(';')[0] : ''}}</span>
-            <span v-show="dispatchTaskMessage.hasSanOut!=''" class="collect-parcel">(取件)</span>
-          </div>
-          <div class="track-name-bottom">
-            <p v-for="(item,index) in dispatchTaskMessage.distName" :key="`we${item}-${index}`">
-              <span>{{item}}</span>
-              <span class="send-parcel">(送件)</span>
-              <span>
-                <img :src="nextStepPng" alt="">
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="track-name" v-else>
-          <div class="track-name-top">
-            <span>{{dispatchTaskMessage.setOutPlaceName}}</span>
-            <span class="collect-parcel">(取件)</span>
-          </div>
-          <div class="track-name-bottom">
-            <p v-for="(item,index) in dispatchTaskMessage.distName" :key="`we${item}-${index}`">
-              <span>{{item}}</span>
-              <span class="send-parcel">(送件)</span>
-              <span>
-                <img :src="nextStepPng" alt="">
-              </span>
-            </p>
           </div>
         </div>
       </div>
@@ -304,9 +306,9 @@ export default {
 
 
   mounted () {
-    if (true) {
-      this.$refs['basicMessage'].style.height = "450px";
-    }
+    // if (true) {
+    //   this.$refs['basicMessage'].style.height = "450px";
+    // }
     // 控制设备物理按键返回
     if (!IsPC()) {
       let that = this;
@@ -799,13 +801,15 @@ export default {
       border-radius: 4px;
       display: inline-block
     };
+    .content {
+      flex: 1;
+      width: 100%;
+      overflow: auto;
+    };
     .basic-message {
       width: 93%;
       margin: 0 auto;
       margin-top: 14px;
-      height: auto;
-      display: flex;
-      flex-flow: column wrap;
       position: relative;
       background: #fff;
       padding: 10px;
@@ -842,8 +846,6 @@ export default {
       .wait-handle-message {
         width: 100%;
         margin-top: 5px;
-        flex: 1;
-        overflow: auto;
         .wait-handle-message-middle {
           margin: 10px 0
         };
@@ -1003,10 +1005,8 @@ export default {
       }
     };
     .office-list {
-      flex:1;
       display: flex;
       flex-flow: column nowrap;
-      overflow: auto;
       width: 93%;
       margin: 0 auto;
       margin-top: 8px;
