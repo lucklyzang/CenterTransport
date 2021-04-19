@@ -405,6 +405,7 @@ export default {
           display: inline-block;
           height: 15px;
           width: 15px;
+          margin-top: 1px;
           vertical-align: top;
           img {
             width: 100%;

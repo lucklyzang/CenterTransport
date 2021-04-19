@@ -730,6 +730,7 @@ export default {
           height: 15px;
           width: 15px;
           vertical-align: top;
+          margin-top: 1px;
           img {
             width: 100%;
             height: 100%

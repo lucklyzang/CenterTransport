@@ -837,6 +837,7 @@ export default {
           height: 15px;
           width: 15px;
           vertical-align: top;
+          margin-top: 1px;
           img {
             width: 100%;
             height: 100%
@@ -919,9 +920,7 @@ export default {
         .handle-message-line-wrapper-other-two {
           display: flex;
           flex-flow: row now;
-          height: 35px;
           line-height: 35px;
-          overflow: auto;
           >p:first-child {
             width: 25%;
             span {
@@ -1025,6 +1024,7 @@ export default {
           height: 15px;
           width: 15px;
           vertical-align: top;
+          margin-top: 1px;
           img {
             width: 100%;
             height: 100%
