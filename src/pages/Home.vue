@@ -1574,7 +1574,7 @@
       .content-middle-task-message {
         height: 100px;
         background: #f2f2f2;
-        padding: 8px 0;
+        padding: 16px 0;
         .task-message-number-wrapper {
           height: 100%;
           position: relative;
@@ -1655,12 +1655,12 @@
         flex:1;
         overflow: auto;
         margin: 0 auto;
-        margin-top: 10px;
+        margin-top: 16px;
         width: 100%;
         .task-button  {
           height: 85%;
           box-sizing: border-box;
-          padding: 0 10px;
+          padding: 0 16px;
           li {
             width:49.5%;
             height: 130px;
