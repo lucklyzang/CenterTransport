@@ -488,6 +488,7 @@
         'navTopTitle',
         'userInfo',
         'completeSweepcodeDestinationInfo',
+        'completeSweepcodeDepartureInfo',
         'globalTimer',
         'completeCheckedItemInfo',
         'catch_components',
@@ -613,6 +614,7 @@
         'changeOverDueWay',
         'changeCatchComponent',
         'changeCompleteCheckedItemInfo',
+        'changeCompleteSweepcodeDepartureInfo',
         'changeCompleteSweepcodeDestinationInfo'
       ]),
 
@@ -1218,7 +1220,9 @@
 
       // 清空该完成任务存储的已完成检查的信息
       emptyCompleteCheckedItem () {
-        let temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
+        console.log('测试1',temporarySweepCodeOficeList);
         temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
         this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
@@ -1226,7 +1230,9 @@
 
       // 清空该完成任务存储的已扫过目的地科室信息
       emptyCompleteDestinationDepartment () {
-        let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
+        console.log('测试2',temporarySweepCodeOficeList);
         temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
         this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
@@ -1234,7 +1240,8 @@
 
       // 清空该完成任务存储的已扫过起始地科室信息
       emptyCompleteDepartureDepartment () {
-        let temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
         temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
         this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
