@@ -495,9 +495,9 @@ export const compareDateTime = (t1,t2) => {
 }
 
 /*
- *
- *  合并运送类型
- *
+ * 合并重复的运送类型
+ * @param{Array}
+ * @return {Array}
  *
 */
 
