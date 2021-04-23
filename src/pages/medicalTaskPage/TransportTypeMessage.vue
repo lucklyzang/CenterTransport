@@ -999,8 +999,8 @@ export default {
           let taskMessage = {
             setOutPlaceId: this.userInfo.depId,  //出发地ID
             setOutPlaceName: this.userInfo.depName,  //出发地名称
-            destinationId: this.destinationListOneValue,   //目的地ID
-            destinationName: this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
+            destinationId: !this.destinationListOneValue ? '' : this.destinationListOneValue,   //目的地ID
+            destinationName: !this.destinationListOneValue ? '' : this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
             parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
             parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
             taskTypeId: this.typeValue,  //运送类型 ID
@@ -1039,8 +1039,8 @@ export default {
             destinations: [],//多个目的地列表
             patientInfoList: [], //多个病人信息列表
             priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-            toolId: this.toolValue == 0 ? '' : this.toolValue, //运送工具ID
-            toolName: this.toolName == '无工具' ? '' : this.toolName, //运送工具名称
+            toolId: this.toolValue, //运送工具ID
+            toolName: this.toolName, //运送工具名称
             actualCount: this.totalNumber, //实际数量
             taskRemark: this.taskDescribe, //备注
             createId: this.workerId,   //创建者ID  当前登录者
@@ -1106,6 +1106,9 @@ export default {
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    .van-overlay{
+      z-index: 1000;
+    };
     .btn-area {
       width: 100%;
       box-sizing: border-box;
