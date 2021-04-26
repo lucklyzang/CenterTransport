@@ -248,6 +248,7 @@
           <div>性别</div>
           <div>
             <van-radio-group v-model="patienModalMessage.genderValue" direction="horizontal">
+              <van-radio name="0" checked-color="#333">未知</van-radio>
               <van-radio name="1" checked-color="#333">男</van-radio>
               <van-radio name="2" checked-color="#333">女</van-radio>
             </van-radio-group>
@@ -262,7 +263,7 @@
         <div class="transportBox">
           <div>运送类型</div>
           <div v-if="xflSelectShow">
-            <Vselect :list="patienModalMessage.sampleList" :clearable="false" :showItemNum="5" :isCanInput="true" :showList="transportParentControlListShow"
+            <Vselect :list="patienModalMessage.sampleList" disabled :clearable="false" :showItemNum="5" :isCanInput="true" :showList="transportParentControlListShow"
                         :style_Container="'height: 50px; font-size: 16px;'" :initValue="patienModalMessage.sampleValue" @change="transportParentChange"
                         @input="transportParentInputEvent" @visible-change="transportParentVisibleChange">
             </Vselect>
@@ -270,8 +271,8 @@
         </div>
         <div class="transport-type-child-box">
           <div class="transport-type-child-content" v-for="(innerItem,innerIndex) in patienModalMessage.transportList"
-                @click="sampleTypeEvent(innerItem,innerIndex)" :key="innerItem.text">
-            <div :class="{'transTypeListStyle': innerItem.checked }">
+               :key="innerItem.text">
+            <div :class="{'transTypeListStyle': innerItem.typerNumber > 0 }">
               {{innerItem.text}}
             </div>
             <div>
@@ -328,7 +329,7 @@ export default {
           bedNumber: '',
           patientName: '',
           patientNumber: '',
-          genderValue: '男',
+          genderValue: '未知',
           actualData: 0,
           sampleValue: '',
           sampleList: [],
@@ -342,7 +343,7 @@ export default {
         patientName: '',
         patientNumber: '',
         actualData: 0,
-        genderValue: '',
+        genderValue: '0',
         transportList: [],
         sampleList: [],
         sampleValue: '',
@@ -480,7 +481,7 @@ export default {
       reduceTotal(index) {
         // 求该病人信息对应的运送数量
         let targetMsg = this.patienModalMessage.transportList.filter((item) => {
-          return item.checked == true
+          return item.typerNumber > 0
         });
         this.patienModalMessage.actualData = targetMsg.reduce((accumulator, currentValue) => {
           return accumulator + currentValue.typerNumber
@@ -570,7 +571,7 @@ export default {
       jointTransportMessage (index) {
         let finalMsg = '';
         let targetMsg = this.templatelistTwo[index].transportList.filter((item) => {
-          return item.checked == true
+          return item.typerNumber > 0
         });
         for (let item of targetMsg) {
           finalMsg += `${item.text}${item.typerNumber}个,`
@@ -754,7 +755,12 @@ export default {
                   text: item.toolName,
                   value: item.id
                 })
-              }
+              };
+              this.vehicleOperationList.push({
+                text: '无工具',
+                value: 0,
+                checked: false
+              })
             };
             if (item3) {
               for(let item of item3) {
@@ -858,8 +864,8 @@ export default {
           this.templatelistTwo[index].genderValue = '男'
         } else if (this.templatelistTwo[index].genderValue === '2') {
           this.templatelistTwo[index].genderValue = '女'
-        } else {
-          this.templatelistTwo[index].genderValue = ''
+        } else if (this.templatelistTwo[index].genderValue === '0'){
+          this.templatelistTwo[index].genderValue = '未知'
         }
       },
       transferGenderTwo () {
@@ -867,8 +873,8 @@ export default {
           this.patienModalMessage.genderValue = '1'
         } else if (this.patienModalMessage.genderValue == '女') {
           this.patienModalMessage.genderValue = '2'
-        } else {
-          this.patienModalMessage.genderValue = ''
+        } else if (this.patienModalMessage.genderValue === '未知'){
+          this.patienModalMessage.genderValue = '0'
         }
       },
 
@@ -903,8 +909,8 @@ export default {
             this.templatelistTwo[this.templatelistTwo.length-1].genderValue = '男'
           } else if (this.templatelistTwo[this.templatelistTwo.length-1].genderValue === '2') {
             this.templatelistTwo[this.templatelistTwo.length-1].genderValue = '女'
-          } else {
-            this.templatelistTwo[this.templatelistTwo.length-1].genderValue = ''
+          } else if (this.templatelistTwo[this.templatelistTwo.length-1].genderValue === '0'){
+            this.templatelistTwo[this.templatelistTwo.length-1].genderValue = '未知'
           }
         };
         this.xflSelectShow = false
@@ -1006,8 +1012,8 @@ export default {
             taskTypeId: this.typeValue,  //运送类型 ID
             taskTypeName: this.typeText,  //运送类型 名 称
             priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-            toolId: this.toolValue,   //运送工具ID
-            toolName: this.toolName,  //运送工具名称
+            toolId: this.toolValue === 0 ? 0 : this.toolValue, //运送工具ID
+            toolName: this.toolName === '无工具' ? '' : this.toolName, //运送工具名称
             actualCount: this.actualData,   //实际数量
             patientName: this.patientName,  //病人姓名
             sex: 0,    //病人性别  0-未指定,1-男, 2-女
@@ -1039,8 +1045,8 @@ export default {
             destinations: [],//多个目的地列表
             patientInfoList: [], //多个病人信息列表
             priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-            toolId: this.toolValue, //运送工具ID
-            toolName: this.toolName, //运送工具名称
+            toolId: this.toolValue === 0 ? 0 : this.toolValue, //运送工具ID
+            toolName: this.toolName === '无工具' ? '' : this.toolName, //运送工具名称
             actualCount: this.totalNumber, //实际数量
             taskRemark: this.taskDescribe, //备注
             createId: this.workerId,   //创建者ID  当前登录者
@@ -1074,7 +1080,7 @@ export default {
           for (let i = 0, len = this.templatelistTwo.length; i < len; i++) {
             if (this.templatelistTwo[i]['transportList'].length > 0) {
               // 获取选中的运送类型小类
-              let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.checked});
+              let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.typerNumber > 0});
               for (let innerItem of checkChildTypeList) {
                 taskMessageTwo.patientInfoList[i]['typeList'].push({
                   quantity: innerItem['typerNumber'],
@@ -1765,8 +1771,8 @@ export default {
       overflow: auto;
       margin: 0 auto;
       width: 100%;
-      display: flex;
-      flex-flow: column nowrap;
+      //display: flex;
+      //flex-flow: column nowrap;
       .transport-type-area {
         width: 100%;
         flex:1;
@@ -2211,7 +2217,9 @@ export default {
         .add-message {
           width: 96%;
           height: 40px;
-          margin: 0 auto;
+          margin-top: 8px;
+          margin-bottom: 8px;
+          margin-left: 2%;
           line-height: 40px;
           text-align: center;
           color: #43c3f3;

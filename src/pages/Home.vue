@@ -122,24 +122,24 @@
                           <span class="message-tit">目的地:</span>
                           <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
                             class="message-tit-real message-tit-real-style">
-                            {{itemInner}}
+                            {{item.distName.length > 0 ? itemInner : '无'}}
                           </span>
                           <span v-else-if="item.state == 0 || item.state == 1"
                             class="message-tit-real message-tit-real-style">
-                            {{item.destinationName}}
+                            {{!item.destinationName ? '无' : item.destinationName}}
                           </span>
                         </P>
                         <P class="destiname-line" v-else-if="templateType == 'template_two'">
                           <span class="message-tit">目的地:</span>
                           <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
                                 class="message-tit-real message-tit-real-style">
-                            {{itemInner}}
+                            {{item.distName.length > 0 ? itemInner : '无'}}
                           </span>
                           <span v-show="item.state == 0 || item.state == 1"
                                 v-for="(itemInner,indexInner) in item.destinationName"
                                 :key="`${itemInner}-${indexInner}`"
                                 class="message-tit-real message-tit-real-style">
-                            {{itemInner.destinationName}}
+                            {{item.destinationName.length > 0 ? itemInner.destinationName : '无'}}
                           </span>
                         </P>
                         <p v-if="templateType == 'template_one'">
@@ -148,7 +148,7 @@
                         </p>
                         <p v-else-if="templateType == 'template_two'">
                           <span class="message-tit">运送类型:</span>
-                          <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
+                          <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
                         </p>
                         <P>
                           <span class="message-tit">状态:</span>
@@ -250,7 +250,7 @@
                           <div class="handle-message-line-wrapper">
                             <p>
                               <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{itemInner}}</span>
+                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
                             </p>
                             <p>
                               <span class="message-tit">转运工具:</span>
@@ -264,7 +264,7 @@
                             </p>
                             <p v-else-if="templateType == 'template_two'">
                               <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
+                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
                             </p>
                             <p>
                               <span class="message-tit">优先级:</span>
@@ -351,12 +351,12 @@
                           <div class="handle-message-line-wrapper">
                             <p v-if="templateType == 'template_one'">
                               <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" class="message-tit-real">{{item.destinationName}}</span>
+                              <span style="margin-right: 4px;" class="message-tit-real">{{!item.destinationName ? '无' :item.destinationName}}</span>
                             </p>
                             <p v-else-if="templateType == 'template_two'">
                               <span class="message-tit">终点:</span>
                               <span style="margin-right: 4px;" v-for="(itemInner,indexInner) in item.destinationName" :key="`${itemInner}-${indexInner}`" class="message-tit-real">
-                                {{itemInner.destinationName}}
+                                {{item.destinationName.length > 0 ? itemInner.destinationName : '无'}}
                               </span>
                             </p>
                             <p>
@@ -371,7 +371,7 @@
                             </p>
                             <p v-else-if="templateType == 'template_two'">
                               <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'][0]['taskTypeName']}}</span>
+                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
                             </p>
                             <p>
                               <span class="message-tit">优先级:</span>
@@ -1446,7 +1446,7 @@
                     distName: item.distName,
                     patientInfoList: item.patientInfoList
                   });
-                  console.log('122',this.taskTraceList[0]['destinationName'][0]['destinationName']);
+                  console.log('122',this.taskTraceList);
                 }
               }
             } else {
@@ -1952,7 +1952,7 @@
               };
               /deep/ .van-tabs {
                 .right-sign {
-                  .status-sign
+                  .status-sign-pad
                 };
                 .van-tabs__nav {
                   .van-tab {
