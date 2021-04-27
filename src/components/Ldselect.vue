@@ -25,7 +25,9 @@
             <div class="title">{{getLabelKeyValue(item)}}</div>
             <span class="selectIcon icongou" v-if="valueIndexOf(item)"></span>
           </div>
-          <div class="no-data" v-show="listData.length == 0">暂无数据 !</div>
+          <div class="no-data" v-show="listData.length == 0">
+            <van-empty description="数据为空" />
+          </div>
         </div>
       </div>
     </div>
@@ -311,10 +313,7 @@ export default {
       };
       .no-data {
         width: 100%;
-        height: 200px;
-        line-height: 200px;
-        text-align: center;
-        color: #43c3f3
+        height: 200px
       };
     }
   }

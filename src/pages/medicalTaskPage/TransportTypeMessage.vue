@@ -1339,7 +1339,6 @@ export default {
                   float: right;
                   position: relative;
                   width: 75%;
-                  z-index: 300;
                   border-bottom: 1px solid #ececec;
 
                   .show-box {
@@ -1398,7 +1397,6 @@ export default {
                     float: right;
                     position: relative;
                     width: 50%;
-                    z-index: 100;
                     border-bottom: 1px solid #f9f9f9;
 
                     .num-box {
@@ -1514,33 +1512,10 @@ export default {
             }
             .destination-title-inner {
               width: 27%
-            }
+            };
           .destination-content {
             width: 79%;
             position: relative;
-            .destination-content-tag {
-              position: absolute;
-              top: 16px;
-              color: red;
-              right: 16px;
-              display: inline-block;
-              width: 5px;
-              height: 5px;
-              z-index: 100;
-            }
-            /deep/ .van-dropdown-menu {
-              .van-dropdown-menu__item {
-                .van-dropdown-menu__title {
-                    width: 100%;
-                    padding: 0;
-                    color: #323233;
-                    font-size: 14px;
-                }
-              }
-              .van-dropdown-menu__bar {
-                box-shadow: none
-              }
-            }
             /deep/ .van-radio-group {
               .van-radio--horizontal {
                 margin-right: 7%;
@@ -1599,7 +1574,6 @@ export default {
             float: right;
             position: relative;
             width: 79%;
-            z-index: 300;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -1734,9 +1708,6 @@ export default {
         }
         .describle-box {
           width: 100%;
-          box-sizing: border-box;
-          margin: 0 auto;
-          padding: 0 10px 0 0;
           border-bottom: 12px solid #f6f6f6;
           /deep/ .van-cell {
             padding: 10px 10px;
@@ -1798,29 +1769,6 @@ export default {
           .destination-content {
             width: 72%;
             position: relative;
-            .destination-content-tag {
-              position: absolute;
-              top: 16px;
-              color: red;
-              right: 16px;
-              display: inline-block;
-              width: 5px;
-              height: 5px;
-              z-index: 100;
-            }
-            /deep/ .van-dropdown-menu {
-              .van-dropdown-menu__item {
-                .van-dropdown-menu__title {
-                  width: 100%;
-                  padding: 0;
-                  color: #323233;
-                  font-size: 14px;
-                }
-              }
-              .van-dropdown-menu__bar {
-                box-shadow: none
-              }
-            }
             /deep/ .van-radio-group {
               .van-radio--horizontal {
                 margin-right: 7%;
@@ -1876,10 +1824,8 @@ export default {
           };
           .destination-content {
             height: 60px;
-            float: right;
             position: relative;
             width: 72%;
-            z-index: 300;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -2194,7 +2140,6 @@ export default {
           .transport-type-list {
             padding: 6px;
             margin-top: 10px;
-            z-index: 200;
             .spanStyle {
               color: #fff;
               background: #2895ea
@@ -2235,9 +2180,6 @@ export default {
         };
         .describle-box {
           width: 100%;
-          box-sizing: border-box;
-          margin: 0 auto;
-          padding: 0 10px 0 0;
           border-top: 12px solid #f6f6f6;
           border-bottom: 12px solid #f6f6f6;
           /deep/ .van-cell {

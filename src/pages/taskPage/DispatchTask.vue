@@ -79,8 +79,8 @@
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
                 <p>运送类型 : </p>
                 <p>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
-                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
+                  <span>
+                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
                   </span>
                 </p>
               </div>
@@ -137,8 +137,8 @@
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
                 <p>运送类型: </p>
                 <p>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
-                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
+                   <span>
+                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
                   </span>
                 </p>
               </div>
@@ -195,8 +195,8 @@
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
                 <p>运送类型 : </p>
                 <p>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
-                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
+                   <span>
+                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
                   </span>
                 </p>
               </div>
@@ -253,8 +253,8 @@
               <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
                 <p>运送类型 : </p>
                 <p>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
-                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
+                  <span>
+                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
                   </span>
                 </p>
               </div>
@@ -334,8 +334,8 @@
             <div class="wait-handle-message-two" v-else-if="templateType === 'template_two'">
               <p>运送类型 : </p>
               <p>
-                  <span v-for="(itemInner,index) in item.patientInfoList[0].typeList">
-                      {{itemInner.taskTypeName == '' ? '无': itemInner.taskTypeName}}-
+                   <span>
+                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
                   </span>
               </p>
             </div>
