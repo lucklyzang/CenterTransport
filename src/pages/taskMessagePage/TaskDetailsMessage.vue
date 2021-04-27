@@ -8,7 +8,7 @@
       <h3></h3>
     </div>
     <div class="transport-type-area">
-      <div class="task-content-item"> 
+      <div class="task-content-item">
         <div class="office-name">科室名称</div>
         <div class="office-name-specific">
           <p v-show="taskType == '预约任务'">
@@ -82,12 +82,10 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryAllDestination, queryTransportTools, generateDispatchTask, quereDeviceMessage} from '@/api/medicalPort.js'
 import {queryDispatchTaskMessage, queryCirculationTaskMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, IsPC  } from '@/common/js/utils'
 export default {
   name: 'taskDetailsMessage',
   data () {
@@ -299,5 +297,5 @@ export default {
         }
       }
     }
-  }  
+  }
 </style>

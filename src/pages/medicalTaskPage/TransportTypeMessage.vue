@@ -305,8 +305,7 @@ import Loading from '@/components/Loading'
 import _ from 'lodash'
 import StepNumberBox from '@/components/StepNumberBox'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore,  IsPC,  removeAllLocalStorage } from '@/common/js/utils'
 export default {
   name: 'transportTypeMessage',
   data () {
@@ -2072,7 +2071,7 @@ export default {
               display: flex;
               flex-flow: row wrap;
               justify-content: space-between;
-              align-items: top;
+              align-items: flex-start;
               .type-list {
                 border: 1px solid #bcbcbc;
                 text-align: center;

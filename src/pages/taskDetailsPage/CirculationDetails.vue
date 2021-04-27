@@ -65,8 +65,7 @@ import {} from '@/api/medicalPort.js'
 import {getCirculationTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import {  setStore,  IsPC, removeBlock } from '@/common/js/utils'
 export default {
   name: 'circulationDetails',
   data () {

@@ -26,7 +26,7 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, compress, deepClone, repeArray} from '@/common/js/utils'
+  import { setStore,  IsPC, compress } from '@/common/js/utils'
   export default {
     name: 'dispatchTakePhoto',
     data () {

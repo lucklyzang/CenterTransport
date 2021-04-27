@@ -2,7 +2,7 @@
   <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
@@ -50,11 +50,10 @@ import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import ElectronicSignature from '@/components/ElectronicSignature'
 import FooterBottom from '@/components/FooterBottom'
-import {sureCustomerAppointInfo,updateAppointTaskMessage} from '@/api/workerPort.js'
+import {sureCustomerAppointInfo} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore, IsPC, deepClone } from '@/common/js/utils'
 export default {
   name: 'appointTaskCustomerInfo',
   data () {
@@ -192,7 +191,7 @@ export default {
       this.changeTitleTxt({tit:'预约任务详情'});
       setStore('currentTitle','预约任务详情')
     },
-    
+
     // 跳转到我的页
     skipMyInfo () {
       this.leftDownShow = !this.leftDownShow;

@@ -20,7 +20,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg, Dictionary} from '@/common/js/utils'
+import { setStore, getStore,  IsPC } from '@/common/js/utils'
 export default {
   name: 'dispatchTaskPhotoSure',
   data () {

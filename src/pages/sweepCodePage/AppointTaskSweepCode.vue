@@ -2,7 +2,7 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="校验中,请稍候····" textColor="#2895ea"></loading>
@@ -13,12 +13,11 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {getAlltTaskNumber,judgeAppointTaskCheckItem, judgeAppointTaskCheckPatient,judgeAppointTaskCheckDepartment} from '@/api/workerPort.js'
+import {judgeAppointTaskCheckItem, judgeAppointTaskCheckPatient,judgeAppointTaskCheckDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore, IsPC, deepClone, repeArray } from '@/common/js/utils'
 export default {
   name: 'appointTaskSweepCode',
   data () {
@@ -149,7 +148,7 @@ export default {
         } else {
           let codeInfo = code.split('|');
           // 校验病人信息
-           if (codeInfo.length > 0) { 
+           if (codeInfo.length > 0) {
             this.checkPatientVerify({
               proId: this.proId, //项目ID
               workerId: this.workerId, //运送员ID
@@ -186,7 +185,7 @@ export default {
               } else {
                 temporaryDepartmentId.push(this.checkId);
                 temporaryOfficeList.push(
-                  { 
+                  {
                     officeList: repeArray(temporaryDepartmentId),
                     taskId: this.taskId
                   }
@@ -195,7 +194,7 @@ export default {
             } else {
               temporaryDepartmentId.push(this.checkId);
               temporaryOfficeList.push(
-                { 
+                {
                   officeList: repeArray(temporaryDepartmentId),
                   taskId: this.taskId
                 }
@@ -209,7 +208,7 @@ export default {
               message: `${err}`
             }).then(() => {
             })
-          } 
+          }
         } else {
           this.backTo();
           this.$dialog.alert({

@@ -29,12 +29,10 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {getWorkerMessage} from '@/api/login.js'
-import {queryDispatchTaskCancelReason, updateDispatchTask, cancelDispatchTaskBatch} from '@/api/workerPort.js'
+import {queryDispatchTaskCancelReason, updateDispatchTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import {setStore, getStore, IsPC } from '@/common/js/utils'
 export default {
   name: 'padDispatchTaskCancelForm',
   data () {

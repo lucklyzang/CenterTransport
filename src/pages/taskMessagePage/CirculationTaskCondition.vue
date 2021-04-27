@@ -292,8 +292,7 @@ import {getCirculationCondition} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { formatTime, setStore, getStore, IsPC  } from '@/common/js/utils'
 export default {
   name: 'circulationTaskCondition',
   data () {

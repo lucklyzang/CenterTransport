@@ -377,8 +377,7 @@
   import { mapGetters, mapMutations } from 'vuex'
   import store from '@/store'
   import SOtime from '@/common/js/SOtime.js'
-  import { formatTime, setStore, getStore, removeStore, IsPC, judgeOverTime, removeAllLocalStorage } from '@/common/js/utils'
-  import {getDictionaryData} from '@/api/login.js'
+  import { formatTime, setStore, getStore, IsPC, removeAllLocalStorage } from '@/common/js/utils'
   export default {
     name: 'dispatchTask',
     data () {

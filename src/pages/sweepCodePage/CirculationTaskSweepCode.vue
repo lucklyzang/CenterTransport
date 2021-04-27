@@ -2,7 +2,7 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!--  -->
@@ -43,8 +43,7 @@ import {judgeDepartment} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore, IsPC } from '@/common/js/utils'
 export default {
   name: 'circulationTaskSweepCode',
   data () {

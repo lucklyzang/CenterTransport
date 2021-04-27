@@ -13,7 +13,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import { mapGetters, mapMutations } from 'vuex'
 import {updateDispatchTask} from '@/api/workerPort.js'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg} from '@/common/js/utils'
+import { setStore, getStore, IsPC, deepClone } from '@/common/js/utils'
 export default {
   name: 'dispatchTaskJudge',
   data () {
@@ -127,7 +127,7 @@ export default {
       this.$dialog.alert({
         message: '请手动结束任务',
       }).then(() => {
-        
+
       });
     },
 

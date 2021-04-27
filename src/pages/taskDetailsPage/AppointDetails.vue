@@ -133,8 +133,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {queryAppointTaskDetailsMessage, appointTaskCompleted, checkItemsCompleted} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, repeArray, deepClone } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, IsPC,  repeArray, deepClone } from '@/common/js/utils'
 export default {
   name: 'appointDetails',
   data () {

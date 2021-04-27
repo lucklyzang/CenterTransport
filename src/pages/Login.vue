@@ -21,12 +21,10 @@
 </template>
 
 <script>
-import {logIn, getDictionaryData, getdepartmentList, getdepartmentListNo,registerChannel} from '@/api/login.js'
+import {logIn, getdepartmentList, getdepartmentListNo,registerChannel} from '@/api/login.js'
 import { mapGetters, mapMutations } from 'vuex'
-import passwordPng from '@/components/images/password.png'
-import userPng from '@/components/images/user.png'
 import Loading from '@/components/Loading'
-import { setStore, getStore, removeStore,IsPC, scanCode } from '@/common/js/utils'
+import { setStore, getStore, removeStore,IsPC  } from '@/common/js/utils'
 export default {
   name: 'login',
   components: {

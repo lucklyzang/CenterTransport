@@ -146,8 +146,7 @@
   import Loading from '@/components/Loading'
   import store from '@/store'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, deepClone, repeArray, compareDateTime, removeAllLocalStorage } from '@/common/js/utils'
-  import {getDictionaryData} from '@/api/login.js'
+  import { setStore, getStore, IsPC, removeBlock,  compareDateTime, removeAllLocalStorage } from '@/common/js/utils'
   let windowTimer
   export default {
     name: 'circulationTask',

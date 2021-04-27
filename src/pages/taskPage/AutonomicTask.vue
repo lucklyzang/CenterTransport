@@ -2,8 +2,8 @@
   <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
-      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
+      <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
     </HeaderTop>
     <div>自主任务</div>
   </div>
@@ -12,11 +12,9 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  //  import {getAlltTaskNumber} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
-  import {getDictionaryData} from '@/api/login.js'
+  import { setStore, IsPC } from '@/common/js/utils'
   export default {
     data () {
       return {
@@ -41,7 +39,7 @@
         pushHistory();
         this.gotoURL(() => {
           this.changeTitleTxt({tit:'中央运送'});
-          setStore('currentTitle','中央运送') 
+          setStore('currentTitle','中央运送')
         })
       }
     },

@@ -96,8 +96,7 @@ import {queryCollectSampleMessage, updateCirculationTask} from '@/api/workerPort
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, repeArray, deepClone, removeBlock, arrayDiff} from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore,  IsPC, repeArray, deepClone, arrayDiff} from '@/common/js/utils'
 export default {
   name: 'circulationTaskMessageConnect',
   data () {

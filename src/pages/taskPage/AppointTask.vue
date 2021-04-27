@@ -404,14 +404,13 @@
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
   import {getWorkerMessage} from '@/api/login.js'
-  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, getAppointTaskComplete, userSignOut, transferAppointTask,queryDispatchTaskCancelReason} from '@/api/workerPort.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, userSignOut, transferAppointTask,queryDispatchTaskCancelReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import store from '@/store'
   import Loading from '@/components/Loading'
   import SOtime from '@/common/js/SOtime.js'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, removeBlock, removeAllLocalStorage } from '@/common/js/utils'
-  import {getDictionaryData} from '@/api/login.js'
+  import { formatTime, setStore, getStore, IsPC, deepClone, removeAllLocalStorage } from '@/common/js/utils'
   export default {
     name: 'appointTask',
     data () {

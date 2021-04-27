@@ -220,15 +220,13 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {} from '@/api/medicalPort.js'
 import { mergeMethods } from '@/common/js/utils'
 import {updateDispatchTask,getDispatchTaskMessageById} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import MyAudio from '@/components/MyAudio'
 import Ldselect from '@/components/Ldselect'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, removeBlock, Dictionary, deepClone, compress, repeArray} from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore,  IsPC,  Dictionary, deepClone, compress } from '@/common/js/utils'
 export default {
   name: 'dispatchDetails',
   data () {

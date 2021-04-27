@@ -82,8 +82,7 @@ import FooterBottom from '@/components/FooterBottom'
 import {collectSampleInfo, updateCirculationTask} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, querySampleName, deepClone } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import {  setStore, getStore, IsPC,  deepClone } from '@/common/js/utils'
 export default {
   name: 'circulationTaskCollectMessageSure',
   data () {

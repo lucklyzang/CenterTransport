@@ -69,8 +69,7 @@ import {judgeDispatchTaskDepartment,updateDispatchTask,dispatchTaskUploadMsg} fr
 import NoData from '@/components/NoData'
 import Loading from '@/components/Loading'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, deepClone, repeArray, compressImg, Dictionary} from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore, IsPC, deepClone, repeArray, compressImg, Dictionary} from '@/common/js/utils'
 export default {
   name: 'dispatchTaskSweepCode',
   data () {

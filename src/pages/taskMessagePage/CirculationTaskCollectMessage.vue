@@ -84,11 +84,10 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
-import {queryCheckEntry, querySampleMessage} from '@/api/workerPort.js'
+import { querySampleMessage} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, querySampleName, repeArray } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore, removeStore, IsPC, checkEmptyArray, deepClone, repeArray } from '@/common/js/utils'
 export default {
   name: 'circulationTaskCollectMessage',
   data () {

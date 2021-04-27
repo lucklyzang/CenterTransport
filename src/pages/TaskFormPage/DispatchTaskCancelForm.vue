@@ -2,7 +2,7 @@
    <div class="content-wrapper">
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
-      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon> 
+      <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <!-- <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>  -->
     </HeaderTop>
      <!-- 右边下拉框菜单 -->
@@ -29,12 +29,10 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
-import {getWorkerMessage} from '@/api/login.js'
 import {queryDispatchTaskCancelReason, updateDispatchTask, cancelDispatchTaskBatch} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
-import { formatTime, setStore, getStore, removeStore, IsPC } from '@/common/js/utils'
-import {getDictionaryData} from '@/api/login.js'
+import { setStore, getStore,  IsPC } from '@/common/js/utils'
 export default {
   name: 'dispatchTaskCancelForm',
   data () {
