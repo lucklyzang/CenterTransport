@@ -1011,8 +1011,8 @@ export default {
             taskTypeId: this.typeValue,  //运送类型 ID
             taskTypeName: this.typeText,  //运送类型 名 称
             priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-            toolId: this.toolValue === 0 ? 0 : this.toolValue, //运送工具ID
-            toolName: this.toolName === '无工具' ? '' : this.toolName, //运送工具名称
+            toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
+            toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
             actualCount: this.actualData,   //实际数量
             patientName: this.patientName,  //病人姓名
             sex: 0,    //病人性别  0-未指定,1-男, 2-女
@@ -1044,8 +1044,8 @@ export default {
             destinations: [],//多个目的地列表
             patientInfoList: [], //多个病人信息列表
             priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-            toolId: this.toolValue === 0 ? 0 : this.toolValue, //运送工具ID
-            toolName: this.toolName === '无工具' ? '' : this.toolName, //运送工具名称
+            toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
+            toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
             actualCount: this.totalNumber, //实际数量
             taskRemark: this.taskDescribe, //备注
             createId: this.workerId,   //创建者ID  当前登录者
