@@ -9,7 +9,8 @@ import {setStore, getStore, IsPC} from '@/common/js/utils.js'
 import echarts from 'echarts'
 // import audio from 'vue-mobile-audio'
 // Vue.use(audio)
-
+import FastClick from 'fastclick';
+FastClick.attach(document.body);
 Vue.prototype.$echarts = echarts;
 Vue.prototype.Base64 = require('js-base64').Base64;
 // 全局挂载时间格式化方法

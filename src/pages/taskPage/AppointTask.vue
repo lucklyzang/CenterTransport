@@ -1401,6 +1401,7 @@
         line-height: 30px;
         background: #f6f6f6;
         padding-left: 10px;
+        text-align: center;
         span {
           font-size: 13px;
           display: inline-block;
