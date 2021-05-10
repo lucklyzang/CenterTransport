@@ -587,7 +587,7 @@
       }
     },
 
-     beforeRouteEnter (to, from, next) {
+    beforeRouteEnter (to, from, next) {
       let catch_components = store.state.catchComponent.catch_components;
       let i = catch_components.indexOf('appointTask');
       i === -1 && catch_components.push('appointTask');
@@ -639,7 +639,7 @@
                 })
               }
             } else {
-              this.$toast('没有查到退回原因');
+              this.$toast('没有查询到退回原因');
             }
           }
         })

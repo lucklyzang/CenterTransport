@@ -506,7 +506,7 @@
     },
 
     activated () {
-      // 控制设备物理返回按键测试
+      // 控制设备物理返回案件测试
       if (!IsPC()) {
         let that = this;
         pushHistory();

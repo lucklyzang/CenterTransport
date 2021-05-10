@@ -1218,6 +1218,9 @@ export default {
     // 病人信息模态框样式
     .patien-modal-box {
       /deep/ .van-dialog {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
         padding: 16px;
         width: 90% !important;
         .van-dialog__header {
@@ -1234,7 +1237,6 @@ export default {
           overflow: scroll;
 
           .slot-content {
-            height: 600px;
             padding: 16px;
 
             .bedNumberBox {
@@ -1368,7 +1370,7 @@ export default {
 
             .transport-type-child-box {
               max-height: 100px;
-
+              width: 100%;
               .transTypeListStyle {
                 background: #44c4f3;
                 color: #fff !important;
@@ -1376,31 +1378,25 @@ export default {
               }
 
               .transport-type-child-content {
+                width: 100%;
                 height: 60px;
                 line-height: 60px;
-
+                display: flex;
+                flex-flow: row nowrap;
                 > div {
                   &:first-child {
-                    float: left;
                     width: 50%;
                     height: 60px;
                     font-size: 16px;
                     color: @color-text-left;
-                    box-sizing: border-box;
                     overflow-x: auto;
-                  }
-                ;
-
+                  };
                   &:last-child {
                     height: 60px;
-                    float: right;
-                    position: relative;
-                    width: 50%;
+                    flex: 1;
                     border-bottom: 1px solid #f9f9f9;
-
                     .num-box {
                       align-items: center;
-
                       .subtract-box {
                         width: 26px;
                         height: 26px;
@@ -1499,28 +1495,27 @@ export default {
         .destination-box {
           width: 100%;
           margin: 0 auto;
-          padding: 10px;
+          padding: 12px;
           box-sizing: border-box;
           border-bottom: 12px solid #f6f6f6;
           > div {
-              display: inline-block
-            };
-            .destination-title {
-              width: 20%;
-              color: @color-text-left
-            }
-            .destination-title-inner {
-              width: 27%
-            };
+            display: inline-block;
+            vertical-align: middle;
+          };
+          .destination-title {
+            width: 20%;
+            color: @color-text-left
+          }
+          .destination-title-inner {
+            width: 30%
+          }
           .destination-content {
-            width: 79%;
+            width: 78%;
             position: relative;
             /deep/ .van-radio-group {
+              justify-content: space-between;
               .van-radio--horizontal {
-                margin-right: 7%;
-                &:last-child {
-                  margin-right: 0
-                };
+                margin-right: 0;
                 &:nth-child(1) {
                   .van-radio__label {
                     color: #0ac30a
@@ -1545,7 +1540,16 @@ export default {
             }
           }
           .destination-content-inner {
-            width: 71%
+            width: 68%;
+            /deep/ .van-radio-group {
+              justify-content: flex-start;
+              .van-radio--horizontal {
+                margin-right: 4%;
+                &:last-child {
+                  margin-right: 0
+                }
+              }
+            }
           }
           &:last-child {
             margin-bottom: 0
@@ -1570,9 +1574,8 @@ export default {
           };
           .destination-content {
             height: 60px;
-            float: right;
             position: relative;
-            width: 79%;
+            width: 78%;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -1608,14 +1611,15 @@ export default {
           border-bottom: 1px solid  @color-underline;
           position: relative;
           > div {
-            display: inline-block
+            display: inline-block;
+            vertical-align: middle;
           };
           .tool-title {
             width: 20%;
             color: @color-text-left
           };
           .tool-name {
-            width: 79%;
+            width: 78%;
             color: @color-text-right
           };
           .tool-sign {
@@ -1756,24 +1760,23 @@ export default {
           box-sizing: border-box;
           border-bottom: 12px solid #f6f6f6;
           > div {
-            display: inline-block
+            display: inline-block;
+            vertical-align: middle;
           };
           .destination-title {
-            width: 27%;
+            width: 20%;
             color: @color-text-left
           }
           .destination-title-inner {
-            width: 27%
+            width: 30%
           }
           .destination-content {
-            width: 72%;
+            width: 78%;
             position: relative;
             /deep/ .van-radio-group {
+              justify-content: space-between;
               .van-radio--horizontal {
-                margin-right: 7%;
-                &:last-child {
-                  margin-right: 0
-                };
+                margin-right: 0;
                 &:nth-child(1) {
                   .van-radio__label {
                     color: #0ac30a
@@ -1798,7 +1801,16 @@ export default {
             }
           }
           .destination-content-inner {
-            width: 72%
+            width: 68%;
+            /deep/ .van-radio-group {
+              justify-content: flex-start;
+              .van-radio--horizontal {
+                margin-right: 4%;
+                &:last-child {
+                  margin-right: 0
+                }
+              }
+            }
           }
           &:last-child {
             margin-bottom: 0
@@ -1815,7 +1827,7 @@ export default {
           };
           .destination-title {
             height: 59px;
-            width: 27%;
+            width: 30%;
             line-height: 59px;
             color: @color-text-left;
             box-sizing: border-box;
@@ -1824,7 +1836,7 @@ export default {
           .destination-content {
             height: 60px;
             position: relative;
-            width: 72%;
+            width: 68%;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -1859,12 +1871,13 @@ export default {
           box-sizing: border-box;
           .destination-title {
             height: 60px;
-            width: 27%;
+            width: 30%;
             line-height: 60px;
             color: @color-text-left;
             box-sizing: border-box
           };
           .destination-content {
+            width: 68%;
             /deep/ .van-cell {
               height: 40px;
               padding: 0 4px;
@@ -1938,18 +1951,19 @@ export default {
                   display: inline-block;
                   /deep/ .van-cell {
                     padding: 2px 0;
+                    height: 34px;
                     background: #f9f9f9;
                     .van-field__label {
-                      width: 70px;
+                      width: 50px;
                       text-align: left;
+                      height: 34px;
+                      line-height: 34px;
                       font-size: 14px;
                       color: @color-text-left;
-                      margin-top: 6px
                     }
                     .van-field__value {
-                      height: 30px;
-                      line-height: 30px;
-                      padding-left: 4px;
+                      height: 34px;
+                      line-height: 34px;
                       color: @color-text-right;
                       font-size: 16px;
                       .van-field__body {
@@ -1962,17 +1976,23 @@ export default {
                 }
               };
               .field-one {
-                position: relative;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: flex-start;
                 > p {
-                  width: 30%;
+                  margin-right: 4px;
+                  &:last-child {
+                    margin-right: 0;
+                  }
                 }
               };
               .field-two {
-                position: relative;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: flex-start;
                 > p {
                   display: inline-block;
                   height: 36px;
-                  width: 30%;
                   line-height: 36px;
                   &:first-child {
                     color: @color-text-left;
@@ -1981,18 +2001,19 @@ export default {
                   &:last-child {
                     /deep/ .van-cell {
                       padding: 2px 0;
+                      height: 34px;
                       background: #f9f9f9;
                       .van-field__label {
-                        width: 70px;
+                        width: 50px;
                         text-align: left;
+                        height: 34px;
+                        line-height: 34px;
                         font-size: 14px;
                         color: @color-text-left;
-                        margin-top: 6px
                       }
                       .van-field__value {
-                        height: 30px;
-                        line-height: 30px;
-                        padding-left: 4px;
+                        height: 34px;
+                        line-height: 34px;
                         color: @color-text-right;
                         font-size: 16px;
                         .van-field__body {
@@ -2010,16 +2031,20 @@ export default {
                   width: 100%;
                   height: 40px;
                   line-height: 40px;
+                  display: flex;
+                  flex-flow: row nowrap;
                   > p {
                     display: inline-block;
                     height: 100%;
                     &:first-child {
                       color: @color-text-left;
                       font-size: 15px;
+                      margin-right: 4px;
                       vertical-align: top;
                     };
                     &:nth-child(2) {
                       vertical-align: top;
+                      margin-right: 4px;
                       /deep/.van-dropdown-menu {
                         height: 100%;
                         .van-dropdown-menu__bar {
@@ -2049,8 +2074,8 @@ export default {
                       }
                     };
                     &:last-child {
-                      width: 53%;
                       height: 40px;
+                      flex: 1;
                       overflow-y: auto;
                       > p {
                         &:first-child {
@@ -2107,14 +2132,15 @@ export default {
           border-bottom: 1px solid  @color-underline;
           position: relative;
           > div {
-            display: inline-block
+            display: inline-block;
+            vertical-align: middle;
           };
           .tool-title {
-            width: 27%;
+            width: 20%;
             color: @color-text-left
           };
           .tool-name {
-            width: 72%;
+            width: 78%;
             color: @color-text-right
           };
           .tool-sign {
