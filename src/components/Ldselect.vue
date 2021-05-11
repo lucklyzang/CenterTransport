@@ -343,8 +343,9 @@ export default {
     max-width: 100%;
   };
   .search-box {
-    width: 50%;
+    width: 60%;
     /deep/ .van-field {
+      padding: 10px !important;
       .van-field__right-icon {
         .van-icon-search {
           font-size: 20px

@@ -1626,7 +1626,8 @@ export default {
             position: absolute;
             right: 6px;
             color: @color-text-right;
-            top: 10px
+            top: 50%;
+            transform: translateY(-50%);
           }
         }
         .transport-type-box {
@@ -1896,7 +1897,6 @@ export default {
           }
         };
         .field-box-wrapper {
-          padding: 4px 0;
           width: 100%;
           margin: 0 auto;
           flex:1;
@@ -1913,13 +1913,13 @@ export default {
               position: relative;
               font-size: 18px;
               color: @color-text-right;
-              line-height: 40px;
               height: 50px;
               font-weight: bold;
               .patient-name {
                 position: absolute;
                 top: 0;
-                height: 100%;
+                height: 50px;
+                line-height: 50px;
                 font-size: 16px;
                 width: 100px;
                 left: 4px;
@@ -2147,7 +2147,8 @@ export default {
             position: absolute;
             right: 6px;
             color: @color-text-right;
-            top: 10px
+            top: 50%;
+            transform: translateY(-50%);
           }
         }
         .transport-type-box {
