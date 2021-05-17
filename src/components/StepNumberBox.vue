@@ -129,7 +129,7 @@ export default {
   display: flex;
   flex-flow: row nowrap;
   .subtract-box  {
-    width: 35px;
+    width: 38px;
     height: 38px;
     background: #d2d2d2;
     display: flex;
@@ -144,12 +144,12 @@ export default {
     }
   };
   input {
-    flex: 1;
+    width: 100px;
     height: 100%;
     background: #a7a7a7;
   };
   .plus-box  {
-    width: 35px;
+    width: 38px;
     height: 38px;
     background: #d2d2d2;
     display: flex;

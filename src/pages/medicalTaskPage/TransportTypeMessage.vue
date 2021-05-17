@@ -88,7 +88,7 @@
         </div>
         <div class="describle-box">
           <van-field v-model="taskDescribe"   type="textarea"
-          autosize label="任务描述:" placeholder="请输入任务描述"/>
+          autosize label="任务描述" placeholder="请输入任务描述"/>
         </div>
       </div>
     </div>
@@ -189,8 +189,10 @@
             </div>
         </div>
         <div class="add-message" @click="addMessageEvent">
-          <span><van-icon name="plus" /></fa-icon></span>
-          <span>添加病人信息</span>
+            <span>
+              <van-icon name="plus" /></fa-icon>
+            </span>
+            添加病人信息
         </div>
         <div class="describle-box">
           <van-field v-model="taskDescribe"   type="textarea" rows="1"
@@ -220,7 +222,7 @@
     </van-dialog>
     </div>
     <div class="patien-modal-box">
-      <van-dialog v-model="patienModalShow" :title="isPressEdit ? `病人${updateIndex+1}`: `病人${templatelistTwo.length+1}`" show-cancel-button width="92%"
+      <van-dialog v-model="patienModalShow" :title="isPressEdit ? `病人${updateIndex+1}`: `病人${templatelistTwo.length+1}`" show-cancel-button
                   use-slot
                   @confirm="patienModalSure"
                   @cancel="patienModalCancel"
@@ -487,7 +489,7 @@ export default {
         }, 0);
       },
 
-      // 右边下拉框菜单点击
+      // 右边下拉菜单点击事件
       leftLiCLick (index) {
         this.liIndex = index;
         this.userLoginOut(this.proId, this.userInfo.userName)
@@ -888,6 +890,7 @@ export default {
           patientName: '',
           patientNumber: '',
           actualData: 0,
+          genderValue: '0',
           transportList: this.transportTypeChild,
           sampleList: this.transportTypeParent,
           sampleValue: this.transportantTaskMessage.value,
@@ -1201,9 +1204,10 @@ export default {
             margin-top: 8px;
             background: #e8e8e8;
             color: #666666
-          }
-        ;
-
+          };
+          .van-dialog__cancel:before {
+            display: none
+          };
           .van-dialog__confirm {
             border-radius: 30px;
             flex: 0 0 45%;
@@ -1211,6 +1215,9 @@ export default {
             background: #fff;
             color: #43c3f4 !important;
             border: 1px solid #43c3f4
+          };
+          .van-dialog__confirm:after {
+            display: none
           }
         }
       }
@@ -1221,8 +1228,12 @@ export default {
         top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
-        padding: 16px;
-        width: 90% !important;
+        padding: 16px 16px 0 16px;
+        max-height: 80%;
+        display: flex;
+        flex-flow: column;
+        width: 92% !important;
+        box-sizing: border-box;
         .van-dialog__header {
           padding-top: 0;
           text-align: left;
@@ -1233,30 +1244,25 @@ export default {
       ;
 
         .van-dialog__content {
-          max-height: 600px;
-          overflow: scroll;
-
+          flex: 1;
+          overflow: auto;
           .slot-content {
-            padding: 16px;
-
             .bedNumberBox {
+              display: flex;
+              flex-flow: row nowrap;
               height: 60px;
-
               > div {
                 height: 60px;
                 line-height: 60px;
-
                 &:first-child {
-                  width: 25%;
+                  width: 90px;
                   font-size: 16px;
                   color: @color-text-left;
-                  float: left
                 }
               ;
 
                 &:last-child {
-                  width: 75%;
-                  float: right;
+                  flex: 1;
                   position: relative;
 
                   .van-cell {
@@ -1288,22 +1294,21 @@ export default {
 
             .genderBox {
               height: 60px;
-
+              display: flex;
+              flex-flow: row nowrap;
               > div {
                 height: 60px;
                 line-height: 60px;
 
                 &:first-child {
-                  width: 25%;
+                  width: 90px;
                   color: @color-text-left;
-                  font-size: 16px;
-                  float: left
+                  font-size: 16px
                 }
               ;
 
                 &:last-child {
-                  width: 75%;
-                  float: right;
+                  flex: 1;
                   border-bottom: 1px solid #ececec;
                   position: relative;
 
@@ -1369,8 +1374,6 @@ export default {
           ;
 
             .transport-type-child-box {
-              max-height: 100px;
-              width: 100%;
               .transTypeListStyle {
                 background: #44c4f3;
                 color: #fff !important;
@@ -1383,9 +1386,10 @@ export default {
                 line-height: 60px;
                 display: flex;
                 flex-flow: row nowrap;
+                justify-content: space-between;
                 > div {
                   &:first-child {
-                    width: 50%;
+                    flex:0 0 90px;
                     height: 60px;
                     font-size: 16px;
                     color: @color-text-left;
@@ -1393,8 +1397,6 @@ export default {
                   };
                   &:last-child {
                     height: 60px;
-                    flex: 1;
-                    border-bottom: 1px solid #f9f9f9;
                     .num-box {
                       align-items: center;
                       .subtract-box {
@@ -1434,23 +1436,28 @@ export default {
 
         .van-dialog__footer {
           justify-content: space-between;
-
+          min-height: 80px;
+          box-sizing: border-box;
+          padding: 4px 0;
+          align-items: center;
           .van-dialog__cancel {
             border-radius: 30px;
             flex: 0 0 45%;
-            margin-top: 8px;
             background: #e8e8e8;
-            color: #666666
+            color: #666666;
+          };
+          .van-dialog__cancel:before {
+            display: none
           }
-        ;
-
           .van-dialog__confirm {
             border-radius: 30px;
             flex: 0 0 45%;
-            margin-top: 8px;
             background: #fff;
             color: #43c3f4 !important;
             border: 1px solid #43c3f4
+          };
+          .van-dialog__confirm:after {
+            display: none
           }
         }
       }
@@ -1473,6 +1480,7 @@ export default {
     .templateOne {
       flex:1;
       overflow: auto;
+      overflow-x: hidden;
       margin: 0 auto;
       width: 100%;
       display: flex;
@@ -1576,6 +1584,7 @@ export default {
             height: 60px;
             position: relative;
             width: 78%;
+            overflow-x: hidden;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -1588,9 +1597,11 @@ export default {
               /deep/ .input {
                 height: 40px !important;
                 padding: 0 4px !important;
+                box-sizing: border-box;
                 border: none;
                 input {
                   background: #f9f9f9;
+                  overflow: auto;
                   font-size: 15px !important
                 }
               };
@@ -1746,8 +1757,7 @@ export default {
       overflow: auto;
       margin: 0 auto;
       width: 100%;
-      //display: flex;
-      //flex-flow: column nowrap;
+      overflow-x: hidden;
       .transport-type-area {
         width: 100%;
         flex:1;
@@ -1838,6 +1848,7 @@ export default {
             height: 60px;
             position: relative;
             width: 68%;
+            overflow-x: hidden;
             .main {
               color: @color-text-right;
               position: absolute;
@@ -1851,8 +1862,10 @@ export default {
                 height: 40px !important;
                 padding: 0 4px !important;
                 border: none;
+                box-sizing: border-box;
                 input {
                   background: #f9f9f9;
+                  overflow: auto;
                   font-size: 15px !important
                 }
               };
@@ -2187,20 +2200,21 @@ export default {
         }
         .add-message {
           width: 96%;
-          height: 40px;
+          height: 41px;
+          line-height: 41px;
           margin-top: 8px;
           margin-bottom: 8px;
           margin-left: 2%;
-          line-height: 40px;
-          text-align: center;
           color: #43c3f3;
+          text-align: center;
           border: 1px solid #44c3f3;
           border-radius: 20px;
           font-size: 16px;
           span {
-            &:first-child {
-              margin-right: 6px;
-              vertical-align: middle;
+            vertical-align: middle;
+            .van-icon {
+              width: 20px;
+              vertical-align: -2px;
             }
           }
         };
