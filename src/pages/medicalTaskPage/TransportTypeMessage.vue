@@ -129,7 +129,6 @@
             <div class="destination-title">科室选择</div>
             <div class="destination-content creat-chooseHospital-content-two" v-if="destinListShow">
               <Ldselect :list="destinationList"
-                        :multiple="true"
                          label-key="value" value-key="id"
                          clearable
                          placeholder="请选择"
@@ -322,7 +321,7 @@ export default {
       destinationId: '',
       destinationName: '',
       destinationListOneValue: '',
-      destinationListValue: [],
+      destinationListValue: '',
       transportTypeParent: [],
       transportTypeChild: [],
       templatelistTwo: [
@@ -1005,10 +1004,12 @@ export default {
           //   return
           // };
           let taskMessage = {
-            setOutPlaceId: this.userInfo.depId,  //出发地ID
-            setOutPlaceName: this.userInfo.depName,  //出发地名称
-            destinationId: !this.destinationListOneValue ? '' : this.destinationListOneValue,   //目的地ID
-            destinationName: !this.destinationListOneValue ? '' : this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
+            // setOutPlaceId: this.userInfo.depId,  //出发地ID
+            // setOutPlaceName: this.userInfo.depName,  //出发地名称
+            setOutPlaceId: this.destinationListOneValue == '' ? this.userInfo.depId : this.destinationListOneValue, //出发地ID
+            setOutPlaceName: this.destinationListOneValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListOneValue),//出发地名称
+            // destinationId: !this.destinationListOneValue ? '' : this.destinationListOneValue,   //目的地ID
+            // destinationName: !this.destinationListOneValue ? '' : this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
             parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
             parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
             taskTypeId: this.typeValue,  //运送类型 ID
@@ -1042,8 +1043,8 @@ export default {
           //   return
           // };
           let taskMessageTwo = {
-            setOutPlaceId: this.userInfo.depId, //出发地ID
-            setOutPlaceName: this.userInfo.depName, //出发地名称
+            setOutPlaceId: this.destinationListValue == '' ? this.userInfo.depId : this.destinationListValue, //出发地ID
+            setOutPlaceName: this.destinationListValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListValue),//出发地名称
             destinations: [],//多个目的地列表
             patientInfoList: [], //多个病人信息列表
             priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
@@ -1059,14 +1060,14 @@ export default {
             createType: 1 //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
           };
           // 获取目的地列表数据
-          if (this.destinationListValue.length > 0) {
-            for (let item of this.destinationListValue) {
-              taskMessageTwo.destinations.push({
-                destinationId: item,
-                destinationName: this.getDepartmentNameById(item)
-              })
-            }
-          };
+          // if (this.destinationListValue.length > 0) {
+          //   for (let item of this.destinationListValue) {
+          //     taskMessageTwo.destinations.push({
+          //       destinationId: item,
+          //       destinationName: this.getDepartmentNameById(item)
+          //     })
+          //   }
+          // };
           // 获取多个病人信息列表数据
           for (let patientItem of this.templatelistTwo) {
             taskMessageTwo.patientInfoList.push({

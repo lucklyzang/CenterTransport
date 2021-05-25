@@ -28,7 +28,7 @@
              <div class="handle-message-line-wrapper">
                <p>
                  <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
-                 <span class="message-tit-real" style="color:#b1d676">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
+                 <span class="message-tit-real" :class="[dispatchTaskMessage.priority==1 ? 'priorityOneStyle' : 'priorityTwoStyle']">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
                </p>
              </div>
             <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
@@ -859,6 +859,13 @@ export default {
             line-height: 30px;
             flex-flow: row nowrap;
             color: #a0a0a0;
+            .priorityOneStyle {
+              color: #b1d676 !important
+            };
+            .priorityTwoStyle {
+              color: red !important;
+              font-weight: bold
+            };
             span {
               display: inline-block;
             };
@@ -1041,9 +1048,9 @@ export default {
             height: 35px;
             line-height: 35px;
             span {
-              color: #a0a0a0;
+              color: black;
               &:last-child {
-                color: black
+                color: #a0a0a0;
               }
             }
           };
@@ -1057,9 +1064,9 @@ export default {
               height: 25px;
               span {
                 display: inline-block;
-                color: #a0a0a0;
+                color: black;
                 &:nth-child(2) {
-                  color: black;
+                  color: #a0a0a0;
                   margin: 0 8px
                 };
                 &:nth-child(3) {

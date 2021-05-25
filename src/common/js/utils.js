@@ -502,6 +502,7 @@ export const compareDateTime = (t1,t2) => {
 */
 
 export const  mergeMethods =  (testData) => {
+  if (!Array.isArray(testData)) { return };
   var mergeData = [];
   for (var i = 0, len = testData.length; i < len; i++ ) {
     var temporaryObj = {typeList:[]};
