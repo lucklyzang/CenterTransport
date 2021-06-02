@@ -717,7 +717,7 @@ export default {
           return '女'
           break;
         default:
-          return '未知'
+          return '未输入'
       }
     },
 
