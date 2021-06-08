@@ -63,7 +63,7 @@ export const IsPC = () => {
 　let p = navigator.platform;
   　　system.win = p.indexOf("Win") == 0;
   　　system.mac = p.indexOf("Mac") == 0;
-  　　system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
+  　　system.xll = (p == "X11") || (p.indexOf("Linux") == 0);
   　　system.ipad = (navigator.userAgent.match(/iPad/i) != null) ? true : false;
 　if (system.win || system.mac || system.xll || system.ipad) {
     flag = true
@@ -515,6 +515,7 @@ export const  mergeMethods =  (testData) => {
     });
     for (var innerI = 0, innerLen = testData[i]['typeList'].length; innerI < innerLen; innerI++ ) {
       // 判断运送大类是否存在已有的数组元素中
+      if (testData[i]['typeList'].length == 0) { continue };
       var tragetIndex = mergeData.findIndex(function(item) { return item.parentTypeName == testData[i]['typeList'][innerI]['parentTypeName']});
       if (tragetIndex == -1) {
         // 判断该病人是否存在多个运送大类

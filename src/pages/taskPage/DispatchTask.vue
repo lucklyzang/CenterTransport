@@ -80,7 +80,8 @@
                 <p>运送类型 : </p>
                 <p>
                   <span>
-                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
+                    {{extractTransportType(item.patientInfoList)}}
+<!--                    {{item.patientInfoList[0].typeList.length == 0  ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}-->
                   </span>
                 </p>
               </div>
@@ -138,7 +139,8 @@
                 <p>运送类型: </p>
                 <p>
                    <span>
-                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
+                      {{extractTransportType(item.patientInfoList)}}
+<!--                    {{item.patientInfoList[0].typeList.length == 0  ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}-->
                   </span>
                 </p>
               </div>
@@ -196,7 +198,8 @@
                 <p>运送类型 : </p>
                 <p>
                    <span>
-                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
+                      {{extractTransportType(item.patientInfoList)}}
+<!--                    {{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}-->
                   </span>
                 </p>
               </div>
@@ -254,7 +257,8 @@
                 <p>运送类型 : </p>
                 <p>
                   <span>
-                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
+                     {{extractTransportType(item.patientInfoList)}}
+<!--                    {{item.patientInfoList[0].typeList.length == 0  ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}-->
                   </span>
                 </p>
               </div>
@@ -335,7 +339,8 @@
               <p>运送类型 : </p>
               <p>
                    <span>
-                    {{item.patientInfoList[0].typeList[0].parentTypeName == '' ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList[0].taskTypeName == '' ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}
+                      {{extractTransportType(item.patientInfoList)}}
+<!--                    {{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].parentTypeName}}-{{item.patientInfoList[0].typeList.length == 0 ? '无': item.patientInfoList[0].typeList[0].taskTypeName}}-->
                   </span>
               </p>
             </div>
@@ -1056,6 +1061,22 @@
           }).then(() => {
           });
         })
+      },
+
+      // 提取靠前的运送类型
+      extractTransportType (transParent) {
+        if (transParent.length == 0) { return "无-无"};
+        for (let i = 0, len = transParent.length; i < len; i++) {
+          if  (transParent[i]['typeList'].length == 0) {continue};
+          for (let innerI = 0, innerlen = transParent[i]['typeList'].length; innerI < innerlen; innerI++) {
+            if (transParent[i]['typeList'][innerI].length !== 0) {
+              if (transParent[i]['typeList'][innerI]['parentTypeName'] != '' && transParent[i]['typeList'][innerI]['taskTypeName'] != '') {
+                return `${transParent[i]['typeList'][innerI]['parentTypeName']}-${transParent[i]['typeList'][innerI]['taskTypeName']}`
+              }
+            }
+          }
+        };
+        return "无-无"
       },
 
       // 退回原因取消事件
