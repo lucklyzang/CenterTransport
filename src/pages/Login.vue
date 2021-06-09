@@ -249,7 +249,7 @@ export default {
           } else {
             this.$toast('未获取到channelId')
           }
-        }
+        };
         // 向客户端发送信标服务器地址
         try {
           let xinbiaoInfo = await this.postUrl(userInfo.id);
