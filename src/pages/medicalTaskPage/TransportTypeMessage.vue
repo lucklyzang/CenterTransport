@@ -1084,13 +1084,23 @@ export default {
             if (this.templatelistTwo[i]['transportList'].length > 0) {
               // 获取选中的运送类型小类
               let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.typerNumber > 0});
-              for (let innerItem of checkChildTypeList) {
+              if (checkChildTypeList.length > 0) {
+                for (let innerItem of checkChildTypeList) {
+                  taskMessageTwo.patientInfoList[i]['typeList'].push({
+                    quantity: innerItem['typerNumber'],
+                    parentTypeId: this.templatelistTwo[i]['sampleId'],
+                    parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                    taskTypeId: innerItem['value'],
+                    taskTypeName: innerItem['text']
+                  })
+                }
+              } else {
                 taskMessageTwo.patientInfoList[i]['typeList'].push({
-                  quantity: innerItem['typerNumber'],
+                  quantity: '',
                   parentTypeId: this.templatelistTwo[i]['sampleId'],
                   parentTypeName: this.templatelistTwo[i]['sampleValue'],
-                  taskTypeId: innerItem['value'],
-                  taskTypeName: innerItem['text']
+                  taskTypeId: '',
+                  taskTypeName: ''
                 })
               }
             }
