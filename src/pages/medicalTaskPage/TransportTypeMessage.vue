@@ -1084,6 +1084,7 @@ export default {
             if (this.templatelistTwo[i]['transportList'].length > 0) {
               // 获取选中的运送类型小类
               let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.typerNumber > 0});
+              // 运送类型小类存在没选的情况
               if (checkChildTypeList.length > 0) {
                 for (let innerItem of checkChildTypeList) {
                   taskMessageTwo.patientInfoList[i]['typeList'].push({

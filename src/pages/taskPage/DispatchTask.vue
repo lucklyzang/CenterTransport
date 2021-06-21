@@ -1070,8 +1070,12 @@
           if  (transParent[i]['typeList'].length == 0) {continue};
           for (let innerI = 0, innerlen = transParent[i]['typeList'].length; innerI < innerlen; innerI++) {
             if (transParent[i]['typeList'][innerI].length !== 0) {
-              if (transParent[i]['typeList'][innerI]['parentTypeName'] != '' && transParent[i]['typeList'][innerI]['taskTypeName'] != '') {
-                return `${transParent[i]['typeList'][innerI]['parentTypeName']}-${transParent[i]['typeList'][innerI]['taskTypeName']}`
+              if (transParent[i]['typeList'][innerI]['parentTypeName'] != '') {
+                if (transParent[i]['typeList'][innerI]['taskTypeName'] != '') {
+                  return `${transParent[i]['typeList'][innerI]['parentTypeName']}-${transParent[i]['typeList'][innerI]['taskTypeName']}`
+                } else {
+                  return `${transParent[i]['typeList'][innerI]['parentTypeName']}-无`
+                }
               }
             }
           }
