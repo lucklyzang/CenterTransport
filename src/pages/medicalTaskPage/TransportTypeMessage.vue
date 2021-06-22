@@ -1097,12 +1097,20 @@ export default {
                 }
               } else {
                 taskMessageTwo.patientInfoList[i]['typeList'].push({
-                  quantity: '',
+                  quantity: 1,
                   parentTypeId: this.templatelistTwo[i]['sampleId'],
                   parentTypeName: this.templatelistTwo[i]['sampleValue'],
                   taskTypeId: '',
                   taskTypeName: ''
-                })
+                });
+                // 没选运送类型小类时,大类也算一个数量
+                taskMessageTwo.patientInfoList[i]['quantity'] = 1;
+                this.templatelistTwo[i]['actualData'] = 1;
+                // 重新计算运送类型总数
+                this.totalNumber  = this.templatelistTwo.reduce((accumulator, currentValue) => {
+                  return accumulator + Number(currentValue.actualData)
+                },0);
+                taskMessageTwo['actualCount'] = this.totalNumber
               }
             }
           };
