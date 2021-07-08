@@ -429,6 +429,7 @@
         waitHandleBox: true,
         isRefresh: false,
         waitBaskList: [],
+        tempFlagId: '',
         taskGetPng: require('@/components/images/task-get.png'),
         taskSearchPng: require('@/components/images/task-search.png'),
         noEndPng: require('@/common/images/home/no-end.png'),
@@ -649,7 +650,8 @@
                     number: item.number,
                     actualCount: item.actualCount,
                     distName: item.distName,
-                    hasSanOut: item.hasSanOut
+                    hasSanOut: item.hasSanOut,
+                    tempFlag: item.tempFlag
                   })
                 } else if (this.templateType === 'template_two') {
                   temporaryTaskListFirst.push({
@@ -671,7 +673,8 @@
                     distName: item.distName,
                     destinations: item.destinations,
                     hasSanOut: item.hasSanOut,
-                    patientInfoList: item.patientInfoList
+                    patientInfoList: item.patientInfoList,
+                    tempFlag: null
                   })
                 }
               };
@@ -758,7 +761,8 @@
                     isSign: item.isSign,
                     number: item.number,
                     actualCount: item.actualCount,
-                    distName: item.distName
+                    distName: item.distName,
+                    tempFlag: item.tempFlag
                   })
                 } else if (this.templateType === 'template_two') {
                   this.stateCompleteList.push({
@@ -780,7 +784,8 @@
                     distName: item.distName,
                     destinations: item.destinations,
                     hasSanOut: item.hasSanOut,
-                    patientInfoList: item.patientInfoList
+                    patientInfoList: item.patientInfoList,
+                    tempFlag: null
                   })
                 }
               };
@@ -1007,6 +1012,7 @@
       sendBack (item) {
         this.taskId = item.id;
         this.toolShow = true;
+        this.tempFlagId = this.templateType == 'template_one' ? item.tempFlag : null;
         querySendBackDispatchTaskReason(this.proId)
         .then((res) => {
           this.vehicleOperationList = [];
@@ -1047,7 +1053,7 @@
           this.$toast('请选择退回原因');
           return
         };
-        sendBackDispatchTask(this.proId,this.taskId,this.toolText)
+        sendBackDispatchTask(this.proId,this.taskId,this.toolText,this.tempFlagId)
         .then((res) => {
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.msg}`);
@@ -1124,7 +1130,7 @@
 
       // 获取待处理任务事件
       getTask (item) {
-        getDispatchTask(item.id,this.workerId)
+        getDispatchTask(item.id,this.workerId,item.tempFlag)
         .then(res => {
           if (res && res.data.code == 200) {
             this.$dialog.alert({

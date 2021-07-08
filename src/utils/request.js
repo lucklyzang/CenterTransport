@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store'
 import router from '../router'
 import Vue from 'vue';
-import { removeAllLocalStorage } from '@/common/js/utils'
+import { removeAllLocalStorage, IsPC } from '@/common/js/utils'
 import { Dialog, Toast } from 'vant';
 // 全局注册
 Vue.use(Dialog);
@@ -26,6 +26,12 @@ service.interceptors.request.use(
     if (store.getters.templateType) {
       config.headers['REQUEST_TEMPLATE'] = store.getters.templateType
     };
+    // 请求头添加设备唯一标识号(IMEI)
+    if (!IsPC()) {
+      if (window.android.getImei()) {
+        config.headers['MOBILE_MARK'] = window.android.getImei()
+      }
+    };
     return config
   },
 
@@ -42,6 +48,25 @@ service.interceptors.response.use(
     if (response.headers['token']) {
       store.commit('changeToken', response.headers['token']);
       setStore('questToken', response.headers['token']);
+    };
+    if (response.headers.hasOwnProperty('offline')) {
+      Dialog.alert({
+        message: '账号已在其它设备登录,你已被强制下线!',
+        closeOnPopstate: false
+      }).then(() => {
+      });
+      if(store.getters.globalTimer) {window.clearInterval(store.getters.globalTimer)};
+      removeAllLocalStorage();
+      // 退出信标服务器连接
+      try {
+        window.android.logOut()
+      } catch (err) {
+        Toast(`${err}`)
+      };
+      setTimeout(() => {
+        router.push({path: '/'})
+      },2000);
+      return response
     };
     if (!response.headers.hasOwnProperty('token')) {
       if (!store.getters.overDueWay) {

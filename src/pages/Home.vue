@@ -860,6 +860,7 @@
               }
             })
           } else {
+            if (res.headers.hasOwnProperty('offline')) {return};
             this.$toast(`${res.data.msg}`);
           }
         })

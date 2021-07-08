@@ -330,7 +330,8 @@ export default {
       }
     });
     this.echoPhoto();
-    this.getTaskMessage()
+    this.getTaskMessage();
+    console.log(this.dispatchTaskMessage);
   },
 
   beforeRouteLeave(to, from, next) {
@@ -484,7 +485,7 @@ export default {
 
     // 获取任务详情
     getTaskMessage () {
-      getDispatchTaskMessageById(this.dispatchTaskId)
+      getDispatchTaskMessageById(this.dispatchTaskId,this.dispatchTaskMessage.tempFlag)
       .then((res) => {
         if (res && res.data.code == 200) {
           this.showChildrenComponent = true;
@@ -568,12 +569,14 @@ export default {
         this.updateTaskState({
           proId: this.proId, //当前项目ID
           id: this.dispatchTaskMessage.id, //当前任务ID
+          tempFlag: this.dispatchTaskMessage.tempFlag,
           state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
         })
       } else {
         this.updateTaskState({
           proId: this.proId, //当前项目ID
           id: this.dispatchTaskMessage.id, //当前任务ID
+          tempFlag: this.dispatchTaskMessage.tempFlag,
           state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
         })
       }

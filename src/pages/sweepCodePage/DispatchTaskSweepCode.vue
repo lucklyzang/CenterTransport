@@ -281,7 +281,8 @@ export default {
           type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
           taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
           photo: this.compressImgUrl, //base64字符串必填
-          flag: this.isSign == 0 ? 1 : 0
+          flag: this.isSign == 0 ? 1 : 0,
+          tempFlag: this.dispatchTaskMessage.tempFlag
         }
       );
     },
@@ -439,7 +440,8 @@ export default {
             photo: this.currentElectronicSignature, //base64字符串必填
             depId: this.departmentId, //当前科室ID 必输
             depNo: this.currentDepartmentNum, //当前科室编号 必输
-            flag: 1
+            flag: 1,
+            tempFlag: this.dispatchTaskMessage.tempFlag
           }
         );
       }
@@ -463,7 +465,8 @@ export default {
             departmentNo: this.departmentNo, //项目编号
             departmentId: this.departmentId,  //科室ID
             checkType: this.dispatchTaskDepartmentType,   //校验类型  出发地-0,目的地-1
-            workerId: this.userId // 用户id
+            workerId: this.userId, // 用户id,
+            tempFlag: this.dispatchTaskMessage.tempFlag
           });
           // 存储扫过的非单一目的地
           if (!this.isSingleDestination && this.dispatchTaskDepartmentType == 1) {
@@ -526,12 +529,14 @@ export default {
           this.updateTaskState({
             proId: this.proId, //当前项目ID
             id: this.dispatchTaskMessage.id, //当前任务ID
+            tempFlag: this.dispatchTaskMessage.tempFlag,
             state: 4//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
           })
         } else {
           this.updateTaskState({
             proId: this.proId, //当前项目ID
             id: this.dispatchTaskMessage.id, //当前任务ID
+            tempFlag: this.dispatchTaskMessage.tempFlag,
             state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
           })
         }
@@ -626,6 +631,7 @@ export default {
         this.updateTaskState({
           proId: this.proId, //当前项目ID
           id: this.dispatchTaskMessage.id, //当前任务ID
+          tempFlag: this.dispatchTaskMessage.tempFlag,
           state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
         })
       } else if (this.dispatchTaskDepartmentType == 1) {
@@ -637,6 +643,7 @@ export default {
             this.updateTaskState({
               proId: this.proId, //当前项目ID
               id: this.dispatchTaskMessage.id, //当前任务ID
+              tempFlag: this.dispatchTaskMessage.tempFlag,
               state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
             })
           } else {
@@ -646,6 +653,7 @@ export default {
               this.updateTaskState({
                 proId: this.proId, //当前项目ID
                 id: this.dispatchTaskMessage.id, //当前任务ID
+                tempFlag: this.dispatchTaskMessage.tempFlag,
                 state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
               })
             }

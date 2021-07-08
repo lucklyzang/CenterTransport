@@ -53,9 +53,9 @@ export function getDispatchTaskComplete(data) {
   })
 };
 // 查询调度任务(根据id)
-export function getDispatchTaskMessageById(taskId) {
+export function getDispatchTaskMessageById(taskId,tempFlag) {
   return request({
-    url: store.getters.templateType == 'template_one' ? `task/query/${taskId}` : `dispatch/app/query/${taskId}`,
+    url: store.getters.templateType == 'template_one' ? `task/query/${taskId}/${tempFlag}` : `dispatch/app/query/${taskId}`,
     method: 'get'
   })
 };
@@ -68,9 +68,9 @@ export function updateDispatchTask(data) {
   })
 };
 // 获取调度任务的操作
-export function getDispatchTask(taskId,workerId) {
+export function getDispatchTask(taskId,workerId,tempFlag) {
   return request({
-    url: store.getters.templateType == 'template_one' ? `task/getTransTask/${taskId}/${workerId}` : `dispatch/getTransTask/${taskId}/${workerId}`,
+    url: store.getters.templateType == 'template_one' ? `task/getTransTask/${taskId}/${workerId}/${tempFlag}` : `dispatch/getTransTask/${taskId}/${workerId}`,
     method: 'get'
   })
 };
@@ -85,9 +85,9 @@ export function querySendBackDispatchTaskReason(proId) {
   })
 };
 // 调度任务退回接口
-export function sendBackDispatchTask(proId,taskId,reason) {
+export function sendBackDispatchTask(proId,taskId,reason,tempFlag) {
   return request({
-    url: store.getters.templateType == 'template_one' ? `task/sendBack/${proId}/${taskId}?reason=${reason}` : `dispatch/sendBack/${proId}/${taskId}?reason=${reason}`,
+    url: store.getters.templateType == 'template_one' ? `task/sendBack/${proId}/${taskId}/${tempFlag}?reason=${reason}` : `dispatch/sendBack/${proId}/${taskId}?reason=${reason}`,
     method: 'get'
   })
 };
