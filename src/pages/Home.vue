@@ -120,18 +120,18 @@
                         </p>
                         <P class="destiname-line" v-if="templateType === 'template_one'">
                           <span class="message-tit">目的地:</span>
-                          <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
+                          <span v-show="item.state !== 0 && item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
                             class="message-tit-real message-tit-real-style">
                             {{item.distName.length > 0 ? itemInner : '无'}}
                           </span>
-                          <span v-else-if="item.state == 0 || item.state == 1"
+                          <span v-show="item.state == 0 || item.state == 1"
                             class="message-tit-real message-tit-real-style">
                             {{!item.destinationName ? '无' : item.destinationName}}
                           </span>
                         </P>
                         <P class="destiname-line" v-else-if="templateType == 'template_two'">
                           <span class="message-tit">目的地:</span>
-                          <span v-if="item.state !== 0 || item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
+                          <span v-show="item.state !== 0 && item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
                                 class="message-tit-real message-tit-real-style">
                             {{item.distName.length > 0 ? itemInner : '无'}}
                           </span>
