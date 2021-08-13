@@ -56,7 +56,7 @@
       </div>
     </div>
     <van-pull-refresh v-model="isRefresh" class="wait-handle-box" @refresh="onRefresh" v-show="waitHandleBox" success-text="刷新成功">
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1 && appointTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -107,7 +107,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 1">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 1 && appointTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -158,7 +158,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 2">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 2 && appointTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -209,7 +209,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 3">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 3 && appointTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -260,7 +260,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 4">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == 4 && appointTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -416,6 +416,7 @@
     data () {
       return {
         showLoadingHint: false,
+        appointTaskListShow: false,
         noDataShow: false,
         reasonShow: false,
         transferShow:  false,
@@ -892,11 +893,12 @@
         queryAppointTaskMessage (data)
         .then((res) => {
           this.showLoadingHint = false;
+          this.isRefresh = false;
           let temporaryTaskListFirst = [];
           this.stateFilterList = [];
           if (res && res.data.code == 200) {
-            this.isRefresh = false;
             if (res.data.data.length > 0) {
+              this.appointTaskListShow = true;
               this.noDataShow = false;
               for (let item of res.data.data) {
                 temporaryTaskListFirst.push({
@@ -953,15 +955,17 @@
                 }
               }
             } else {
-              this.noDataShow = true;
+              this.appointTaskListShow = false;
+              this.noDataShow = true
             }
           } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
-              this.noDataShow = true;
             });
+            this.appointTaskListShow = false;
+            this.noDataShow = true
           }
         })
         .catch((err) => {
@@ -969,9 +973,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
-            this.noDataShow = true;
           });
+          this.appointTaskListShow = false;
+          this.noDataShow = true
           this.showLoadingHint = false;
+          this.isRefresh = false
         })
       },
 
@@ -1001,9 +1007,10 @@
         queryAppointTaskMessage(data).then((res) => {
           this.stateCompleteList = [];
           this.showLoadingHint = false;
-          this.noDataShow = true
+          this.isRefresh = false;
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.appointTaskListShow = true;
               this.noDataShow = false;
               for (let item of res.data.data) {
                 this.stateCompleteList.push({
@@ -1029,15 +1036,17 @@
                 })
               }
             } else {
-              this.noDataShow = true;
+              this.appointTaskListShow = false;
+              this.noDataShow = true
             }
           } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
-              this.noDataShow = true;
             });
+            this.appointTaskListShow = false;
+            this.noDataShow = true
           }
         })
         .catch((err) => {
@@ -1045,9 +1054,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
-            this.noDataShow = true;
           });
+          this.appointTaskListShow = false;
+          this.noDataShow = true
           this.showLoadingHint = false;
+          this.isRefresh = false
         })
       },
 

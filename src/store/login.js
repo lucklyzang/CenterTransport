@@ -17,7 +17,9 @@ export default {
     taskDetailsMessage: {},
     taskType: '',
     globalTimer: null,
+    globalCircleTimer: null,
     isFreshHomePage: false,
+    isNewCircle: false
   },
   getters:{
     userInfo : state => state.userInfo,
@@ -33,7 +35,9 @@ export default {
     taskDetailsMessage: state => state.taskDetailsMessage,
     taskType: state => state.taskType,
     globalTimer: state => state.globalTimer,
-    isFreshHomePage: state => state.isFreshHomePage
+    globalCircleTimer: state => state.globalCircleTimer,
+    isFreshHomePage: state => state.isFreshHomePage,
+    isNewCircle: state => state.isNewCircle
   },
   mutations:{
     storeUserInfo (state, playLoad) {
@@ -87,9 +91,17 @@ export default {
     changeGlobalTimer (state, playLoad) {
       state.globalTimer = playLoad
     },
+    // 改变全局定时器的状态
+    changeGlobalCircleTimer (state, playLoad) {
+      state.globalCircleTimer = playLoad
+    },
     // 改变是否刷新首页的状态
     changeIsFreshHomePage (state, playLoad) {
       state.isFreshHomePage = playLoad
+    },
+    // 修改是否是新循环任务状态
+    changeIsNewCircle (state, playLoad) {
+      state.isNewCircle = playLoad
     }
   },
   actions:{}

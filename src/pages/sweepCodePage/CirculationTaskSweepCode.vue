@@ -97,7 +97,8 @@ export default {
       'isCollectEnterSweepCodePage',
       'stipulateOfficeList',
       'arriveDepartmentId',
-      'circulationDetails'
+      'circulationDetails',
+      'isNewCircle'
     ]),
     proId () {
       return JSON.parse(getStore('userInfo')).extendData.proId
@@ -112,7 +113,8 @@ export default {
       'changeTitleTxt',
       'changeStoreArriveDeparnmentId',
       'changeIsrefreshCirculationConnectPage',
-      'changeVerifyCirculationOfficeId'
+      'changeVerifyCirculationOfficeId',
+      'changeVerifyNewCirculationOfficeId'
     ]),
 
      // 右边下拉框菜单点击
@@ -173,10 +175,18 @@ export default {
             // 存储送达的科室编号
             this.changeStoreArriveDeparnmentId(departmentNo);
             setStore('currentDepartmentId', departmentNo);
+            // 存储新循环任务要送达的科室id
+            this.changeVerifyNewCirculationOfficeId(departmentId);
             this.changeIsrefreshCirculationConnectPage(true);
-            this.$router.push({path:'/circulationTaskMessageConnect'});
-            this.changeTitleTxt({tit:'循环信息交接'});
-            setStore('currentTitle','循环信息交接')
+            if (this.isNewCircle) {
+              this.$router.push({path:'/newCirculationTaskConnectMessage'});
+              this.changeTitleTxt({tit:'待送达标本'});
+              setStore('currentTitle','待送达标本')
+            } else {
+              this.$router.push({path:'/circulationTaskMessageConnect'});
+              this.changeTitleTxt({tit:'循环信息交接'});
+              setStore('currentTitle','循环信息交接')
+            }
           }
         }
       } else {
@@ -198,12 +208,20 @@ export default {
       this.showLoadingHint = true;
       judgeDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 存储校验通过的科室id
+          // 存储校验通过的科室编号
           this.changeVerifyCirculationOfficeId(data['departmentNo']);
+          // 存储新循环任务校验通过的科室id
+          this.changeVerifyNewCirculationOfficeId(data['departmentId']);
           if(this.isCollectEnterSweepCodePage) {
-            this.$router.push({path:'/circulationTaskCollectMessage'});
-            this.changeTitleTxt({tit:'循环信息采集'});
-            setStore('currentTitle','循环信息采集')
+            if (this.isNewCircle) {
+              this.$router.push({path:'/newCirculationTaskCollectMessage'});
+              this.changeTitleTxt({tit:'标本采集'});
+              setStore('currentTitle','标本采集')
+            } else {
+              this.$router.push({path:'/circulationTaskCollectMessage'});
+              this.changeTitleTxt({tit:'循环信息采集'});
+              setStore('currentTitle','循环信息采集')
+            }
           }
         } else {
           this.backTo();

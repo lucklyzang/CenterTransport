@@ -35,6 +35,18 @@
                  <span class="message-tit-real">{{circulationDetails.startUpTime}}</span>
                </P>
              </div>
+             <div class="handle-message-line-wrapper" v-show="this.isNewCircle">
+               <P>
+                 <span class="message-tit">已收集标本包数 :&nbsp;</span>
+                 <span class="message-tit-real">{{circulationDetails.packages}}</span>
+               </P>
+             </div>
+             <div class="handle-message-line-wrapper" v-show="this.isNewCircle">
+               <P>
+                 <span class="message-tit">未送达标本包数 :&nbsp;</span>
+                 <span class="message-tit-real">{{circulationDetails.notArrive}}</span>
+               </P>
+             </div>
            </div>
         </div>
       </div>
@@ -51,8 +63,11 @@
         <span @click="joinSweepCode">扫描二维码</span>
         <span @click="circulationTaskArrived">送达</span>
       </p>
-      <p class="circultion-task-btn-bottom" v-show="circulationDetails.state == 7">
+      <p class="circultion-task-btn-middle" v-show="circulationDetails.state == 7">
         <span @click="backTo">返回</span>
+      </p>
+      <p class="circultion-task-btn-bottom" v-show="circulationDetails.state != 7 && isNewCircle">
+        <span @click="skipCurrentSample">当前标本信息</span>
       </p>
     </div>
   </div>
@@ -99,7 +114,8 @@ export default {
       'userInfo',
       'circulationDetails',
       'completeDeparnmentInfo',
-      'circulationTaskId'
+      'circulationTaskId',
+      'isNewCircle'
     ]),
 
     proId () {
@@ -227,6 +243,8 @@ export default {
                 taskTypeName: res.data.data.taskTypeName,
                 workerName: res.data.data.workerName,
                 state: res.data.data.state,
+                packages: this.circulationDetails ? res.data.data.packages : '',
+                notArrive: this.circulationDetails ? res.data.data.notArrive : '',
                 priority: res.data.data.priority,
                 taskNumber: res.data.data.taskNumber,
                 finishTime: res.data.data.finishTime,
@@ -328,8 +346,8 @@ export default {
         if (this.circulationDetails['spaces'].filter((item) => item.check == true).length >= 1) {
           this.changeIsCollectEnterSweepCodePage(false);
           this.$router.push({path: 'circulationTaskSweepCode'});
-          this.changeTitleTxt({tit:'扫码'});
-          setStore('currentTitle','扫码')
+          this.changeTitleTxt({tit: '扫码'});
+          setStore('currentTitle', '扫码')
         } else {
           this.$dialog.alert({
             message: '请至少采集完一个科室,才能进行送达',
@@ -338,6 +356,13 @@ export default {
           });
         }
       }
+    },
+
+    // 跳转到当前标本信息页面
+    skipCurrentSample () {
+      this.$router.push({path:'/currentCirculationTaskSampleMessage'});
+      this.changeTitleTxt({tit:'全部标本信息'});
+      setStore('currentTitle','全部标本信息')
     },
 
     // 进入扫码页
@@ -351,9 +376,9 @@ export default {
       } else {
         this.changeArriveDepartmentId(false);
         this.changeIsCollectEnterSweepCodePage(true);
-        this.$router.push({'path':'/circulationTaskSweepCode'});
-        this.changeTitleTxt({tit:'扫码'});
-        setStore('currentTitle','扫码')
+        this.$router.push({'path': '/circulationTaskSweepCode'});
+        this.changeTitleTxt({tit: '扫码'});
+        setStore('currentTitle', '扫码')
       }
     }
   }
@@ -434,7 +459,7 @@ export default {
               display: inline-block;
             };
             span:first-child {
-              width: 35%
+              width: 40%
             };
             .message-tit-real-style {
               color: #2895ea;
@@ -558,9 +583,20 @@ export default {
           }
         }
       };
+      .circultion-task-btn-middle {
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        span {
+          border-radius: 4px;
+          width: 100%;
+          background-image: linear-gradient(to right, #37d4fd, #429bff);
+        }
+      };
       .circultion-task-btn-bottom {
         height: 40px;
         line-height: 40px;
+        margin-top: 8px;
         text-align: center;
         span {
           border-radius: 4px;

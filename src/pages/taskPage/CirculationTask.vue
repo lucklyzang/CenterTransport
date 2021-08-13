@@ -41,7 +41,7 @@
       </div>
     </div>
     <van-pull-refresh class="circulation-task-list-box"  v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
-      <div class="circulation-task-list" v-show="stateIndex == -1">
+      <div class="circulation-task-list" v-show="stateIndex == -1 && circulationTaskListShow">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
           <p class="list-status">
             <img :src="stateTransferImg(item.state)" alt="">
@@ -63,7 +63,7 @@
           </p>
         </div>
       </div>
-      <div class="circulation-task-list" v-show="stateIndex == 2">
+      <div class="circulation-task-list" v-show="stateIndex == 2 && circulationTaskListShow">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
           <p class="list-status">
             <img :src="stateTransferImg(item.state)" alt="">
@@ -85,7 +85,7 @@
           </p>
         </div>
       </div>
-      <div class="circulation-task-list" v-show="stateIndex == 3">
+      <div class="circulation-task-list" v-show="stateIndex == 3 && circulationTaskListShow">
         <div class="wait-handle-list" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
           <p class="list-status">
             <img :src="stateTransferImg(item.state)" alt="">
@@ -108,7 +108,7 @@
         </div>
       </div>
       <div class="circulation-task-list" style="margin-top:10px">
-        <div class="wait-handle-list"  v-show="taskQueryShow" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
+        <div class="wait-handle-list"  v-show="taskQueryShow && circulationTaskListShow" v-for="(item,indexWrapper) in circulationTaskList" :key="`${indexWrapper}-${item}`">
           <p class="list-status">
             <img :src="stateTransferImg(item.state)" alt="">
           </p>
@@ -198,7 +198,8 @@
         'isFreshCirculationTaskPage',
         'userInfo',
         'catch_components',
-        'circulationDetails'
+        'circulationDetails',
+        'isNewCircle'
       ]),
       proId () {
         return JSON.parse(getStore('userInfo')).extendData.proId
@@ -523,6 +524,14 @@
 
       // 开始任务
       startTask (item) {
+        if (item.state == 7 && this.isNewCircle) {
+          this.changeCirculationTaskId(item.id);
+          this.changeCirculationDetails(item);
+          this.$router.push({path:'/newCirculationTaskHistoryDetails'});
+          this.changeTitleTxt({tit:'任务详情'});
+          setStore('currentTitle','任务详情');
+          return
+        };
         // 判断上个任务是否完成或超时
         let currentItemIndex = this.circulationTaskList.indexOf(item);
         if (currentItemIndex != 0) {
@@ -587,11 +596,14 @@
         this.noDataShow = false;
         this.showLoadingHint = true;
         queryCirculationTask(data).then((res) => {
+          if (!res['headers']['token']) {
+            if(windowTimer) {window.clearInterval(windowTimer)}
+          };
           this.showLoadingHint = false;
+          this.isRefresh = false;
           this.circulationTaskList = [];
           let temporaryTaskListFirst = [];
           if (res && res.data.code == 200) {
-            this.isRefresh = false;
             if (res.data.data.length > 0) {
               this.circulationTaskListShow = true;
               this.noDataShow = false;
@@ -695,16 +707,18 @@
               console.log('任务信息',this.circulationTaskList)
             } else {
               this.circulationTaskListShow = false;
-              this.noDataShow = true;
+              this.noDataShow = true
             }
           } else {
+            if (!res) {return};
+            if (res.headers.hasOwnProperty('offline')) {return};
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
-              this.circulationTaskListShow = false;
-              this.noDataShow = true;
             });
+            this.circulationTaskListShow = false;
+            this.noDataShow = true;
           }
         })
         .catch((err) => {
@@ -712,10 +726,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
-            this.circulationTaskListShow = false;
-            this.noDataShow = true;
           });
+          this.circulationTaskListShow = false;
+          this.noDataShow = true;
           this.showLoadingHint = false;
+          this.isRefresh = false
         });
       },
 

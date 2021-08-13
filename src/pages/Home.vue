@@ -539,6 +539,7 @@
     },
 
     mounted() {
+      console.log('新任务',this.isNewCircle);
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
@@ -645,7 +646,8 @@
         'globalTimer',
         'catch_components',
         'isFreshHomePage',
-        'templateType'
+        'templateType',
+        'isNewCircle'
       ]),
       userName () {
        return this.userInfo.userName
@@ -838,7 +840,7 @@
         audio.preloadc = "auto";
         process.env.NODE_ENV == 'development' ? audio.src = "/static/audios/task-info-voice.wav" : audio.src = "/transWeb/static/audios/task-info-voice.wav";
         getNewWork(proId,workerId).then((res) => {
-          // token过期,清除定时器
+          // token过期,清楚定时器
           if (!res['headers']['token']) {
             if(windowTimer) {window.clearInterval(windowTimer)}
           };
@@ -860,15 +862,18 @@
               }
             })
           } else {
-            this.$toast(`${res.data.msg}`);
+            if (res.headers.hasOwnProperty('offline')) {return};
+            this.$toast(`${res.data.msg}`)
           }
         })
         .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
+          if (err.hasOwnProperty('message')) {
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {
+            })
+          }
         })
       },
 
@@ -1100,6 +1105,10 @@
         if (getStore('isClickSure')) {
           this.$store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
         };
+        // 重新存入新循环任务完成标本采集信息的状态
+        if (getStore('completeCollectSample')) {
+          this.$store.commit('changeIsCompleteSampleList',JSON.parse(getStore('completeCollectSample'))['sampleInfo']);
+        };
         // 重新存入调度任务完成扫码的出发地和单一目的地科室信息(id)
         if (getStore('completeDispatchSweepCodeInfo')) {
           this.$store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
@@ -1143,6 +1152,10 @@
         // 页面刷新重新存入科室信息编号
         if (getStore('departmentInfoNo')) {
           this.$store.commit('changeDepartmentInfoListNo', JSON.parse(getStore('departmentInfoNo')));
+        };
+        // 页面刷新重新存入是否为新任务状态
+        if (JSON.parse(getStore('isNewCircle'))['isNewCircle']) {
+          this.$store.commit('changeIsNewCircle', JSON.parse(getStore('isNewCircle'))['isNewCircle']);
         }
       },
 
