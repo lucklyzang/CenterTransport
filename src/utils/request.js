@@ -28,11 +28,13 @@ service.interceptors.request.use(
     };
     // 请求头添加设备唯一标识号(IMEI)
     if (!IsPC()) {
-      if (window.android.getImei()) {
-        config.headers['MOBILE_MARK'] = window.android.getImei()
-      } else {
-        config.headers['MOBILE_MARK'] = ''
-      }
+      try {
+        if (window.android.getImei()) {
+          config.headers['MOBILE_MARK'] = window.android.getImei()
+        } else {
+          config.headers['MOBILE_MARK'] = ''
+        }
+      } catch (err) {}
     };
     return config
   },
@@ -44,7 +46,7 @@ service.interceptors.request.use(
 );
 
 // response interceptor
-service.interceptors.response.use(  
+service.interceptors.response.use(
   response => {
     // 获取响应头token,并存储到vuex和localStorage中
     if (response.headers['token']) {
