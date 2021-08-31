@@ -301,6 +301,16 @@ export const repeArray = (targetArray) => {
     })
   return result;
 }
+
+/*
+  * 数组去重方法
+  * @param{Array} targetArray
+*/
+export const uniqueArray = (targetArray) => {
+  if (!Array.isArray(targetArray)) {return};
+  return Array.from(new Set(targetArray))
+}
+
 /*
   * 压缩图片
   * @param{String} img 图片对象
@@ -605,5 +615,7 @@ export const removeAllLocalStorage = () => {
   removeStore('currentDispatchTaskMessage');
   removeStore('currentDispatchTaskMessage');
   removeStore('completDepartmentNumber');
-  removeStore('templateType')
+  removeStore('templateType');
+  removeStore('isNewCircle');
+  removeStore('completeCollectSample')
 }

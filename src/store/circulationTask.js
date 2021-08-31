@@ -19,8 +19,11 @@ export default {
     isClickSure: false,
     circulationDetails: null,
     verifyCirculationOfficeId: '',
+    verifyNewCirculationOfficeId: '',
     isFreshCirculationTaskPage: true,
-    circulationTaskId: ''
+    circulationTaskId: '',
+    // 新循环任务采集过的标本信息
+    isCompleteSampleList: []
   },
   getters:{
     arriveCirculationTaskId: state => state.arriveCirculationTaskId,
@@ -41,8 +44,10 @@ export default {
     isClickSure: state => state.isClickSure,
     circulationDetails: state => state.circulationDetails,
     verifyCirculationOfficeId: state => state.verifyCirculationOfficeId,
+    verifyNewCirculationOfficeId: state => state.verifyNewCirculationOfficeId,
     isFreshCirculationTaskPage: state => state.isFreshCirculationTaskPage,
-    circulationTaskId: state => state.circulationTaskId
+    circulationTaskId: state => state.circulationTaskId,
+    isCompleteSampleList: state => state.isCompleteSampleList
   },
   mutations:{
     // 改变电子签名状态
@@ -109,6 +114,10 @@ export default {
     changeVerifyCirculationOfficeId (state,payLoad) {
       state.verifyCirculationOfficeId = payLoad
     },
+    // 改变校验通过的科室id状态
+    changeVerifyNewCirculationOfficeId (state,payLoad) {
+      state.verifyNewCirculationOfficeId = payLoad
+    },
     // 改变是否刷新任务页的状态
     changeIsFreshCirculationTaskPage (state,payLoad) {
       state.isFreshCirculationTaskPage = payLoad
@@ -116,6 +125,10 @@ export default {
     // 改变循环任务id状态
     changeCirculationTaskId (state,payLoad) {
       state.circulationTaskId = payLoad
+    },
+    // 改变新循环任务完成标本采集的状态
+    changeIsCompleteSampleList (state,payLoad) {
+      state.isCompleteSampleList = payLoad
     }
   },
   actions:{}

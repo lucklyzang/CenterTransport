@@ -94,7 +94,8 @@ export default {
       'changeUserType',
       'changeOverDueWay',
       'changeIsTemplateOne',
-      'changeTemplateType'
+      'changeTemplateType',
+      'changeIsNewCircle'
     ]),
 
 
@@ -227,6 +228,14 @@ export default {
       if (userInfo.mobile) {
         this.changeTemplateType(userInfo.mobile);
         setStore('templateType', userInfo.mobile)
+      };
+      // 保存是否为新循环任务
+      if (userInfo.circle == 1) {
+        this.changeIsNewCircle(true);
+        setStore('isNewCircle',{isNewCircle: true})
+      } else {
+        this.changeIsNewCircle(false);
+        setStore('isNewCircle',{isNewCircle: false})
       };
       if (!IsPC()) {
         // 注册channel

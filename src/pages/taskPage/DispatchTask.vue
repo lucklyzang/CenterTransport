@@ -41,7 +41,7 @@
       </div>
     </div>
     <van-pull-refresh class="wait-handle-box" v-show="waitHandleBox" v-model="isRefresh" @refresh="onRefresh" success-text="刷新成功">
-      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1">
+      <div class="state-filter-all wait-handle-one" v-show="stateIndex == -1 && dispatchTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <p class="list-status">
@@ -100,7 +100,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-no-get wait-handle-one" v-show="stateIndex == 1">
+      <div class="state-filter-no-get wait-handle-one" v-show="stateIndex == 1 && dispatchTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <p class="list-status">
@@ -159,7 +159,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-get wait-handle-one" v-show="stateIndex == 2">
+      <div class="state-filter-get wait-handle-one" v-show="stateIndex == 2 && dispatchTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList" :key="`${item}-${index}`">
             <p class="list-status">
@@ -218,7 +218,7 @@
           </div>
         </div>
       </div>
-      <div class="state-filter-going wait-handle-one" v-show="stateIndex == 3">
+      <div class="state-filter-going wait-handle-one" v-show="stateIndex == 3 && dispatchTaskListShow">
         <div class="task-status-list">
           <div class="wait-handle-list" v-for="(item,index) in stateFilterList"  :key="`${item}-${index}`">
             <p class="list-status">
@@ -392,6 +392,7 @@
         showLoadingHint: false,
         noDataShow: false,
         stateListShow: false,
+        dispatchTaskListShow: false,
         timeFastindex: '',
         stateIndex: -1,
         columns: ['全部','未获取','已获取', '进行中'],
@@ -619,12 +620,13 @@
         getDispatchTaskMessage (proID, workerId,index)
         .then((res) => {
           this.showLoadingHint = false;
-          this.noDataShow = false;
+          this.isRefresh = false;
           let temporaryTaskListFirst = [];
           this.stateFilterList = [];
           if (res && res.data.code == 200) {
-            this.isRefresh = false;
             if (res.data.data.length > 0) {
+              this.dispatchTaskListShow = true;
+              this.noDataShow = false;
               for (let item of res.data.data) {
                 if (this.templateType === 'template_one') {
                   temporaryTaskListFirst.push({
@@ -701,15 +703,17 @@
               }
                console.log(this.stateFilterList);
             } else {
-              this.noDataShow = true;
+              this.dispatchTaskListShow = false;
+              this.noDataShow = true
             }
           } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
-              this.noDataShow = true;
             });
+            this.dispatchTaskListShow = false;
+            this.noDataShow = true
           }
         })
         .catch((err) => {
@@ -717,9 +721,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
-            this.noDataShow = true;
           });
+          this.dispatchTaskListShow = false;
+          this.noDataShow = true
           this.showLoadingHint = false;
+          this.isRefresh = false
         })
       },
 
@@ -734,9 +740,11 @@
         this.showLoadingHint = true;
         getDispatchTaskComplete(data).then((res) => {
           this.showLoadingHint = false;
+          this.isRefresh = false;
           this.stateCompleteList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
+              this.dispatchTaskListShow = true;
               this.noDataShow = false;
               for (let item of res.data.data) {
                 if (this.templateType === 'template_one') {
@@ -791,15 +799,17 @@
               };
               console.log('完成',this.stateCompleteList);
             } else {
-              this.noDataShow = true;
+              this.dispatchTaskListShow = false;
+              this.noDataShow = true
             }
           } else {
             this.$dialog.alert({
               message: `${res.data.msg}`,
               closeOnPopstate: true
             }).then(() => {
-              this.noDataShow = true;
             });
+            this.dispatchTaskListShow = false;
+            this.noDataShow = true
           }
         })
         .catch((err) => {
@@ -807,9 +817,11 @@
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {
-            this.noDataShow = true;
           });
+          this.dispatchTaskListShow = false;
+          this.noDataShow = true
           this.showLoadingHint = false;
+          this.isRefresh = false
         })
       },
 

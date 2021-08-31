@@ -12,10 +12,14 @@ const DispatchTaskSweepCode = () => import('@/pages/sweepCodePage/DispatchTaskSw
 const AppointTaskSweepCode = () => import('@/pages/sweepCodePage/AppointTaskSweepCode')
 const CirculationTaskSweepCode = () => import('@/pages/sweepCodePage/CirculationTaskSweepCode')
 const CirculationTaskCollectMessage = () => import('@/pages/taskMessagePage/CirculationTaskCollectMessage')
+const NewCirculationTaskCollectMessage = () => import('@/pages/taskMessagePage/NewCirculationTaskCollectMessage')
+const NewCirculationTaskConnectMessage = () => import('@/pages/taskMessagePage/NewCirculationTaskConnectMessage')
 const CirculationTaskCollectMessageSure = () => import('@/pages/taskMessagePage/CirculationTaskCollectMessageSure')
 const CirculationTaskMessageConnect = () => import('@/pages/taskMessagePage/CirculationTaskMessageConnect')
 const CirculationTaskConnectMessageSure = () => import('@/pages/taskMessagePage/CirculationTaskConnectMessageSure')
 const CirculationTaskCondition = () => import('@/pages/taskMessagePage/CirculationTaskCondition')
+const CurrentCirculationTaskSampleMessage = () => import('@/pages/taskMessagePage/CurrentCirculationTaskSampleMessage')
+const NewCirculationTaskHistoryDetails = () => import('@/pages/taskMessagePage/NewCirculationTaskHistoryDetails')
 const TransportTypeMessage = () => import('@/pages/medicalTaskPage/TransportTypeMessage')
 const DispatchTaskTransferForm = () => import('@/pages/taskFormPage/DispatchTaskTransferForm')
 const DispatchTaskCancelForm = () => import('@/pages/taskFormPage/DispatchTaskCancelForm')
@@ -88,6 +92,16 @@ let baseRoute  = [
     component: CirculationTaskCollectMessage
   },
   {
+    path: '/newCirculationTaskCollectMessage',
+    name: 'newCirculationTaskCollectMessage',
+    component: NewCirculationTaskCollectMessage
+  },
+  {
+    path: '/newCirculationTaskConnectMessage',
+    name: 'newCirculationTaskConnectMessage',
+    component: NewCirculationTaskConnectMessage
+  },
+  {
     path: '/circulationTaskCollectMessageSure',
     name: 'circulationTaskCollectMessageSure',
     component: CirculationTaskCollectMessageSure
@@ -101,6 +115,16 @@ let baseRoute  = [
     path: '/circulationTaskConnectMessageSure',
     name: 'circulationTaskConnectMessageSure',
     component: CirculationTaskConnectMessageSure
+  },
+  {
+    path: '/currentCirculationTaskSampleMessage',
+    name: 'currentCirculationTaskSampleMessage',
+    component: CurrentCirculationTaskSampleMessage
+  },
+  {
+    path: '/newCirculationTaskHistoryDetails',
+    name: 'newCirculationTaskHistoryDetails',
+    component: NewCirculationTaskHistoryDetails
   },
   {
     path: '/circulationTaskCondition',

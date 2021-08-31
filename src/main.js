@@ -114,6 +114,10 @@ new Vue({
     if (getStore('isClickSure')) {
       store.commit('changeIsClickSure',JSON.parse(getStore('isClickSure')));
     };
+    // 重新存入新循环任务完成标本采集信息的状态
+    if (getStore('completeCollectSample')) {
+      store.commit('changeIsCompleteSampleList',JSON.parse(getStore('completeCollectSample'))['sampleInfo']);
+    };
     // 页面刷新重新存入调度任务完成扫码的出发地和单一目的地科室信息（id）
     if (getStore('completeDispatchSweepCodeInfo')) {
       store.commit('changeisCompleteSweepCode', JSON.parse(getStore('completeDispatchSweepCodeInfo'))['sweepCodeInfo']);
@@ -157,6 +161,12 @@ new Vue({
     // 页面刷新重新存入科室信息编号
     if (getStore('departmentInfoNo')) {
       store.commit('changeDepartmentInfoListNo', JSON.parse(getStore('departmentInfoNo')));
+    };
+    // 页面刷新重新存入是否为新任务状态
+    if (JSON.parse(getStore('isNewCircle'))) {
+      if (JSON.parse(getStore('isNewCircle'))['isNewCircle']) {
+        store.commit('changeIsNewCircle', JSON.parse(getStore('isNewCircle'))['isNewCircle']);
+      }
     }
   },
   template: '<App/>'

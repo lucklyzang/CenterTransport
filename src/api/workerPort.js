@@ -269,6 +269,45 @@ export function queryCirculationTaskMessage(id, date) {
 };
 
 /**
+ * 新循环任务
+ */
+
+// 搜集标本信息
+export function collectNewCircleSampleMessage(data) {
+  return request({
+    url: 'circlePackage/collect',
+    method: 'put',
+    data
+  })
+};
+
+// 查询标本信息
+export function queryNewCircleSampleMessage(data) {
+  return request({
+    url: 'circlePackage/arriveQuery',
+    method: 'get',
+    params: data
+  })
+};
+
+// 查询任务详情
+export function queryNewCircleTaskDetails(taskId) {
+  return request({
+    url: `circlePackage/info/${taskId}`,
+    method: 'get'
+  })
+};
+
+// 查询科室标本交接情况
+export function queryNewCircleTaskComplete(data) {
+  return request({
+    url: 'circlePackage/finish',
+    method: 'get',
+    params: data
+  })
+};
+
+/**
  * 预约任务
 */
 
