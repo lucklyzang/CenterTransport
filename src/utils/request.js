@@ -30,6 +30,8 @@ service.interceptors.request.use(
     if (!IsPC()) {
       if (window.android.getImei()) {
         config.headers['MOBILE_MARK'] = window.android.getImei()
+      } else {
+        config.headers['MOBILE_MARK'] = ''
       }
     };
     return config
