@@ -28,6 +28,7 @@ service.interceptors.request.use(
     };
     // 请求头添加设备唯一标识号(IMEI)
     if (!IsPC()) {
+      config.headers['MOBILE_MARK'] = ''
       try {
         if (window.android.getImei()) {
           config.headers['MOBILE_MARK'] = window.android.getImei()
