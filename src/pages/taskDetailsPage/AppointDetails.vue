@@ -19,14 +19,16 @@
            <div class="wait-handle-message-top">
              <div class="handle-message-line-wrapper">
                <p>
-                 <span class="message-tit">病人床号 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.badNumber}}</span>
+                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                 <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper">
                <p>
-                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                 <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
+                 <span class="message-tit">任务编号 : </span>
+                 <span class="message-tit-real">
+                   {{appointDetailsMessage.serial ? appointDetailsMessage.serial : '无'}}
+                 </span>
                </p>
              </div>
              <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
@@ -35,6 +37,24 @@
                  <span class="message-tit-real">
                    {{appointDetailsMessage.planStartTime}}
                  </span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">床号 : </span>
+                 <span class="message-tit-real">{{appointDetailsMessage.badNumber ? appointDetailsMessage.badNumber : '无'}}</span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">住院号 : </span>
+                 <span class="message-tit-real">{{appointDetailsMessage.patientNumber ? appointDetailsMessage.patientNumber : '无'}}</span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">姓名 : </span>
+                 <span class="message-tit-real">{{appointDetailsMessage.patientName ? replaceStr(appointDetailsMessage.patientName,1,'*') : '无'}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper">
@@ -50,6 +70,14 @@
                  <span class="message-tit">转运工具 : </span>
                  <span class="message-tit-real message-tit-real-style">
                    {{appointDetailsMessage.toolName ? appointDetailsMessage.toolName : '无'}}
+                 </span>
+               </p>
+             </div>
+             <div class="handle-message-line-wrapper">
+               <p>
+                 <span class="message-tit">预约号 : </span>
+                 <span class="message-tit-real message-tit-real-style">
+                   {{appointDetailsMessage.bespokeCount ? appointDetailsMessage.bespokeCount : '无'}}
                  </span>
                </p>
              </div>
@@ -329,6 +357,7 @@ export default {
       queryAppointTaskDetailsMessage(taskId).then((res) => {
         if (res && res.data.code == 200) {
           this.appointDetailsMessage = res.data.data;
+          console.log('详情',this.appointDetailsMessage);
           for (let item in this.appointDetailsMessage) {
             if (item == 'checkItems') {
               for (let innerItem of this.appointDetailsMessage[item]) {
@@ -424,6 +453,13 @@ export default {
         }).then(() => {
         })
       })
+    },
+
+    // 替换字符串中某个位置的字符为指定字符
+    replaceStr (str, index, char) {
+      const strAry = str.split('');
+      strAry[index] = char;
+      return strAry.join('');
     },
 
     // 存储完成检查的科室
