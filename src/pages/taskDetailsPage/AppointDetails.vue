@@ -48,7 +48,7 @@
              <div class="handle-message-line-wrapper">
                <p>
                  <span class="message-tit">住院号 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.patientNumber ? appointDetailsMessage.patientNumber : '无'}}</span>
+                 <span class="message-tit-real">{{appointDetailsMessage.hospitalNo  ? appointDetailsMessage.hospitalNo  : '无'}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper">

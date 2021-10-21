@@ -35,7 +35,8 @@ service.interceptors.request.use(
         } else {
           config.headers['MOBILE_MARK'] = ''
         }
-      } catch (err) {}
+      } catch (err) {
+      }
     };
     return config
   },
