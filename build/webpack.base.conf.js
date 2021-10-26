@@ -22,7 +22,10 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    // "babel-polyfill":"babel-polyfill",
+    // app: './src/main.js'
+    app: ["babel-polyfill", "./src/main.js"]//改为最新的这行入口
+    // app: './src/main.js'
   },
   externals: {
     'vue': 'Vue',
@@ -56,17 +59,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        include: [ 
+        include: [
         /src/,
-        '/node_modules/element-ui/lib/' 
-        ], 
+        '/node_modules/element-ui/lib/'
+        ],
         loader: 'style-loader!css-loader'
       },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
-      },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'babel-loader',
+      //   include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+      // },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
