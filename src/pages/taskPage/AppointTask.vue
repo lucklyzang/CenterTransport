@@ -65,7 +65,7 @@
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
-                <span>{{item.createTime}}</span>
+                <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-two">
                 <p>任务描述 : </p>
@@ -116,7 +116,7 @@
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
-                <span>{{item.createTime}}</span>
+                <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-two">
                 <p>任务描述 : </p>
@@ -167,7 +167,7 @@
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
-                <span>{{item.createTime}}</span>
+                <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-two">
                 <p>任务描述 : </p>
@@ -218,7 +218,7 @@
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
-                <span>{{item.createTime}}</span>
+                <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-two">
                 <p>任务描述 : </p>
@@ -269,7 +269,7 @@
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
-                <span>{{item.createTime}}</span>
+                <span>{{item.planStartTime}}</span>
               </div>
               <div class="wait-handle-message-two">
                 <p>任务描述 : </p>
@@ -343,7 +343,7 @@
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
               <span>开始时间 : </span>
-              <span>{{item.createTime}}</span>
+              <span>{{item.planStartTime}}</span>
             </div>
             <div class="wait-handle-message-two">
               <p>任务描述 : </p>
@@ -904,6 +904,7 @@
                 temporaryTaskListFirst.push({
                   taskCheck: false,
                   createTime: item.createTime,
+                  planStartTime: item.planStartTime,
                   state: item.state,
                   setOutPlaceId: item.setOutPlaceId,
                   setOutPlaceName: item.setOutPlaceName,
@@ -1016,6 +1017,7 @@
                 this.stateCompleteList.push({
                   taskCheck: false,
                   createTime: item.createTime,
+                  planStartTime: item.planStartTime,
                   spaces: item.destinationName,
                   state: item.state,
                   finishTime: item.finishTime,
