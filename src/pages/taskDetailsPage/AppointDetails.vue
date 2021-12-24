@@ -54,7 +54,7 @@
              <div class="handle-message-line-wrapper">
                <p>
                  <span class="message-tit">姓名 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.patientName ? replaceStr(appointDetailsMessage.patientName,1,'*') : '无'}}</span>
+                 <span class="message-tit-real">{{appointDetailsMessage.patientName ? appointDetailsMessage.patientName : '无'}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper">
