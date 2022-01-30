@@ -38,7 +38,6 @@ import App from './App'
 let options = {
   fullscreenEl: false
 };
-
 Vue.use(Vant);
 Vue.config.productionTip = false;
 if (IsPC()) {

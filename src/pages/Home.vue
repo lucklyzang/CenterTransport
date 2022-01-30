@@ -539,7 +539,6 @@
     },
 
     mounted() {
-      console.log('文件名',getFileName('123.png'));
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
