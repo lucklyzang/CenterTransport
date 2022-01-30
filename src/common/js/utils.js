@@ -576,6 +576,55 @@ export const  mergeMethods =  (testData) => {
   };
   return mergeData
 }
+
+/*
+ * 对象转换为formData类型
+ * @param{object} obj
+ * @return {formData} multipart_params
+ *
+*/
+export const formData = (obj) => {
+  if (obj instanceof Object) {
+    let multipart_params = new FormData();
+    for (let key in obj) {
+      multipart_params.append(key, obj[key]);
+    }
+    return multipart_params;
+  }
+  return;
+}
+
+/*
+ * 生成随机文件名 格式为随机6位数+时间戳+文件类型
+ * @param{filename} string
+ * @return string
+ *
+*/
+export const getFileName = (filename) => {
+  let pos = filename.lastIndexOf('.')
+  if (pos != -1) {
+    return randomString(6) + new Date().getTime() + filename.substring(pos - 1);
+  }
+  return '';
+}
+
+/*
+ * 随机数 未指定长度则为32位
+ * @param {len} number
+ * @return {pwd} string
+ *
+*/
+export  const randomString = (len) => {
+  len = len || 32;
+  let chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+  let maxPos = chars.length;
+  let pwd = '';
+  for (let i = 0; i < len; i++) {
+    pwd += chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+  return pwd;
+}
+
 /*
  *
  *  清空所有LocalStorage

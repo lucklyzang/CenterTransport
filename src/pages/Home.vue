@@ -450,7 +450,7 @@
   import {queryTransportTypeClass, collectDispatchTask, taskReminder} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage, getFileName } from '@/common/js/utils'
   import dispatchTaskPng from '@/common/images/home/dispatch-task.png'
   import circulationTaskPng from '@/common/images/home/circulation-task.png'
   import offWorkSignOutPng from '@/common/images/home/offWork-signOut.png'
@@ -539,7 +539,6 @@
     },
 
     mounted() {
-      console.log('新任务',this.isNewCircle);
       this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
