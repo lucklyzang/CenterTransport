@@ -48,7 +48,7 @@
                <span class="message-tit">任务终点 :&nbsp;</span>
              </P>
              <p>
-               <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations">{{innerItem.destinationName}}</span>
+               <span class="message-tit-real message-tit-real-destinationList" v-for="(innerItem,innerindex) in dispatchTaskMessage.destinations" :key="innerindex">{{innerItem.destinationName}}</span>
              </p>
            </div>
             <div class="handle-message-line-wrapper handle-message-line-wrapper-other">
@@ -101,15 +101,15 @@
                  运送类型 :&nbsp;
                </div>
                <div class="transport-type-content">
-                 <div class="transport-type-list-wrapper" v-for="(item,index) in transportList">
+                 <div class="transport-type-list-wrapper" v-for="(item,index) in transportList" :key="index">
                     <div class="transport-type-list">
                       <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
-                      <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList">
+                      <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList" :key="indexInner">
                         <span class="serial">{{indexInner+1}}、</span>
                         <span>
                           床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
                         </span>
-                        <span v-for="(targetItem, targetIndex) in itemInner.typeChildList">
+                        <span v-for="(targetItem, targetIndex) in itemInner.typeChildList" :key="targetIndex">
                           {{targetItem.taskTypeName}}×{{targetItem.quantity}}
                         </span>
                       </p>
