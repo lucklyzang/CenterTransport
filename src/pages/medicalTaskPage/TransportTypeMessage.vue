@@ -2231,10 +2231,10 @@ export default {
           border-radius: 20px;
           font-size: 16px;
           span {
-            vertical-align: middle;
+            vertical-align: top;
             .van-icon {
               width: 20px;
-              vertical-align: -2px;
+              // vertical-align: -2px;
             }
           }
         };
