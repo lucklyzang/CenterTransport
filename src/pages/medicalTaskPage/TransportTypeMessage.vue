@@ -147,7 +147,7 @@
           </div>
         </div>
         <div class="field-box-wrapper">
-            <div class="field-box-two" v-for="(item,index) in templatelistTwo">
+            <div class="field-box-two" v-for="(item,index) in templatelistTwo" :key="`${item}-${index}`">
               <div class="field-title">
                 <div class="patient-name">病人{{index+1}}</div>
                 <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)"/>
@@ -189,7 +189,7 @@
         </div>
         <div class="add-message" @click="addMessageEvent">
             <span>
-              <van-icon name="plus" /></fa-icon>
+              <van-icon name="plus" />
             </span>
             添加病人信息
         </div>

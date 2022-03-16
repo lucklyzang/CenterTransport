@@ -74,7 +74,7 @@
             </div>
             <div class="time">{{`运送时间:${item.generateTime}`}}</div>
           </div>
-          <div class="sample-list-content-wrapper" v-if="item.isShow" v-for="(itemInner,indexInner) in item.packages" :key="indexInner">
+          <div class="sample-list-content-wrapper" v-show="item.isShow" v-for="(itemInner,indexInner) in item.packages" :key="indexInner">
             <div class="sample-list-inner-title">
               <div class="serial-number">
                 {{ indexInner+1 }}
