@@ -129,7 +129,7 @@ new Vue({
       store.commit('changeIsCompleteSweepCodeDestinationList', JSON.parse(getStore('completeDispatchSweepCodeDestinationInfo'))['sweepCodeInfo']);
     };
     // 页面刷新重新存入调度任务是否第一次扫码
-     if (getStore('isDispatchFirstSweepCode')) {
+    if (getStore('isDispatchFirstSweepCode')) {
       store.commit('changeIsDispatchTaskFirstSweepCode', JSON.parse(getStore('isDispatchFirstSweepCode')));
     };
     // 页面刷新重新存入预约任务完成扫码的目的地科室信息
