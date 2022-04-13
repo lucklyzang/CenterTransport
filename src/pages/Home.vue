@@ -193,243 +193,774 @@
               </div>
             </van-pull-refresh>
             <div class="medical-worker-operate-right-historyTask" v-show="operateHistoryTask == 4">
-              <p>历史任务</p>
-              <div class="historyTask-list-box">
-                <div class="time-search">
-                  <span class="time-between">至</span>
-                  <div class="content-middle-top-content">
-                    <div style="left:0">
-                      <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+              <!--任务切换栏-->
+              <div class="task-switch">
+                <span v-for="(item,index) in taskNameList" :class="{'active-tab-style':taskNameIndex === index}" :key="index" @click="tabSwitchEvent(item,index)">{{item.name}}</span>
+              </div>
+                <div class="historyTask-box">
+                  <div class="historyTask-list-box historyTask-list-dispatch-box" v-show="taskNameIndex === 0">
+                    <div class="time-search">
+                      <span class="time-between">至</span>
+                      <div class="content-middle-top-content">
+                        <div style="left:0">
+                          <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+                        </div>
+                        <div style="right:0">
+                          <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
+                        </div>
+                      </div>
+                      <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
+                        <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
+                        @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
+                      </van-popup>
+                      <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
+                        <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
+                        @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
+                      </van-popup>
                     </div>
-                    <div style="right:0">
-                      <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
-                    </div>
-                  </div>
-                  <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
-                    <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
-                    @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
-                  </van-popup>
-                  <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
-                    <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
-                    @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
-                  </van-popup>
-                </div>
 <!--                <p class="middle-top-search">-->
 <!--                  <span>-->
 <!--                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">-->
 <!--                  </span>-->
 <!--                </p>-->
-                <van-tabs v-model="activetask" @click="onClickTab">
-                  <van-tab name="0">
-                    <div slot="title">
-                      <span class="title">已完成</span>
-                      <span class="right-sign sign-not-in" v-show="currentIndex == 0">{{taskCount}}</span>
-                    </div>
-                    <div class="historyTask-list">
-                      <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
-                        <p class="wait-handle-message-createTime">
-                          创建时间：{{item.createTime}}
-                        </p>
-                        <p class="wait-handle-message-createTime">
-                          计划开始时间：{{item.planStartTime}}
-                        </p>
-                        <p class="wait-handle-message-planUseTime">
-                          计划用时：{{item.planUseTime}}分钟
-                        </p>
-                        <div class="wait-handle-message">
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">状态:</span>
-                              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                            </p>
-                            <P>
-                              <span class="message-tit">起点:</span>
-                              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                            </P>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">转运工具:</span>
-                              <span class="message-tit-real">{{item.toolName}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p v-if="templateType == 'template_one'">
-                              <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.taskTypeName}}</span>
-                            </p>
-                            <p v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">优先级:</span>
-                              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">出发地拍照:</span>
-                              <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">目的地拍照:</span>
-                              <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">签字:</span>
-                              <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">回到出发地:</span>
-                              <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p v-if="templateType == 'template_one'">
-                              <span class="message-tit">病人:</span>
-                              <span class="message-tit-real">{{item.patientName}}</span>
-                            </p>
-                            <P v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">病人:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
-                            </P>
-                            <P v-if="templateType == 'template_one'">
-                              <span class="message-tit">床号:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                            </P>
-                            <P v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">床号:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
-                            </P>
-                          </div>
-                          <p class="wait-handle-check" v-show="item.state == 2 ">
-                            <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-                          </p>
+                    <van-tabs v-model="activetaskDispatch" @click="onClickTab">
+                      <van-tab name="0">
+                        <div slot="title">
+                          <span class="title">已完成</span>
+                          <span class="right-sign sign-not-in" v-show="currentIndex == 0 && taskNameIndex === 0">{{taskCount}}</span>
                         </div>
-                        <p class="get-wait-task">
-                          <span v-show="item.state == '1'">
-                            <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </van-tab>
-                  <van-tab name="1" >
-                    <div slot="title">
-                      <span class="title">已取消</span>
-                      <span class="right-sign sign-not-in" v-show="currentIndex == 1">{{taskCount}}</span>
-                    </div>
-                    <div class="historyTask-list">
-                      <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
-                        <p class="wait-handle-message-createTime">
-                          创建时间：{{item.createTime}}
-                        </p>
-                        <p class="wait-handle-message-createTime">
-                          计划开始时间：{{item.planStartTime}}
-                        </p>
-                        <p class="wait-handle-message-planUseTime">
-                          计划用时：{{item.planUseTime}}分钟
-                        </p>
-                        <div class="wait-handle-message">
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">状态:</span>
-                              <span class="message-tit-real" style="color:red">{{stateTransfer(item.state)}}</span>
-                            </p>
-                            <P>
-                              <span class="message-tit">起点:</span>
-                              <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                            </P>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p v-if="templateType == 'template_one'">
-                              <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" class="message-tit-real">{{!item.destinationName ? '无' :item.destinationName}}</span>
-                            </p>
-                            <p v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">终点:</span>
-                              <span style="margin-right: 4px;" v-for="(itemInner,indexInner) in item.destinationName" :key="`${itemInner}-${indexInner}`" class="message-tit-real">
-                                {{item.destinationName.length > 0 ? itemInner.destinationName : '无'}}
+                        <div class="historyTask-list">
+                          <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                            <div class="wait-handle-message">
+                              <div class="wait-handle-message-top">
+                                <p>
+                                  编号: {{item.taskNumber}}
+                                </p>
+                                <p>
+                                    {{stateTransfer(item.state)}}
+                                </p>
+                              </div>
+                              <div class="wait-handle-message-middle">
+                                <p v-if="templateType == 'template_one'">
+                                  <span class="message-tit">运送类型:</span>
+                                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                </p>
+                                <p v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">运送类型:</span>
+                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <P>
+                                  <span class="message-tit">出发地:</span>
+                                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                </P>
+                                <p>
+                                  <span class="message-tit">目的地:</span>
+                                  <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <p>
+                                  <span class="message-tit">优先级:</span>
+                                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                </p>
+                                <P v-if="templateType == 'template_one'">
+                                  <span class="message-tit">床号:</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                </P>
+                                <P v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">床号:</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                </P>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <p class="adimission-number">
+                                  <span class="message-tit">住院号:</span>
+                                  <span class="message-tit-real">{{item.patientNumber}}</span>
+                                </p>
+                                <p>
+                                  <span class="message-tit">运送工具:</span>
+                                  <span class="message-tit-real">{{item.toolName}}</span>
+                                </p>
+                              </div>
+<!--                              <div class="handle-message-line-wrapper">-->
+<!--                                <p>-->
+<!--                                  <span class="message-tit">出发地拍照:</span>-->
+<!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
+<!--                                </p>-->
+<!--                                <p>-->
+<!--                                  <span class="message-tit">目的地拍照:</span>-->
+<!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
+<!--                                </p>-->
+<!--                              </div>-->
+<!--                              <div class="handle-message-line-wrapper">-->
+<!--                                <p>-->
+<!--                                  <span class="message-tit">签字:</span>-->
+<!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
+<!--                                </p>-->
+<!--                                <p>-->
+<!--                                  <span class="message-tit">回到出发地:</span>-->
+<!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
+<!--                                </p>-->
+<!--                              </div>-->
+<!--                              <div class="handle-message-line-wrapper">-->
+<!--                                <p v-if="templateType == 'template_one'">-->
+<!--                                  <span class="message-tit">病人:</span>-->
+<!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
+<!--                                </p>-->
+<!--                                <P v-else-if="templateType == 'template_two'">-->
+<!--                                  <span class="message-tit">病人:</span>-->
+<!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
+<!--                                </P>-->
+<!--                              </div>-->
+                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <p>
+                                  <span class="message-tit">订单创建时间:</span>
+                                  <span class="message-tit-real">{{item.createTime}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <p>
+                                  <span class="message-tit">完成时间:</span>
+                                  <span class="message-tit-real">{{item.finishTime}}</span>
+                                </p>
+                              </div>
+                              <p class="wait-handle-check" v-show="item.state == 2 ">
+                                <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                              </p>
+                            </div>
+                            <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
                               </span>
                             </p>
-                            <p>
-                              <span class="message-tit">转运工具:</span>
-                              <span class="message-tit-real">{{item.toolName}}</span>
-                            </p>
                           </div>
-                          <div class="handle-message-line-wrapper">
-                            <p v-if="templateType == 'template_one'">
-                              <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.taskTypeName}}</span>
-                            </p>
-                            <p v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">运送类型:</span>
-                              <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">优先级:</span>
-                              <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">出发地拍照:</span>
-                              <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">目的地拍照:</span>
-                              <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p>
-                              <span class="message-tit">签字:</span>
-                              <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
-                            </p>
-                            <p>
-                              <span class="message-tit">回到出发地:</span>
-                              <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
-                            </p>
-                          </div>
-                          <div class="handle-message-line-wrapper">
-                            <p v-if="templateType == 'template_one'">
-                              <span class="message-tit">病人:</span>
-                              <span class="message-tit-real">{{item.patientName}}</span>
-                            </p>
-                            <P v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">病人:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
-                            </P>
-                            <P v-if="templateType == 'template_one'">
-                              <span class="message-tit">床号:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                            </P>
-                            <P v-else-if="templateType == 'template_two'">
-                              <span class="message-tit">床号:</span>
-                              <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
-                            </P>
-                          </div>
-                          <p class="wait-handle-check" v-show="item.state == 2 ">
-                            <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-                          </p>
                         </div>
-                        <p class="get-wait-task">
-                          <span v-show="item.state == '1'">
-                            <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
-                          </span>
-                        </p>
-                      </div>
+                      </van-tab>
+                      <van-tab name="1" >
+                        <div slot="title">
+                          <span class="title">已取消</span>
+                          <span class="right-sign sign-not-in" v-show="currentIndex == 1 && taskNameIndex === 0">{{taskCount}}</span>
+                        </div>
+                        <div class="historyTask-list historyTask-list-cancel">
+                          <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                            <div class="wait-handle-message">
+                              <div class="wait-handle-message-top">
+                                <p>
+                                  编号: {{item.taskNumber}}
+                                </p>
+                                <p>
+                                  {{stateTransfer(item.state)}}
+                                </p>
+                              </div>
+                              <div class="wait-handle-message-middle">
+                                <p v-if="templateType == 'template_one'">
+                                  <span class="message-tit">运送类型:</span>
+                                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                </p>
+                                <p v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">运送类型:</span>
+                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <P>
+                                  <span class="message-tit">出发地:</span>
+                                  <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                </P>
+                                <p>
+                                  <span class="message-tit">目的地:</span>
+                                  <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <p>
+                                  <span class="message-tit">优先级:</span>
+                                  <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                </p>
+                                <P v-if="templateType == 'template_one'">
+                                  <span class="message-tit">床号:</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                </P>
+                                <P v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">床号:</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                </P>
+                              </div>
+                              <div class="handle-message-line-wrapper">
+                                <p class="adimission-number">
+                                  <span class="message-tit">住院号:</span>
+                                  <span class="message-tit-real">{{item.patientNumber}}</span>
+                                </p>
+                                <p>
+                                  <span class="message-tit">运送工具:</span>
+                                  <span class="message-tit-real">{{item.toolName}}</span>
+                                </p>
+                              </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">出发地拍照:</span>
+                                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">目的地拍照:</span>
+                                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">签字:</span>
+                                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">回到出发地:</span>
+                                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p v-if="templateType == 'template_one'">
+                                    <span class="message-tit">病人:</span>
+                                    <span class="message-tit-real">{{item.patientName}}</span>
+                                  </p>
+                                  <P v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">病人:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
+                                  </P>
+                                </div>
+                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <p>
+                                  <span class="message-tit">订单创建时间:</span>
+                                  <span class="message-tit-real">{{item.createTime}}</span>
+                                </p>
+                              </div>
+                              <p class="wait-handle-check" v-show="item.state == 2 ">
+                                <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                              </p>
+                            </div>
+                            <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </van-tab>
+                    </van-tabs>
                     </div>
-                  </van-tab>
-                </van-tabs>
-              </div>
+                  <div class="historyTask-list-box historyTask-list-appoint-box" v-show="taskNameIndex === 1">
+                      <div class="time-search">
+                        <span class="time-between">至</span>
+                        <div class="content-middle-top-content">
+                          <div style="left:0">
+                            <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+                          </div>
+                          <div style="right:0">
+                            <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
+                          </div>
+                        </div>
+                        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
+                          <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
+                                                @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
+                        </van-popup>
+                        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
+                          <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
+                                                @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
+                        </van-popup>
+                      </div>
+                      <!--                <p class="middle-top-search">-->
+                      <!--                  <span>-->
+                      <!--                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">-->
+                      <!--                  </span>-->
+                      <!--                </p>-->
+                      <van-tabs v-model="activetaskAppoint" @click="onClickTab">
+                        <van-tab name="0">
+                          <div slot="title">
+                            <span class="title">已完成</span>
+                            <span class="right-sign sign-not-in" v-show="currentIndex == 0 && taskNameIndex === 1">{{taskCount}}</span>
+                          </div>
+                          <div class="historyTask-list">
+                            <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                              <div class="wait-handle-message">
+                                <div class="wait-handle-message-top">
+                                  <p>
+                                    编号: {{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    {{stateTransfer(item.state)}}
+                                  </p>
+                                </div>
+                                <div class="wait-handle-message-middle">
+                                  <p v-if="templateType == 'template_one'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  </p>
+                                  <p v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <P>
+                                    <span class="message-tit">出发地:</span>
+                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                  </P>
+                                  <p>
+                                    <span class="message-tit">目的地:</span>
+                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">优先级:</span>
+                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                  </p>
+                                  <P v-if="templateType == 'template_one'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  </P>
+                                  <P v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  </P>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p class="adimission-number">
+                                    <span class="message-tit">住院号:</span>
+                                    <span class="message-tit-real">{{item.patientNumber}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">运送工具:</span>
+                                    <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">签字:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">回到出发地:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p v-if="templateType == 'template_one'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <P v-else-if="templateType == 'template_two'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
+                                <!--                                </P>-->
+                                <!--                              </div>-->
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">订单创建时间:</span>
+                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">完成时间:</span>
+                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                  </p>
+                                </div>
+                                <p class="wait-handle-check" v-show="item.state == 2 ">
+                                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                                </p>
+                              </div>
+                              <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                              </span>
+                              </p>
+                            </div>
+                          </div>
+                        </van-tab>
+                        <van-tab name="1" >
+                          <div slot="title">
+                            <span class="title">已取消</span>
+                            <span class="right-sign sign-not-in" v-show="currentIndex == 1 && taskNameIndex === 1">{{taskCount}}</span>
+                          </div>
+                          <div class="historyTask-list historyTask-list-cancel">
+                            <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                              <div class="wait-handle-message">
+                                <div class="wait-handle-message-top">
+                                  <p>
+                                    编号: {{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    {{stateTransfer(item.state)}}
+                                  </p>
+                                </div>
+                                <div class="wait-handle-message-middle">
+                                  <p v-if="templateType == 'template_one'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  </p>
+                                  <p v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <P>
+                                    <span class="message-tit">出发地:</span>
+                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                  </P>
+                                  <p>
+                                    <span class="message-tit">目的地:</span>
+                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">优先级:</span>
+                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                  </p>
+                                  <P v-if="templateType == 'template_one'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  </P>
+                                  <P v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  </P>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p class="adimission-number">
+                                    <span class="message-tit">住院号:</span>
+                                    <span class="message-tit-real">{{item.patientNumber}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">运送工具:</span>
+                                    <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">签字:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">回到出发地:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p v-if="templateType == 'template_one'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <P v-else-if="templateType == 'template_two'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
+                                <!--                                </P>-->
+                                <!--                              </div>-->
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">订单创建时间:</span>
+                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">完成时间:</span>
+                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                  </p>
+                                </div>
+                                <p class="wait-handle-check" v-show="item.state == 2 ">
+                                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                                </p>
+                              </div>
+                              <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                              </span>
+                              </p>
+                            </div>
+                          </div>
+                        </van-tab>
+                      </van-tabs>
+                    </div>
+                  <div class="historyTask-list-box historyTask-list-circulation-box" v-show="taskNameIndex === 2">
+                      <div class="time-search">
+                        <span class="time-between">至</span>
+                        <div class="content-middle-top-content">
+                          <div style="left:0">
+                            <van-field v-model="startTime" placeholder="开始日期" readonly="readonly" @click="startTimePop = true" right-icon="newspaper-o"/>
+                          </div>
+                          <div style="right:0">
+                            <van-field v-model="endTime" placeholder="结束日期" readonly="readonly" @click="endTimePop = true" right-icon="newspaper-o"/>
+                          </div>
+                        </div>
+                        <van-popup v-model="startTimePop" label="离开时间" position="bottom" :overlay="true">
+                          <van-datetime-picker  v-model="currentDateStart"  type="date"  :min-date="minDateStart"
+                                                @cancel="startTimePop = false"  @confirm="confirmEvent"  @change="startTimeChange"/>
+                        </van-popup>
+                        <van-popup v-model="endTimePop" label="离开时间" position="bottom" :overlay="true">
+                          <van-datetime-picker  v-model="currentDateEnd"  type="date"  :min-date="minDateEnd"
+                                                @cancel="endTimePop = false"  @confirm="endConfirmEvent"  @change="endTimeChange"/>
+                        </van-popup>
+                      </div>
+                      <!--                <p class="middle-top-search">-->
+                      <!--                  <span>-->
+                      <!--                    <img :src="taskSearchPng" alt="" @click.stop="searchCompleteTask">-->
+                      <!--                  </span>-->
+                      <!--                </p>-->
+                      <van-tabs v-model="activetaskCirculation" @click="onClickTab">
+                        <van-tab name="0">
+                          <div slot="title">
+                            <span class="title">已完成</span>
+                            <span class="right-sign sign-not-in" v-show="currentIndex == 0 && taskNameIndex === 2">{{taskCount}}</span>
+                          </div>
+                          <div class="historyTask-list">
+                            <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                              <div class="wait-handle-message">
+                                <div class="wait-handle-message-top">
+                                  <p>
+                                    编号: {{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    {{stateTransfer(item.state)}}
+                                  </p>
+                                </div>
+                                <div class="wait-handle-message-middle">
+                                  <p v-if="templateType == 'template_one'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  </p>
+                                  <p v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <P>
+                                    <span class="message-tit">出发地:</span>
+                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                  </P>
+                                  <p>
+                                    <span class="message-tit">目的地:</span>
+                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">优先级:</span>
+                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                  </p>
+                                  <P v-if="templateType == 'template_one'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  </P>
+                                  <P v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  </P>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p class="adimission-number">
+                                    <span class="message-tit">住院号:</span>
+                                    <span class="message-tit-real">{{item.patientNumber}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">运送工具:</span>
+                                    <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">签字:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">回到出发地:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p v-if="templateType == 'template_one'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <P v-else-if="templateType == 'template_two'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
+                                <!--                                </P>-->
+                                <!--                              </div>-->
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">订单创建时间:</span>
+                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">完成时间:</span>
+                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                  </p>
+                                </div>
+                                <p class="wait-handle-check" v-show="item.state == 2 ">
+                                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                                </p>
+                              </div>
+                              <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                              </span>
+                              </p>
+                            </div>
+                          </div>
+                        </van-tab>
+                        <van-tab name="1" >
+                          <div slot="title">
+                            <span class="title">已取消</span>
+                            <span class="right-sign sign-not-in" v-show="currentIndex == 1 && taskNameIndex === 2">{{taskCount}}</span>
+                          </div>
+                          <div class="historyTask-list historyTask-list-cancel">
+                            <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
+                              <div class="wait-handle-message">
+                                <div class="wait-handle-message-top">
+                                  <p>
+                                    编号: {{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    {{stateTransfer(item.state)}}
+                                  </p>
+                                </div>
+                                <div class="wait-handle-message-middle">
+                                  <p v-if="templateType == 'template_one'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  </p>
+                                  <p v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <P>
+                                    <span class="message-tit">出发地:</span>
+                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
+                                  </P>
+                                  <p>
+                                    <span class="message-tit">目的地:</span>
+                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p>
+                                    <span class="message-tit">优先级:</span>
+                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
+                                  </p>
+                                  <P v-if="templateType == 'template_one'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  </P>
+                                  <P v-else-if="templateType == 'template_two'">
+                                    <span class="message-tit">床号:</span>
+                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  </P>
+                                </div>
+                                <div class="handle-message-line-wrapper">
+                                  <p class="adimission-number">
+                                    <span class="message-tit">住院号:</span>
+                                    <span class="message-tit-real">{{item.patientNumber}}</span>
+                                  </p>
+                                  <p>
+                                    <span class="message-tit">运送工具:</span>
+                                    <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">签字:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <p>-->
+                                <!--                                  <span class="message-tit">回到出发地:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
+                                <!--                                </p>-->
+                                <!--                              </div>-->
+                                <!--                              <div class="handle-message-line-wrapper">-->
+                                <!--                                <p v-if="templateType == 'template_one'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
+                                <!--                                </p>-->
+                                <!--                                <P v-else-if="templateType == 'template_two'">-->
+                                <!--                                  <span class="message-tit">病人:</span>-->
+                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
+                                <!--                                </P>-->
+                                <!--                              </div>-->
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">订单创建时间:</span>
+                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">完成时间:</span>
+                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                  </p>
+                                </div>
+                                <p class="wait-handle-check" v-show="item.state == 2 ">
+                                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                                </p>
+                              </div>
+                              <p class="get-wait-task">
+                              <span v-show="item.state == '1'">
+                                <img :src="taskGetPng" alt="" @click.stop="getTask(item.id)">
+                              </span>
+                              </p>
+                            </div>
+                          </div>
+                        </van-tab>
+                      </van-tabs>
+                    </div>
+                </div>
             </div>
             <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
               <p>收藏</p>
@@ -446,7 +977,7 @@
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import store from '@/store'
-  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete} from '@/api/workerPort.js'
+  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, queryAppointTaskMessage, queryCirculationTask} from '@/api/workerPort.js'
   import {queryTransportTypeClass, collectDispatchTask, taskReminder} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
@@ -484,7 +1015,9 @@
         liIndex: null,
         showLoadingHint: false,
         noDataShow: false,
-        activetask: 0,
+        activetaskDispatch: 0,
+        activetaskAppoint: 0,
+        activetaskCirculation: 0,
         currentIndex: 0,
         taskCount: '',
         operateListInnerIndex: 1,
@@ -502,6 +1035,9 @@
         currentDateEnd: new Date(),
         minDateStart: new Date(2020, 0, 1),
         minDateEnd: new Date(2020, 0, 1),
+        taskNameList: [{name: '调度任务'},{name: '预约任务'},{name: '循环任务'}],
+        taskNameIndex: 0,
+        taskCurrentName: '调度任务',
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng},
           {tit:'循环任务',imgUrl: circulationTaskPng},
@@ -1205,47 +1741,162 @@
         this.searchCompleteTask()
       },
 
+      // 任务类型tab切换事件
+      tabSwitchEvent (item,index) {
+        this.taskNameIndex = index;
+        this.taskCurrentName = item.name;
+        this.currentIndex = 0;
+        if (index == 0) {
+          this.activetaskDispatch = 0
+        } else if (index == 1) {
+          this.activetaskAppoint = 0
+        } else {
+          this.activetaskCirculation = 0
+        };
+        if (this.taskCurrentName == '调度任务') {
+          this.queryCompleteDispatchTask(
+            {
+              proId: this.proId, workerId: '', state: 7,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            }, "历史任务", name
+          )
+        } else if (this.taskCurrentName == '预约任务') {
+          this.queryCompleteAppointTask(
+            {
+              proId: this.proId, workerId: '', state: 7,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            }
+          )
+        } else if (this.taskCurrentName == '循环任务') {
+          this.queryCompleteCirculationTask(
+            {
+              proId: this.proId, workerId: '', state: 7,
+              startDate: this.startTime, endDate: this.endTime,
+              departmentId: this.userInfo.depId
+            }
+          )
+        }
+      },
+
       // 点击标签按钮事件
       onClickTab (name, title) {
         this.currentIndex = name;
         this.taskCount = 0;
-        if (name == 1) {
-          this.queryCompleteDispatchTask(
-            {
-              proId:this.proId, workerId:'',state:6,
-              startDate: this.startTime, endDate: this.endTime,
-              departmentId: this.userInfo.depId
-            },"历史任务",name
-          )
-        } else {
-          this.queryCompleteDispatchTask(
-            {
-              proId:this.proId, workerId:'',state:7,
-              startDate: this.startTime, endDate: this.endTime,
-              departmentId: this.userInfo.depId
-            },"历史任务",name
-          )
+        if (this.taskCurrentName == '调度任务') {
+          if (name == 1) {
+            this.queryCompleteDispatchTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }, "历史任务", name
+            )
+          } else {
+            this.queryCompleteDispatchTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }, "历史任务", name
+            )
+          }
+        } else if (this.taskCurrentName == '预约任务') {
+          if (name == 1) {
+            this.queryCompleteAppointTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          } else {
+            this.queryCompleteAppointTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          }
+        } else if (this.taskCurrentName == '循环任务') {
+          if (name == 1) {
+            this.queryCompleteCirculationTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          } else {
+            this.queryCompleteCirculationTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          }
         }
       },
 
       // 搜索完成的任务
       searchCompleteTask () {
-        if (this.currentIndex == 0) {
-          this.queryCompleteDispatchTask(
-            {
-              proId:this.proId, workerId:'',state:7,
-              startDate: this.startTime, endDate: this.endTime,
-              departmentId: this.userInfo.depId
-            },"历史任务",0
-          )
-        } else {
-          this.queryCompleteDispatchTask(
-            {
-              proId:this.proId, workerId:'',state:6,
-              startDate: this.startTime, endDate: this.endTime,
-              departmentId: this.userInfo.depId
-            },"历史任务",1
-          )
+        if (this.taskCurrentName == '调度任务') {
+          if (this.currentIndex == 0) {
+            this.queryCompleteDispatchTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }, "历史任务", 0
+            )
+          } else {
+            this.queryCompleteDispatchTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }, "历史任务", 1
+            )
+          }
+        } else if (this.taskCurrentName == '预约任务') {
+          if (this.currentIndex == 0) {
+            this.queryCompleteAppointTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          } else {
+            this.queryCompleteAppointTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          }
+        } else if (this.taskCurrentName == '循环任务') {
+          if (this.currentIndex == 0) {
+            this.queryCompleteCirculationTask(
+              {
+                proId: this.proId, workerId: '', state: 7,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          } else {
+            this.queryCompleteCirculationTask(
+              {
+                proId: this.proId, workerId: '', state: 6,
+                startDate: this.startTime, endDate: this.endTime,
+                departmentId: this.userInfo.depId
+              }
+            )
+          }
         }
       },
 
@@ -1280,7 +1931,9 @@
           )
         } else if (index == 3) {
           this.currentIndex = 0;
-          this.activetask = 0;
+          this.activetaskDispatch = 0;
+          this.activetaskAppoint = 0;
+          this.activetaskCirculation = 0;
           this.operateMessage = '';
           this.operateCallOut = '';
           this.operateTaskTrace = '';
@@ -1428,12 +2081,15 @@
                     planStartTime: item.planStartTime,
                     state: item.state,
                     setOutPlaceName: item.setOutPlaceName,
+                    taskNumber: item.taskNumber,
                     destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
                     taskTypeName: item.taskTypeName,
                     toolName: item.toolName,
                     priority: item.priority,
+                    patientNumber: item.patientNumber,
                     id: item.id,
                     distName: item.distName,
+                    finishTime: item.finishTime,
                     patientName: item.patientName,
                     bedNumber: item.bedNumber,
                     startPhoto: item.startPhoto,
@@ -1476,6 +2132,112 @@
           });
           this.showLoadingHint = false;
         })
+      },
+      // 查询历史预约任务(已完成)
+      queryCompleteAppointTask (data) {
+        this.noDataShow = false;
+        this.showLoadingHint = true;
+        queryAppointTaskMessage(data).then((res) => {
+          this.showLoadingHint = false;
+          if (res && res.data.code == 200) {
+            this.isRefresh = false;
+            this.stateCompleteList = [];
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                this.stateCompleteList.push({
+                  createTime: item.createTime,
+                  planUseTime: item.planUseTime,
+                  planStartTime: item.planStartTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  taskNumber: item.taskNumber,
+                  destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
+                  taskTypeName: item.taskTypeName,
+                  toolName: item.toolName,
+                  priority: item.priority,
+                  patientNumber: item.patientNumber,
+                  id: item.id,
+                  distName: item.distName,
+                  finishTime: item.finishTime,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto,
+                  isBack: item.isBack,
+                  isSign: item.isSign,
+                  patientInfoList: item.patientInfoList
+                });
+                this.taskCount = this.stateCompleteList.length;
+              }
+            } else {
+              this.noDataShow = true;
+              this.taskCount = 0
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+            this.noDataShow = true;
+          });
+          this.showLoadingHint = false;
+        })
+      },
+      // 查询历史循环任务(已完成)
+      queryCompleteCirculationTask (data) {
+        this.noDataShow = false;
+        this.showLoadingHint = true;
+        queryCirculationTask(data).then((res) => {
+          this.showLoadingHint = false;
+          if (res && res.data.code == 200) {
+            this.isRefresh = false;
+            this.stateCompleteList = [];
+            if (res.data.data.length > 0) {
+              this.noDataShow = false;
+              for (let item of res.data.data) {
+                this.stateCompleteList.push({
+                  createTime: item.createTime,
+                  planUseTime: item.planUseTime,
+                  planStartTime: item.planStartTime,
+                  state: item.state,
+                  setOutPlaceName: item.setOutPlaceName,
+                  taskNumber: item.taskNumber,
+                  destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
+                  taskTypeName: item.taskTypeName,
+                  toolName: item.toolName,
+                  priority: item.priority,
+                  patientNumber: item.patientNumber,
+                  id: item.id,
+                  distName: item.distName,
+                  finishTime: item.finishTime,
+                  patientName: item.patientName,
+                  bedNumber: item.bedNumber,
+                  startPhoto: item.startPhoto,
+                  endPhoto: item.endPhoto,
+                  isBack: item.isBack,
+                  isSign: item.isSign,
+                  patientInfoList: item.patientInfoList
+                });
+                this.taskCount = this.stateCompleteList.length;
+              }
+            } else {
+              this.noDataShow = true;
+              this.taskCount = 0
+            }
+          }
+        })
+          .catch((err) => {
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {
+              this.noDataShow = true;
+            });
+            this.showLoadingHint = false;
+          })
       }
     }
   }
@@ -1957,6 +2719,44 @@
             .medical-worker-operate-right-historyTask {
               flex:1;
               overflow: auto;
+              .task-switch {
+                width: 100%;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: center;
+                height: 50px;
+                >span {
+                  display: inline-block;
+                  font-size: 16px;
+                  color: #333;
+                  text-align: center;
+                  width: 30%;
+                  margin-right: 2%;
+                  line-height: 50px;
+                  height: 50px;
+                  &:last-child {
+                    margin-right: 0
+                  }
+                };
+                .active-tab-style {
+                  color: #2895ea;
+                  font-size: 17px;
+                  font-weight: bold;
+                  position: relative;
+                  &:after {
+                    content: '';
+                    position: absolute;
+                    bottom: 4px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 26px;
+                    height: 4px;
+                    background: #2895ea;
+                    border-radius: 2px;
+                  }
+                };
+              };
               /deep/ .van-tabs--line {
                 .van-tabs__line {
                   background-color: @color-theme;
@@ -1965,6 +2765,11 @@
               /deep/ .van-tabs {
                 .right-sign {
                   .status-sign-pad
+                };
+                .van-tabs__content {
+                  background: #fafafa;
+                  padding-top: 8px;
+                  box-sizing: border-box;
                 };
                 .van-tabs__nav {
                   .van-tab {
@@ -1983,121 +2788,203 @@
                 line-height: 40px !important;
                 .bottom-border-1px(#d0d0d0);
               }
-              .historyTask-list-box {
-                display: flex;
-                height: 100%;
-                flex-direction: column;
-                /deep/ .van-tabs {
-                  flex: 1;
-                  overflow: auto
-                };
-                .time-search {
-                  background: #fff;
-                  height: 44px;
-                  position: relative;
-                  /deep/ .van-cell {
-                    width: 100%;
-                    display: inline-block;
-                    padding: 10px 10px;
-                    border: 1px solid #d8d5d5;
-                    border-radius: 4px;
-                    line-height: 0;
-                  }
-                  .time-between {
-                    color: black;
-                    position: absolute;
-                  }
-                  .content-middle-top-content {
-                    position: relative;
+                .historyTask-box {
+                  .historyTask-list-box {
+                    display: flex;
                     height: 100%;
-                    width: 100%;
-                    margin: 0 auto;
-                    > div {
-                      width: 44%;
-                      position: absolute;
-                      top: 14%;
+                    flex-direction: column;
+
+                    /deep/ .van-tabs {
+                      flex: 1;
+                      overflow: auto
                     }
-                  }
-                };
-                .middle-top-search {
-                  width: 100%;
-                  margin: 4px 0;
-                  text-align: center;
-                  span {
-                    display: inline-block;
-                    width: 70px;
-                    height: 30px;
-                    img {
-                      width: 100%;
-                      height: 100%
-                    }
-                  }
-                }
-                .historyTask-list {
-                  .wait-handle-list {
-                    box-sizing: border-box;
-                    position: relative;
-                    box-sizing: border-box;
-                    .wait-handle-message-createTime {
-                      border-top: 1px solid #e3ece9;
-                      padding-left: 10px;
-                      background: #ececec;
-                      height: 24px;
-                      line-height: 24px;
-                      font-size: 12px;
-                      color: #7f7d7d
-                    };
-                    .wait-handle-message-planUseTime {
-                      position: absolute;
-                      top: 6px;
-                      right: 10px;
-                      font-size: 12px;
-                      color: #7f7d7d
-                    };
-                    .wait-handle-message {
-                      font-size: 12px;
-                      padding-top: 15px;
-                      padding-bottom: 15px;
-                      box-sizing: border-box;
-                      .handle-message-line-wrapper {
-                        margin-left: 30px;
-                        p {
-                          width: 47%;
-                          height: 40px;
-                          line-height: 40px;
-                          display: inline-block;
-                          overflow: auto;
-                          vertical-align: top;
-                          .message-tit {
-                            color: #7f7d7d
-                          };
-                          .message-tit-real {
-                            color: black
-                          }
+                  ;
+
+                    .time-search {
+                      background: #fff;
+                      height: 44px;
+                      position: relative;
+
+                      /deep/ .van-cell {
+                        width: 100%;
+                        display: inline-block;
+                        padding: 10px 10px;
+                        border: 1px solid #d8d5d5;
+                        border-radius: 4px;
+                        line-height: 0;
+                      }
+
+                      .time-between {
+                        color: black;
+                        position: absolute;
+                      }
+
+                      .content-middle-top-content {
+                        position: relative;
+                        height: 100%;
+                        width: 100%;
+                        margin: 0 auto;
+
+                        > div {
+                          width: 44%;
+                          position: absolute;
+                          top: 14%;
                         }
                       }
-                    };
-                    .wait-handle-check {
-                      position: absolute;
-                      top: 60px;
-                      left: 6px
-                    };
-                    .get-wait-task {
+                    }
+                  ;
+
+                    .middle-top-search {
                       width: 100%;
+                      margin: 4px 0;
                       text-align: center;
+
                       span {
                         display: inline-block;
-                        width: 90px;
-                        height: 40px;
+                        width: 70px;
+                        height: 30px;
+
                         img {
                           width: 100%;
                           height: 100%
                         }
                       }
                     }
+
+                    .historyTask-list {
+                      .wait-handle-list {
+                        box-sizing: border-box;
+                        position: relative;
+                        box-sizing: border-box;
+                        background: #fff;
+                        width: 96%;
+                        margin: 0 auto;
+                        margin-bottom: 8px;
+                        &:last-child {
+                          margin-bottom: 0
+                        };
+                        .wait-handle-message-createTime {
+                          height: 24px;
+                          line-height: 24px;
+                          font-size: 12px;
+                          color: #7f7d7d
+                        };
+                        .wait-handle-message-planUseTime {
+                          position: absolute;
+                          top: 6px;
+                          right: 10px;
+                          font-size: 12px;
+                          color: #7f7d7d
+                        }
+                      ;
+
+                        .wait-handle-message {
+                          font-size: 12px;
+                          box-sizing: border-box;
+                          .wait-handle-message-top {
+                            display: flex;
+                            flex-flow: row nowrap;
+                            justify-content: space-between;
+                            height: 40px;
+                            align-items: center;
+                            background: #f1f1f1;
+                            > p {
+                              font-size: 14px;
+                              color: #7f7d7d;
+                              &:first-child {
+                                flex: 1;
+                                overflow: auto;
+                                height: 14px;
+                              };
+                              &:last-child {
+                                width: 50px;
+                                color: #0ac50a;
+                                text-align: right;
+                              }
+                            }
+                          };
+                          .wait-handle-message-middle {
+                            font-size: 15px;
+                            color: black;
+                            height: 30px;
+                            line-height: 30px;
+                          };
+                          .handle-message-line-wrapper {
+                            .adimission-number {
+                              overflow: hidden;
+                              white-space: nowrap;
+                              text-overflow: ellipsis
+                            };
+                            p {
+                              width: 47%;
+                              height: 30px;
+                              line-height: 30px;
+                              display: inline-block;
+                              overflow: auto;
+                              vertical-align: top;
+                              > span {
+                                &:first-child {
+                                  margin-right: 2px
+                                }
+                              };
+                              .message-tit {
+                                color: #7f7d7d
+                              }
+                            ;
+
+                              .message-tit-real {
+                                color: black
+                              }
+                            }
+                          };
+                          .handle-message-line-wrapper-one-line {
+                            > p {
+                              width: 100%;
+                              > span {
+                                &:first-child {
+                                  margin-right: 2px
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ;
+
+                        .wait-handle-check {
+                          position: absolute;
+                          top: 60px;
+                          left: 6px
+                        }
+                      ;
+
+                        .get-wait-task {
+                          width: 100%;
+                          text-align: center;
+
+                          span {
+                            display: inline-block;
+                            width: 90px;
+                            height: 40px;
+
+                            img {
+                              width: 100%;
+                              height: 100%
+                            }
+                          }
+                        }
+                      }
+                    };
+                    .historyTask-list-cancel {
+                      .wait-handle-message-top {
+                        > p {
+                          &:last-child {
+                            color: indianred !important;
+                          }
+                        }
+                      };
+                    }
                   }
                 }
-              }
             }
             .wait-handle-box {
               overflow: auto;
@@ -2133,17 +3020,46 @@
                       font-size: 14px;
                       padding-top: 6px;
                       box-sizing: border-box;
+                      .wait-handle-message-top {
+                        display: flex;
+                        flex-flow: row nowrap;
+                        justify-content: space-between;
+                        height: 40px;
+                        align-items: center;
+                        background: #f1f1f1;
+                        > p {
+                          font-size: 14px;
+                          color: #7f7d7d;
+                          &:first-child {
+                            flex: 1;
+                            overflow: auto;
+                            height: 14px;
+                          };
+                          &:last-child {
+                            width: 50px;
+                            color: #0ac50a;
+                            text-align: right;
+                          }
+                        }
+                      };
                       .handle-message-line-wrapper {
-                        padding-left: 10px;
+                        .adimission-number {
+                          overflow: hidden;
+                          white-space: nowrap;
+                          text-overflow: ellipsis
+                        };
                         p {
                           width: 24%;
                           display: inline-block;
                           text-align: left;
-                          height: 60px;
-                          line-height: 60px;
+                          height: 30px;
+                          line-height: 30px;
                           overflow: auto;
                           vertical-align: top;
-                          span {
+                          > span {
+                            &:first-child {
+                              margin-right: 2px;
+                            };
                             &:last-child {
                               line-height: 24px;
                             }
@@ -2163,7 +3079,12 @@
                             line-height: 24px;
                           }
                         }
-                      }
+                      };
+                      .handle-message-line-wrapper-one-line {
+                        p {
+                          width: 100%;
+                        }
+                      };
                     }
                     .btn-area-trace {
                       text-align: center;
