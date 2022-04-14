@@ -326,6 +326,52 @@
                                   <span class="message-tit-real">{{item.finishTime}}</span>
                                 </p>
                               </div>
+                              <!-- 反馈区域 -->
+                              <div class="feedback-area">
+                                <div class="feedback-top">
+                                  <div class="left">
+                                    <van-icon name="manager" size="20" />
+                                    <span>运送人:</span>
+                                    <span>{{item.workerName}}</span>
+                                  </div>
+                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                    </div>
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
+                                        点赞
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                    感谢您的反馈!
+                                  </div>
+                                </div>
+                                <div class="feedback-bottom" v-show="item.isShowFeedBack">
+                                  <div class="idea-feedback">
+                                    请输入你的反馈意见
+                                  </div>
+                                  <van-field
+                                    rows="4"
+                                    v-model="item.deedbackContent"
+                                    type="textarea"
+                                    maxlength="2000"
+                                    show-word-limit
+                                    placeholder="请输入你的反馈意见"
+                                  />
+                                  <div class="guess-speak">
+                                    猜你想说
+                                  </div>
+                                  <div class="guess-speak-list">
+                                    <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
+                                  </div>  
+                                  <div class="submit-feedback">
+                                    提交反馈
+                                  </div> 
+                                </div>
+                              </div>
                               <p class="wait-handle-check" v-show="item.state == 2 ">
                                 <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                               </p>
@@ -576,9 +622,55 @@
                                     <span class="message-tit-real">{{item.finishTime}}</span>
                                   </p>
                                 </div>
-                                <p class="wait-handle-check" v-show="item.state == 2 ">
-                                  <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-                                </p>
+                                <!-- 反馈区域 -->
+                              <div class="feedback-area">
+                                <div class="feedback-top">
+                                  <div class="left">
+                                    <van-icon name="manager" size="20" />
+                                    <span>运送人:</span>
+                                    <span>{{item.workerName}}</span>
+                                  </div>
+                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                    </div>
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
+                                        点赞
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                    感谢您的反馈!
+                                  </div>
+                                </div>
+                                <div class="feedback-bottom" v-show="item.isShowFeedBack">
+                                  <div class="idea-feedback">
+                                    请输入你的反馈意见
+                                  </div>
+                                  <van-field
+                                    rows="4"
+                                    v-model="item.deedbackContent"
+                                    type="textarea"
+                                    maxlength="2000"
+                                    show-word-limit
+                                    placeholder="请输入你的反馈意见"
+                                  />
+                                  <div class="guess-speak">
+                                    猜你想说
+                                  </div>
+                                  <div class="guess-speak-list">
+                                    <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
+                                  </div>  
+                                  <div class="submit-feedback">
+                                    提交反馈
+                                  </div> 
+                                </div>
+                              </div>
+                              <p class="wait-handle-check" v-show="item.state == 2 ">
+                                <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+                              </p>
                               </div>
                               <p class="get-wait-task">
                               <span v-show="item.state == '1'">
@@ -748,90 +840,71 @@
                                 </div>
                                 <div class="wait-handle-message-middle">
                                   <p v-if="templateType == 'template_one'">
-                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit">任务名称:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
                                   </p>
-                                  <p v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
-                                  </p>
                                 </div>
-                                <div class="handle-message-line-wrapper">
-                                  <P>
-                                    <span class="message-tit">出发地:</span>
-                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                                  </P>
-                                  <p>
-                                    <span class="message-tit">目的地:</span>
-                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
-                                  </p>
-                                </div>
-                                <div class="handle-message-line-wrapper">
-                                  <p>
-                                    <span class="message-tit">优先级:</span>
-                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                                  </p>
-                                  <P v-if="templateType == 'template_one'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                                  </P>
-                                  <P v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
-                                  </P>
-                                </div>
-                                <div class="handle-message-line-wrapper">
-                                  <p class="adimission-number">
-                                    <span class="message-tit">住院号:</span>
-                                    <span class="message-tit-real">{{item.patientNumber}}</span>
-                                  </p>
-                                  <p>
-                                    <span class="message-tit">运送工具:</span>
-                                    <span class="message-tit-real">{{item.toolName}}</span>
-                                  </p>
-                                </div>
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                              </div>-->
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">签字:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">回到出发地:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                              </div>-->
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p v-if="templateType == 'template_one'">-->
-                                <!--                                  <span class="message-tit">病人:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <P v-else-if="templateType == 'template_two'">-->
-                                <!--                                  <span class="message-tit">病人:</span>-->
-                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
-                                <!--                                </P>-->
-                                <!--                              </div>-->
                                 <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
-                                    <span class="message-tit">订单创建时间:</span>
-                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                    <span class="message-tit">预计开始时间:</span>
+                                    <span class="message-tit-real">{{item.startTime}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
-                                    <span class="message-tit">完成时间:</span>
-                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                    <span class="message-tit">实际开始时间:</span>
+                                    <span class="message-tit-real">{{item.startUpTime}}</span>
                                   </p>
                                 </div>
+                                <div class="dist-list">
+                                  <span v-for="(innerItem,innerIndex) in item.distName" :key="innerIndex">{{innerItem.name}}</span>
+                                </div>
+                                <!-- 反馈区域 -->
+                              <div class="feedback-area">
+                                <div class="feedback-top">
+                                  <div class="left">
+                                    <van-icon name="manager" size="20" />
+                                    <span>运送人:</span>
+                                    <span>{{item.workerName}}</span>
+                                  </div>
+                                <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                    </div>
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
+                                        点赞
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                    感谢您的反馈!
+                                  </div>
+                                </div>
+                                <div class="feedback-bottom" v-show="item.isShowFeedBack">
+                                  <div class="idea-feedback">
+                                    请输入你的反馈意见
+                                  </div>
+                                  <van-field
+                                    rows="4"
+                                    v-model="item.deedbackContent"
+                                    type="textarea"
+                                    maxlength="2000"
+                                    show-word-limit
+                                    placeholder="请输入你的反馈意见"
+                                  />
+                                  <div class="guess-speak">
+                                    猜你想说
+                                  </div>
+                                  <div class="guess-speak-list">
+                                    <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
+                                  </div>  
+                                  <div class="submit-feedback">
+                                    提交反馈
+                                  </div> 
+                                </div>
+                              </div>
                                 <p class="wait-handle-check" v-show="item.state == 2 ">
                                   <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                                 </p>
@@ -849,7 +922,7 @@
                             <span class="title">已取消</span>
                             <span class="right-sign sign-not-in" v-show="currentIndex == 1 && taskNameIndex === 2">{{taskCount}}</span>
                           </div>
-                          <div class="historyTask-list historyTask-list-cancel">
+                          <div class="historyTask-list">
                             <div class="wait-handle-list" v-for="(item,index) in stateCompleteList" :key="`${item}-${index}`">
                               <div class="wait-handle-message">
                                 <div class="wait-handle-message-top">
@@ -862,89 +935,24 @@
                                 </div>
                                 <div class="wait-handle-message-middle">
                                   <p v-if="templateType == 'template_one'">
-                                    <span class="message-tit">运送类型:</span>
+                                    <span class="message-tit">任务名称:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
                                   </p>
-                                  <p v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
-                                  </p>
                                 </div>
-                                <div class="handle-message-line-wrapper">
-                                  <P>
-                                    <span class="message-tit">出发地:</span>
-                                    <span class="message-tit-real">{{item.setOutPlaceName}}</span>
-                                  </P>
-                                  <p>
-                                    <span class="message-tit">目的地:</span>
-                                    <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
-                                  </p>
-                                </div>
-                                <div class="handle-message-line-wrapper">
-                                  <p>
-                                    <span class="message-tit">优先级:</span>
-                                    <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
-                                  </p>
-                                  <P v-if="templateType == 'template_one'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                                  </P>
-                                  <P v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
-                                  </P>
-                                </div>
-                                <div class="handle-message-line-wrapper">
-                                  <p class="adimission-number">
-                                    <span class="message-tit">住院号:</span>
-                                    <span class="message-tit-real">{{item.patientNumber}}</span>
-                                  </p>
-                                  <p>
-                                    <span class="message-tit">运送工具:</span>
-                                    <span class="message-tit-real">{{item.toolName}}</span>
-                                  </p>
-                                </div>
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">出发地拍照:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">目的地拍照:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                              </div>-->
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">签字:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <p>-->
-                                <!--                                  <span class="message-tit">回到出发地:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>-->
-                                <!--                                </p>-->
-                                <!--                              </div>-->
-                                <!--                              <div class="handle-message-line-wrapper">-->
-                                <!--                                <p v-if="templateType == 'template_one'">-->
-                                <!--                                  <span class="message-tit">病人:</span>-->
-                                <!--                                  <span class="message-tit-real">{{item.patientName}}</span>-->
-                                <!--                                </p>-->
-                                <!--                                <P v-else-if="templateType == 'template_two'">-->
-                                <!--                                  <span class="message-tit">病人:</span>-->
-                                <!--                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>-->
-                                <!--                                </P>-->
-                                <!--                              </div>-->
                                 <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
-                                    <span class="message-tit">订单创建时间:</span>
-                                    <span class="message-tit-real">{{item.createTime}}</span>
+                                    <span class="message-tit">预计开始时间:</span>
+                                    <span class="message-tit-real">{{item.startTime}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
-                                    <span class="message-tit">完成时间:</span>
-                                    <span class="message-tit-real">{{item.finishTime}}</span>
+                                    <span class="message-tit">实际开始时间:</span>
+                                    <span class="message-tit-real">{{item.startUpTime}}</span>
                                   </p>
+                                </div>
+                                <div class="dist-list">
+                                  <span v-for="(innerItem,innerIndex) in item.distName" :key="innerIndex">{{innerItem.name}}</span>
                                 </div>
                                 <p class="wait-handle-check" v-show="item.state == 2 ">
                                   <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
@@ -964,6 +972,36 @@
             </div>
             <div class="medical-worker-operate-right-taskCollect" v-show="operateTaskCollect == 5">
               <p>收藏</p>
+            </div>
+            <div class="medical-worker-operate-right-taskFeedback" v-show="operateTaskCollect == 6">
+              <div class="feedback-icon">
+                <van-icon name="records" size="50" color="#2895ea" />
+              </div>
+              <div class="idea-type">
+                <span>*</span>意见类型
+              </div>
+              <div class="idea-type-list">
+                <span>运送人员</span>
+                <span>功能故障</span>
+                <span>其它意见</span>
+              </div>
+               <div class="feedback-idea">
+                <span>*</span>反馈意见
+              </div>
+              <van-field
+                rows="8"
+                v-model="deedbackContent"
+                type="textarea"
+                maxlength="2000"
+                show-word-limit
+                placeholder="请输入反馈意见"
+              />
+              <div class="guess-speak-list">
+                <span v-for="(innerItem,innerIndex) in totalGuessSpeakList" @click="totalGuessSpeakListEvent(innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
+              </div>  
+              <div class="feedback-btn">
+                意见反馈
+              </div>
             </div>
           </div>
         </div>
@@ -1037,6 +1075,9 @@
         minDateEnd: new Date(2020, 0, 1),
         taskNameList: [{name: '调度任务'},{name: '预约任务'},{name: '循环任务'}],
         taskNameIndex: 0,
+        deedbackContent: '',
+        guessSpeakList: [{name: '服务态度有待改进'},{name: '运送时间比较长'},{name: '等待时间比较长'},{name: '服务不够细心'}],
+        totalGuessSpeakList: [{name: '服务态度有待改进'},{name: '运送时间比较长'},{name: '等待时间比较长'},{name: '服务不够细心'}],
         taskCurrentName: '调度任务',
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng},
@@ -1049,7 +1090,8 @@
           {tit:'呼叫', imgUrl: medicalCallPng, imgUrlChecked:medicalCallCheckedPng},
           {tit:'任务跟踪', imgUrl: taskTailPng, imgUrlChecked:taskTailCheckedPng},
           {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
-          {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
+          {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng},
+           {tit:'意见反馈', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
         operateMessage: '',
         operateCallOut: 2,
@@ -1075,7 +1117,6 @@
     },
 
     mounted() {
-      this.changeTitleTxt({tit:'中央运送'});
       setStore('currentTitle','中央运送');
       // 控制设备物理返回按键测试
       if (!IsPC()) {
@@ -1953,6 +1994,12 @@
           this.operateTaskTrace = '';
           this.operateHistoryTask = '';
           this.operateTaskCollect = 5
+        } else if (index == 5) {
+          this.operateMessage = '';
+          this.operateCallOut = '';
+          this.operateTaskTrace = '';
+          this.operateHistoryTask = '';
+          this.operateTaskCollect = 6
         }
       },
 
@@ -2088,6 +2135,11 @@
                     priority: item.priority,
                     patientNumber: item.patientNumber,
                     id: item.id,
+                    deedbackContent: '',
+                    isShowFeedBack: false,
+                    isShowFeedBackIconStyle: false,
+                    isShowGiveLikeIconStyle: false,
+                    workerName: item.workerName,
                     distName: item.distName,
                     finishTime: item.finishTime,
                     patientName: item.patientName,
@@ -2159,6 +2211,11 @@
                   patientNumber: item.patientNumber,
                   id: item.id,
                   distName: item.distName,
+                  deedbackContent: '',
+                  isShowFeedBack: false,
+                  isShowFeedBackIconStyle: false,
+                  isShowGiveLikeIconStyle: false,
+                  workerName: item.workerName,
                   finishTime: item.finishTime,
                   patientName: item.patientName,
                   bedNumber: item.bedNumber,
@@ -2199,30 +2256,22 @@
               this.noDataShow = false;
               for (let item of res.data.data) {
                 this.stateCompleteList.push({
-                  createTime: item.createTime,
-                  planUseTime: item.planUseTime,
-                  planStartTime: item.planStartTime,
+                  startTime: item.startTime,
+                  startUpTime: item.startUpTime,
                   state: item.state,
-                  setOutPlaceName: item.setOutPlaceName,
                   taskNumber: item.taskNumber,
-                  destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
                   taskTypeName: item.taskTypeName,
-                  toolName: item.toolName,
-                  priority: item.priority,
-                  patientNumber: item.patientNumber,
                   id: item.id,
-                  distName: item.distName,
-                  finishTime: item.finishTime,
-                  patientName: item.patientName,
-                  bedNumber: item.bedNumber,
-                  startPhoto: item.startPhoto,
-                  endPhoto: item.endPhoto,
-                  isBack: item.isBack,
-                  isSign: item.isSign,
-                  patientInfoList: item.patientInfoList
+                  deedbackContent: '',
+                  isShowFeedBack: false,
+                  isShowFeedBackIconStyle: false,
+                  isShowGiveLikeIconStyle: false,
+                  workerName: item.workerName,
+                  distName: Object.values(JSON.parse(item.hasAccess))
                 });
                 this.taskCount = this.stateCompleteList.length;
-              }
+              };
+              console.log('科室列表',this.stateCompleteList);
             } else {
               this.noDataShow = true;
               this.taskCount = 0
@@ -2238,6 +2287,33 @@
             });
             this.showLoadingHint = false;
           })
+      },
+
+      // 反馈事件
+      feedBackEvent(item,index) {
+        this.stateCompleteList[index]['isShowFeedBackIconStyle'] = !this.stateCompleteList[index]['isShowFeedBackIconStyle'];
+        this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack']
+      },
+      // 点赞事件
+      giveLikeEvent(item,index) {
+        if (this.stateCompleteList[index]['isShowGiveLikeIconStyle']) {return};
+        this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle']
+      },
+      // 任务猜你想说项点击事件
+      guessSpeakListEvent(index,innerItem,innerIndex) {
+        if (this.stateCompleteList[index]['deedbackContent'].length == 0) {
+          this.stateCompleteList[index]['deedbackContent'] = `${innerItem.name}`
+        } else {
+          this.stateCompleteList[index]['deedbackContent'] = `${this.stateCompleteList[index]['deedbackContent']},${innerItem.name}`
+        }
+      },
+      // 总体反馈猜你想说项点击事件
+      totalGuessSpeakListEvent(innerItem,innerIndex) {
+        if (this.deedbackContent.length == 0) {
+          this.deedbackContent = `${innerItem.name}`
+        } else {
+          this.deedbackContent = `${this.deedbackContent},${innerItem.name}`
+        }
       }
     }
   }
@@ -2283,6 +2359,7 @@
           height: 50px;
           display: flex;
           align-items: center;
+          box-sizing: border-box;
           .content-top-userName-img {
             display: inline-block;
             width: 40px;
@@ -2349,6 +2426,7 @@
         height: 100px;
         background: #f2f2f2;
         padding: 16px 0;
+        box-sizing: border-box;
         .task-message-number-wrapper {
           height: 100%;
           position: relative;
@@ -2573,12 +2651,14 @@
                   width: 10%;
                   text-align: left;
                   padding-left: 6px;
+                  box-sizing: border-box;
                 };
                 &:last-child {
                   right: 0;
                   width: 80%;
                   text-align: right;
                   padding-right: 6px;
+                  box-sizing: border-box;
                 }
               }
             }
@@ -2593,6 +2673,7 @@
                 line-height: 30px;
                 background: #fff;
                 padding-left: 8px;
+                box-sizing: border-box;
                 color: black;
               }
               .transport-type-area {
@@ -2603,6 +2684,7 @@
                   width: 100%;
                   .destination-box {
                     padding-left: 15px;
+                    box-sizing: border-box;
                     > div {
                         display: inline-block
                       };
@@ -2697,7 +2779,83 @@
                 line-height: 40px !important;
                 .bottom-border-1px(#d0d0d0);
               }
-            }
+            };
+            .medical-worker-operate-right-taskFeedback {
+              padding: 0 8px;
+              box-sizing: border-box;
+              .feedback-icon {
+                height: 140px;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: center;
+              };
+              /deep/ .van-cell {
+                border: 1px solid #dadada;
+                background-color: #f6f6f6
+              };
+              .idea-type {
+                color: black;
+                font-size: 14px;
+                font-weight: bold;;
+                margin-bottom: 12px;
+                >span {
+                  color: red;
+                }
+              };
+              .guess-speak-list {
+                  display: flex;
+                  flex-flow: row wrap;
+                  justify-content: flex-start;
+                  margin: 20px 0;
+                  span {
+                    font-size: 13px;
+                    color: #a59f9f;
+                    display: inline-block;
+                    padding: 4px 8px;
+                    box-sizing: border-box;
+                    height: 20px;
+                    text-align: center;
+                    border: 1px solid #a59f9f;
+                    margin: 0 8px 8px 0;
+                  }
+              };
+              .idea-type-list {
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: flex-start;
+                span {
+                  font-size: 13px;
+                  color: #a59f9f;
+                  display: inline-block;
+                  padding: 8px 16px;
+                  background: #f4f4f4;
+                  box-sizing: border-box;
+                  text-align: center;
+                  border: 1px solid #a59f9f;
+                  margin: 0 8px 8px 0;
+                }
+              };
+              .feedback-idea {
+                color: black;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 12px 0;
+                >span {
+                  color: red;
+                }
+              };
+              .feedback-btn {
+                width: 100%;
+                margin: 0 auto;
+                height: 42px;
+                line-height: 42px;
+                color: #fff;
+                font-size: 13px;
+                text-align: center;
+                background: #63bbff
+              }
+            };
             .medical-worker-operate-right-callOut {
               .medical-worker-transport-type {
                 color: #2895ea;
@@ -2783,6 +2941,7 @@
                 font-size: 16px;
                 background: #fff;
                 padding-left: 10px;
+                box-sizing: border-box;
                 position: relative;
                 height: 40px !important;
                 line-height: 40px !important;
@@ -2809,6 +2968,7 @@
                         width: 100%;
                         display: inline-block;
                         padding: 10px 10px;
+                        box-sizing: border-box;
                         border: 1px solid #d8d5d5;
                         border-radius: 4px;
                         line-height: 0;
@@ -2946,9 +3106,121 @@
                                 }
                               }
                             }
+                          };
+                          .feedback-area {
+                            display: flex;
+                            flex-direction: column;
+                            .feedback-top {
+                              display: flex;
+                              flex-flow: row nowrap;
+                              justify-content: space-between;
+                              align-items: center;
+                              background: #f7f7f7;
+                              height: 60px;
+                              .left {
+                                width: 160px;
+                                span {
+                                  color: black;
+                                  &:nth-child(2) {
+                                    font-size: 13px;
+                                    margin: 0 2px;
+                                  };
+                                  &:nth-child(3) {
+                                    font-size: 12px;
+                                  }
+                                }
+                              };
+                              .right {
+                                display: flex;
+                                flex-flow: row nowrap;
+                                justify-content: space-between;
+                                align-items: center;
+                                height: 50px;
+                                width: 160px;
+                                padding: 0 8px;
+                                box-sizing: border-box;
+                                border: 1px solid #e2e2e2;
+                                border-radius: 30px;
+                                .left-feedback-icon {
+                                  width: 50px;
+                                  height: 50px;
+                                  display: flex;
+                                  flex-flow: row nowrap;
+                                  justify-content: center;
+                                  align-items: center;
+                                  border-right: 1px solid #a59f9f;
+                                };
+                                .right-like-icon {
+                                  flex: 1;
+                                  text-align: center;
+                                  span {
+                                    font-size: 12px;
+                                    color: #a59f9f;
+                                    margin-left: 4px
+                                  };
+                                  .give-like-text-style {
+                                    color: orange
+                                  }
+                                }
+                              };
+                              .thank-feedback {
+                                display: flex;
+                                flex-flow: row nowrap;
+                                justify-content: space-between;
+                                align-items: center;
+                                height: 50px;
+                                width: 160px;
+                                padding: 0 8px;
+                                box-sizing: border-box;
+                                color: orange;
+                                font-size: 14px;
+                              }
+                            };
+                          .feedback-bottom {
+                            .idea-feedback {
+                              color: black;
+                              font-size: 13px;
+                              margin: 12px 0;
+                            };
+                            /deep/ .van-cell {
+                              border: 1px solid #dadada
+                            };
+                            .guess-speak {
+                              font-size: 12px;
+                              color: #a59f9f;
+                              margin: 12px 0;
+                            };
+                            .guess-speak-list {
+                                display: flex;
+                                flex-flow: row wrap;
+                                justify-content: flex-start;
+                                span {
+                                  font-size: 13px;
+                                  color: #a59f9f;
+                                  display: inline-block;
+                                  padding: 4px 8px;
+                                  box-sizing: border-box;
+                                  height: 20px;
+                                  text-align: center;
+                                  border: 1px solid #a59f9f;
+                                  margin: 0 8px 8px 0;
+                                }
+                            };
+                            .submit-feedback {
+                              width: 180px;
+                              height: 40px;
+                              background: orange;
+                              font-size: 13px;
+                              text-align: center;
+                              line-height: 40px;
+                              color: #fff;
+                              margin: 0 auto;
+                              margin-top: 12px;
+                              border-radius: 20px;
+                            }
                           }
                         }
-                      ;
+                    };
 
                         .wait-handle-check {
                           position: absolute;
@@ -2983,6 +3255,27 @@
                         }
                       };
                     }
+                  };
+                  .historyTask-list-circulation-box {
+                    .message-tit {
+                      color: black !important
+                    };
+                    .dist-list {
+                      display: flex;
+                      flex-flow: row wrap;
+                      justify-content: space-between;
+                      >span {
+                        display: inline-block;
+                        padding: 6px 10px;
+                        box-sizing: border-box;
+                        width: 48%;
+                        margin-bottom: 10px;
+                        border: 1px solid #d5d5d5;
+                        font-size: 12px;
+                        color: #333;
+                        text-align: center
+                      }
+                    }
                   }
                 }
             }
@@ -2997,6 +3290,7 @@
                   font-size: 16px;
                   background: #fff;
                   padding-left: 10px;
+                  box-sizing: border-box;
                   position: relative;
                   height: 40px !important;
                   line-height: 40px !important;
@@ -3015,6 +3309,7 @@
                   .task-list-inner {
                     background: #f7f7f7;
                     padding-bottom: 10px;
+                    box-sizing: border-box;
                     margin-bottom: 6px;
                     .wait-handle-message {
                       font-size: 14px;
@@ -3085,6 +3380,32 @@
                           width: 100%;
                         }
                       };
+                      .feedback-area {
+                        display: flex;
+                        flex-direction: column;
+                        .feedback-top {
+                          display: flex;
+                          flex-flow: row nowrap;
+                          justify-content: space-between;
+                          align-items: center;
+                          height: 60px;
+                          .left {
+                            span {
+                              color: black;
+                              &:nth-child(1) {
+                                font-size: 13px;
+                                margin-left: 2px;
+                              };
+                              &:nth-child(2) {
+                                font-size: 12px;
+                              }
+                            }
+                          }
+                        };
+                        .feedback-bottom {
+
+                        }
+                      }
                     }
                     .btn-area-trace {
                       text-align: center;
