@@ -2218,7 +2218,7 @@
                   workerName: item.workerName,
                   finishTime: item.finishTime,
                   patientName: item.patientName,
-                  bedNumber: item.bedNumber,
+                  bedNumber: item.badNumber,
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
@@ -2297,7 +2297,9 @@
       // 点赞事件
       giveLikeEvent(item,index) {
         if (this.stateCompleteList[index]['isShowGiveLikeIconStyle']) {return};
-        this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle']
+        this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle'],
+        this.stateCompleteList[index]['isShowFeedBackIconStyle'] = false;
+				this.stateCompleteList[index]['isShowFeedBack'] = false
       },
       // 任务猜你想说项点击事件
       guessSpeakListEvent(index,innerItem,innerIndex) {
