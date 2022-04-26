@@ -281,7 +281,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item['patientInfoList'][0]['patientNumber']}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['patientNumber']:'无'}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -445,7 +445,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item['patientInfoList'][0]['patientNumber']}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['patientNumber']:'无'}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
