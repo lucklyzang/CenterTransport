@@ -198,7 +198,7 @@
                 <span v-for="(item,index) in taskNameList" :class="{'active-tab-style':taskNameIndex === index}" :key="index" @click="tabSwitchEvent(item,index)">{{item.name}}</span>
               </div>
                 <div class="historyTask-box">
-                  <div class="historyTask-list-box historyTask-list-dispatch-box" v-show="taskNameIndex === 0">
+                  <div class="historyTask-list-box historyTask-list-dispatch-box" v-if="taskNameIndex === 0">
                     <div class="time-search">
                       <span class="time-between">至</span>
                       <div class="content-middle-top-content">
@@ -275,9 +275,13 @@
                                 </P>
                               </div>
                               <div class="handle-message-line-wrapper">
-                                <p class="adimission-number">
+                                <p class="adimission-number" v-if="templateType == 'template_one'">
                                   <span class="message-tit">住院号:</span>
                                   <span class="message-tit-real">{{item.patientNumber}}</span>
+                                </p>
+                                <p class="adimission-number" v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">住院号:</span>
+                                  <span class="message-tit-real">{{item['patientInfoList'][0]['patientNumber']}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -335,10 +339,10 @@
                                     <span>{{item.workerName}}</span>
                                   </div>
                                   <div class="right" v-show="!item.isShowGiveLikeIconStyle">
-                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index,1)">
                                       <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
-                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index,1,'点赞')">
                                       <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
@@ -367,7 +371,7 @@
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
                                   </div>
-                                  <div class="submit-feedback">
+                                  <div class="submit-feedback" @click="submitTaskFeedBack(item,index,1,'反对')">
                                     提交反馈
                                   </div>
                                 </div>
@@ -435,9 +439,13 @@
                                 </P>
                               </div>
                               <div class="handle-message-line-wrapper">
-                                <p class="adimission-number">
+                               <p class="adimission-number" v-if="templateType == 'template_one'">
                                   <span class="message-tit">住院号:</span>
                                   <span class="message-tit-real">{{item.patientNumber}}</span>
+                                </p>
+                                <p class="adimission-number" v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">住院号:</span>
+                                  <span class="message-tit-real">{{item['patientInfoList'][0]['patientNumber']}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -494,7 +502,7 @@
                       </van-tab>
                     </van-tabs>
                     </div>
-                  <div class="historyTask-list-box historyTask-list-appoint-box" v-show="taskNameIndex === 1">
+                  <div class="historyTask-list-box historyTask-list-appoint-box" v-if="taskNameIndex === 1">
                       <div class="time-search">
                         <span class="time-between">至</span>
                         <div class="content-middle-top-content">
@@ -537,13 +545,9 @@
                                   </p>
                                 </div>
                                 <div class="wait-handle-message-middle">
-                                  <p v-if="templateType == 'template_one'">
+                                  <p>
                                     <span class="message-tit">运送类型:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
-                                  </p>
-                                  <p v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -561,13 +565,9 @@
                                     <span class="message-tit">优先级:</span>
                                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                                   </p>
-                                  <P v-if="templateType == 'template_one'">
+                                  <P>
                                     <span class="message-tit">床号:</span>
                                     <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                                  </P>
-                                  <P v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
                                   </P>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -631,10 +631,10 @@
                                     <span>{{item.workerName}}</span>
                                   </div>
                                   <div class="right" v-show="!item.isShowGiveLikeIconStyle">
-                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index,2)">
                                       <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
-                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index,2,'点赞')">
                                       <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
@@ -663,7 +663,7 @@
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
                                   </div>
-                                  <div class="submit-feedback">
+                                  <div class="submit-feedback" @click="submitTaskFeedBack(item,index,2,'反对')">
                                     提交反馈
                                   </div>
                                 </div>
@@ -697,13 +697,9 @@
                                   </p>
                                 </div>
                                 <div class="wait-handle-message-middle">
-                                  <p v-if="templateType == 'template_one'">
+                                  <p>
                                     <span class="message-tit">运送类型:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
-                                  </p>
-                                  <p v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -721,13 +717,9 @@
                                     <span class="message-tit">优先级:</span>
                                     <span class="message-tit-real">{{priorityTransfer(item.priority)}}</span>
                                   </p>
-                                  <P v-if="templateType == 'template_one'">
+                                  <P>
                                     <span class="message-tit">床号:</span>
                                     <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
-                                  </P>
-                                  <P v-else-if="templateType == 'template_two'">
-                                    <span class="message-tit">床号:</span>
-                                    <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
                                   </P>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -796,7 +788,7 @@
                         </van-tab>
                       </van-tabs>
                     </div>
-                  <div class="historyTask-list-box historyTask-list-circulation-box" v-show="taskNameIndex === 2">
+                  <div class="historyTask-list-box historyTask-list-circulation-box" v-if="taskNameIndex === 2">
                       <div class="time-search">
                         <span class="time-between">至</span>
                         <div class="content-middle-top-content">
@@ -839,7 +831,7 @@
                                   </p>
                                 </div>
                                 <div class="wait-handle-message-middle">
-                                  <p v-if="templateType == 'template_one'">
+                                  <p>
                                     <span class="message-tit">任务名称:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
                                   </p>
@@ -868,10 +860,10 @@
                                     <span>{{item.workerName}}</span>
                                   </div>
                                 <div class="right" v-show="!item.isShowGiveLikeIconStyle">
-                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index)">
+                                    <div class="left-feedback-icon"  @click="feedBackEvent(item,index,3)">
                                       <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
-                                    <div class="right-like-icon" @click="giveLikeEvent(item,index)">
+                                    <div class="right-like-icon" @click="giveLikeEvent(item,index,3,'点赞')">
                                       <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
@@ -900,7 +892,7 @@
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
                                   </div>
-                                  <div class="submit-feedback">
+                                  <div class="submit-feedback" @click="submitTaskFeedBack(item,index,3,'反对')">
                                     提交反馈
                                   </div>
                                 </div>
@@ -934,7 +926,7 @@
                                   </p>
                                 </div>
                                 <div class="wait-handle-message-middle">
-                                  <p v-if="templateType == 'template_one'">
+                                  <p>
                                     <span class="message-tit">任务名称:</span>
                                     <span class="message-tit-real">{{item.taskTypeName}}</span>
                                   </p>
@@ -1016,7 +1008,7 @@
   import Loading from '@/components/Loading'
   import store from '@/store'
   import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, queryAppointTaskMessage, queryCirculationTask} from '@/api/workerPort.js'
-  import {queryTransportTypeClass, collectDispatchTask, taskReminder, queryFeedback, submitFeedback} from '@/api/medicalPort.js'
+  import {queryTransportTypeClass, collectDispatchTask, taskReminder, queryFeedback, submitFeedback, submitTaskFeedback} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage, getFileName } from '@/common/js/utils'
@@ -1826,7 +1818,7 @@
         })
       },
 
-      // 提交意见反馈
+      // 提交总体意见反馈
       submitFeedBackEvent () {
         if (this.opinionTypeIndex === null) {
           this.$toast('请选择意见类型');
@@ -1861,6 +1853,160 @@
           });
         })
       },
+
+      //提交任务反馈事件
+			submitTaskFeedBack (item,index,type,text) {
+				let data = {
+					feedbackId : this.workerId, // 反馈者ID
+					feedbackName : this.workerId, // 反馈者名称
+					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+					depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
+					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
+					content : this.stateCompleteList[index]['deedbackContent'] , //反馈内容，可以为空，点赞默认为空
+					type : 1, //反馈类型(1-意见反馈，2-赞)
+					terminal : 2, //反馈终端(1-客户端，2-小程序)
+					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
+					proId : this.proId, //所属项目ID，医务人员proId字段
+					taskId : item.id, //任务ID
+					taskNumber : item.taskNumber, //任务编号
+					taskCreate : item.createTime, //调度任务创建时间
+					taskStart : item.planStartTime, //调度任务开始时间
+					taskFinish : item.finishTime, //调度任务结束时间
+					taskState : 7, //调度任务状态
+					taskPriority : item.priority, //调度任务优先级
+					taskWorkerId : item.workerId, //运送员ID
+					taskWorkerName : item.workerName //运送员姓名
+				};
+				if (type == 1) {
+					data['taskType'] = type;
+					data['taskStartDep'] = '';
+					data['taskCreateDep'] = item['setOutPlaceName'];
+					if (this.userInfo.pc == 'template_one') {
+						data['taskTransType'] = `${item.parentTypeName}-${item.taskTypeName}`;
+					} else {
+						if (item.patientInfoList.length > 0 && item.patientInfoList[0].typeList.length > 0) {
+							let typeList = this.extractTransportTypeSmallClass(item.patientInfoList).join('、');
+							data['taskTransType'] = `${item.patientInfoList[0].typeList[0].parentTypeName}-${typeList}`
+						} else {
+							data['taskTransType'] = ''
+						}
+					};
+					data['taskTemplate'] = this.userInfo.pc == 'template_two' ? 2 : 1;
+					this.submitFeedBackEvent(data,index,type,text)
+				} else if (type == 2) {
+					data['taskCreateDep'] = item['setOutPlaceName'];
+					data['taskType'] = type;
+					data['taskHospitalNo'] = item['patientNumber'] ? item['patientNumber'] : '';
+					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : '';
+					this.submitFeedBackEvent(data,index,type,text)
+				} else if (type == 3) {
+					data['taskHasAccess'] = item.hasAccess;
+					data['taskType'] = type;
+					data['taskName'] = item['taskTypeName'];
+					data['taskStart'] = item['startUpTime'];
+					data['taskStarttTime'] = item['startTime'];
+					this.submitFeedBackEvent(data,index,type,text)
+				} 
+			},
+
+      // 提交意见反馈
+			submitFeedBackEvent (data,index,type,text) {
+        console.log('数据',data);
+				submitTaskFeedback(data,type).then((res) => {
+					if (res && res.data.code == 200) {
+            this.$toast('意见反馈成功');
+						if (text == '点赞') {
+							this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle'];
+							this.stateCompleteList[index]['isShowFeedBackIconStyle'] = false;
+							this.stateCompleteList[index]['isShowFeedBack'] = false;
+						}
+					} else {
+							this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+					}
+				})
+				.catch((err) => {
+				this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+				})
+			},
+			
+			// 点赞事件
+			giveLikeEvent(item,index,type,text) {
+				if (this.stateCompleteList[index]['isShowGiveLikeIconStyle']) {return};
+				let data = {
+					feedbackId : this.workerId, // 反馈者ID
+					feedbackName : this.workerId, // 反馈者名称
+					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+					depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
+					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
+					content : '' , //反馈内容，可以为空，点赞默认为空
+					type : 2, //反馈类型(1-意见反馈，2-赞)
+					terminal : 2, //反馈终端(1-客户端，2-小程序)
+					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
+					proId : this.proId, //所属项目ID，医务人员proId字段
+					taskId : item.id, //任务ID
+					taskNumber : item.taskNumber, //任务编号
+					taskCreate : item.createTime, //调度任务创建时间
+					taskStart : item.planStartTime, //调度任务开始时间
+					taskFinish : item.finishTime, //调度任务结束时间
+					taskState : 7, //调度任务状态
+					taskPriority : item.priority, //调度任务优先级
+					taskWorkerId : item.workerId, //运送员ID
+					taskWorkerName : item.workerName //运送员姓名
+				};
+				if (type == 1) {
+					data['taskType'] = type;
+					data['taskStartDep'] = '';
+					data['taskCreateDep'] = item['setOutPlaceName'];
+					if (this.userInfo.pc == 'template_one') {
+						data['taskTransType'] = `${item.parentTypeName}-${item.taskTypeName}`;
+					} else {
+						if (item.patientInfoList.length > 0 && item.patientInfoList[0].typeList.length > 0) {
+							let typeList = this.extractTransportTypeSmallClass(item.patientInfoList).join('、');
+							data['taskTransType'] = `${item.patientInfoList[0].typeList[0].parentTypeName}-${typeList}`
+						} else {
+							data['taskTransType'] = ''
+						}
+					};
+					data['taskTemplate'] = this.userInfo.pc == 'template_two' ? 2 : 1;
+					this.submitFeedBackEvent(data,index,type,text)
+				} else if (type == 2) {
+					data['taskCreateDep'] = item['setOutPlaceName'];
+					data['taskType'] = type;
+					data['taskHospitalNo'] = item['patientNumber'] ? item['patientNumber'] : '';
+					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : '';
+					this.submitFeedBackEvent(data,index,type,text)
+				} else if (type == 3) {
+					data['taskHasAccess'] = item.hasAccess;
+					data['taskType'] = type;
+					data['taskName'] = item['taskTypeName'];
+					data['taskStart'] = item['startUpTime'];
+					data['taskStarttTime'] = item['startTime'];
+					this.submitFeedBackEvent(data,index,type,text)
+				} 
+			},
+
+      //提取调度任务运送类型小类
+			extractTransportTypeSmallClass (transportTypeList) {
+				let TransportTypeList = [];
+				if (transportTypeList.length > 0) {
+					for (let item of transportTypeList) {
+						if (item.typeList.length > 0) {
+							for (let innerItem of item.typeList) {
+								TransportTypeList.push(innerItem['taskTypeName'])
+							}
+						}
+					}
+				};
+				return TransportTypeList
+			},
 
       // 任务类型tab切换事件
       tabSwitchEvent (item,index) {
@@ -2217,6 +2363,7 @@
                     patientNumber: item.patientNumber,
                     id: item.id,
                     deedbackContent: '',
+                    workerId: item.workerId,
                     isShowFeedBack: false,
                     isShowFeedBackIconStyle: false,
                     isShowGiveLikeIconStyle: false,
@@ -2270,11 +2417,11 @@
       queryCompleteAppointTask (data) {
         this.noDataShow = false;
         this.showLoadingHint = true;
+        this.stateCompleteList = [];
         queryAppointTaskMessage(data).then((res) => {
           this.showLoadingHint = false;
           if (res && res.data.code == 200) {
             this.isRefresh = false;
-            this.stateCompleteList = [];
             if (res.data.data.length > 0) {
               this.noDataShow = false;
               for (let item of res.data.data) {
@@ -2285,7 +2432,7 @@
                   state: item.state,
                   setOutPlaceName: item.setOutPlaceName,
                   taskNumber: item.taskNumber,
-                  destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
+                  destinationName: item.destinationName,
                   taskTypeName: item.taskTypeName,
                   toolName: item.toolName,
                   priority: item.priority,
@@ -2297,17 +2444,17 @@
                   isShowFeedBackIconStyle: false,
                   isShowGiveLikeIconStyle: false,
                   workerName: item.workerName,
+                  workerId: item.workerId,
                   finishTime: item.finishTime,
                   patientName: item.patientName,
                   bedNumber: item.badNumber,
                   startPhoto: item.startPhoto,
                   endPhoto: item.endPhoto,
                   isBack: item.isBack,
-                  isSign: item.isSign,
-                  patientInfoList: item.patientInfoList
+                  isSign: item.isSign
                 });
                 this.taskCount = this.stateCompleteList.length;
-              }
+              };
             } else {
               this.noDataShow = true;
               this.taskCount = 0
@@ -2328,11 +2475,11 @@
       queryCompleteCirculationTask (data) {
         this.noDataShow = false;
         this.showLoadingHint = true;
+        this.stateCompleteList = [];
         queryCirculationTask(data).then((res) => {
           this.showLoadingHint = false;
           if (res && res.data.code == 200) {
             this.isRefresh = false;
-            this.stateCompleteList = [];
             if (res.data.data.length > 0) {
               this.noDataShow = false;
               for (let item of res.data.data) {
@@ -2347,8 +2494,14 @@
                   isShowFeedBack: false,
                   isShowFeedBackIconStyle: false,
                   isShowGiveLikeIconStyle: false,
+                  workerId: item.workerId,
                   workerName: item.workerName,
-                  distName: Object.values(JSON.parse(item.hasAccess))
+                  distName: Object.values(JSON.parse(item.hasAccess)),
+                  priority: item.priority,
+									finishTime: item.finishTime,
+									createTime: item.createTime,
+                  hasAccess: item.hasAccess,
+
                 });
                 this.taskCount = this.stateCompleteList.length;
               };
@@ -2374,13 +2527,6 @@
       feedBackEvent(item,index) {
         this.stateCompleteList[index]['isShowFeedBackIconStyle'] = !this.stateCompleteList[index]['isShowFeedBackIconStyle'];
         this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack']
-      },
-      // 点赞事件
-      giveLikeEvent(item,index) {
-        if (this.stateCompleteList[index]['isShowGiveLikeIconStyle']) {return};
-        this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle'],
-        this.stateCompleteList[index]['isShowFeedBackIconStyle'] = false;
-				this.stateCompleteList[index]['isShowFeedBack'] = false
       },
       // 任务猜你想说项点击事件
       guessSpeakListEvent(index,innerItem,innerIndex) {
