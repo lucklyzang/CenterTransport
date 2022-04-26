@@ -72,3 +72,20 @@ export function taskReminder(proId,taskId) {
     method: 'get'
   })
 };
+// 查询反馈意见
+export function queryFeedback(data) {
+  return request({
+    url: 'feedbackConf/queryAll',
+    method: 'get',
+    params: data
+  })
+};
+
+// 提交反馈意见
+export function submitFeedback(data) {
+  return request({
+    url: 'wholeFeedback/add',
+    method: 'post',
+    data
+  })
+};

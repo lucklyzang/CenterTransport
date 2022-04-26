@@ -366,10 +366,10 @@
                                   </div>
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
-                                  </div>  
+                                  </div>
                                   <div class="submit-feedback">
                                     提交反馈
-                                  </div> 
+                                  </div>
                                 </div>
                               </div>
                               <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -662,10 +662,10 @@
                                   </div>
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
-                                  </div>  
+                                  </div>
                                   <div class="submit-feedback">
                                     提交反馈
-                                  </div> 
+                                  </div>
                                 </div>
                               </div>
                               <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -899,10 +899,10 @@
                                   </div>
                                   <div class="guess-speak-list">
                                     <span v-for="(innerItem,innerIndex) in guessSpeakList" @click="guessSpeakListEvent(index,innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
-                                  </div>  
+                                  </div>
                                   <div class="submit-feedback">
                                     提交反馈
-                                  </div> 
+                                  </div>
                                 </div>
                               </div>
                                 <p class="wait-handle-check" v-show="item.state == 2 ">
@@ -981,9 +981,9 @@
                 <span>*</span>意见类型
               </div>
               <div class="idea-type-list">
-                <span>运送人员</span>
-                <span>功能故障</span>
-                <span>其它意见</span>
+                <span v-for="(item,index) in opinionTypeList" :class="{'opinionTypeStyle': opinionTypeIndex == index}" :key="index" @click="opinionTypeEvent(item,index)">
+                  {{item}}
+                </span>
               </div>
                <div class="feedback-idea">
                 <span>*</span>反馈意见
@@ -998,8 +998,8 @@
               />
               <div class="guess-speak-list">
                 <span v-for="(innerItem,innerIndex) in totalGuessSpeakList" @click="totalGuessSpeakListEvent(innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
-              </div>  
-              <div class="feedback-btn">
+              </div>
+              <div class="feedback-btn" @click="submitFeedBackEvent">
                 意见反馈
               </div>
             </div>
@@ -1016,7 +1016,7 @@
   import Loading from '@/components/Loading'
   import store from '@/store'
   import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, queryAppointTaskMessage, queryCirculationTask} from '@/api/workerPort.js'
-  import {queryTransportTypeClass, collectDispatchTask, taskReminder} from '@/api/medicalPort.js'
+  import {queryTransportTypeClass, collectDispatchTask, taskReminder, queryFeedback, submitFeedback} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
   import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage, getFileName } from '@/common/js/utils'
@@ -1062,6 +1062,8 @@
         yesterdayNumber: '',
         yesterdayRank: '',
         isHaveTask: '',
+        opinionTypeList: ['运送人员','功能故障','其它意见'],
+        opinionTypeIndex: null,
         leftDropdownDataList: ['退出登录'],
         taskTypeList: [],
         startTime: '',
@@ -1077,7 +1079,7 @@
         taskNameIndex: 0,
         deedbackContent: '',
         guessSpeakList: [{name: '服务态度有待改进'},{name: '运送时间比较长'},{name: '等待时间比较长'},{name: '服务不够细心'}],
-        totalGuessSpeakList: [{name: '服务态度有待改进'},{name: '运送时间比较长'},{name: '等待时间比较长'},{name: '服务不够细心'}],
+        totalGuessSpeakList: [],
         taskCurrentName: '调度任务',
         taskList: [
           {tit:'调度任务',imgUrl: dispatchTaskPng},
@@ -1782,6 +1784,84 @@
         this.searchCompleteTask()
       },
 
+      // 意见反馈栏意见类型点击事件
+      opinionTypeEvent (item,index) {
+        this.opinionTypeIndex = index;
+        this.deedbackContent = '';
+        // 查询总体反馈意见
+        this.inquireFeedback({
+          proId: this.proId,
+          signFlag: 1,
+          typeFlag: index + 1,
+          state: 1
+        })
+      },
+
+      // 查询app反馈意见
+      inquireFeedback (data) {
+        this.totalGuessSpeakList = [];
+        queryFeedback(data).then((res) => {
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                this.totalGuessSpeakList.push({
+                  name: item.content
+                })
+              }
+            }
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      // 提交意见反馈
+      submitFeedBackEvent () {
+        if (this.opinionTypeIndex === null) {
+          this.$toast('请选择意见类型');
+          return
+        };
+        submitFeedback({
+          feedbackId : this.workerId, // 反馈者ID
+          typeFlag: this.opinionTypeIndex + 1, //意见类型
+          feedbackName : this.name, // 反馈者名称
+          feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+          depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
+          depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
+          content : this.deedbackContent , //反馈内容，可以为空，点赞默认为空
+          type : 1, //反馈类型(1-意见反馈，2-赞)
+          terminal : 1, //反馈终端(1-客户端，2-小程序)
+        }).then((res) => {
+          if (res && res.data.code == 200) {
+            this.$toast('意见反馈成功');
+          } else {
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
       // 任务类型tab切换事件
       tabSwitchEvent (item,index) {
         this.taskNameIndex = index;
@@ -1995,6 +2075,7 @@
           this.operateHistoryTask = '';
           this.operateTaskCollect = 5
         } else if (index == 5) {
+          this.noDataShow = false;
           this.operateMessage = '';
           this.operateCallOut = '';
           this.operateTaskTrace = '';
@@ -2810,13 +2891,17 @@
                   flex-flow: row wrap;
                   justify-content: flex-start;
                   margin: 20px 0;
+                  min-height: 80px;
+                  overlow: auto;
                   span {
                     font-size: 13px;
                     color: #a59f9f;
                     display: inline-block;
-                    padding: 4px 8px;
+                    padding: 0 8px;
                     box-sizing: border-box;
-                    height: 20px;
+                    border-radius: 20px;
+                    height: 30px;
+                    line-height: 30px;
                     text-align: center;
                     border: 1px solid #a59f9f;
                     margin: 0 8px 8px 0;
@@ -2836,6 +2921,11 @@
                   text-align: center;
                   border: 1px solid #a59f9f;
                   margin: 0 8px 8px 0;
+                };
+                .opinionTypeStyle {
+                  border: none;
+                  background: #63bbff;
+                  color: #ffff;
                 }
               };
               .feedback-idea {
@@ -3196,6 +3286,7 @@
                                 display: flex;
                                 flex-flow: row wrap;
                                 justify-content: flex-start;
+                                min-height: 80px;
                                 span {
                                   font-size: 13px;
                                   color: #a59f9f;
