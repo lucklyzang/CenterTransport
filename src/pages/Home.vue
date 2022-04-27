@@ -1776,7 +1776,7 @@
         this.searchCompleteTask()
       },
 
-      // 意见反馈栏意见类型点击事件
+      // 总体意见反馈栏意见类型点击事件
       opinionTypeEvent (item,index) {
         this.opinionTypeIndex = index;
         this.deedbackContent = '';
@@ -1836,6 +1836,7 @@
           terminal : 1, //反馈终端(1-客户端，2-小程序)
         }).then((res) => {
           if (res && res.data.code == 200) {
+            this.deedbackContent = '';
             this.$toast('意见反馈成功');
           } else {
             this.$dialog.alert({
@@ -1854,7 +1855,7 @@
         })
       },
 
-      //提交任务反馈事件
+      //任务反馈事件点击
 			submitTaskFeedBack (item,index,type,text) {
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
@@ -1864,7 +1865,7 @@
 					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
 					content : this.stateCompleteList[index]['deedbackContent'] , //反馈内容，可以为空，点赞默认为空
 					type : 1, //反馈类型(1-意见反馈，2-赞)
-					terminal : 2, //反馈终端(1-客户端，2-小程序)
+					terminal : 1, //反馈终端(1-客户端，2-小程序)
 					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
 					proId : this.proId, //所属项目ID，医务人员proId字段
 					taskId : item.id, //任务ID
@@ -1878,6 +1879,9 @@
 					taskWorkerName : item.workerName //运送员姓名
 				};
 				if (type == 1) {
+          data['taskCreate'] = item.createTime ? item.createTime.slice(0,item.createTime.lastIndexOf(':')) : '';
+          data['taskStart'] = item.planStartTime ? item.planStartTime.slice(0,item.planStartTime.lastIndexOf(':')) : '';
+          data['taskFinish'] = item.finishTime ? item.finishTime.slice(0,item.finishTime.lastIndexOf(':')) : '';
 					data['taskType'] = type;
 					data['taskStartDep'] = '';
 					data['taskCreateDep'] = item['setOutPlaceName'];
@@ -1892,26 +1896,27 @@
 						}
 					};
 					data['taskTemplate'] = this.userInfo.pc == 'template_two' ? 2 : 1;
-					this.submitFeedBackEvent(data,index,type,text)
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} else if (type == 2) {
 					data['taskCreateDep'] = item['setOutPlaceName'];
 					data['taskType'] = type;
 					data['taskHospitalNo'] = item['patientNumber'] ? item['patientNumber'] : '';
-					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : '';
-					this.submitFeedBackEvent(data,index,type,text)
+					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : [];
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} else if (type == 3) {
 					data['taskHasAccess'] = item.hasAccess;
 					data['taskType'] = type;
 					data['taskName'] = item['taskTypeName'];
-					data['taskStart'] = item['startUpTime'];
-					data['taskStarttTime'] = item['startTime'];
-					this.submitFeedBackEvent(data,index,type,text)
+          data['taskCreate'] = item.createTime ? item.createTime.slice(0,item.createTime.lastIndexOf(':')) : '';
+          data['taskFinish'] = item.finishTime ? item.finishTime.slice(0,item.finishTime.lastIndexOf(':')) : '';
+					data['taskStart'] = item['startUpTime'] ? item['startUpTime'].slice(0,item['startUpTime'].lastIndexOf(':')) : '';
+					data['taskStartTime'] = item['startTime'] ? item['startTime'].slice(0,item['startTime'].lastIndexOf(':')) : '';
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} 
 			},
 
-      // 提交意见反馈
-			submitFeedBackEvent (data,index,type,text) {
-        console.log('数据',data);
+      // 提交任务意见反馈
+			submitTaskFeedBackEvent (data,index,type,text) {
 				submitTaskFeedback(data,type).then((res) => {
 					if (res && res.data.code == 200) {
             this.$toast('意见反馈成功');
@@ -1919,6 +1924,9 @@
 							this.stateCompleteList[index]['isShowGiveLikeIconStyle'] = !this.stateCompleteList[index]['isShowGiveLikeIconStyle'];
 							this.stateCompleteList[index]['isShowFeedBackIconStyle'] = false;
 							this.stateCompleteList[index]['isShowFeedBack'] = false;
+						} else if (text == '反对') {
+							this.stateCompleteList[index]['isShowFeedBackIconStyle'] = !this.stateCompleteList[index]['isShowFeedBackIconStyle'];
+							this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack'];
 						}
 					} else {
 							this.$dialog.alert({
@@ -1948,7 +1956,7 @@
 					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
 					content : '' , //反馈内容，可以为空，点赞默认为空
 					type : 2, //反馈类型(1-意见反馈，2-赞)
-					terminal : 2, //反馈终端(1-客户端，2-小程序)
+					terminal : 1, //反馈终端(1-客户端，2-小程序)
 					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
 					proId : this.proId, //所属项目ID，医务人员proId字段
 					taskId : item.id, //任务ID
@@ -1962,6 +1970,9 @@
 					taskWorkerName : item.workerName //运送员姓名
 				};
 				if (type == 1) {
+          data['taskCreate'] = item.createTime ? item.createTime.slice(0,item.createTime.lastIndexOf(':')) : '';
+          data['taskStart'] = item.planStartTime ? item.planStartTime.slice(0,item.planStartTime.lastIndexOf(':')) : '';
+          data['taskFinish'] = item.finishTime ? item.finishTime.slice(0,item.finishTime.lastIndexOf(':')) : '';
 					data['taskType'] = type;
 					data['taskStartDep'] = '';
 					data['taskCreateDep'] = item['setOutPlaceName'];
@@ -1976,20 +1987,22 @@
 						}
 					};
 					data['taskTemplate'] = this.userInfo.pc == 'template_two' ? 2 : 1;
-					this.submitFeedBackEvent(data,index,type,text)
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} else if (type == 2) {
 					data['taskCreateDep'] = item['setOutPlaceName'];
 					data['taskType'] = type;
 					data['taskHospitalNo'] = item['patientNumber'] ? item['patientNumber'] : '';
-					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : '';
-					this.submitFeedBackEvent(data,index,type,text)
+					data['taskDistDepartments'] = item['distDepartments'] ? item['distDepartments'] : [];
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} else if (type == 3) {
 					data['taskHasAccess'] = item.hasAccess;
 					data['taskType'] = type;
 					data['taskName'] = item['taskTypeName'];
-					data['taskStart'] = item['startUpTime'];
-					data['taskStarttTime'] = item['startTime'];
-					this.submitFeedBackEvent(data,index,type,text)
+          data['taskCreate'] = item.createTime ? item.createTime.slice(0,item.createTime.lastIndexOf(':')) : '';
+          data['taskFinish'] = item.finishTime ? item.finishTime.slice(0,item.finishTime.lastIndexOf(':')) : '';
+					data['taskStart'] = item['startUpTime'] ? item['startUpTime'].slice(0,item['startUpTime'].lastIndexOf(':')) : '';
+					data['taskStartTime'] = item['startTime'] ? item['startTime'].slice(0,item['startTime'].lastIndexOf(':')) : '';
+					this.submitTaskFeedBackEvent(data,index,type,text)
 				} 
 			},
 
@@ -2523,10 +2536,21 @@
           })
       },
 
-      // 反馈事件
-      feedBackEvent(item,index) {
+      // 任务反对点击事件
+      feedBackEvent(item, index, type) {
         this.stateCompleteList[index]['isShowFeedBackIconStyle'] = !this.stateCompleteList[index]['isShowFeedBackIconStyle'];
-        this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack']
+				this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack'];
+				if (this.stateCompleteList[index]['isShowFeedBack']) {
+					if (!this.stateCompleteList[index]['deedbackContent']) {
+						this.stateCompleteList[index]['deedbackContent'] == ''
+					};
+					this.inquireFeedback({
+						proId: this.proId,
+						signFlag: 2,
+						typeFlag: '',
+						state: 1
+					})
+				}
       },
       // 任务猜你想说项点击事件
       guessSpeakListEvent(index,innerItem,innerIndex) {
@@ -3043,11 +3067,11 @@
                     font-size: 13px;
                     color: #a59f9f;
                     display: inline-block;
-                    padding: 0 8px;
                     box-sizing: border-box;
                     border-radius: 20px;
                     height: 30px;
                     line-height: 30px;
+                    padding: 0 8px;
                     text-align: center;
                     border: 1px solid #a59f9f;
                     margin: 0 8px 8px 0;
@@ -3437,9 +3461,11 @@
                                   font-size: 13px;
                                   color: #a59f9f;
                                   display: inline-block;
-                                  padding: 4px 8px;
+                                  padding: 0 8px;
                                   box-sizing: border-box;
-                                  height: 20px;
+                                  height: 30px;
+                                  line-height: 30px;
+                                  border-radius: 20px;
                                   text-align: center;
                                   border: 1px solid #a59f9f;
                                   margin: 0 8px 8px 0;
