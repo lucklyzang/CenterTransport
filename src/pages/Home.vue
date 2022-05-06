@@ -338,18 +338,18 @@
                                     <span>运送人:</span>
                                     <span>{{item.workerName}}</span>
                                   </div>
-                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle && !item.isIssueFeedback && templateType == 'template_one' && item.feedbackFlag == 0">
                                     <div class="left-feedback-icon"  @click="feedBackEvent(item,index,1)">
-                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-bottom" class="iconfont" class-prefix="icon" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
                                     <div class="right-like-icon" @click="giveLikeEvent(item,index,1,'点赞')">
-                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-top" class="iconfont" class-prefix="icon" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
                                       </span>
                                     </div>
                                   </div>
-                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                  <div class="thank-feedback" v-show="(item.isShowGiveLikeIconStyle || item.isIssueFeedback || item.feedbackFlag == 1) && templateType == 'template_one'">
                                     感谢您的反馈!
                                   </div>
                                 </div>
@@ -453,26 +453,6 @@
                                 </p>
                               </div>
                                 <div class="handle-message-line-wrapper">
-                                  <p>
-                                    <span class="message-tit">出发地拍照:</span>
-                                    <span class="message-tit-real">{{item.startPhoto == 0 ? '否' : '是'}}</span>
-                                  </p>
-                                  <p>
-                                    <span class="message-tit">目的地拍照:</span>
-                                    <span class="message-tit-real">{{item.endPhoto == 0 ? '否' : '是'}}</span>
-                                  </p>
-                                </div>
-                                <div class="handle-message-line-wrapper">
-                                  <p>
-                                    <span class="message-tit">签字:</span>
-                                    <span class="message-tit-real">{{item.isSign == 0 ? '否' : '是'}}</span>
-                                  </p>
-                                  <p>
-                                    <span class="message-tit">回到出发地:</span>
-                                    <span class="message-tit-real">{{item.isBack == 0 ? '否' : '是'}}</span>
-                                  </p>
-                                </div>
-                                <div class="handle-message-line-wrapper">
                                   <p v-if="templateType == 'template_one'">
                                     <span class="message-tit">病人:</span>
                                     <span class="message-tit-real">{{item.patientName}}</span>
@@ -488,6 +468,15 @@
                                   <span class="message-tit-real">{{item.createTime}}</span>
                                 </p>
                               </div>
+                              <div class="feedback-area">
+                                <div class="feedback-top">
+                                  <div class="left">
+                                    <van-icon name="manager" size="20" />
+                                    <span>运送人:</span>
+                                    <span>{{item.workerName}}</span>
+                                  </div>
+                                </div>
+                              </div>  
                               <p class="wait-handle-check" v-show="item.state == 2 ">
                                 <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                               </p>
@@ -630,18 +619,18 @@
                                     <span>运送人:</span>
                                     <span>{{item.workerName}}</span>
                                   </div>
-                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                  <div class="right" v-show="!item.isShowGiveLikeIconStyle && !item.isIssueFeedback && templateType == 'template_one' && item.feedbackFlag == 0">
                                     <div class="left-feedback-icon"  @click="feedBackEvent(item,index,2)">
-                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-bottom" class="iconfont" class-prefix="icon" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
                                     <div class="right-like-icon" @click="giveLikeEvent(item,index,2,'点赞')">
-                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-top" class="iconfont" class-prefix="icon" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
                                       </span>
                                     </div>
                                   </div>
-                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                  <div class="thank-feedback" v-show="(item.isShowGiveLikeIconStyle || item.isIssueFeedback || item.feedbackFlag == 1) && templateType == 'template_one'">
                                     感谢您的反馈!
                                   </div>
                                 </div>
@@ -774,6 +763,15 @@
                                     <span class="message-tit-real">{{item.finishTime}}</span>
                                   </p>
                                 </div>
+                                <div class="feedback-area">
+                                  <div class="feedback-top">
+                                    <div class="left">
+                                      <van-icon name="manager" size="20" />
+                                      <span>运送人:</span>
+                                      <span>{{item.workerName}}</span>
+                                    </div>
+                                  </div>
+                                </div>  
                                 <p class="wait-handle-check" v-show="item.state == 2 ">
                                   <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                                 </p>
@@ -859,18 +857,18 @@
                                     <span>运送人:</span>
                                     <span>{{item.workerName}}</span>
                                   </div>
-                                <div class="right" v-show="!item.isShowGiveLikeIconStyle">
+                                <div class="right" v-show="!item.isShowGiveLikeIconStyle && !item.isIssueFeedback && templateType == 'template_one' && item.feedbackFlag == 0">
                                     <div class="left-feedback-icon"  @click="feedBackEvent(item,index,3)">
-                                      <van-icon name="arrow-down" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-bottom" class="iconfont" class-prefix="icon" size="20" :color="item.isShowFeedBackIconStyle ? 'orange' : '#a59f9f'" />
                                     </div>
                                     <div class="right-like-icon" @click="giveLikeEvent(item,index,3,'点赞')">
-                                      <van-icon name="arrow-up" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
+                                      <van-icon name="triangle-top" class="iconfont" class-prefix="icon" size="20" :color="item.isShowGiveLikeIconStyle ? 'orange' : '#a59f9f'" />
                                       <span :class="{'give-like-text-style':item.isShowGiveLikeIconStyle}">
                                         点赞
                                       </span>
                                     </div>
                                   </div>
-                                  <div class="thank-feedback" v-show="item.isShowGiveLikeIconStyle">
+                                  <div class="thank-feedback" v-show="(item.isShowGiveLikeIconStyle || item.isIssueFeedback || item.feedbackFlag == 1) && templateType == 'template_one'">
                                     感谢您的反馈!
                                   </div>
                                 </div>
@@ -946,6 +944,15 @@
                                 <div class="dist-list">
                                   <span v-for="(innerItem,innerIndex) in item.distName" :key="innerIndex">{{innerItem.name}}</span>
                                 </div>
+                                <div class="feedback-area">
+                                  <div class="feedback-top">
+                                    <div class="left">
+                                      <van-icon name="manager" size="20" />
+                                      <span>运送人:</span>
+                                      <span>{{item.workerName}}</span>
+                                    </div>
+                                  </div>
+                                </div>  
                                 <p class="wait-handle-check" v-show="item.state == 2 ">
                                   <van-checkbox v-model="item.taskCheck" @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
                                 </p>
@@ -977,7 +984,7 @@
                   {{item}}
                 </span>
               </div>
-               <div class="feedback-idea">
+              <div class="feedback-idea">
                 <span>*</span>反馈意见
               </div>
               <van-field
@@ -988,11 +995,14 @@
                 show-word-limit
                 placeholder="请输入反馈意见"
               />
+              <div class="guess-speak">
+                <span>猜你想说 :</span>
+              </div>
               <div class="guess-speak-list">
                 <span v-for="(innerItem,innerIndex) in totalGuessSpeakList" @click="totalGuessSpeakListEvent(innerItem,innerIndex)" :key="innerIndex">{{innerItem.name}}</span>
               </div>
               <div class="feedback-btn" @click="submitFeedBackEvent">
-                意见反馈
+                提交反馈
               </div>
             </div>
           </div>
@@ -1085,7 +1095,7 @@
           {tit:'任务跟踪', imgUrl: taskTailPng, imgUrlChecked:taskTailCheckedPng},
           {tit:'历史任务', imgUrl: historyTaskPng, imgUrlChecked:historyTaskCheckedPng},
           {tit:'收藏', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng},
-           {tit:'意见反馈', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
+          {tit:'意见反馈', imgUrl: medicalCollectPng, imgUrlChecked:medicalCollectCheckedPng}
         ],
         operateMessage: '',
         operateCallOut: 2,
@@ -1143,7 +1153,8 @@
         window['setDeviceInfo'] = (val) => {
           me.setDeviceInfo(val);
         };
-        this.parallelFunctionTwo()
+        this.parallelFunctionTwo();
+        this.isShowFeedbackEvent()
       }
     },
 
@@ -1195,7 +1206,8 @@
               departmentId: this.userInfo.depId
             },"任务跟踪"
           )
-        }
+        };
+        this.isShowFeedbackEvent()
       };
       document.addEventListener('click',(e) => {
         if(e.target.className!='status-name'){
@@ -1285,6 +1297,13 @@
       // 获取版本号
       getVersionNumber () {
         this.versionNumber = window.android.getVersion()
+      },
+
+      //模板二时不展示意见反馈
+      isShowFeedbackEvent () {
+        // if (this.templateType == 'template_two') {
+        //   this.operateList = this.operateList.filter((item) => {return item.tit != '意见反馈'})
+        // }
       },
 
       // 并行查询任务数量和排名
@@ -1820,8 +1839,8 @@
 
       // 提交总体意见反馈
       submitFeedBackEvent () {
-        if (this.opinionTypeIndex === null) {
-          this.$toast('请选择意见类型');
+        if (this.opinionTypeIndex === null || this.deedbackContent == '') {
+          this.$toast('请选择/填写反馈意见');
           return
         };
         submitFeedback({
@@ -1857,6 +1876,10 @@
 
       //任务反馈事件点击
 			submitTaskFeedBack (item,index,type,text) {
+        if (this.stateCompleteList[index]['isIssueFeedback']) {
+          this.$toast('该任务已反馈过!');
+          return
+        };
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
 					feedbackName : this.workerId, // 反馈者名称
@@ -1868,6 +1891,9 @@
 					terminal : 1, //反馈终端(1-客户端，2-小程序)
 					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
 					proId : this.proId, //所属项目ID，医务人员proId字段
+          isIssueFeedback: item.isIssueFeedback,
+          feedbackFlag: item.feedbackFlag,
+          isShowFeedBack: item.isShowFeedBack,
 					taskId : item.id, //任务ID
 					taskNumber : item.taskNumber, //任务编号
 					taskCreate : item.createTime, //调度任务创建时间
@@ -1917,6 +1943,10 @@
 
       // 提交任务意见反馈
 			submitTaskFeedBackEvent (data,index,type,text) {
+        if (data.feedbackFlag == 1 || data.isIssueFeedback) {
+          this.$toast('该任务已反馈过!');
+          return
+        };
 				submitTaskFeedback(data,type).then((res) => {
 					if (res && res.data.code == 200) {
             this.$toast('意见反馈成功');
@@ -1926,8 +1956,9 @@
 							this.stateCompleteList[index]['isShowFeedBack'] = false;
 						} else if (text == '反对') {
 							this.stateCompleteList[index]['isShowFeedBackIconStyle'] = !this.stateCompleteList[index]['isShowFeedBackIconStyle'];
+              this.stateCompleteList[index]['isIssueFeedback'] = true;
 							this.stateCompleteList[index]['isShowFeedBack'] = !this.stateCompleteList[index]['isShowFeedBack'];
-						}
+						};
 					} else {
 							this.$dialog.alert({
               message: `${res.data.msg}`,
@@ -1952,7 +1983,9 @@
 					feedbackId : this.workerId, // 反馈者ID
 					feedbackName : this.workerId, // 反馈者名称
 					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
-					depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
+					depId : this.userInfo.depId, //反馈科室ID，医务人员depId字段
+          isIssueFeedback: item.isIssueFeedback,
+          isShowFeedBack: item.isShowFeedBack,
 					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
 					content : '' , //反馈内容，可以为空，点赞默认为空
 					type : 2, //反馈类型(1-意见反馈，2-赞)
@@ -1960,6 +1993,7 @@
 					taskType : '', //任务类型-调度任务(1-调度任务，2-预约任务，3-循环任务)
 					proId : this.proId, //所属项目ID，医务人员proId字段
 					taskId : item.id, //任务ID
+          feedbackFlag: item.feedbackFlag,
 					taskNumber : item.taskNumber, //任务编号
 					taskCreate : item.createTime, //调度任务创建时间
 					taskStart : item.planStartTime, //调度任务开始时间
@@ -2372,11 +2406,13 @@
                     destinationName: this.templateType == 'template_one' ? item.destinationName : item.destinations,
                     taskTypeName: item.taskTypeName,
                     toolName: item.toolName,
+                    feedbackFlag: item.feedbackFlag,
                     priority: item.priority,
                     patientNumber: item.patientNumber,
                     id: item.id,
                     deedbackContent: '',
                     workerId: item.workerId,
+                    isIssueFeedback: false,
                     isShowFeedBack: false,
                     isShowFeedBackIconStyle: false,
                     isShowGiveLikeIconStyle: false,
@@ -2448,11 +2484,13 @@
                   destinationName: item.destinationName,
                   taskTypeName: item.taskTypeName,
                   toolName: item.toolName,
+                  feedbackFlag: item.feedbackFlag,
                   priority: item.priority,
                   patientNumber: item.patientNumber,
                   id: item.id,
                   distName: item.distName,
                   deedbackContent: '',
+                  isIssueFeedback: false,
                   isShowFeedBack: false,
                   isShowFeedBackIconStyle: false,
                   isShowGiveLikeIconStyle: false,
@@ -2503,7 +2541,9 @@
                   taskNumber: item.taskNumber,
                   taskTypeName: item.taskTypeName,
                   id: item.id,
+                  feedbackFlag: item.feedbackFlag,
                   deedbackContent: '',
+                  isIssueFeedback: false,
                   isShowFeedBack: false,
                   isShowFeedBackIconStyle: false,
                   isShowGiveLikeIconStyle: false,
@@ -3056,22 +3096,33 @@
                   color: red;
                 }
               };
+              .guess-speak {
+                margin: 20px 0;
+                font-size: 12px;
+                color: #767676;
+              };
               .guess-speak-list {
                   display: flex;
                   flex-flow: row wrap;
                   justify-content: flex-start;
-                  margin: 20px 0;
-                  min-height: 80px;
-                  overlow: auto;
-                  span {
+                  height: 100px;
+                  overflow: auto;
+                  padding: 6px 0;
+                  box-sizing: border-box;
+                  >span {
                     font-size: 13px;
                     color: #a59f9f;
                     display: inline-block;
                     box-sizing: border-box;
-                    border-radius: 20px;
                     height: 30px;
+                    max-width: 250px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
                     line-height: 30px;
+                    border-radius: 20px;
                     padding: 0 8px;
+                    box-sizing: border-box;
                     text-align: center;
                     border: 1px solid #a59f9f;
                     margin: 0 8px 8px 0;
@@ -3110,6 +3161,7 @@
               .feedback-btn {
                 width: 100%;
                 margin: 0 auto;
+                margin-top: 10px;
                 height: 42px;
                 line-height: 42px;
                 color: #fff;
@@ -3450,23 +3502,30 @@
                             .guess-speak {
                               font-size: 12px;
                               color: #a59f9f;
-                              margin: 12px 0;
+                              height: 30px;
+                              line-height: 30px
                             };
                             .guess-speak-list {
                                 display: flex;
                                 flex-flow: row wrap;
                                 justify-content: flex-start;
-                                min-height: 80px;
-                                span {
+                                height: 100px;
+                                overflow: auto;
+                                >span {
                                   font-size: 13px;
                                   color: #a59f9f;
                                   display: inline-block;
-                                  padding: 0 8px;
+                                  max-width: 250px;
                                   box-sizing: border-box;
                                   height: 30px;
                                   line-height: 30px;
+                                  padding: 0 8px;
+                                  box-sizing: border-box;
                                   border-radius: 20px;
                                   text-align: center;
+                                  overflow: hidden;
+                                  white-space: nowrap;
+                                  text-overflow: ellipsis;
                                   border: 1px solid #a59f9f;
                                   margin: 0 8px 8px 0;
                                 }
