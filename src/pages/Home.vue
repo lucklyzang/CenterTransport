@@ -2733,7 +2733,8 @@
         padding: 16px 0;
         box-sizing: border-box;
         .task-message-number-wrapper {
-          height: 100%;
+          height: 68px;
+          padding: 10px 0;
           position: relative;
           box-sizing: border-box;
           .task-message-img {
@@ -2748,14 +2749,13 @@
             }
           };
           .task-message-number {
-            height: 100%;
             box-sizing: border-box;
             color: #434343;
             font-size: 0;
-            padding: 28px 0;
+            height: 48px;
             .transport-day-number {
               font-size: 13px;
-              height: 100%;
+              height: 48px;
               width: 50%;
               display: inline-block;
               position: relative;
@@ -2787,6 +2787,7 @@
               height: 100%;
               font-size: 13px;
               width: 50%;
+              height: 48px;
               display: inline-block;
               position: relative;
               span {
