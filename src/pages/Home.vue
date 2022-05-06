@@ -1080,7 +1080,7 @@
         taskNameList: [{name: '调度任务'},{name: '预约任务'},{name: '循环任务'}],
         taskNameIndex: 0,
         deedbackContent: '',
-        guessSpeakList: [{name: '服务态度有待改进'},{name: '运送时间比较长'},{name: '等待时间比较长'},{name: '服务不够细心'}],
+        guessSpeakList: [],
         totalGuessSpeakList: [],
         taskCurrentName: '调度任务',
         taskList: [
@@ -1808,16 +1808,28 @@
         })
       },
 
-      // 查询app反馈意见
+      // 查询反馈意见
       inquireFeedback (data) {
-        this.totalGuessSpeakList = [];
+        if (data.signFlag == 1) {
+          this.totalGuessSpeakList = [];
+        } else if (data.signFlag == 2) {
+          this.guessSpeakList = [];
+        }
         queryFeedback(data).then((res) => {
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
-              for (let item of res.data.data) {
-                this.totalGuessSpeakList.push({
-                  name: item.content
-                })
+              if (data.signFlag == 1) {
+                for (let item of res.data.data) {
+                  this.totalGuessSpeakList.push({
+                    name: item.content
+                  })
+                }
+              } else if (data.signFlag == 2) {
+                for (let item of res.data.data) {
+                  this.guessSpeakList.push({
+                    name: item.content
+                  })
+                }
               }
             }
           } else {
