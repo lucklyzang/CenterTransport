@@ -243,7 +243,7 @@
                               <div class="wait-handle-message-middle">
                                 <p v-if="templateType == 'template_one'">
                                   <span class="message-tit">运送类型:</span>
-                                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  <span class="message-tit-real">{{item.taskTypeName ? item.taskTypeName : '无'}}</span>
                                 </p>
                                 <p v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">运送类型:</span>
@@ -267,7 +267,7 @@
                                 </p>
                                 <P v-if="templateType == 'template_one'">
                                   <span class="message-tit">床号:</span>
-                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber ? item.bedNumber : '无'}}</span>
                                 </P>
                                 <P v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">床号:</span>
@@ -281,7 +281,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['patientNumber']:'无'}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['number']:'无'}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -407,7 +407,7 @@
                               <div class="wait-handle-message-middle">
                                 <p v-if="templateType == 'template_one'">
                                   <span class="message-tit">运送类型:</span>
-                                  <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                  <span class="message-tit-real">{{item.taskTypeName ? item.taskTypeName : '无'}}</span>
                                 </p>
                                 <p v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">运送类型:</span>
@@ -431,7 +431,7 @@
                                 </p>
                                 <P v-if="templateType == 'template_one'">
                                   <span class="message-tit">床号:</span>
-                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber}}</span>
+                                  <span class="message-tit-real message-tit-real-style">{{item.bedNumber ? item.bedNumber : '无'}}</span>
                                 </P>
                                 <P v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">床号:</span>
@@ -445,7 +445,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['patientNumber']:'无'}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['number']:'无'}}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -1894,7 +1894,7 @@
         };
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
-					feedbackName : this.workerId, // 反馈者名称
+					feedbackName : this.name, // 反馈者名称
 					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
 					depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
 					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
@@ -1924,7 +1924,7 @@
 					data['taskStartDep'] = '';
 					data['taskCreateDep'] = item['setOutPlaceName'];
 					if (this.userInfo.pc == 'template_one') {
-						data['taskTransType'] = `${item.parentTypeName}-${item.taskTypeName}`;
+						data['taskTransType'] = `${item.parentTypeName ? item.parentTypeName : ''}-${item.taskTypeName ? item.taskTypeName : ''}`;
 					} else {
 						if (item.patientInfoList.length > 0 && item.patientInfoList[0].typeList.length > 0) {
 							let typeList = this.extractTransportTypeSmallClass(item.patientInfoList).join('、');
@@ -1993,7 +1993,7 @@
 				if (this.stateCompleteList[index]['isShowGiveLikeIconStyle']) {return};
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
-					feedbackName : this.workerId, // 反馈者名称
+					feedbackName : this.name, // 反馈者名称
 					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
 					depId : this.userInfo.depId, //反馈科室ID，医务人员depId字段
           isIssueFeedback: item.isIssueFeedback,
@@ -2023,7 +2023,7 @@
 					data['taskStartDep'] = '';
 					data['taskCreateDep'] = item['setOutPlaceName'];
 					if (this.userInfo.pc == 'template_one') {
-						data['taskTransType'] = `${item.parentTypeName}-${item.taskTypeName}`;
+						data['taskTransType'] = `${item.parentTypeName ? item.parentTypeName : ''}-${item.taskTypeName ? item.taskTypeName : ''}`;
 					} else {
 						if (item.patientInfoList.length > 0 && item.patientInfoList[0].typeList.length > 0) {
 							let typeList = this.extractTransportTypeSmallClass(item.patientInfoList).join('、');
@@ -2420,8 +2420,9 @@
                     toolName: item.toolName,
                     feedbackFlag: item.feedbackFlag,
                     priority: item.priority,
-                    patientNumber: item.patientNumber,
+                    patientNumber: item.number,
                     id: item.id,
+                    parentTypeName: item.parentTypeName,
                     deedbackContent: '',
                     workerId: item.workerId,
                     isIssueFeedback: false,
@@ -2498,7 +2499,7 @@
                   toolName: item.toolName,
                   feedbackFlag: item.feedbackFlag,
                   priority: item.priority,
-                  patientNumber: item.patientNumber,
+                  patientNumber: item.hospitalNo,
                   id: item.id,
                   distName: item.distName,
                   deedbackContent: '',
@@ -3395,6 +3396,7 @@
                             color: black;
                             height: 30px;
                             line-height: 30px;
+                            overflow: auto;
                           };
                           .handle-message-line-wrapper {
                             .adimission-number {
