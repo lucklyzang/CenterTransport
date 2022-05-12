@@ -3786,7 +3786,7 @@
                                 margin-left: 2px;
                               };
                               &:nth-child(2) {
-                                font-size: 12px;
+                                font-size: 13px;
                                 height: 50px;
                                 display: flex;
                                 flex-flow: row nowrap;
