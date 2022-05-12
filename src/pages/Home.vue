@@ -3474,16 +3474,26 @@
                               height: 60px;
                               .left {
                                 flex: 1;
-                                overflow: auto;
+                                word-break: break-all;
                                 line-height: 20px;
+                                display: flex;
+                                flex-flow: row nowrap;
+                                align-items: center;
                                 span {
                                   color: black;
+                                  display: inline-block;
                                   &:nth-child(2) {
                                     font-size: 13px;
                                     margin: 0 2px;
                                   };
                                   &:nth-child(3) {
-                                    font-size: 12px;
+                                    font-size: 13px;
+                                    height: 50px;
+                                    display: flex;
+                                    flex-flow: row nowrap;
+                                    align-items: center;
+                                    overflow: auto;
+                                    flex: 1;
                                   }
                                 }
                               };
@@ -3763,14 +3773,26 @@
                           height: 60px;
                           .left {
                             flex: 1;
+                            word-break: break-all;
+                            line-height: 20px;
+                            display: flex;
+                            flex-flow: row nowrap;
+                            align-items: center;
                             span {
                               color: black;
+                              display: inline-block;
                               &:nth-child(1) {
                                 font-size: 13px;
                                 margin-left: 2px;
                               };
                               &:nth-child(2) {
                                 font-size: 12px;
+                                height: 50px;
+                                display: flex;
+                                flex-flow: row nowrap;
+                                align-items: center;
+                                overflow: auto;
+                                flex: 1;
                               }
                             }
                           }
