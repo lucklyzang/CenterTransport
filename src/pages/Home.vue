@@ -93,10 +93,6 @@
         </div>
         <div class="medical-worker-operate-right">
           <div class="medical-worker-operate-right-inner">
-            <div class="medical-version">
-              <span>{{versionNumber}}</span>
-              <span>{{this.userInfo.depName}}</span>
-            </div>
             <div class="medical-worker-operate-right-message" v-show="operateMessage == 1">
               <p>消息</p>
             </div>
@@ -452,7 +448,7 @@
                                   <span class="message-tit-real">{{item.toolName}}</span>
                                 </p>
                               </div>
-                                <div class="handle-message-line-wrapper">
+                                <!-- <div class="handle-message-line-wrapper">
                                   <p v-if="templateType == 'template_one'">
                                     <span class="message-tit">病人:</span>
                                     <span class="message-tit-real">{{item.patientName}}</span>
@@ -461,7 +457,7 @@
                                     <span class="message-tit">病人:</span>
                                     <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
                                   </P>
-                                </div>
+                                </div> -->
                               <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                 <p>
                                   <span class="message-tit">订单创建时间:</span>
@@ -1005,6 +1001,10 @@
                 提交反馈
               </div>
             </div>
+            <p class="medical-version">
+              <span>{{versionNumber}}</span>
+              <span>{{this.userInfo.depName}}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -2919,6 +2919,7 @@
         font-size: 14px;
         flex:1;
         display: flex;
+        flex-flow: row nowrap;
         overflow: auto;
         margin: 0 auto;
         width: 100%;
@@ -2926,10 +2927,10 @@
           display: inline-block
         }
         .medical-worker-operate-left {
-          flex: 20%;
           background: #3a4862;
           .medical-worker-operate-list {
             height: 100%;
+            width: 80px;
             .medical-worker-operate-list-inner {
               height: 90px;
               padding-top: 20px;
@@ -2958,44 +2959,16 @@
           }
         };
         .medical-worker-operate-right {
-          flex: 80%;
+          flex: 1;
           background: #fff;
           .medical-worker-operate-right-inner {
             width: 100%;
             height: 100%;
-            position: relative;
-            .medical-version {
-              position: absolute;
-              width: 100%;
-              bottom: 0;
-              left: 0;
-              width: 100%;
-              height: 3%;
-              color:#bebebe;
-              font-size: 16px;
-              span {
-                display: inline-block;
-                position: absolute;
-                bottom: 0;
-                &:first-child {
-                  left: 0;
-                  width: 10%;
-                  text-align: left;
-                  padding-left: 6px;
-                  box-sizing: border-box;
-                };
-                &:last-child {
-                  right: 0;
-                  width: 80%;
-                  text-align: right;
-                  padding-right: 6px;
-                  box-sizing: border-box;
-                }
-              }
-            }
+            display: flex;
+            flex-direction: column;
             > div {
               display: flex;
-              height: 97%;
+              flex: 1;
               flex-direction: column;
               background: #fff;
               > p {
@@ -3090,7 +3063,30 @@
                   }
                 }
               }
-            }
+            };
+            .medical-version {
+              width: 100%;
+              height: 40px;
+              display: flex;
+              padding: 0 10px;
+              box-sizing: border-box;
+              flex-flow: row nowrap;
+              justify-content: space-between;
+              align-items: center;
+              color:#bebebe;
+              font-size: 16px;
+              span {
+                display: inline-block;
+                &:first-child {
+                  padding-left: 6px;
+                  box-sizing: border-box;
+                };
+                &:last-child {
+                  padding-right: 6px;
+                  box-sizing: border-box;
+                }
+              }
+            };
             .medical-worker-operate-right-message {
               p {
                 color: #2895ea;
@@ -3477,7 +3473,9 @@
                               background: #f7f7f7;
                               height: 60px;
                               .left {
-                                width: 160px;
+                                flex: 1;
+                                overflow: auto;
+                                line-height: 20px;
                                 span {
                                   color: black;
                                   &:nth-child(2) {
@@ -3528,7 +3526,6 @@
                                 justify-content: space-between;
                                 align-items: center;
                                 height: 50px;
-                                width: 160px;
                                 padding: 0 8px;
                                 box-sizing: border-box;
                                 color: orange;
@@ -3765,6 +3762,7 @@
                           align-items: center;
                           height: 60px;
                           .left {
+                            flex: 1;
                             span {
                               color: black;
                               &:nth-child(1) {
