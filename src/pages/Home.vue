@@ -527,7 +527,7 @@
                               <div class="wait-handle-message">
                                 <div class="wait-handle-message-top">
                                   <p>
-                                    编号: {{item.taskNumber}}
+                                    编号:{{item.taskNumber}}
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -535,8 +535,8 @@
                                 </div>
                                 <div class="wait-handle-message-middle">
                                   <p>
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                    <span class="message-tit">检查类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName.length > 0 ? item.taskTypeName.join(";") : '无'}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -679,7 +679,7 @@
                               <div class="wait-handle-message">
                                 <div class="wait-handle-message-top">
                                   <p>
-                                    编号: {{item.taskNumber}}
+                                    编号:{{item.taskNumber}}
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -687,8 +687,8 @@
                                 </div>
                                 <div class="wait-handle-message-middle">
                                   <p>
-                                    <span class="message-tit">运送类型:</span>
-                                    <span class="message-tit-real">{{item.taskTypeName}}</span>
+                                    <span class="message-tit">检查类型:</span>
+                                    <span class="message-tit-real">{{item.taskTypeName.length > 0 ? item.taskTypeName.join(";") : '无'}}</span>
                                   </p>
                                 </div>
                                 <div class="handle-message-line-wrapper">
@@ -1021,7 +1021,7 @@
   import {queryTransportTypeClass, collectDispatchTask, taskReminder, queryFeedback, submitFeedback, submitTaskFeedback} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
-  import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage, getFileName } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, IsPC, changeArrIndex, removeAllLocalStorage, checkEmptyArray, getFileName } from '@/common/js/utils'
   import dispatchTaskPng from '@/common/images/home/dispatch-task.png'
   import circulationTaskPng from '@/common/images/home/circulation-task.png'
   import offWorkSignOutPng from '@/common/images/home/offWork-signOut.png'
@@ -2067,6 +2067,30 @@
 				return TransportTypeList
 			},
 
+      //提取预约任务检查类型
+			extractAppointTaskCheckType (checkItems) {
+				let AppointTypeList = [];
+				if (checkItems.length > 0) {
+					for (let item of checkItems) {
+						AppointTypeList.push(item.checkTypeName)
+					}
+				};
+				return AppointTypeList
+			},
+
+      //提取预约任务目的地
+			extractAppointTaskDist (checkItems) {
+				let AppointDistList = [];
+				if (checkItems.length > 0) {
+					for (let item of checkItems) {
+						AppointDistList.push(item.depName)
+					}
+				};
+				return checkEmptyArray(AppointDistList)
+			},
+
+
+
       // 任务类型tab切换事件
       tabSwitchEvent (item,index) {
         this.taskNameIndex = index;
@@ -2495,13 +2519,13 @@
                   setOutPlaceName: item.setOutPlaceName,
                   taskNumber: item.taskNumber,
                   destinationName: item.destinationName,
-                  taskTypeName: item.taskTypeName,
+                  taskTypeName: this.extractAppointTaskCheckType(item.checkItems),
                   toolName: item.toolName,
                   feedbackFlag: item.feedbackFlag,
                   priority: item.priority,
                   patientNumber: item.hospitalNo,
                   id: item.id,
-                  distName: item.distName,
+                  distName: this.extractAppointTaskDist(item.checkItems),
                   deedbackContent: '',
                   isIssueFeedback: false,
                   isShowFeedBack: false,
@@ -3382,21 +3406,27 @@
                               &:first-child {
                                 flex: 1;
                                 overflow: auto;
-                                height: 14px;
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                word-break: break-all
                               };
                               &:last-child {
-                                width: 50px;
+                                width: 60px;
                                 color: #0ac50a;
-                                text-align: right;
+                                justify-content: flex-end;
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
                               }
                             }
                           };
                           .wait-handle-message-middle {
                             font-size: 15px;
                             color: black;
-                            height: 30px;
-                            line-height: 30px;
-                            overflow: auto;
+                            line-height: 20px;
+                            text-align: justify;
+                            margin-top: 6px;
                           };
                           .handle-message-line-wrapper {
                             .adimission-number {
@@ -3667,12 +3697,18 @@
                           &:first-child {
                             flex: 1;
                             overflow: auto;
-                            height: 14px;
+                            height: 40px;
+                            display: flex;
+                            align-items: center;
+                            word-break: break-all
                           };
                           &:last-child {
-                            width: 50px;
+                            width: 60px;
                             color: #0ac50a;
-                            text-align: right;
+                            justify-content: flex-end;
+                            height: 40px;
+                            display: flex;
+                            align-items: center;
                           }
                         }
                       };
