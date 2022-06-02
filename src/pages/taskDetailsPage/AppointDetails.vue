@@ -83,7 +83,7 @@
              </div>
            </div>
            <div class="wait-handle-message-bottom">
-              <div class="handle-message-line-wrapper">
+              <div class="handle-message-line-wrapper task-describe">
                 <p>
                   <span class="message-tit">任务描述 : </span>
                   <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
@@ -781,6 +781,12 @@ export default {
         .wait-handle-message-bottom {
           margin-top: 10px
         };
+        .task-describe {
+          p {
+            height: auto !important;
+            line-height: 20px !important
+          }
+        }
         .handle-message-line-wrapper {
           p {
             display: flex;
@@ -800,6 +806,9 @@ export default {
             };
             span:first-child {
               width: 25%
+            };
+            .message-tit-real {
+              word-break: break-all
             };
             .message-tit-real-style {
               color: #2895ea;

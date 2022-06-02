@@ -2778,21 +2778,21 @@
             color: #434343;
             font-size: 0;
             height: 48px;
+            .transport-day-number::after {
+              content:"";
+              background: #e3e3e3;
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 1px;
+              height: 48px
+            };
             .transport-day-number {
               font-size: 13px;
               height: 48px;
               width: 50%;
               display: inline-block;
               position: relative;
-              ::after {
-                content:"";
-                background: #e3e3e3;
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 1px;
-                height: 25px
-              };
               span {
                 position: absolute;
                 left: 0;

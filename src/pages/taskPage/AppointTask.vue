@@ -1255,6 +1255,17 @@
 
       // 转移任务弹框确定事件(picker选择器)
       transferConfirm(value) {
+        // 驻点人员必须在任务状态为进行中时才能转移
+        if (value.indexOf('(') != -1) {
+          let temporaryStateFilterList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+          if (temporaryStateFilterList[0]['state'] != 3) {
+            this.$toast({
+              message: '请扫描起点后再转移给驻点人员',
+              position: 'bottom'
+            });
+            return
+          }
+        };
         this.currentPerson = value;
         if (this.currentPerson == this.workerName) {
           this.$toast(`任务不能转移给自己`);
@@ -1282,7 +1293,6 @@
 
       // 转移弹框取消事件(Dialog弹框)
       transferCancelEvent () {
-        this.transferShow = false
       },
 
       // 获取在线工作人员
@@ -1301,10 +1311,19 @@
                 if (innerItem == 'workerName') {
                   temporaryWorkerMessageArray.push(item[innerItem]);
                   this.transerColumns.push(item[innerItem])
+                };
+                if (innerItem == 'depName') {
+                  if (item[innerItem]) {
+                    temporaryWorkerMessageArray.push(item[innerItem]);
+                    this.transerColumns[this.transerColumns.length - 1] = `${this.transerColumns[this.transerColumns.length - 1]} (${item[innerItem]})`
+                  } else {
+                    temporaryWorkerMessageArray.push('')
+                  }
                 }
               };
-              this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0]})
+              this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0],depName: temporaryWorkerMessageArray[2]})
             };
+            console.log(this.onlinePersonLlist)
           }
         })
           .catch((err) => {
@@ -1677,6 +1696,7 @@
                   width: 70%;
                   text-align: justify;
                   color: black;
+                  word-break: break-all
                 }
               }
             }
@@ -1917,6 +1937,7 @@
               &:last-child {
                 width: 70%;
                 color: black;
+                word-break: break-all
               }
             }
           }
@@ -2079,6 +2100,7 @@
               &:last-child {
                 width: 70%;
                 color: black;
+                word-break: break-all
               }
             }
           }
