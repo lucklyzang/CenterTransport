@@ -99,12 +99,21 @@ export function cancelDispatchTaskBatch(data) {
     data
   })
 };
+
 // 取消原因查询
 export function queryDispatchTaskCancelReason(data) {
   return request({
     url: 'cancel/queryAll',
     method: 'get',
     params: data
+  })
+};
+
+// 退回原因查询
+export function queryAppointTaskSendbackReason() {
+  return request({
+    url: 'undo/queryAll',
+    method: 'get'
   })
 };
 
@@ -363,6 +372,16 @@ export function cancelAppointTask(data) {
     data
   })
 };
+
+// 任务退回
+export function sendbackAppointTask(data) {
+  return request({
+    url: 'bookTask/undoTask',
+    method: 'put',
+    data
+  })
+};
+
 
 // 校验病人信息
 export function judgeAppointTaskCheckPatient(data) {
