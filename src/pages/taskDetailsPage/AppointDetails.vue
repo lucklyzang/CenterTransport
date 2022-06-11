@@ -4,6 +4,86 @@
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
     </HeaderTop>
+    <!-- 检查详情弹框 -->
+    <div class="check-details">
+      <van-dialog v-model="checkDetailsShow"  show-cancel-button width="92%"
+        title="检查详情"
+        @confirm="checkDetailsSure" @cancel="checkDetailsCancel"
+      >
+        <div class="tool-name-list">
+          <div class="tool-name-list-content">
+            <p class="circulation-area-title">
+              <span>检查科室</span>
+              <span>检查类型</span>
+              <span>检查诊室</span>
+              <span>签到号</span>
+            </p>
+            <p v-for="(item,index) in checkItemList" :key="`${item}-${index}`" class="circulation-area-content">
+              <span>
+                {{item.checkDepartment}}
+              </span>
+              <span>
+                {{item.checkType}}
+              </span>
+              <span>
+                {{item.checkRoom}}
+              </span>
+              <span>
+                {{item.signNumber}}
+              </span>
+            </p>
+          </div>
+        </div>
+      </van-dialog>
+    </div>
+     <!-- 完成任务弹框 -->
+    <div class="completet-details">
+      <van-dialog v-model="completeTaskShow"  show-cancel-button width="92%"
+        title="完成任务"
+        @confirm="completetTaskSure" @cancel="completetTaskCancel"
+      >
+        <div class="task-content">
+          <div class="select-reason-box">
+            <div class="select-title">
+              选择结束原因<span>*</span>
+            </div>
+            <div class="select-content">
+              <van-dropdown-menu 
+                active-color="#2895ea"
+              >
+                <van-dropdown-item v-model="reasonValue" :options="reasonOption" @change="selectReasonChane"/>
+              </van-dropdown-menu>
+            </div>
+          </div>
+          <div class="detail-describe-box">
+            <div class="detail-describe-title">
+              详细描述
+            </div>
+            <div class="detail-describe-content">
+              <van-field
+                v-model="detailDescribeContent"
+                rows="2"
+                autosize
+                type="textarea"
+                maxlength="2000"
+                show-word-limit
+              />
+            </div>
+          </div>
+          <div class="signature-box">
+            <div class="signature-title">
+              点击签字<span>*</span>
+            </div>
+            <div class="signature-content">
+              <ElectronicSignature ref="mychild"></ElectronicSignature>
+            </div>
+            <div class="rewrite-box">
+              <span @click="rewrite">重 签</span>
+            </div>
+          </div>
+        </div>
+      </van-dialog>
+    </div>    
     <div class="content">
       <div class="basic-message">
           <p class="basic-mesage-state">
@@ -83,7 +163,7 @@
              </div>
            </div>
            <div class="wait-handle-message-bottom">
-              <div class="handle-message-line-wrapper">
+              <div class="handle-message-line-wrapper task-describe">
                 <p>
                   <span class="message-tit">任务描述 : </span>
                   <span class="message-tit-real">{{appointDetailsMessage.taskRemark}}</span>
@@ -158,6 +238,7 @@
 <script>
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
+import ElectronicSignature from '@/components/ElectronicSignature'
 import {queryAppointTaskDetailsMessage, appointTaskCompleted, checkItemsCompleted} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
@@ -168,6 +249,50 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      detailDescribeContent: '',
+      reasonValue: 0,
+      reasonOption: [
+        { text: '全部商品', value: 0 },
+        { text: '新款商品', value: 1 },
+        { text: '活动商品', value: 2 },
+        { text: '全部商品', value: 3 },
+        { text: '新款商品', value: 4 },
+        { text: '活动商品', value: 5 },
+      ],
+      checkItemList: [
+        {
+          checkDepartment: '呼吸科',
+          checkType: '胃肠道彩超',
+          checkRoom: 14,
+          signNumber: 12
+        },
+        {
+          checkDepartment: '呼吸科',
+          checkType: '胃肠道彩超',
+          checkRoom: 14,
+          signNumber: 12
+        },
+        {
+          checkDepartment: '呼吸科',
+          checkType: '胃肠道彩超',
+          checkRoom: 14,
+          signNumber: 12
+        },
+          {
+          checkDepartment: '呼吸科',
+          checkType: '胃肠道彩超',
+          checkRoom: 14,
+          signNumber: 12
+        },
+        {
+          checkDepartment: '呼吸科',
+          checkType: '胃肠道彩超',
+          checkRoom: 14,
+          signNumber: 12
+        }
+      ],
+      checkDetailsShow: false,
+      completeTaskShow: true,
       liIndex: null,
       isPatienVerified: false,
       isStartPonitVerified: false,
@@ -189,12 +314,15 @@ export default {
   components: {
     HeaderTop,
     NoData,
-    FooterBottom
+    FooterBottom,
+    ElectronicSignature
   },
 
   computed: {
     ...mapGetters([
       'navTopTitle',
+      'currentElectronicSignature',
+      'originalSignature',
       'userInfo',
       'appointTaskMessage',
       'completeCheckedItemInfo',
@@ -243,6 +371,7 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
+      'changeCurrentElectronicSignature',
       'changeIsFreshAppointTaskPage',
       'changeCompleteCheckedItemInfo',
       'changeCompleteSweepcodeDestinationInfo',
@@ -259,6 +388,38 @@ export default {
       this.$router.push({path:'/appointTask'});
       this.changeTitleTxt({tit:'预约任务'});
       setStore('currentTitle','预约任务')
+    },
+
+    //检查详情弹框确定事件
+    checkDetailsSure () {
+
+    },
+
+    //检查详情弹框取消事件
+    checkDetailsCancel () {
+
+    },
+
+    //完成任务弹框确定
+    completetTaskSure () {
+      this.$refs.mychild.commitSure();
+      if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
+        return
+      };
+    },
+
+    //完成任务弹框取消
+    completetTaskCancel () {
+
+    },
+
+    //原因下拉选项选中值改变事件
+    selectReasonChane (value) {
+    },
+
+    // 签名重写
+    rewrite () {
+      this.$refs.mychild.overwrite()
     },
 
     // 任务状态转换图片
@@ -728,6 +889,187 @@ export default {
     .content-wrapper();
       font-size: 16px;
       background: #f6f6f6;
+      .check-details {
+      /deep/ .van-dialog {
+        top: 50%;
+        .van-dialog__header {
+          background: #2895ea;
+          padding-top: 0;
+          color: #fff;
+          height: 60px;
+          line-height: 60px
+        };
+        .van-dialog__content {
+          .tool-name-list {
+            width: 100%;
+            display: flex;
+            flex-flow: column;
+            overflow: auto;
+            margin: 0 auto;
+            padding: 0;
+            max-height: 80vh;
+            .tool-name-list-content {
+              flex: 1;
+              padding: 6px 0;
+              overflow: auto;
+              box-sizing: border-box;
+              .circulation-area-content {
+                position: relative;
+                background: #eaeaea;
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                margin-bottom: 4px;
+                > span {
+                  line-height: 35px;
+                  font-size: 15px;
+                  flex: 1;
+                  color: #525252;
+                  word-break: break-all;
+                  text-align: center;
+                  display: inline-block;
+                  &:first-child {
+                  };
+                  &:nth-child(2) {
+                  }
+                  &:nth-child(3) {
+                  }
+                  &:last-child {
+                  }
+                }
+              }
+              .circulation-area-title {
+                position: relative;
+                font-size: 0;
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                span {
+                  line-height: 30px;
+                  text-align: center;
+                  display: inline-block;
+                  font-size: 16px;
+                  flex: 1;
+                  &:first-child {
+                  };
+                  &:nth-child(2) {
+                  }
+                  &:nth-child(3) {
+                  }
+                  &:last-child {
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    .completet-details {
+       /deep/ .van-dialog {
+        top: 50%;
+        .van-dialog__header {
+          height: 40px;
+          padding: 0;
+          background:#efefef;
+          line-height: 40px
+        };
+        .van-dialog__content {
+          .task-content {
+            padding: 0 6px 6px 6px;
+            box-sizing: border-box;
+            max-height: 80vh;
+            min-height: 50vh;
+            font-size: 14px;
+            .select-reason-box {
+              .select-title {
+                height: 40px;
+                display: flex;
+                align-items: center;
+                > span {
+                  color: red
+                }
+              };
+              .select-content {
+                /deep/ .van-dropdown-menu {
+                  border: 1px solid #c7c7c7;
+                  border-radius: 10px;
+                  .van-dropdown-menu__bar {
+                    box-shadow: none;
+                    background: none;
+                    height: 35px;
+                    .van-dropdown-menu__item {
+                      justify-content: flex-start;
+                      .van-dropdown-menu__title {
+                        position: relative;
+                        padding: 0 6px;
+                        font-size: 14px;
+                        box-sizing: border-box;
+                        width: 100%;
+                        display: inline-block
+                      };
+                      .van-dropdown-menu__title::after {
+                        right: 10px
+                      }
+                    }
+                  };
+                  .van-dropdown-item {
+                    top: 120px !important
+                  }
+                }
+              }
+            };
+            .detail-describe-box {
+              .detail-describe-title {
+                height: 40px;
+                display: flex;
+                align-items: center;
+              };
+              .detail-describe-content {
+                border: 1px solid #c7c7c7;
+                border-radius: 4px;
+                /deep/ .van-cell {
+                  background: none;
+                  padding: 6px;
+                  box-sizing: border-box
+                }
+              }
+            };
+            .signature-box {
+              .signature-title {
+                height: 40px;
+                display: flex;
+                align-items: center;
+                > span {
+                  color: red
+                }
+              };
+              .signature-content {
+                .signatureBox {
+                  width: 100%
+                }
+              };
+              .rewrite-box {
+                height: 40px;
+                margin: 10px 0;
+                width: 100%;
+                text-align: center;
+                span {
+                  display: inline-block;
+                  width: 120px;
+                  height: 40px;
+                  line-height: 40px;
+                  background: #fff;
+                  border-radius: 4px;
+                  color: #fff;
+                  background: #2895ea
+                }
+              }
+            }
+          }
+        }
+      }  
+    };  
     .content {
       flex: 1;
       width: 100%;
@@ -781,6 +1123,12 @@ export default {
         .wait-handle-message-bottom {
           margin-top: 10px
         };
+        .task-describe {
+          p {
+            height: auto !important;
+            line-height: 20px !important
+          }
+        }
         .handle-message-line-wrapper {
           p {
             display: flex;
@@ -800,6 +1148,9 @@ export default {
             };
             span:first-child {
               width: 25%
+            };
+            .message-tit-real {
+              word-break: break-all
             };
             .message-tit-real-style {
               color: #2895ea;

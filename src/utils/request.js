@@ -9,6 +9,7 @@ Vue.use(Dialog);
 import { setStore } from '@/common/js/utils'
 // http://blink.blinktech.cn/trans 测试地址
 // http://blinktech.cn/trans 正式地址
+// http://new.blinktech.cn/trans 临时生产地址
 const service = axios.create({
   baseURL: 'http://blink.blinktech.cn/trans', //接口基础地址
   retry: 2, // 网络请求异常后，重试次数

@@ -10,6 +10,7 @@ import 'vant/lib/index.css';
 import moment from 'moment'
 import {setStore, getStore, IsPC} from '@/common/js/utils.js'
 import echarts from 'echarts'
+import '../static/icon/iconfont.css'
 // import audio from 'vue-mobile-audio'
 // Vue.use(audio)
 import FastClick from 'fastclick';

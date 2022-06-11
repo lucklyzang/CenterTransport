@@ -3,6 +3,10 @@
     <div class="no-data" v-show="noDataShow">
       <NoData></NoData>
     </div>
+    <van-dialog v-model="isShowTransferPop" :show-cancel-button="true"  :close-on-popstate="false" :title="`确认要将任务转移给${currentPerson}吗`"
+      @confirm="transferSureEvent" 
+      @cancel="transferCancelEvent"
+    />
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
     </div>
@@ -59,6 +63,7 @@
           <van-popup v-model="transferShow" position="bottom">
             <van-picker
               show-toolbar
+              title="请选择要移交的运送员"
               :columns="transerColumns"
               @cancel="transferShow = false"
               @confirm="transferConfirm"
@@ -105,20 +110,25 @@
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
-            <p class="get-wait-task">
-              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
-                获&nbsp;&nbsp;取
-              </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-                进入任务
-              </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
-                取&nbsp;&nbsp;消
-              </span>
-            </p>
+            <div class="wait-handle-message-bottom">
+              <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+                <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                  获&nbsp;&nbsp;取
+                </span>
+                <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+                  进入任务
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                  退&nbsp;&nbsp;回
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                  取&nbsp;&nbsp;消
+                </span>
+              </p>
+            </div>  
           </div>
         </div>
       </div>
@@ -159,20 +169,25 @@
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
-            <p class="get-wait-task">
-              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
-                获&nbsp;&nbsp;取
-              </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-                进入任务
-              </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
-                取&nbsp;&nbsp;消
-              </span>
-            </p>
+            <div class="wait-handle-message-bottom">
+              <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+                <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                  获&nbsp;&nbsp;取
+                </span>
+                <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+                  进入任务
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                  退&nbsp;&nbsp;回
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                  取&nbsp;&nbsp;消
+                </span>
+              </p>
+            </div>  
           </div>
         </div>
       </div>
@@ -213,20 +228,25 @@
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
-            <p class="get-wait-task">
-              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
-                获&nbsp;&nbsp;取
-              </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-                进入任务
-              </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
-                取&nbsp;&nbsp;消
-              </span>
-            </p>
+            <div class="wait-handle-message-bottom">
+              <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+                <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                  获&nbsp;&nbsp;取
+                </span>
+                <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+                  进入任务
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                  退&nbsp;&nbsp;回
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                  取&nbsp;&nbsp;消
+                </span>
+              </p>
+            </div>  
           </div>
         </div>
       </div>
@@ -267,20 +287,25 @@
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
-            <p class="get-wait-task">
-              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
-                获&nbsp;&nbsp;取
-              </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-                进入任务
-              </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
-                取&nbsp;&nbsp;消
-              </span>
-            </p>
+            <div class="wait-handle-message-bottom">
+              <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+                <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                  获&nbsp;&nbsp;取
+                </span>
+                <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+                  进入任务
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                  退&nbsp;&nbsp;回
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                  取&nbsp;&nbsp;消
+                </span>
+              </p>
+            </div>  
           </div>
         </div>
       </div>
@@ -321,20 +346,25 @@
                 <span>{{item.toolName ? item.toolName : '无'}}</span>
               </div>
             </div>
-            <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-            </p>
-            <p class="get-wait-task">
-              <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
-                获&nbsp;&nbsp;取
-              </span>
-              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
-                进入任务
-              </span>
-              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
-                取&nbsp;&nbsp;消
-              </span>
-            </p>
+            <div class="wait-handle-message-bottom">
+              <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+                <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+              </p>
+              <p class="get-wait-task">
+                <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
+                  获&nbsp;&nbsp;取
+                </span>
+                <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+                  进入任务
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                  退&nbsp;&nbsp;回
+                </span>
+                <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+                  取&nbsp;&nbsp;消
+                </span>
+              </p>
+            </div>  
           </div>
         </div>
       </div>
@@ -395,23 +425,29 @@
               <span>{{item.toolName ? item.toolName : '无'}}</span>
             </div>
           </div>
-          <p class="wait-handle-check" v-show="item.state == 2 || item.state == 3">
-            <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
-          </p>
-          <p class="get-wait-task">
+          <div class="wait-handle-message-bottom">
+            <p class="wait-handle-check" v-show="item.state == 1 || item.state == 2 || item.state == 3">
+              <van-checkbox v-model="item.taskCheck"  @click.stop.native="emptyHandle" @change="waitTaskChecked(item.taskCheck)"></van-checkbox>
+            </p>
+            <p class="get-wait-task">
               <span v-show="item.state == '1'" @click.stop="getTask(item.id)">
                 获&nbsp;&nbsp;取
               </span>
-            <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
+              <span v-show="!(item.state == '1')" @click.stop="intoTask(item)">
                 进入任务
               </span>
-            <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
+              <span v-show="item.state == '1' || item.state == '2' " @click="sendbackTaskEvent(item)">
+                退&nbsp;&nbsp;回
+              </span>
+              <span v-show="item.state == '1' || item.state == '2' " @click="cancelTaskEvent(item)">
                 取&nbsp;&nbsp;消
               </span>
-          </p>
+            </p>
+          </div>  
         </div>
       </div>
     </div>
+<<<<<<< HEAD
     <!-- 退回原因弹窗 -->
     <div class="back-reason-box">
       <van-dialog v-model="reasonShow" title="请选择退回原因" show-cancel-button width="92%"
@@ -426,6 +462,32 @@
         </div>
       </van-dialog>
     </div>  
+=======
+    <!-- 取消原因弹窗 -->
+    <van-dialog v-model="reasonShow" title="请选择取消原因" show-cancel-button width="92%"
+      @confirm="reasonSure" @cancel="reasonCancel"
+    >
+      <div class="tool-name-list">
+        <div class="tool-name-list-content">
+          <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
+            {{item.text}}
+          </span>
+        </div>
+      </div>
+    </van-dialog>
+    <!-- 退回原因弹窗 -->
+    <van-dialog v-model="sendbackShow" title="请选择退回原因" show-cancel-button width="92%"
+      @confirm="sendbackSure" @cancel="sendbackCancel"
+    >
+      <div class="tool-name-list">
+        <div class="tool-name-list-content">
+          <span :class="{spanStyle:sendbackIndex === index}" v-for="(item,index) in sendbackOperationList" :key="`${item}-${index}`" @click="sendbackCheck(item,index)">
+            {{item.text}}
+          </span>
+        </div>
+      </div>
+    </van-dialog>
+>>>>>>> 2802167bc95cfbd0bfba3d602dab36430f8efe83
   </div>
 </template>
 
@@ -433,7 +495,7 @@
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
   import {getWorkerMessage} from '@/api/login.js'
-  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, userSignOut, transferAppointTask,queryDispatchTaskCancelReason} from '@/api/workerPort.js'
+  import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, userSignOut, transferAppointTask,queryDispatchTaskCancelReason,sendbackAppointTask,queryAppointTaskSendbackReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import store from '@/store'
   import Loading from '@/components/Loading'
@@ -447,13 +509,18 @@
         codeAreaShow: false,
         currentCodeUrl: '',
         showLoadingHint: false,
+        sendbackShow: false,
         appointTaskListShow: false,
         noDataShow: false,
         reasonShow: false,
         transferShow:  false,
         reasonOperationList: [],
+        sendbackOperationList: [],
         transerColumns: [],
         reasonIndex: '',
+        sendbackIndex: '',
+        sendbackName: '',
+        sendbackValue: '',
         timeFastindex: '',
         reasonText: '',
         reasonName: '',
@@ -461,6 +528,7 @@
         stateIndex: -1,
         valueStatus: '全部',
         statusShow: false,
+        isShowTransferPop: false,
         taskQueryShow: false,
         leftDropdownDataList: ['退出登录'],
         stateListShow: false,
@@ -655,7 +723,7 @@
         this.userLoginOut(this.proId, this.userInfo.userName)
       },
 
-      // 任务退回
+      // 任务取消
       cancelTaskEvent (item) {
         this.taskId = item.id;
         this.reasonShow = true;
@@ -671,7 +739,7 @@
                 })
               }
             } else {
-              this.$toast('没有查询到退回原因');
+              this.$toast('没有查询到取消原因');
             }
           }
         })
@@ -683,6 +751,36 @@
           });
         });
         this.reasonIndex = ''
+      },
+
+      // 任务退回
+      sendbackTaskEvent (item) {
+        this.taskId = item.id;
+        this.sendbackShow = true;
+        queryAppointTaskSendbackReason({proId:this.proId,state: 0})
+        .then((res) => {
+          this.sendbackOperationList = [];
+          if (res && res.data.code == 200) {
+            if (res.data.data.length > 0) {
+              for (let item of res.data.data) {
+                this.sendbackOperationList.push({
+                  text: item.undoName,
+                  value: item.id
+                })
+              }
+            } else {
+              this.$toast('没有查询到退回原因');
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        });
+        this.sendbackIndex = ''
       },
 
       // 时间查询快捷键点击事件
@@ -702,10 +800,10 @@
           startDate: startDate,endDate: endDate})
       },
 
-      // 退回原因确定
+      // 取消原因确定
       reasonSure () {
         if (this.reasonIndex === '') {
-          this.$toast('请选择退回原因');
+          this.$toast('请选择取消原因');
           return
         };
         cancelAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.reasonText})
@@ -726,18 +824,57 @@
         })
       },
 
-      // 退回原因取消
+      // 取消原因取消
       reasonCancel() {
         this.reasonIndex = '';
         this.reasonName = '';
         this.reasonShow = false
       },
-      // 原因选中事件
+      // 取消原因选中事件
       reasonCheck (item,index) {
         this.reasonIndex = index;
         this.reasonText = item.text;
         this.reasonName = item.text
         this.reasonValue = item.value
+      },
+
+      //退回原因确定
+      sendbackSure () {
+        if (this.sendbackIndex === '') {
+          this.$toast('请选择退回原因');
+          return
+        };
+        sendbackAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.sendbackText})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            this.$toast(`${res.data.msg}`);
+            this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1, startDate: '',endDate: ''}, this.stateIndex)
+          } else {
+            this.$toast(`${res.data.msg}`)
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err.message}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        })
+      },
+
+      //退回原因取消
+      sendbackCancel () {
+        this.sendbackIndex = '';
+        this.sendbackName = '';
+        this.sendbackShow = false
+      },
+
+      // 退回原因选中
+      sendbackCheck (item,index) {
+        this.sendbackIndex = index;
+        this.sendbackText = item.text;
+        this.sendbackName = item.text
+        this.sendbackValue = item.value
       },
 
 
@@ -1173,14 +1310,37 @@
         this.stateListEvent(this.stateIndex)
       },
 
-      // 转移任务弹框确定事件
+      // 转移任务弹框确定事件(picker选择器)
       transferConfirm(value) {
+        // 驻点人员必须在任务状态为进行中时才能转移
+        if (value.indexOf('(') != -1) {
+          let temporaryStateFilterList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
+          if (temporaryStateFilterList[0]['state'] != 3) {
+            this.$toast({
+              message: '请扫描起点后再转移给驻点人员',
+              position: 'bottom'
+            });
+            return
+          }
+        };
         this.currentPerson = value;
-        this.transferShow = false;
         if (this.currentPerson == this.workerName) {
           this.$toast(`任务不能转移给自己`);
           return
         };
+        this.isShowTransferPop = true
+      },
+      
+
+      // 获取转移人员的id
+      getTransferPersonId (name) {
+        let id = this.onlinePersonLlist.filter((item) => {return item.text == name})[0]['value'];
+        return id
+      },
+
+      // 转移弹框确定事件(Dialog弹框)
+      transferSureEvent () {
+        this.transferShow = false;
         this.sureTransferDispatchTask ({
           taskId: this.appointTaskTransferIdList[0],
           afterWorkerId: this.getTransferPersonId(this.currentPerson),   //任务接受者ID
@@ -1188,10 +1348,8 @@
         })
       },
 
-      // 获取转移人员的id
-      getTransferPersonId (name) {
-        let id = this.onlinePersonLlist.filter((item) => {return item.text == name})[0]['value'];
-        return id
+      // 转移弹框取消事件(Dialog弹框)
+      transferCancelEvent () {
       },
 
       // 获取在线工作人员
@@ -1210,10 +1368,19 @@
                 if (innerItem == 'workerName') {
                   temporaryWorkerMessageArray.push(item[innerItem]);
                   this.transerColumns.push(item[innerItem])
+                };
+                if (innerItem == 'depName') {
+                  if (item[innerItem]) {
+                    temporaryWorkerMessageArray.push(item[innerItem]);
+                    this.transerColumns[this.transerColumns.length - 1] = `${this.transerColumns[this.transerColumns.length - 1]} (${item[innerItem]})`
+                  } else {
+                    temporaryWorkerMessageArray.push('')
+                  }
                 }
               };
-              this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0]})
+              this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0],depName: temporaryWorkerMessageArray[2]})
             };
+            console.log(this.onlinePersonLlist)
           }
         })
           .catch((err) => {
@@ -1491,7 +1658,6 @@
         span {
           font-size: 13px;
           display: inline-block;
-          margin-top: 5px;
           width: 70px;
           height: 30px;
           border-radius: 4px;
@@ -1614,8 +1780,7 @@
               }
             };
             .wait-handle-message-two {
-              height: 35px;
-              line-height: 35px;
+              line-height: 20px;
               overflow: auto;
               margin-left: -4px;
               p {
@@ -1628,42 +1793,59 @@
                 };
                 &:last-child {
                   width: 70%;
+                  text-align: justify;
                   color: black;
+                  word-break: break-all
                 }
               }
             }
           };
-          .wait-handle-check {
-            position: absolute;
-            left: 10px;
-            bottom: 20px;
-            width: 20px;
-            height: 20px
-          };
-          .get-wait-task {
-            margin-top: 4px;
-            width: 100%;
-            text-align: center;
-            span {
-              vertical-align: top;
-              display: inline-block;
-              width: 120px;
-              background: #1b88ff;
-              line-height: 35px;
-              height: 35px;
-              font-size: 15px;
-              color: #fff;
-              margin-right: 20px;
-              border-radius: 20px;
-              &:last-child {
-                margin-right: 0;
-                color: #1b88ff;
-                background: #fff;
-                border: 1px solid #1b88ff;
-                text-align: center
+          .wait-handle-message-bottom {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: center;
+            .wait-handle-check {
+              width: 20px;
+              height: 20px;
+              margin-right: 10px;
+            };
+            .get-wait-task {
+              margin-top: 4px;
+              flex: 1;
+              width: 100%;
+              display: flex;
+              flex-flow: row nowrap;
+              justify-content: center;
+              align-items: center;
+              span {
+                vertical-align: top;
+                display: inline-block;
+                text-align: center;
+                flex: 1;
+                background: #1b88ff;
+                line-height: 35px;
+                height: 35px;
+                font-size: 15px;
+                color: #fff;
+                margin-right: 20px;
+                border-radius: 20px;
+                &:nth-child(3) {
+                  color: #1b88ff;
+                  background: #fff;
+                  border: 1px solid #1b88ff;
+                  text-align: center
+                }
+                &:nth-child(4) {
+                  margin-right: 0;
+                  color: #1b88ff;
+                  background: #fff;
+                  border: 1px solid #1b88ff;
+                  text-align: center
+                }
               }
             }
-          }
+          }  
         }
       };
     };
@@ -1865,31 +2047,54 @@
               &:last-child {
                 width: 70%;
                 color: black;
+                word-break: break-all
               }
             }
           }
         };
-        .get-wait-task {
-          margin-top: 4px;
-          width: 100%;
-          text-align: center;
-          span {
-            vertical-align: top;
-            display: inline-block;
-            width: 120px;
-            background: #1b88ff;
-            line-height: 35px;
-            height: 35px;
-            font-size: 15px;
-            color: #fff;
-            margin-right: 20px;
-            border-radius: 20px;
-            &:last-child {
-              margin-right: 0;
-              color: #1b88ff;
-              background: #fff;
-              border: 1px solid #1b88ff;
-              text-align: center
+        .wait-handle-message-bottom {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center;
+          .wait-handle-check {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+          };
+          .get-wait-task {
+            margin-top: 4px;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            span {
+              vertical-align: top;
+              display: inline-block;
+              text-align: center;
+              flex: 1;
+              background: #1b88ff;
+              line-height: 35px;
+              height: 35px;
+              font-size: 15px;
+              color: #fff;
+              margin-right: 20px;
+              border-radius: 20px;
+              &:nth-child(3) {
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
+              }
+              &:nth-child(4) {
+                margin-right: 0;
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
+              }
             }
           }
         }
@@ -2005,31 +2210,54 @@
               &:last-child {
                 width: 70%;
                 color: black;
+                word-break: break-all
               }
             }
           }
         };
-        .get-wait-task {
-          margin-top: 4px;
-          width: 100%;
-          text-align: center;
-          span {
-            vertical-align: top;
-            display: inline-block;
-            width: 120px;
-            background: #1b88ff;
-            line-height: 35px;
-            height: 35px;
-            font-size: 15px;
-            color: #fff;
-            margin-right: 20px;
-            border-radius: 20px;
-            &:last-child {
-              margin-right: 0;
-              color: #1b88ff;
-              background: #fff;
-              border: 1px solid #1b88ff;
-              text-align: center
+        .wait-handle-message-bottom {
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: space-between;
+          align-items: center;
+          .wait-handle-check {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+          };
+          .get-wait-task {
+            margin-top: 4px;
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            span {
+              vertical-align: top;
+              display: inline-block;
+              text-align: center;
+              flex: 1;
+              background: #1b88ff;
+              line-height: 35px;
+              height: 35px;
+              font-size: 15px;
+              color: #fff;
+              margin-right: 20px;
+              border-radius: 20px;
+              &:nth-child(3) {
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
+              }
+              &:nth-child(4) {
+                margin-right: 0;
+                color: #1b88ff;
+                background: #fff;
+                border: 1px solid #1b88ff;
+                text-align: center
+              }
             }
           }
         }
