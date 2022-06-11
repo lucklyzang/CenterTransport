@@ -447,10 +447,9 @@
         </div>
       </div>
     </div>
-<<<<<<< HEAD
-    <!-- 退回原因弹窗 -->
     <div class="back-reason-box">
-      <van-dialog v-model="reasonShow" title="请选择退回原因" show-cancel-button width="92%"
+      <!-- 取消原因弹窗 -->
+      <van-dialog v-model="reasonShow" title="请选择取消原因" show-cancel-button width="92%"
         @confirm="reasonSure" @cancel="reasonCancel"
       >
         <div class="tool-name-list">
@@ -461,33 +460,19 @@
           </div>
         </div>
       </van-dialog>
+      <!-- 退回原因弹窗 -->
+      <van-dialog v-model="sendbackShow" title="请选择退回原因" show-cancel-button width="92%"
+        @confirm="sendbackSure" @cancel="sendbackCancel"
+      >
+        <div class="tool-name-list">
+          <div class="tool-name-list-content">
+            <span :class="{spanStyle:sendbackIndex === index}" v-for="(item,index) in sendbackOperationList" :key="`${item}-${index}`" @click="sendbackCheck(item,index)">
+              {{item.text}}
+            </span>
+          </div>
+        </div>
+      </van-dialog>
     </div>  
-=======
-    <!-- 取消原因弹窗 -->
-    <van-dialog v-model="reasonShow" title="请选择取消原因" show-cancel-button width="92%"
-      @confirm="reasonSure" @cancel="reasonCancel"
-    >
-      <div class="tool-name-list">
-        <div class="tool-name-list-content">
-          <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
-            {{item.text}}
-          </span>
-        </div>
-      </div>
-    </van-dialog>
-    <!-- 退回原因弹窗 -->
-    <van-dialog v-model="sendbackShow" title="请选择退回原因" show-cancel-button width="92%"
-      @confirm="sendbackSure" @cancel="sendbackCancel"
-    >
-      <div class="tool-name-list">
-        <div class="tool-name-list-content">
-          <span :class="{spanStyle:sendbackIndex === index}" v-for="(item,index) in sendbackOperationList" :key="`${item}-${index}`" @click="sendbackCheck(item,index)">
-            {{item.text}}
-          </span>
-        </div>
-      </div>
-    </van-dialog>
->>>>>>> 2802167bc95cfbd0bfba3d602dab36430f8efe83
   </div>
 </template>
 
