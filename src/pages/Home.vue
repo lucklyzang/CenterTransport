@@ -19,10 +19,15 @@
       <!-- 内容部分 -->
       <div class="content-top">
         <div class="content-top-userName">
-          <span class="content-top-userName-img">
-            <img :src="sex == 1 ? defaultPersonManPng : defaultPersonWomanPng" alt="">
-          </span>
-          <span class="real-name">{{name}}</span>
+          <div class="content-top-userName-left">
+            <span class="content-top-userName-img">
+              <img :src="sex == 1 ? defaultPersonManPng : defaultPersonWomanPng" alt="">
+            </span>
+            <span class="real-name">{{name}}</span>
+          </div>
+          <div class="content-top-userName-right">
+            <span class="scan-code" @click="scanCodeEvent">扫描任务二维码</span>
+          </div>  
         </div>
         <div class="wait-dask-wrapper">
           <div class="wait-dask-img-box">
@@ -1776,6 +1781,11 @@
         this.searchCompleteTask()
       },
 
+      //首页扫描二维码事件
+      scanCodeEvent () {
+
+      },
+
       // 总体意见反馈栏意见类型点击事件
       opinionTypeEvent (item,index) {
         this.opinionTypeIndex = index;
@@ -2608,24 +2618,47 @@
         color: #fff;
         background-image: linear-gradient(to bottom, #2895ea, #5173f8);
         .content-top-userName {
-          padding-left: 10px;
+          padding: 0 10px;
           height: 50px;
           display: flex;
           align-items: center;
+          justify-content: space-between;
           box-sizing: border-box;
-          .content-top-userName-img {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            vertical-align: middle;
-            margin-right: 8px;
-            img {
-              width: 100%;
-              height: 100%;
+          .content-top-userName-left {
+            flex: 1;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: flex-start;
+            align-items: center;
+            padding-right: 10px;
+            box-sizing: border-box;
+            .content-top-userName-img {
+              display: inline-block;
+              width: 40px;
+              height: 40px;
+              vertical-align: middle;
+              margin-right: 8px;
+              img {
+                width: 100%;
+                height: 100%;
+              }
             }
-          }
-          .real-name {
-            font-size: 17px
+            .real-name {
+              flex: 1;
+              width: 0;
+              font-size: 17px;
+              .no-wrap()
+            }
+          };
+          .content-top-userName-right {
+            >span {
+              padding: 6px;
+              box-sizing: border-box;
+              border: 1px solid #f3f3f3;
+              font-size: 12px;
+              color: #fff;
+              border-radius: 4px
+            }
           }
         };
         .wait-dask-wrapper {

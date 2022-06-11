@@ -11,6 +11,18 @@
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
       <van-icon name="manager-o" slot="right" @click="skipMyInfo"></van-icon>
     </HeaderTop>
+    <!-- 二维码图片弹框 -->
+    <div class="area-code-box">
+      <van-dialog v-model="codeAreaShow" :show-confirm-button="false">
+        <div class="title">
+          <span>扫码获取任务</span>
+          <van-icon name="clear" color="#808080" size="25" @click="clearAreaCodeDialogEvent" />
+        </div>
+        <div class="content">
+          <img :src="currentCodeUrl" />
+        </div>
+      </van-dialog>
+    </div>  
      <!-- 右边下拉框菜单 -->
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
@@ -62,6 +74,9 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
+            <div class="area-code" @click="areaCodeClickEvent(item)">
+              <img :src="waitSurePng" alt="">
+            </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
@@ -113,6 +128,9 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
+            <div class="area-code" @click="areaCodeClickEvent(item)">
+              <img :src="waitSurePng" alt="">
+            </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
@@ -164,6 +182,9 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
+            <div class="area-code" @click="areaCodeClickEvent(item)">
+              <img :src="waitSurePng" alt="">
+            </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
@@ -215,6 +236,9 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
+            <div class="area-code" @click="areaCodeClickEvent(item)">
+              <img :src="waitSurePng" alt="">
+            </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
@@ -266,6 +290,9 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
+            <div class="area-code" @click="areaCodeClickEvent(item)">
+              <img :src="waitSurePng" alt="">
+            </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
@@ -386,17 +413,19 @@
       </div>
     </div>
     <!-- 退回原因弹窗 -->
-    <van-dialog v-model="reasonShow" title="请选择退回原因" show-cancel-button width="92%"
-      @confirm="reasonSure" @cancel="reasonCancel"
-    >
-      <div class="tool-name-list">
-        <div class="tool-name-list-content">
-          <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
-            {{item.text}}
-          </span>
+    <div class="back-reason-box">
+      <van-dialog v-model="reasonShow" title="请选择退回原因" show-cancel-button width="92%"
+        @confirm="reasonSure" @cancel="reasonCancel"
+      >
+        <div class="tool-name-list">
+          <div class="tool-name-list-content">
+            <span :class="{spanStyle:reasonIndex === index}" v-for="(item,index) in reasonOperationList" :key="`${item}-${index}`" @click="reasonCheck(item,index)">
+              {{item.text}}
+            </span>
+          </div>
         </div>
-      </div>
-    </van-dialog>
+      </van-dialog>
+    </div>  
   </div>
 </template>
 
@@ -415,6 +444,8 @@
     name: 'appointTask',
     data () {
       return {
+        codeAreaShow: false,
+        currentCodeUrl: '',
         showLoadingHint: false,
         appointTaskListShow: false,
         noDataShow: false,
@@ -759,6 +790,17 @@
           }).then(() => {
           });
         })
+      },
+
+      // 关闭二维码弹框事件
+      clearAreaCodeDialogEvent () {
+        this.codeAreaShow = false
+      },
+
+      // 二维码点击事件
+      areaCodeClickEvent (item) {
+        this.codeAreaShow = true;
+        this.currentCodeUrl = this.taskGetPng
       },
 
       // 任务优先级转换
@@ -1292,42 +1334,73 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
    .content-wrapper {
-    /deep/ .van-dialog {
-      .van-dialog__content {
-        margin-bottom: 6px;
-        height: 200px;
-        margin: 10px 0;
-        .tool-name-list {
-          width: 94%;
-          height: 100%;
-          overflow: auto;
-          margin: 0 auto;
-          padding: 0;
-          .tool-name-list-content {
-            padding: 6px;
-            .spanStyle {
-              color: #2895ea;
-              background: #fff;
-              border: 1px solid #2895ea
-            }
-            span {
-              display: inline-block;
-              width: 48%;
-              height: 40px;
-              text-align: center;
-              margin-bottom: 8px;
-              border-radius: 20px;
-              line-height: 40px;
-              background: #f3f3f3;
-              margin-right: 3%;
-              &:nth-child(even) {
-                margin-right: 0
+    .back-reason-box {
+      /deep/ .van-dialog {
+        .van-dialog__content {
+          margin-bottom: 6px;
+          height: 200px;
+          margin: 10px 0;
+          .tool-name-list {
+            width: 94%;
+            height: 100%;
+            overflow: auto;
+            margin: 0 auto;
+            padding: 0;
+            .tool-name-list-content {
+              padding: 6px;
+              .spanStyle {
+                color: #2895ea;
+                background: #fff;
+                border: 1px solid #2895ea
+              }
+              span {
+                display: inline-block;
+                width: 48%;
+                height: 40px;
+                text-align: center;
+                margin-bottom: 8px;
+                border-radius: 20px;
+                line-height: 40px;
+                background: #f3f3f3;
+                margin-right: 3%;
+                &:nth-child(even) {
+                  margin-right: 0
+                }
               }
             }
           }
         }
-      }
+      };
     };
+    .area-code-box {
+      /deep/ .van-dialog {
+        .van-dialog__content {
+          padding: 10px;
+          box-sizing: border-box;
+          .title {
+            width: 100%;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            >span {
+              font-size: 18px;
+              color: black;
+              flex: 1;
+              display: flex;
+              justify-content: center
+            }
+          };
+          .content {
+            width: 100%;
+            >img {
+              width: 100%
+            }
+          }
+        }
+      }
+    };  
     .content-wrapper();
     font-size: 14px;
     position: relative;
@@ -1442,7 +1515,7 @@
           width: 94%;
           margin:0 auto;
           background: #fff;
-          padding: 10px;
+          padding: 25px 10px 10px 10px;
           margin-bottom: 10px;
           box-sizing: border-box;
           .list-status {
@@ -1457,7 +1530,18 @@
               width: 100%;
               height: 100%
             }
-          }
+          };
+          .area-code {
+            position: absolute;
+            top: 4px;
+            left: 5px;
+            width: 40px;
+            height: 40px;
+            img {
+              width: 100%;
+              height: 100%
+            }
+          };
           .listStatusStyleOne {
             color: red
           }
@@ -1667,7 +1751,7 @@
         width: 94%;
         margin:0 auto;
         background: #fff;
-        padding: 10px;
+        padding: 25px 10px 10px 10px;
         margin-bottom: 10px;
         box-sizing: border-box;
         .list-status {
@@ -1682,7 +1766,18 @@
             width: 100%;
             height: 100%
           }
-        }
+        };
+        .area-code {
+          position: absolute;
+          top: 4px;
+          left: 5px;
+          width: 40px;
+          height: 40px;
+          img {
+            width: 100%;
+            height: 100%
+          }
+        };
         .listStatusStyleOne {
           color: red
         }
