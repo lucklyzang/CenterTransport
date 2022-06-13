@@ -22,8 +22,7 @@
           <span>扫码获取任务</span>
           <van-icon name="clear" color="#808080" size="25" @click="clearAreaCodeDialogEvent" />
         </div>
-        <div class="content">
-          <img :src="currentCodeUrl" />
+        <div class="content" ref="qrcode">
         </div>
       </van-dialog>
     </div>  
@@ -80,7 +79,7 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="area-code" @click="areaCodeClickEvent(item)">
-              <img :src="waitSurePng" alt="">
+              <img :src="qrCodeJpg" alt="">
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
@@ -139,7 +138,7 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="area-code" @click="areaCodeClickEvent(item)">
-              <img :src="waitSurePng" alt="">
+              <img :src="qrCodeJpg" alt="">
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
@@ -198,7 +197,7 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="area-code" @click="areaCodeClickEvent(item)">
-              <img :src="waitSurePng" alt="">
+              <img :src="qrCodeJpg" alt="">
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
@@ -257,7 +256,7 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="area-code" @click="areaCodeClickEvent(item)">
-              <img :src="waitSurePng" alt="">
+              <img :src="qrCodeJpg" alt="">
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
@@ -316,7 +315,7 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="area-code" @click="areaCodeClickEvent(item)">
-              <img :src="waitSurePng" alt="">
+              <img :src="qrCodeJpg" alt="">
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
@@ -483,6 +482,7 @@
   import {queryAppointTaskMessage, updateAppointTaskMessage, cancelAppointTask, userSignOut, transferAppointTask,queryDispatchTaskCancelReason,sendbackAppointTask,queryAppointTaskSendbackReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import store from '@/store'
+  import QRCode from 'qrcodejs2'
   import Loading from '@/components/Loading'
   import SOtime from '@/common/js/SOtime.js'
   import { mapGetters, mapMutations } from 'vuex'
@@ -492,7 +492,6 @@
     data () {
       return {
         codeAreaShow: false,
-        currentCodeUrl: '',
         showLoadingHint: false,
         sendbackShow: false,
         appointTaskListShow: false,
@@ -548,6 +547,7 @@
         screenTaskList: [],
         transferTaskIdList: [],
         drawCompleteTaskIdList: [],
+        qrCodeJpg: require('@/common/images/home/qr-code.jpeg'),
         taskGetPng: require('@/components/images/task-get.png'),
         taskSearchPng: require('@/components/images/task-search.png'),
         noEndPng: require('@/common/images/home/no-end.png'),
@@ -922,8 +922,23 @@
       // 二维码点击事件
       areaCodeClickEvent (item) {
         this.codeAreaShow = true;
-        this.currentCodeUrl = this.taskGetPng
+        this.$nextTick(() => {
+          this.creatQrCode(`${this.workerId}|${item.id}`)
+        })
       },
+
+      // 生产二维码
+      creatQrCode(codeContent) {
+        this.$refs.qrcode.innerHTML = ''
+        let qrcode = new QRCode(this.$refs.qrcode, {
+          text: codeContent,
+          width: 200,
+          height: 200,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        })
+      },     
 
       // 任务优先级转换
       priorityTransfer (index) {
@@ -1327,7 +1342,7 @@
       transferSureEvent () {
         this.transferShow = false;
         this.sureTransferDispatchTask ({
-          taskId: this.appointTaskTransferIdList[0],
+          taskIds: this.appointTaskTransferIdList,
           afterWorkerId: this.getTransferPersonId(this.currentPerson),   //任务接受者ID
           beforeWorkerId: this.workerId,      //转移者ID
         })
@@ -1406,30 +1421,25 @@
         this.transferTaskIdList = [];
         let temporaryTransferTaskCheckList = [];
         temporaryTransferTaskCheckList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-        if (temporaryTransferTaskCheckList.length == 1) {
-          this.transferShow = true;
-          for (let item of temporaryTransferTaskCheckList)  {
-            for (let key in item) {
-              if (key == 'id')
-              this.transferTaskIdList.push(item['id'])
-            }
-          };
-          this.transferTask = true;
-          this.cancelTask = false;
-          this.transferWorkerShow = true;
-          this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList});
-          this.queryOnlineWorker({proId: this.proId, state:''});
-        } else {
-          this.$toast('只能同时转移一个任务')
-        }
+        this.transferShow = true;
+        for (let item of temporaryTransferTaskCheckList)  {
+          for (let key in item) {
+            if (key == 'id')
+            this.transferTaskIdList.push(item['id'])
+          }
+        };
+        this.transferTask = true;
+        this.cancelTask = false;
+        this.transferWorkerShow = true;
+        this.changeAppointTaskTransferIdList({DtMsg: this.transferTaskIdList});
+        this.queryOnlineWorker({proId: this.proId, state:''});
       },
 
       // 清空该完成任务存储的已完成检查的信息
       emptyCompleteCheckedItem () {
         let temporarySweepCodeOficeList = [];
         temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
-        console.log('测试1',temporarySweepCodeOficeList);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return this.appointTaskTransferIdList.indexOf(item.taskId) == -1 });
         this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
       },
@@ -1438,8 +1448,7 @@
       emptyCompleteDestinationDepartment () {
         let temporarySweepCodeOficeList = [];
         temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
-        console.log('测试2',temporarySweepCodeOficeList);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return this.appointTaskTransferIdList.indexOf(item.taskId) == -1 });
         this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
       },
@@ -1448,7 +1457,7 @@
       emptyCompleteDepartureDepartment () {
         let temporarySweepCodeOficeList = [];
         temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.appointTaskTransferIdList[0]});
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return this.appointTaskTransferIdList.indexOf(item.taskId) == -1 });
         this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
         setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
       },

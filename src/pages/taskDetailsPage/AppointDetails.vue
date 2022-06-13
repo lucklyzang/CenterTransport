@@ -89,7 +89,7 @@
           <p class="basic-mesage-state">
             <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
           </p>
-          <p class="basic-message-title">
+          <p class="basic-message-title" @click="viewCheckItemDetails(appointDetailsMessage.checkItems)">
             <span>
               <img :src="taskInfoPng" alt="">
             </span>
@@ -239,7 +239,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import FooterBottom from '@/components/FooterBottom'
 import ElectronicSignature from '@/components/ElectronicSignature'
-import {queryAppointTaskDetailsMessage, appointTaskCompleted, checkItemsCompleted} from '@/api/workerPort.js'
+import {queryAppointTaskDetailsMessage, appointTaskCompleted, appointTaskSignCompleted, checkItemsCompleted, getAppointTaskEndReason} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
 import { mapGetters, mapMutations } from 'vuex'
 import { setStore, IsPC,  repeArray, deepClone } from '@/common/js/utils'
@@ -251,46 +251,9 @@ export default {
       leftDownShow: false,
       detailDescribeContent: '',
       reasonValue: 0,
-      reasonOption: [
-        { text: '全部商品', value: 0 },
-        { text: '新款商品', value: 1 },
-        { text: '活动商品', value: 2 },
-        { text: '全部商品', value: 3 },
-        { text: '新款商品', value: 4 },
-        { text: '活动商品', value: 5 },
-      ],
-      checkItemList: [
-        {
-          checkDepartment: '呼吸科',
-          checkType: '胃肠道彩超',
-          checkRoom: 14,
-          signNumber: 12
-        },
-        {
-          checkDepartment: '呼吸科',
-          checkType: '胃肠道彩超',
-          checkRoom: 14,
-          signNumber: 12
-        },
-        {
-          checkDepartment: '呼吸科',
-          checkType: '胃肠道彩超',
-          checkRoom: 14,
-          signNumber: 12
-        },
-          {
-          checkDepartment: '呼吸科',
-          checkType: '胃肠道彩超',
-          checkRoom: 14,
-          signNumber: 12
-        },
-        {
-          checkDepartment: '呼吸科',
-          checkType: '胃肠道彩超',
-          checkRoom: 14,
-          signNumber: 12
-        }
-      ],
+      reasonOption: [],
+      checkItemList: [],
+      completeTaskReason: '',
       checkDetailsShow: false,
       completeTaskShow: true,
       liIndex: null,
@@ -348,6 +311,7 @@ export default {
   },
 
   mounted () {
+    this.queryAppointTaskCompleteReason({proId: this.proId, state: 0});
     // 控制设备物理返回按键
     if (!IsPC()) {
       let that = this;
@@ -406,6 +370,11 @@ export default {
       if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
         return
       };
+      if (!this.completeTaskReason) {
+        this.$toast('请选择结束原因');
+        return
+      };
+      this.completeTaskSign()
     },
 
     //完成任务弹框取消
@@ -415,6 +384,37 @@ export default {
 
     //原因下拉选项选中值改变事件
     selectReasonChane (value) {
+      this.completeTaskReason = this.reasonOption.filter((item) => { return item.value == value})[0]['text'];
+    },
+
+    // 任务完成原因
+    queryAppointTaskCompleteReason (data) {
+      this.reasonOption = [];
+      getAppointTaskEndReason(data).then((res) => {
+        if (res && res.data.code == 200) {
+          if (res.data.data.length > 0) {
+            for (let item of res.data.data) {
+              this.reasonOption.push({
+                text: item.completeName,
+                value: item.id
+              })
+            }
+          }
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        })
+      })
     },
 
     // 签名重写
@@ -444,6 +444,20 @@ export default {
           return  this.taskFinshedPng
           break;
       }
+    },
+
+    // 查看任务下检查项详情
+    viewCheckItemDetails (data) {
+      this.checkItemList = [];
+      for (let item of data) {
+        this.checkItemList.push({
+          checkDepartment: item.depName,
+          checkType: item.checkTypeName,
+          checkRoom: '',
+          signNumber: ''
+        })
+      };
+      this.checkDetailsShow = true
     },
 
     // 任务状态转换
@@ -530,7 +544,7 @@ export default {
             }
           };
           console.log(this.appointDetailsMessage)
-          // 为完成二维码校验的科室增加标价
+          // 为完成二维码校验的科室增加标记
           if (this.completeSweepcodeDestinationInfo.length > 0) {
             for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
               if (this.appointDetailsMessage['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
@@ -685,6 +699,7 @@ export default {
       }
     },
 
+    // 完成任务(没有签名)
     completeTask () {
       let completeInfo = {
         proId: this.proId, //项目ID
@@ -692,6 +707,41 @@ export default {
         taskId: this.taskId   //任务ID
       };
       appointTaskCompleted(completeInfo).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$toast(`${res.data.msg}`);
+          this.emptyCompleteCheckedItem();
+          this.emptyCompleteDestinationDepartment();
+          this.emptyCompleteDepartureDepartment();
+          this.$router.push({path:'/appointTask'});
+          this.changeTitleTxt({tit:'预约任务'});
+          setStore('currentTitle','预约任务')
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        })
+      })
+    },
+
+    // 完成任务(有签名)
+    completeTaskSign () {
+      let completeInfo = {
+        taskId: this.taskId, //完成任务的id
+        sign: this.currentElectronicSignature, //签名信息bese64编码
+        signPath: '', //签名信息上传OSS后地址
+        completeReason: this.completeTaskReason, //任务完成原因
+        operationRemark: this.detailDescribeContent //任务完成备注信息
+      };
+      appointTaskSignCompleted(completeInfo).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
           this.emptyCompleteCheckedItem();
@@ -913,6 +963,7 @@ export default {
               padding: 6px 0;
               overflow: auto;
               box-sizing: border-box;
+              border: 1px solid transparent;
               .circulation-area-content {
                 position: relative;
                 background: #eaeaea;
@@ -978,9 +1029,11 @@ export default {
           .task-content {
             padding: 0 6px 6px 6px;
             box-sizing: border-box;
-            max-height: 80vh;
-            min-height: 50vh;
+            height: 80vh;
+            overflow: auto;
             font-size: 14px;
+            display: flex;
+            flex-direction: column;
             .select-reason-box {
               .select-title {
                 height: 40px;
@@ -1036,6 +1089,9 @@ export default {
               }
             };
             .signature-box {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
               .signature-title {
                 height: 40px;
                 display: flex;
@@ -1045,8 +1101,13 @@ export default {
                 }
               };
               .signature-content {
-                .signatureBox {
-                  width: 100%
+                flex: 1;
+                display: flex;
+                .signature {
+                  width: 100%;
+                  .signatureBox {
+                    width: 100%
+                  }
                 }
               };
               .rewrite-box {

@@ -436,3 +436,21 @@ export function appointTaskCompleted (data) {
     data
   })
 };
+
+// 预约任务签名完成
+export function appointTaskSignCompleted (data) {
+  return request({
+    url: 'bookTask/completeTask/sign',
+    method: 'put',
+    data
+  })
+};
+
+// 查询预约任务结束原因
+export function getAppointTaskEndReason(data) {
+  return request({
+    url: 'complete/queryAll',
+    method: 'get',
+    params: data
+  })
+};

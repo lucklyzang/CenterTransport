@@ -1022,7 +1022,7 @@
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import store from '@/store'
-  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, queryAppointTaskMessage, queryCirculationTask} from '@/api/workerPort.js'
+  import {getAllTaskNumber, queryAllTaskMessage, userSignOut, getNewWork, getDispatchTaskComplete, queryAppointTaskMessage, queryCirculationTask, transferAppointTask} from '@/api/workerPort.js'
   import {queryTransportTypeClass, collectDispatchTask, taskReminder, queryFeedback, submitFeedback, submitTaskFeedback} from '@/api/medicalPort.js'
   import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
   import { mapGetters, mapMutations } from 'vuex'
@@ -1054,6 +1054,8 @@
     },
     data() {
       return {
+        currentAppointTaskId: '',
+        appointTaskRawPeopleId: '',
         leftDownShow: false,
         workerShow: true,
         cancelShow: true,
@@ -1134,6 +1136,16 @@
         });
         this.getVersionNumber()
       };
+
+    // 二维码回调方法绑定到window下面,提供给外部调用
+    let me = this;
+    window['scanQRcodeCallback'] = (code) => {
+      me.scanQRcodeCallback(code);
+    };
+    window['scanQRcodeCallbackCanceled'] = () => {
+      me.scanQRcodeCallbackCanceled();
+    };
+    console.log('信息校验',this.appointTaskMessage);
       document.addEventListener('click',(e) => {
         if(e.target.className!='van-icon van-icon-manager-o' && e.target.className!='left-dropDown'){
           this.leftDownShow = false;
@@ -1234,7 +1246,10 @@
         'catch_components',
         'isFreshHomePage',
         'templateType',
-        'isNewCircle'
+        'isNewCircle',
+        'completeCheckedItemInfo',
+        'completeSweepcodeDestinationInfo',
+        'completeSweepcodeDepartureInfo'
       ]),
       userName () {
        return this.userInfo.userName
@@ -1287,7 +1302,10 @@
         'changeNewTaskList',
         'changeTaskTranceMsg',
         'changeGlobalTimer',
-        'changeCatchComponent'
+        'changeCatchComponent',
+        'changeCompleteCheckedItemInfo',
+        'changeCompleteSweepcodeDestinationInfo',
+        'changeCompleteSweepcodeDepartureInfo'
       ]),
 
       juddgeIspc () {
@@ -1297,11 +1315,6 @@
       playInfoVoice () {
         let currentAudio = this.$refs.audio;
         currentAudio.play()
-      },
-
-      // 获取版本号
-      getVersionNumber () {
-        this.versionNumber = window.android.getVersion()
       },
 
       //模板二时不展示意见反馈
@@ -1475,6 +1488,100 @@
        * 工作人员代码
        *
       */
+
+      // 转移任务
+      sureTransferDispatchTask (data) {
+        transferAppointTask(data)
+          .then((res) => {
+            if (res && res.data.code == 200) {
+              this.$toast(`${ res.data.msg}`);
+              this.emptyCompleteCheckedItem();
+              this.emptyCompleteDestinationDepartment();
+              this.emptyCompleteDepartureDepartment();
+              this.appointEvent()
+            } else {
+              this.$dialog.alert({
+                message: res.data.msg,
+                closeOnPopstate: true
+              }).then(() => {
+              });
+            }
+          })
+          .catch((err) => {
+            this.$dialog.alert({
+              message: `${err.message}`,
+              closeOnPopstate: true
+            }).then(() => {
+            });
+          })
+      },
+
+
+    //首页扫描二维码事件
+    scanCodeEvent () {
+      this.sweepAstoffice()
+    },
+
+    // 扫描二维码方法
+    sweepAstoffice () {
+      window.android.scanQRcode()
+    },
+
+    // 摄像头扫码后的回调
+    scanQRcodeCallback(code) {
+      if (code) {
+        // 判断校验类型
+        let codeData = code.split('|');
+        if (codeData.length > 0) {
+          this.appointTaskRawPeopleId = codeData[0];
+          this.currentAppointTaskId = codeData[1];
+          // 转移任务
+          this.sureTransferDispatchTask({
+            taskIds: this.currentAppointTaskId,
+            afterWorkerId: this.workerId,   //任务接受者ID
+            beforeWorkerId: this.appointTaskRawPeopleId //转移者ID
+          })
+        }
+      } else {
+        this.$dialog.alert({
+          message: '当前没有扫描到任何信息,请重新扫描'
+        }).then(() => {
+          this.sweepAstoffice()
+        });
+      }
+    },
+
+      // 清空该完成预约任务存储的已完成检查的信息
+      emptyCompleteCheckedItem () {
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId  });
+        this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
+      },
+
+      // 清空该完成预约任务存储的已扫过目的地科室信息
+      emptyCompleteDestinationDepartment () {
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId });
+        this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+      },
+
+      // 清空该完成预约任务存储的已扫过起始地科室信息
+      emptyCompleteDepartureDepartment () {
+        let temporarySweepCodeOficeList = [];
+        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
+        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId });
+        this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
+        setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
+      },
+
+      // 获取版本号
+      getVersionNumber () {
+        this.versionNumber = window.android.getVersion()
+      },
 
       // 用户签退
       userLoginOut (proId,workerId) {
@@ -1798,11 +1905,6 @@
           return
         };
         this.searchCompleteTask()
-      },
-
-      //首页扫描二维码事件
-      scanCodeEvent () {
-
       },
 
       // 总体意见反馈栏意见类型点击事件
