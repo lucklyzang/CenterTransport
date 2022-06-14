@@ -2070,13 +2070,13 @@
             width: 100%;
             display: flex;
             flex-flow: row nowrap;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             span {
               vertical-align: top;
               display: inline-block;
               text-align: center;
-              flex: 1;
+              width: 30%;
               background: #1b88ff;
               line-height: 35px;
               height: 35px;
@@ -2096,6 +2096,9 @@
                 background: #fff;
                 border: 1px solid #1b88ff;
                 text-align: center
+              };
+              &:last-child {
+                margin-right: 0
               }
             }
           }
@@ -2233,13 +2236,13 @@
             width: 100%;
             display: flex;
             flex-flow: row nowrap;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             span {
               vertical-align: top;
               display: inline-block;
               text-align: center;
-              flex: 1;
+              width: 30%;
               background: #1b88ff;
               line-height: 35px;
               height: 35px;
@@ -2259,6 +2262,9 @@
                 background: #fff;
                 border: 1px solid #1b88ff;
                 text-align: center
+              };
+              &:last-child {
+                margin-right: 0
               }
             }
           }
