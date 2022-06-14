@@ -440,7 +440,7 @@ export function appointTaskCompleted (data) {
 // 预约任务签名完成
 export function appointTaskSignCompleted (data) {
   return request({
-    url: 'bookTask/completeTask/sign',
+    url: 'bookTask/complete/sign',
     method: 'put',
     data
   })

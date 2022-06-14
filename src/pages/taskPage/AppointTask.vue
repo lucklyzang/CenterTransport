@@ -17,7 +17,7 @@
     </HeaderTop>
     <!-- 二维码图片弹框 -->
     <div class="area-code-box">
-      <van-dialog v-model="codeAreaShow" :show-confirm-button="false">
+      <van-dialog v-model="codeAreaShow" :show-confirm-button="false" @close="areaCodeBoxCloseEvent">
         <div class="title">
           <span>扫码获取任务</span>
           <van-icon name="clear" color="#808080" size="25" @click="clearAreaCodeDialogEvent" />
@@ -706,6 +706,11 @@
       leftLiCLick (index) {
         this.liIndex = index;
         this.userLoginOut(this.proId, this.userInfo.userName)
+      },
+
+      // 二维码弹框关闭事件
+      areaCodeBoxCloseEvent () {
+        this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, isMobile: 1,startDate: '',endDate: ''}, this.stateIndex);
       },
 
       // 任务取消
@@ -1810,19 +1815,19 @@
               width: 100%;
               display: flex;
               flex-flow: row nowrap;
-              justify-content: center;
+              justify-content: flex-start;
               align-items: center;
               span {
                 vertical-align: top;
                 display: inline-block;
                 text-align: center;
-                flex: 1;
+                width: 30%;
                 background: #1b88ff;
                 line-height: 35px;
                 height: 35px;
                 font-size: 15px;
                 color: #fff;
-                margin-right: 20px;
+                margin-right: 3%;
                 border-radius: 20px;
                 &:nth-child(3) {
                   color: #1b88ff;
@@ -1836,6 +1841,9 @@
                   background: #fff;
                   border: 1px solid #1b88ff;
                   text-align: center
+                };
+                &:last-child {
+                  margin-right: 0
                 }
               }
             }

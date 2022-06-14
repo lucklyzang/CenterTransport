@@ -89,7 +89,7 @@
           <p class="basic-mesage-state">
             <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
           </p>
-          <p class="basic-message-title" @click="viewCheckItemDetails(appointDetailsMessage.checkItems)">
+          <p class="basic-message-title">
             <span>
               <img :src="taskInfoPng" alt="">
             </span>
@@ -179,33 +179,43 @@
         </div>
         <div class="office-list-right">
           <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
-            <span>病人</span>
-            <span>扫码</span>
+            <span>{{isPatienVerified ? '已扫' : '病人扫'}}</span>
+            <span>码</span>
           </p>
-          <p :class="{listRightStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
-            <span>科室</span>
-            <span>扫码</span>
+          <p :class="{listRightTwoStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
+            <span>{{isStartPonitVerified ? '已扫' : '科室扫'}}</span>
+            <span>码</span>
           </p>
         </div>
       </div>
       <div class="office-list">
         <div class="office-list-inner-wrapper">
-          <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.checkItems" :key="`${item}-${index}`" class="office-list-item">
+          <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.depCheckItems" :key="`${item}-${index}`" class="office-list-item">
             <span class="quadrant">
               {{index + 1}}
             </span>
             <div class="office-list-left">
-              <p>{{item.bookTime}}</p>
-              <p v-show="!item.checkDepName || !item.room">{{item.depName}}</p>
-              <p v-show="item.checkDepName != null && item.room != null">{{item.checkDepName}}-{{item.room}}</p>
+              <div class="office-list-left-top">
+                <p>
+                  {{`${item.depName}`}}
+                  <span @click="viewCheckItemDetails(appointDetailsMessage.checkItems)">详情</span>
+                </p>
+              </div>
+               <div class="office-list-left-bottom">
+                 <p v-for="(innerItem, innerIndex) in item.itemList" :key="innerIndex">
+                  <span>
+                    {{`${innerItem.checkTypeName}(${innerItem.bookTime})`}}
+                  </span>
+                 </p>
+              </div>
             </div>
             <div class="office-list-right">
               <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
-                <span>科室</span>
-                <span>扫码</span>
+                <span>{{item.isChecked ? '检查已' : '科室'}}</span>
+                <span>{{item.isChecked ? '开始' : '扫码'}}</span>
               </p>
-              <p :class="{listRightStyle: item.isCompleted == true}" @click="checkCompleted(item)">
-                <span>检查</span>
+              <p :class="{listRightTwoStyle: item.isCompleted == true}" @click="checkCompleted(item)">
+                <span>{{item.isCompleted ? '检查已' : '检查'}}</span>
                 <span>完成</span>
               </p>
             </div>
@@ -218,8 +228,8 @@
         </div>
         <div class="office-list-right">
           <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
-            <span>科室</span>
-            <span>扫码</span>
+            <span>{{isBackStartPonitVerified ? '已扫' : '科室扫'}}</span>
+            <span>码</span>
           </p>
         </div>
       </div>
@@ -255,7 +265,7 @@ export default {
       checkItemList: [],
       completeTaskReason: '',
       checkDetailsShow: false,
-      completeTaskShow: true,
+      completeTaskShow: false,
       liIndex: null,
       isPatienVerified: false,
       isStartPonitVerified: false,
@@ -534,26 +544,25 @@ export default {
           this.appointDetailsMessage = res.data.data;
           console.log('详情',this.appointDetailsMessage);
           for (let item in this.appointDetailsMessage) {
-            if (item == 'checkItems') {
+            if (item == 'depCheckItems') {
               for (let innerItem of this.appointDetailsMessage[item]) {
                 innerItem['isChecked'] = false;
                 innerItem['isCompleted'] = false;
-                this.appointDetailsMessage.extendData1 ? innerItem['checkDepName'] = this.appointDetailsMessage.extendData1.checkDepName : innerItem['checkDepName'] = null;
-                this.appointDetailsMessage.extendData1 ? innerItem['room'] = this.appointDetailsMessage.extendData1.room : innerItem['room'] = null;
+                // this.appointDetailsMessage.extendData1 ? innerItem['checkDepName'] = this.appointDetailsMessage.extendData1.checkDepName : innerItem['checkDepName'] = null;
+                // this.appointDetailsMessage.extendData1 ? innerItem['room'] = this.appointDetailsMessage.extendData1.room : innerItem['room'] = null;
               };
             }
           };
-          console.log(this.appointDetailsMessage)
           // 为完成二维码校验的科室增加标记
           if (this.completeSweepcodeDestinationInfo.length > 0) {
             for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
               if (this.appointDetailsMessage['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
                 if (this.completeSweepcodeDestinationInfo[w]['officeList'].length > 0) {
                   for (let i = 0, len1 = this.completeSweepcodeDestinationInfo[w]['officeList'].length; i < len1; i++) {
-                    if (this.appointDetailsMessage['checkItems'].length > 0) {
-                      for (let j = 0, len2 = this.appointDetailsMessage['checkItems'].length; j < len2; j++) {
-                        if (this.appointDetailsMessage['checkItems'][j]['id'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
-                          this.appointDetailsMessage['checkItems'][j]['isChecked'] = true;
+                    if (this.appointDetailsMessage['depCheckItems'].length > 0) {
+                      for (let j = 0, len2 = this.appointDetailsMessage['depCheckItems'].length; j < len2; j++) {
+                        if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
+                          this.appointDetailsMessage['depCheckItems'][j]['isChecked'] = true;
                           // 为完成检查的科室增加标记
                           if (this.completeCheckedItemInfo.length > 0) {
                             let temporaryIndex = this.completeCheckedItemInfo.indexOf(this.completeCheckedItemInfo.filter((item) => {return item.taskId == this.taskId})[0]);
@@ -561,8 +570,8 @@ export default {
                               let targetDepartmentList = this.completeCheckedItemInfo[temporaryIndex]['officeList'];
                               if (targetDepartmentList.length > 0) {
                                 for (let targetItem of targetDepartmentList) {
-                                  if (this.appointDetailsMessage['checkItems'][j]['id'] == targetItem) {
-                                    this.appointDetailsMessage['checkItems'][j]['isCompleted'] = true
+                                  if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == targetItem) {
+                                    this.appointDetailsMessage['depCheckItems'][j]['isCompleted'] = true
                                   }
                                 }
                               }
@@ -606,12 +615,12 @@ export default {
       let checkedItemsInfo = {
         proId: this.proId, //项目ID
         workerId: this.workerId, //运送员ID即当前登录人
-        itemId: item.id   //检查项ID
+        itemId: item['itemList'][0]['id']   //检查项ID
       };
       checkItemsCompleted(checkedItemsInfo).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
-          this.storeCheckedDepartment(item.id);
+          this.storeCheckedDepartment(item['itemList'][0]['id']);
           this.getAppointTaskMessage(this.appointTaskMessage.id)
         } else {
           this.$dialog.alert({
@@ -683,13 +692,22 @@ export default {
           if (!this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified'] && !this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
             this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
           } else {
-            this.$dialog.alert({
-              message: '是否确认完成任务',
-              closeOnPopstate: true,
-              showCancelButton: true
-            }).then(() => {
-              this.completeTask()
-            }).catch((err) => {})
+            // 判断检查科室是否全部成功扫码
+            let isCheckDepartmentAllSweepCode = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isChecked == false});
+            // 判断所有科室是否全部扫码完成
+            if (!isCheckDepartmentAllSweepCode && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
+              // 所有科室都扫码成功直接完成任务
+              this.$dialog.alert({
+                message: '是否确认完成任务',
+                closeOnPopstate: true,
+                showCancelButton: true
+              }).then(() => {
+                this.completeTask()
+              }).catch((err) => {})
+            } else {
+              // 不是所有科室都扫码成功需要签名完成任务
+              this.completeTaskShow = true
+            }
           }
         } else {
           this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
@@ -784,7 +802,7 @@ export default {
                 this.$router.push(
                   {
                     'path':'/appointTaskSweepCode',
-                    query: {checkType: type, id: item.id}
+                    query: {checkType: type, id: item['itemList'][0]['id']}
                   }
                 );
                 this.changeTitleTxt({tit:'扫码'});
@@ -1029,7 +1047,7 @@ export default {
           .task-content {
             padding: 0 6px 6px 6px;
             box-sizing: border-box;
-            height: 80vh;
+            height: 85vh;
             overflow: auto;
             font-size: 14px;
             display: flex;
@@ -1345,7 +1363,10 @@ export default {
           }
         };
         .listRightStyle {
-          background: #0ee883
+          background: #0ee883 !important
+        };
+        .listRightTwoStyle {
+          background: #2aeb53 !important
         }
       }
     };
@@ -1363,8 +1384,8 @@ export default {
         box-sizing: border-box;
         .office-list-item {
           font-size: 16px;
-          height: 90px;
-          padding: 10px;
+          min-height: 90px;
+          padding: 20px 10px 10px 10px;
           display: flex;
           flex-flow: row nowrap;
           background: #fff;
@@ -1391,13 +1412,39 @@ export default {
           .office-list-left {
             width: 60%;
             margin-right: 4px;
-            p {
-              height: 25px;
-              width: 76%;
-              overflow: auto;
-              line-height: 25px;
-              &:first-child {
-                font-size: 13px
+            .office-list-left-top {
+              width: 100%;
+              height: 35px;
+              display: flex;
+              flex-flow: row nowrap;
+              align-items: center;
+              margin-bottom: 4px;
+              >p {
+                  font-weight: bolder;
+                  height: 35px;
+                  overflow: auto;
+                  word-break: break-all;
+                  flex: 1;
+                  font-size: 16px;
+                  margin-right: 2px;
+                  >span {
+                    width: 30px;
+                    font-size: 12px;
+                    color: #217dfc
+                  }
+              }  
+            };
+            .office-list-left-bottom {
+              >p {
+                span {
+                  display: inline-block;
+                  width: 100%;
+                  height: 30px;
+                  overflow: auto;
+                  line-height: 15px;
+                  word-break: break-all;
+                  font-size: 12px
+                }
               }
             }
           };
@@ -1430,7 +1477,10 @@ export default {
               }
             };
             .listRightStyle {
-              background: #0ee883
+              background: #0ee883 !important
+            };
+            .listRightTwoStyle {
+              background: #2aeb53 !important
             }
           }
         };
@@ -1491,7 +1541,10 @@ export default {
           }
         };
         .listRightStyle {
-          background: #0ee883
+          background: #0ee883 !important
+        };
+        .listRightTwoStyle {
+          background: #2aeb53 !important
         }
       }
     };

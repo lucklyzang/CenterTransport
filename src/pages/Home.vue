@@ -1246,10 +1246,7 @@
         'catch_components',
         'isFreshHomePage',
         'templateType',
-        'isNewCircle',
-        'completeCheckedItemInfo',
-        'completeSweepcodeDestinationInfo',
-        'completeSweepcodeDepartureInfo'
+        'isNewCircle'
       ]),
       userName () {
        return this.userInfo.userName
@@ -1495,9 +1492,6 @@
           .then((res) => {
             if (res && res.data.code == 200) {
               this.$toast(`${ res.data.msg}`);
-              this.emptyCompleteCheckedItem();
-              this.emptyCompleteDestinationDepartment();
-              this.emptyCompleteDepartureDepartment();
               this.appointEvent()
             } else {
               this.$dialog.alert({
@@ -1537,7 +1531,7 @@
           this.currentAppointTaskId = codeData[1];
           // 转移任务
           this.sureTransferDispatchTask({
-            taskIds: this.currentAppointTaskId,
+            taskIds: [this.currentAppointTaskId],
             afterWorkerId: this.workerId,   //任务接受者ID
             beforeWorkerId: this.appointTaskRawPeopleId //转移者ID
           })
@@ -1550,33 +1544,6 @@
         });
       }
     },
-
-      // 清空该完成预约任务存储的已完成检查的信息
-      emptyCompleteCheckedItem () {
-        let temporarySweepCodeOficeList = [];
-        temporarySweepCodeOficeList = deepClone(this.completeCheckedItemInfo);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId  });
-        this.changeCompleteCheckedItemInfo(temporarySweepCodeOficeList);
-        setStore('completAppointTaskCheckedItemInfo', {"sweepCodeInfo": temporarySweepCodeOficeList})
-      },
-
-      // 清空该完成预约任务存储的已扫过目的地科室信息
-      emptyCompleteDestinationDepartment () {
-        let temporarySweepCodeOficeList = [];
-        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDestinationInfo);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId });
-        this.changeCompleteSweepcodeDestinationInfo(temporarySweepCodeOficeList);
-        setStore('completAppointTaskSweepCodeDestinationInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
-      },
-
-      // 清空该完成预约任务存储的已扫过起始地科室信息
-      emptyCompleteDepartureDepartment () {
-        let temporarySweepCodeOficeList = [];
-        temporarySweepCodeOficeList = deepClone(this.completeSweepcodeDepartureInfo);
-        temporarySweepCodeOficeList = temporarySweepCodeOficeList.filter((item) => { return item.taskId != this.currentAppointTaskId });
-        this.changeCompleteSweepcodeDepartureInfo(temporarySweepCodeOficeList);
-        setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporarySweepCodeOficeList});
-      },
 
       // 获取版本号
       getVersionNumber () {
