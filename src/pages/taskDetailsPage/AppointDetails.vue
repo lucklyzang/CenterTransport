@@ -1314,7 +1314,6 @@ export default {
       margin: 0 auto;
       font-size: 15px;
       background: #fff;
-      height: 90px;
       padding: 10px;
       display: flex;
       flex-flow: row nowrap;
@@ -1325,12 +1324,15 @@ export default {
         width: 60%;
         margin-right: 4px;
         p {
-          height: 25px;
-          width: 76%;
-          overflow: auto;
+          width: 100%;
           line-height: 25px;
           &:first-child {
+            height: 25px;
+            overflow: auto;
             font-size: 13px
+          };
+          &:last-child {
+            word-break: break-all
           }
         }
       };
@@ -1385,7 +1387,7 @@ export default {
         .office-list-item {
           font-size: 16px;
           min-height: 90px;
-          padding: 20px 10px 10px 10px;
+          padding: 22px 10px;
           display: flex;
           flex-flow: row nowrap;
           background: #fff;
@@ -1414,14 +1416,13 @@ export default {
             margin-right: 4px;
             .office-list-left-top {
               width: 100%;
-              height: 35px;
+              line-height: 20px;
               display: flex;
               flex-flow: row nowrap;
               align-items: center;
               margin-bottom: 4px;
               >p {
                   font-weight: bolder;
-                  height: 35px;
                   overflow: auto;
                   word-break: break-all;
                   flex: 1;
@@ -1439,9 +1440,8 @@ export default {
                 span {
                   display: inline-block;
                   width: 100%;
-                  height: 30px;
                   overflow: auto;
-                  line-height: 15px;
+                  line-height: 20px;
                   word-break: break-all;
                   font-size: 12px
                 }
@@ -1495,7 +1495,6 @@ export default {
       margin: 0 auto;
       font-size: 15px;
       background: #fff;
-      height: 90px;
       padding: 10px;
       display: flex;
       flex-flow: row nowrap;
@@ -1506,10 +1505,10 @@ export default {
         width: 60%;
         margin-right: 4px;
         p {
-          height: 25px;
-          width: 76%;
+          width: 100%;
           overflow: auto;
-          line-height: 25px
+          line-height: 25px;
+          word-break: break-all
         }
       };
       .office-list-right {
