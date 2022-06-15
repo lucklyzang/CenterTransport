@@ -1906,7 +1906,8 @@
          display: flex;
          flex-flow: row nowrap;
          align-items: center;
-         margin-bottom: 10px;
+         padding-bottom: 10px;
+         box-sizing: border-box;
          span {
            display: inline-block;
            color: #fff;
@@ -1924,8 +1925,13 @@
          };
        };
        .task-status-list {
-         flex: 1;
-         overflow: auto
+         .wait-handle-list {
+          padding: 10px !important;
+          box-sizing: border-box !important;
+          .get-wait-task {
+            justify-content: center !important;
+          }
+         }  
        }
       }
     .wait-handle {
@@ -2236,7 +2242,7 @@
             width: 100%;
             display: flex;
             flex-flow: row nowrap;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
             span {
               vertical-align: top;

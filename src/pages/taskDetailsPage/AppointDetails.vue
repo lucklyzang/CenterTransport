@@ -72,7 +72,7 @@
           </div>
           <div class="signature-box">
             <div class="signature-title">
-              点击签字<span>*</span>
+              签字<span>*</span>
             </div>
             <div class="signature-content">
               <ElectronicSignature ref="mychild"></ElectronicSignature>
@@ -179,12 +179,12 @@
         </div>
         <div class="office-list-right">
           <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
-            <span>{{isPatienVerified ? '已扫' : '病人扫'}}</span>
-            <span>码</span>
+            <span>{{isPatienVerified ? '已' : '病人'}}</span>
+            <span>扫码</span>
           </p>
           <p :class="{listRightTwoStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
-            <span>{{isStartPonitVerified ? '已扫' : '科室扫'}}</span>
-            <span>码</span>
+            <span>{{isStartPonitVerified ? '已' : '科室'}}</span>
+            <span>扫码</span>
           </p>
         </div>
       </div>
@@ -211,12 +211,12 @@
             </div>
             <div class="office-list-right">
               <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
-                <span>{{item.isChecked ? '检查已' : '科室'}}</span>
-                <span>{{item.isChecked ? '开始' : '扫码'}}</span>
+                <span>{{item.isChecked ? '检查' : '科室'}}</span>
+                <span>{{item.isChecked ? '已开始' : '扫码'}}</span>
               </p>
               <p :class="{listRightTwoStyle: item.isCompleted == true}" @click="checkCompleted(item)">
-                <span>{{item.isCompleted ? '检查已' : '检查'}}</span>
-                <span>完成</span>
+                <span>检查</span>
+                <span>{{item.isCompleted ? '已完成' : '完成'}}</span>
               </p>
             </div>
           </div>
@@ -228,8 +228,8 @@
         </div>
         <div class="office-list-right">
           <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
-            <span>{{isBackStartPonitVerified ? '已扫' : '科室扫'}}</span>
-            <span>码</span>
+            <span>{{isBackStartPonitVerified ? '已' : '科室'}}</span>
+            <span>扫码</span>
           </p>
         </div>
       </div>
