@@ -1690,7 +1690,7 @@
             text-align: center;
             line-height: 30px;
             top: 8px;
-            right: -12px;
+            right: -10px;
             img {
               width: 100%;
               height: 100%
@@ -1951,7 +1951,7 @@
           text-align: center;
           line-height: 30px;
           top: 8px;
-          right: -12px;
+          right: -10px;
           img {
             width: 100%;
             height: 100%
@@ -2128,7 +2128,7 @@
           text-align: center;
           line-height: 30px;
           top: 8px;
-          right: -12px;
+          right: -10px;
           img {
             width: 100%;
             height: 100%
