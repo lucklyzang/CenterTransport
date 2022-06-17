@@ -36,7 +36,7 @@
           <li :class="{'taskLineOneStyle':taskLlineOneIndex == index}" :key="index" v-for="(item,index) in taskOneList" @click="taskLineOneEvent(item, index)">{{item}}</li>
         </ul>
       </div>
-      <div class="status-box" v-show="taskQueryShow == false">
+      <div class="status-box" v-show="taskQueryShow == false && !transferTaskBtnShow">
         <p class="task-line-two">
           <span class="state-filter-span">
             状态筛选
@@ -1649,14 +1649,18 @@
         }
       }
       .task-operate-box {
-        height: 40px;
-        line-height: 30px;
+        height: 50px;
         background: #f6f6f6;
-        padding-left: 10px;
         text-align: center;
+        margin-top: 6px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           font-size: 13px;
-          display: inline-block;
           width: 70px;
           height: 30px;
           border-radius: 4px;

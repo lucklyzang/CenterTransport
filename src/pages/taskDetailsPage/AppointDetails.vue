@@ -694,8 +694,10 @@ export default {
           } else {
             // 判断检查科室是否全部成功扫码
             let isCheckDepartmentAllSweepCode = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isChecked == false});
+            // 判断检查科室是否全部检查完成
+            let isCheckDepartmentAllCompleted = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isCompleted == false});
             // 判断所有科室是否全部扫码完成
-            if (!isCheckDepartmentAllSweepCode && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
+            if (!isCheckDepartmentAllSweepCode && !isCheckDepartmentAllCompleted && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
               // 所有科室都扫码成功直接完成任务
               this.$dialog.alert({
                 message: '是否确认完成任务',
