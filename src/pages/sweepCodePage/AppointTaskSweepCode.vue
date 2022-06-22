@@ -121,13 +121,26 @@ export default {
             this.departmentId = codeData[0];
             let departmentNo = codeData[1];
             if (this.checkType == 1 || this.checkType == 3) {
-              // 校验起始科室
-              this.checkDepartmentVerify({
-                proId: this.proId, //项目ID
-                workerId: this.workerId, //运送员ID
-                taskId: this.taskId,   //任务ID
-                departmentNo: departmentNo   //扫描科室编码
-              },this.checkType)
+              if (this.checkType == 1) {
+                // 校验起始科室
+                this.checkDepartmentVerify({
+                  proId: this.proId, //项目ID
+                  workerId: this.workerId, //运送员ID
+                  taskId: this.taskId,   //任务ID
+                  departmentNo: departmentNo,   //扫描科室编码
+                  scanDepartment: this.checkType
+                },this.checkType)
+              };
+              if (this.checkType == 3) {
+                // 校验终点科室(起始科室放在最后)
+                this.checkDepartmentVerify({
+                  proId: this.proId, //项目ID
+                  workerId: this.workerId, //运送员ID
+                  taskId: this.taskId,   //任务ID
+                  departmentNo: departmentNo,   //扫描科室编码
+                  scanDepartment: 2
+                },this.checkType)
+              }
             } else {
               // 校验检查项科室
               try {
@@ -237,13 +250,11 @@ export default {
         if (res && res.data.code == 200) {
           // 储存校验通过的起始科室信息
           if (type == 1) {
-            this.storeDepartureInfo(1);
             this.$router.push({'path':'/appointTaskCustomerInfo'});
             this.changeTitleTxt({tit:'病人信息确认'});
             setStore('currentTitle','病人信息确认')
           };
           if (type == 3) {
-            this.storeDepartureInfo(3);
             this.backTo()
           }
         } else {
@@ -273,8 +284,6 @@ export default {
       this.showLoadingHint = true;
       judgeAppointTaskCheckPatient(data).then((res) => {
         if (res && res.data.code == 200) {
-          // 储存校验通过的病人信息
-          this.storeDepartureInfo(0);
           this.backTo()
         } else {
           this.backTo();
@@ -295,29 +304,6 @@ export default {
         }).then(() => {
         })
       })
-    },
-
-    // 存储校验通过的起始地和病人信息
-    storeDepartureInfo (type) {
-      let temporaryOfficeList = deepClone(this.completeSweepcodeDepartureInfo);
-      if (this.completeSweepcodeDepartureInfo.length > 0 ) {
-        let temporaryIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-        if (temporaryIndex != -1) {
-          if (type == 0) {temporaryOfficeList[temporaryIndex]['patienVerified'] = true};
-          if (type == 1) {temporaryOfficeList[temporaryIndex]['startPonitVerified'] = true};
-          if (type == 3) {temporaryOfficeList[temporaryIndex]['backStartPonitVerified'] = true}
-        } else {
-          if (type == 0) {temporaryOfficeList.push({ taskId: this.taskId,patienVerified: true})};
-          if (type == 1) {temporaryOfficeList.push({ taskId: this.taskId,startPonitVerified: true})};
-          if (type == 3) {temporaryOfficeList.push({ taskId: this.taskId,backStartPonitVerified: true})}
-        }
-      } else {
-        if (type == 0) {temporaryOfficeList.push({ taskId: this.taskId,patienVerified: true})};
-        if (type == 1) {temporaryOfficeList.push({ taskId: this.taskId,startPonitVerified: true})};
-        if (type == 3) {temporaryOfficeList.push({ taskId: this.taskId,backStartPonitVerified: true})}
-      };
-      this.changeCompleteSweepcodeDepartureInfo(temporaryOfficeList);
-      setStore('completAppointTaskSweepCodeDepartureInfo', {"sweepCodeInfo": temporaryOfficeList})
     },
 
     // 返回上一页

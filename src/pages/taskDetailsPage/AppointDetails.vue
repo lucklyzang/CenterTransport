@@ -172,25 +172,25 @@
            </div>
         </div>
       </div>
-      <div class="office-list-item-start-point" :class="{listItemStyle: isPatienVerified == true || isStartPonitVerified == true}">
+      <div class="office-list-item-start-point" :class="{listItemStyle: appointDetailsMessage.scanPatient === 1 &&  (appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2)}">
         <div class="office-list-left">
           <p>{{appointDetailsMessage.planStartTime}}</p>
           <p>{{appointDetailsMessage.setOutPlaceName}}</p>
         </div>
         <div class="office-list-right">
-          <p :class="{listRightStyle: isPatienVerified == true}" @click="joinSweepCode(0,appointDetailsMessage)">
-            <span>{{isPatienVerified ? '已' : '病人'}}</span>
+          <p :class="{listRightStyle: appointDetailsMessage.scanPatient === 1 }">
+            <span>{{appointDetailsMessage.scanPatient === 1 ? '已' : '病人'}}</span>
             <span>扫码</span>
           </p>
-          <p :class="{listRightTwoStyle: isStartPonitVerified == true}" @click="joinSweepCode(1,appointDetailsMessage)">
-            <span>{{isStartPonitVerified ? '已' : '科室'}}</span>
+          <p :class="{listRightTwoStyle: appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2}" @click="joinSweepCode(1,appointDetailsMessage)">
+            <span>{{appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2 ? '已' : '科室'}}</span>
             <span>扫码</span>
           </p>
         </div>
       </div>
       <div class="office-list">
         <div class="office-list-inner-wrapper">
-          <div :class="{listItemStyle: item.isChecked == true && item.isCompleted == true}" v-for="(item,index) in appointDetailsMessage.depCheckItems" :key="`${item}-${index}`" class="office-list-item">
+          <div :class="{listItemStyle: item['itemList'][0]['state'] === 2}" v-for="(item,index) in appointDetailsMessage.depCheckItems" :key="`${item}-${index}`" class="office-list-item">
             <span class="quadrant">
               {{index + 1}}
             </span>
@@ -210,25 +210,25 @@
               </div>
             </div>
             <div class="office-list-right">
-              <p :class="{listRightStyle: item.isChecked == true}" @click="joinSweepCode(2,item)">
-                <span>{{item.isChecked ? '检查' : '科室'}}</span>
-                <span>{{item.isChecked ? '已开始' : '扫码'}}</span>
+              <p :class="{listRightStyle: item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2}" @click="joinSweepCode(2,item)">
+                <span>{{item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2 ? '检查' : '科室'}}</span>
+                <span>{{item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2 ? '已开始' : '扫码'}}</span>
               </p>
-              <p :class="{listRightTwoStyle: item.isCompleted == true}" @click="checkCompleted(item)">
+              <p :class="{listRightTwoStyle: item['itemList'][0]['state'] === 2}" @click="checkCompleted(item)">
                 <span>检查</span>
-                <span>{{item.isCompleted ? '已完成' : '完成'}}</span>
+                <span>{{item['itemList'][0]['state'] === 2 ? '已完成' : '完成'}}</span>
               </p>
             </div>
           </div>
         </div>
       </div>
-      <div class="office-list-item-end-point" :class="{listItemStyle: isBackStartPonitVerified == true}">
+      <div class="office-list-item-end-point" :class="{listItemStyle: appointDetailsMessage.scanDepartment === 2}">
         <div class="office-list-left">
           <p>{{appointDetailsMessage.setOutPlaceName}}</p>
         </div>
         <div class="office-list-right">
-          <p :class="{listRightStyle: isBackStartPonitVerified == true}" @click="joinSweepCode(3,appointDetailsMessage)">
-            <span>{{isBackStartPonitVerified ? '已' : '科室'}}</span>
+          <p :class="{listRightStyle: appointDetailsMessage.scanDepartment === 2}" @click="joinSweepCode(3,appointDetailsMessage)">
+            <span>{{appointDetailsMessage.scanDepartment === 2 ? '已' : '科室'}}</span>
             <span>扫码</span>
           </p>
         </div>
@@ -686,36 +686,27 @@ export default {
         this.$toast('该任务已完成或取消，不能执行此操作');
         return
       };
-      if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
-        let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-        if (echoIndex !== -1) {
-          if (!this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified'] && !this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
-            this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
-          } else {
-            // 判断检查科室是否全部成功扫码
-            let isCheckDepartmentAllSweepCode = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isChecked == false});
-            // 判断检查科室是否全部检查完成
-            let isCheckDepartmentAllCompleted = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isCompleted == false});
-            // 判断所有科室是否全部扫码完成
-            if (!isCheckDepartmentAllSweepCode && !isCheckDepartmentAllCompleted && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
-              // 所有科室都扫码成功直接完成任务
-              this.$dialog.alert({
-                message: '是否确认完成任务',
-                closeOnPopstate: true,
-                showCancelButton: true
-              }).then(() => {
-                this.completeTask()
-              }).catch((err) => {})
-            } else {
-              // 不是所有科室都扫码成功需要签名完成任务
-              this.completeTaskShow = true
-            }
-          }
-        } else {
-          this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
-        }
-      } else {
+      if (!this.appointDetailsMessage['scanDepartment'] && !this.appointDetailsMessage['scanPatient']) {
         this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
+      } else {
+        // 判断检查科室是否全部成功扫码
+        let isCheckDepartmentAllSweepCode = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isChecked == false});
+        // 判断检查科室是否全部检查完成
+        let isCheckDepartmentAllCompleted = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isCompleted == false});
+        // 判断所有科室是否全部扫码完成
+        if (!isCheckDepartmentAllSweepCode && !isCheckDepartmentAllCompleted && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
+          // 所有科室都扫码成功直接完成任务
+          this.$dialog.alert({
+            message: '是否确认完成任务',
+            closeOnPopstate: true,
+            showCancelButton: true
+          }).then(() => {
+            this.completeTask()
+          }).catch((err) => {})
+        } else {
+          // 不是所有科室都扫码成功需要签名完成任务
+          this.completeTaskShow = true
+        }
       }
     },
 
@@ -895,30 +886,21 @@ export default {
           }
         };
         if (type == 3) {
-          if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
-            let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-            if (echoIndex !== -1) {
-              if (!this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified'] && !this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
-                this.$toast('请至少完成出发地科室二维码或病人二维码的校验才能在次扫描出发地科室二维码')
-              } else {
-                if (!this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
-                  this.$router.push(
-                    {
-                      'path':'/appointTaskSweepCode',
-                      query: {checkType: type}
-                    }
-                  );
-                  this.changeTitleTxt({tit:'扫码'});
-                  setStore('currentTitle','扫码')
-                } else {
-                  this.$toast('返回科室出发地扫码已经校验过')
-                }
-              }
-            } else {
-              this.$toast('请至少完成出发地科室二维码或病人二维码的校验才能在次扫描出发地科室二维码')
-            }
-          } else {
+          if (!this.appointDetailsMessage['scanDepartment'] && !this.appointDetailsMessage['scanPatient']) {
             this.$toast('请至少完成出发地科室二维码或病人二维码的校验才能在次扫描出发地科室二维码')
+          } else {
+            if (this.appointDetailsMessage['scanPatient'] === 2) {
+              this.$toast('返回科室出发地扫码已经校验过')
+            } else {
+              this.$router.push(
+                {
+                  'path':'/appointTaskSweepCode',
+                  query: {checkType: type}
+                }
+              );
+              this.changeTitleTxt({tit:'扫码'});
+              setStore('currentTitle','扫码')
+            }
           }
         }
       }
