@@ -1400,9 +1400,6 @@
             if (res && res.data.code == 200) {
               this.$toast(`${ res.data.msg}`);
               this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1);
-              this.emptyCompleteCheckedItem();
-              this.emptyCompleteDestinationDepartment();
-              this.emptyCompleteDepartureDepartment();
             } else {
               this.$dialog.alert({
                 message: res.data.msg,

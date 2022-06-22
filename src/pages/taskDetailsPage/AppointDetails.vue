@@ -172,25 +172,25 @@
            </div>
         </div>
       </div>
-      <div class="office-list-item-start-point" :class="{listItemStyle: appointDetailsMessage.scanPatient === 1 &&  (appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2)}">
+      <div class="office-list-item-start-point" :class="{listItemStyle: appointDetailsMessage.scanPatient == 1 &&  (appointDetailsMessage.scanDepartment == 1 || appointDetailsMessage.scanDepartment == 2)}">
         <div class="office-list-left">
           <p>{{appointDetailsMessage.planStartTime}}</p>
           <p>{{appointDetailsMessage.setOutPlaceName}}</p>
         </div>
         <div class="office-list-right">
-          <p :class="{listRightStyle: appointDetailsMessage.scanPatient === 1 }">
-            <span>{{appointDetailsMessage.scanPatient === 1 ? '已' : '病人'}}</span>
+          <p :class="{listRightStyle: appointDetailsMessage.scanPatient == 1 }" @click="joinSweepCode(0,appointDetailsMessage)">
+            <span>{{appointDetailsMessage.scanPatient == 1 ? '已' : '病人'}}</span>
             <span>扫码</span>
           </p>
-          <p :class="{listRightTwoStyle: appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2}" @click="joinSweepCode(1,appointDetailsMessage)">
-            <span>{{appointDetailsMessage.scanDepartment === 1 || appointDetailsMessage.scanDepartment === 2 ? '已' : '科室'}}</span>
+          <p :class="{listRightTwoStyle: appointDetailsMessage.scanDepartment == 1 || appointDetailsMessage.scanDepartment == 2}" @click="joinSweepCode(1,appointDetailsMessage)">
+            <span>{{appointDetailsMessage.scanDepartment == 1 || appointDetailsMessage.scanDepartment == 2 ? '已' : '科室'}}</span>
             <span>扫码</span>
           </p>
         </div>
       </div>
       <div class="office-list">
         <div class="office-list-inner-wrapper">
-          <div :class="{listItemStyle: item['itemList'][0]['state'] === 2}" v-for="(item,index) in appointDetailsMessage.depCheckItems" :key="`${item}-${index}`" class="office-list-item">
+          <div :class="{listItemStyle: item['itemList'][0]['state'] == 2}" v-for="(item,index) in appointDetailsMessage.depCheckItems" :key="`${item}-${index}`" class="office-list-item">
             <span class="quadrant">
               {{index + 1}}
             </span>
@@ -210,25 +210,25 @@
               </div>
             </div>
             <div class="office-list-right">
-              <p :class="{listRightStyle: item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2}" @click="joinSweepCode(2,item)">
-                <span>{{item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2 ? '检查' : '科室'}}</span>
-                <span>{{item['itemList'][0]['state'] === 1 || item['itemList'][0]['state'] === 2 ? '已开始' : '扫码'}}</span>
+              <p :class="{listRightStyle: item['itemList'][0]['state'] == 1 || item['itemList'][0]['state'] == 2}" @click="joinSweepCode(2,item)">
+                <span>{{item['itemList'][0]['state'] == 1 || item['itemList'][0]['state'] == 2 ? '检查' : '科室'}}</span>
+                <span>{{item['itemList'][0]['state'] == 1 || item['itemList'][0]['state'] == 2 ? '已开始' : '扫码'}}</span>
               </p>
-              <p :class="{listRightTwoStyle: item['itemList'][0]['state'] === 2}" @click="checkCompleted(item)">
+              <p :class="{listRightTwoStyle: item['itemList'][0]['state'] == 2}" @click="checkCompleted(item)">
                 <span>检查</span>
-                <span>{{item['itemList'][0]['state'] === 2 ? '已完成' : '完成'}}</span>
+                <span>{{item['itemList'][0]['state'] == 2 ? '已完成' : '完成'}}</span>
               </p>
             </div>
           </div>
         </div>
       </div>
-      <div class="office-list-item-end-point" :class="{listItemStyle: appointDetailsMessage.scanDepartment === 2}">
+      <div class="office-list-item-end-point" :class="{listItemStyle: appointDetailsMessage.scanDepartment == 2}">
         <div class="office-list-left">
           <p>{{appointDetailsMessage.setOutPlaceName}}</p>
         </div>
         <div class="office-list-right">
-          <p :class="{listRightStyle: appointDetailsMessage.scanDepartment === 2}" @click="joinSweepCode(3,appointDetailsMessage)">
-            <span>{{appointDetailsMessage.scanDepartment === 2 ? '已' : '科室'}}</span>
+          <p :class="{listRightStyle: appointDetailsMessage.scanDepartment == 2}" @click="joinSweepCode(3,appointDetailsMessage)">
+            <span>{{appointDetailsMessage.scanDepartment == 2 ? '已' : '科室'}}</span>
             <span>扫码</span>
           </p>
         </div>
@@ -542,49 +542,48 @@ export default {
       queryAppointTaskDetailsMessage(taskId).then((res) => {
         if (res && res.data.code == 200) {
           this.appointDetailsMessage = res.data.data;
-          console.log('详情',this.appointDetailsMessage);
-          for (let item in this.appointDetailsMessage) {
-            if (item == 'depCheckItems') {
-              for (let innerItem of this.appointDetailsMessage[item]) {
-                innerItem['isChecked'] = false;
-                innerItem['isCompleted'] = false;
-                // this.appointDetailsMessage.extendData1 ? innerItem['checkDepName'] = this.appointDetailsMessage.extendData1.checkDepName : innerItem['checkDepName'] = null;
-                // this.appointDetailsMessage.extendData1 ? innerItem['room'] = this.appointDetailsMessage.extendData1.room : innerItem['room'] = null;
-              };
-            }
-          };
+          // for (let item in this.appointDetailsMessage) {
+          //   if (item == 'depCheckItems') {
+          //     for (let innerItem of this.appointDetailsMessage[item]) {
+          //       innerItem['isChecked'] = false;
+          //       innerItem['isCompleted'] = false;
+          //       // this.appointDetailsMessage.extendData1 ? innerItem['checkDepName'] = this.appointDetailsMessage.extendData1.checkDepName : innerItem['checkDepName'] = null;
+          //       // this.appointDetailsMessage.extendData1 ? innerItem['room'] = this.appointDetailsMessage.extendData1.room : innerItem['room'] = null;
+          //     };
+          //   }
+          // };
           // 为完成二维码校验的科室增加标记
-          if (this.completeSweepcodeDestinationInfo.length > 0) {
-            for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
-              if (this.appointDetailsMessage['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
-                if (this.completeSweepcodeDestinationInfo[w]['officeList'].length > 0) {
-                  for (let i = 0, len1 = this.completeSweepcodeDestinationInfo[w]['officeList'].length; i < len1; i++) {
-                    if (this.appointDetailsMessage['depCheckItems'].length > 0) {
-                      for (let j = 0, len2 = this.appointDetailsMessage['depCheckItems'].length; j < len2; j++) {
-                        if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
-                          this.appointDetailsMessage['depCheckItems'][j]['isChecked'] = true;
-                          // 为完成检查的科室增加标记
-                          if (this.completeCheckedItemInfo.length > 0) {
-                            let temporaryIndex = this.completeCheckedItemInfo.indexOf(this.completeCheckedItemInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-                            if (temporaryIndex != -1) {
-                              let targetDepartmentList = this.completeCheckedItemInfo[temporaryIndex]['officeList'];
-                              if (targetDepartmentList.length > 0) {
-                                for (let targetItem of targetDepartmentList) {
-                                  if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == targetItem) {
-                                    this.appointDetailsMessage['depCheckItems'][j]['isCompleted'] = true
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          // if (this.completeSweepcodeDestinationInfo.length > 0) {
+          //   for (let w = 0, wLen = this.completeSweepcodeDestinationInfo.length; w < wLen; w++) {
+          //     if (this.appointDetailsMessage['id'] == this.completeSweepcodeDestinationInfo[w]['taskId']) {
+          //       if (this.completeSweepcodeDestinationInfo[w]['officeList'].length > 0) {
+          //         for (let i = 0, len1 = this.completeSweepcodeDestinationInfo[w]['officeList'].length; i < len1; i++) {
+          //           if (this.appointDetailsMessage['depCheckItems'].length > 0) {
+          //             for (let j = 0, len2 = this.appointDetailsMessage['depCheckItems'].length; j < len2; j++) {
+          //               if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == this.completeSweepcodeDestinationInfo[w]['officeList'][i]) {
+          //                 this.appointDetailsMessage['depCheckItems'][j]['isChecked'] = true;
+          //                 // 为完成检查的科室增加标记
+          //                 if (this.completeCheckedItemInfo.length > 0) {
+          //                   let temporaryIndex = this.completeCheckedItemInfo.indexOf(this.completeCheckedItemInfo.filter((item) => {return item.taskId == this.taskId})[0]);
+          //                   if (temporaryIndex != -1) {
+          //                     let targetDepartmentList = this.completeCheckedItemInfo[temporaryIndex]['officeList'];
+          //                     if (targetDepartmentList.length > 0) {
+          //                       for (let targetItem of targetDepartmentList) {
+          //                         if (this.appointDetailsMessage['depCheckItems'][j]['itemList'][0]['id'] == targetItem) {
+          //                           this.appointDetailsMessage['depCheckItems'][j]['isCompleted'] = true
+          //                         }
+          //                       }
+          //                     }
+          //                   }
+          //                 }
+          //               }
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
         } else {
           this.$toast(`${res.data.msg}`)
         }
@@ -604,13 +603,14 @@ export default {
         this.$toast('该任务已完成或取消，不能执行此操作');
         return
       };
-      if (!item.isChecked) {
+      if (!item['itemList'][0]['state']) {
         this.$toast('请先完成该检查科室二维码校验');
         return
-      };
-      if (item.isCompleted) {
-        this.$toast('该科室已经完成过检查');
-        return
+      } else {
+        if (item['itemList'][0]['state'] == 2) {
+          this.$toast('该科室已经完成过检查');
+          return
+        }
       };
       let checkedItemsInfo = {
         proId: this.proId, //项目ID
@@ -644,6 +644,19 @@ export default {
       const strAry = str.split('');
       strAry[index] = char;
       return strAry.join('');
+    },
+
+    // 判断检查科室是否全部检查完成
+    isCheckDepartmentAllCompleted (data) {
+      let allCompleted = true;
+      for (let item of data) {
+        let flag = item['itemList'].every((innerItem) => { return innerItem.state == 2});
+        if (!flag) {
+          allCompleted = false;
+          break
+        }
+      };
+      return allCompleted
     },
 
     // 存储完成检查的科室
@@ -689,12 +702,10 @@ export default {
       if (!this.appointDetailsMessage['scanDepartment'] && !this.appointDetailsMessage['scanPatient']) {
         this.$toast('请至少完成出发地科室二维码或病人二维码校验才能完成任务')
       } else {
-        // 判断检查科室是否全部成功扫码
-        let isCheckDepartmentAllSweepCode = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isChecked == false});
         // 判断检查科室是否全部检查完成
-        let isCheckDepartmentAllCompleted = this.appointDetailsMessage['depCheckItems'].some((item) => { return item.isCompleted == false});
+        let isCheckDepartmentAllCompleted = this.isCheckDepartmentAllCompleted(this.appointDetailsMessage['depCheckItems']);
         // 判断所有科室是否全部扫码完成
-        if (!isCheckDepartmentAllSweepCode && !isCheckDepartmentAllCompleted && this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified'] && this.completeSweepcodeDepartureInfo[echoIndex]['backStartPonitVerified']) {
+        if (isCheckDepartmentAllCompleted && this.appointDetailsMessage['scanDepartment'] == 2 && this.appointDetailsMessage['scanPatient'] == 1) {
           // 所有科室都扫码成功直接完成任务
           this.$dialog.alert({
             message: '是否确认完成任务',
@@ -785,58 +796,26 @@ export default {
         return
       };
       if (type == 2) {
-        if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
-          let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-          if (echoIndex !== -1) {
-            if (!this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified'] && !this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
-              this.$toast('请先进行出发地科室二维码或病人二维码校验')
-            } else {
-              if (!item.isChecked) {
-                this.$router.push(
-                  {
-                    'path':'/appointTaskSweepCode',
-                    query: {checkType: type, id: item['itemList'][0]['id']}
-                  }
-                );
-                this.changeTitleTxt({tit:'扫码'});
-                setStore('currentTitle','扫码')
-              } else {
-                this.$toast('该检查科室已经校验过')
-              }
-            }
-          } else {
-            this.$toast('请先进行出发地科室二维码或病人二维码校验')
-          }
-        } else {
+        if (!this.appointDetailsMessage['scanDepartment'] && !this.appointDetailsMessage['scanPatient']) {
           this.$toast('请先进行出发地科室二维码或病人二维码校验')
+        } else {
+          if (item['itemList'][0]['state'] == 1 || item['itemList'][0]['state'] == 2) {
+            this.$toast('该检查科室已经校验并通过')
+          } else {
+            this.$router.push(
+              {
+                'path':'/appointTaskSweepCode',
+                query: {checkType: type, id: item['itemList'][0]['id']}
+              }
+            );
+            this.changeTitleTxt({tit:'扫码'});
+            setStore('currentTitle','扫码')
+          }
         }
       } else {
         if (type == 0) {
-           if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
-            let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-            if (echoIndex !== -1) {
-              if (this.completeSweepcodeDepartureInfo[echoIndex]['patienVerified']) {
-                this.$toast('该病人二维码已经校验并通过,请进行检查科室二维码的校验')
-              } else {
-                this.$router.push(
-                  {
-                    'path':'/appointTaskSweepCode',
-                    query: {checkType: type}
-                  }
-                );
-                this.changeTitleTxt({tit:'扫码'});
-                setStore('currentTitle','扫码')
-              }
-            } else {
-              this.$router.push(
-                {
-                  'path':'/appointTaskSweepCode',
-                  query: {checkType: type}
-                }
-              );
-              this.changeTitleTxt({tit:'扫码'});
-              setStore('currentTitle','扫码')
-            }
+          if (this.appointDetailsMessage.scanPatient == 1) {
+            this.$toast('该病人二维码已经校验并通过,请进行起始科室二维码的校验')
           } else {
             this.$router.push(
               {
@@ -849,31 +828,8 @@ export default {
           }
         };
         if (type == 1) {
-          if (this.completeSweepcodeDepartureInfo && this.completeSweepcodeDepartureInfo.length > 0) {
-            let echoIndex = this.completeSweepcodeDepartureInfo.indexOf(this.completeSweepcodeDepartureInfo.filter((item) => {return item.taskId == this.taskId})[0]);
-            if (echoIndex !== -1) {
-              if (this.completeSweepcodeDepartureInfo[echoIndex]['startPonitVerified']) {
-                this.$toast('该出发地科室二维码已经校验并通过,请进行检查科室二维码的校验')
-              } else {
-                this.$router.push(
-                  {
-                    'path':'/appointTaskSweepCode',
-                    query: {checkType: type}
-                  }
-                );
-                this.changeTitleTxt({tit:'扫码'});
-                setStore('currentTitle','扫码')
-              }
-            } else {
-              this.$router.push(
-                {
-                  'path':'/appointTaskSweepCode',
-                  query: {checkType: type}
-                }
-              );
-              this.changeTitleTxt({tit:'扫码'});
-              setStore('currentTitle','扫码')
-            }
+          if (this.appointDetailsMessage.scanDepartment == 1 || this.appointDetailsMessage.scanDepartment == 2) {
+            this.$toast('该出发地科室二维码已经校验并通过,请进行检查科室二维码的校验')
           } else {
             this.$router.push(
               {
@@ -887,9 +843,9 @@ export default {
         };
         if (type == 3) {
           if (!this.appointDetailsMessage['scanDepartment'] && !this.appointDetailsMessage['scanPatient']) {
-            this.$toast('请至少完成出发地科室二维码或病人二维码的校验才能在次扫描出发地科室二维码')
+            this.$toast('请至少完成出发地科室二维码或病人二维码的校验才能再次扫描出发地科室二维码')
           } else {
-            if (this.appointDetailsMessage['scanPatient'] === 2) {
+            if (this.appointDetailsMessage['scanPatient'] == 2) {
               this.$toast('返回科室出发地扫码已经校验过')
             } else {
               this.$router.push(
