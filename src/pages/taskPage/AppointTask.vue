@@ -8,7 +8,7 @@
       @cancel="transferCancelEvent"
     />
     <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" :textContent="loadingContent" textColor="#2895ea"></loading>
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
@@ -493,6 +493,7 @@
       return {
         codeAreaShow: false,
         showLoadingHint: false,
+        loadingContent: '加载中,请稍候···',
         sendbackShow: false,
         appointTaskListShow: false,
         noDataShow: false,
@@ -1320,7 +1321,7 @@
         // 驻点人员必须在任务状态为进行中时才能转移
         if (value.indexOf('(') != -1) {
           let temporaryStateFilterList = this.stateFilterList.filter((item) => {return item.taskCheck == true});
-          if (temporaryStateFilterList[0]['state'] != 3) {
+          if (temporaryStateFilterList.some((item) => { return item.state != 3})) {
             this.$toast({
               message: '请扫描起点后再转移给驻点人员',
               position: 'bottom'
@@ -1329,17 +1330,22 @@
           }
         };
         this.currentPerson = value;
-        if (this.currentPerson == this.workerName) {
-          this.$toast(`任务不能转移给自己`);
-          return
-        };
         this.isShowTransferPop = true
       },
       
 
       // 获取转移人员的id
       getTransferPersonId (name) {
-        let id = this.onlinePersonLlist.filter((item) => {return item.text == name})[0]['value'];
+        let temporaryName = name;
+        let temporaryIndex = temporaryName.indexOf("(");
+        if (temporaryIndex != -1) {
+          temporaryName = name.slice(0,temporaryIndex-1)
+        };
+        let id = this.onlinePersonLlist.filter((item) => {return item.text == temporaryName})[0]['value'];
+        // 转移给自己或同名的
+        if (temporaryName == this.workerName) {
+          id = this.workerId
+        };
         return id
       },
 
@@ -1395,8 +1401,12 @@
 
       // 转移任务
       sureTransferDispatchTask (data) {
+        this.loadingContent = '转移中,请稍候···';
+        this.showLoadingHint = true;
         transferAppointTask(data)
           .then((res) => {
+            this.showLoadingHint = false;
+            this.loadingContent = '加载中,请稍候···';
             if (res && res.data.code == 200) {
               this.$toast(`${ res.data.msg}`);
               this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1);
@@ -1409,6 +1419,8 @@
             }
           })
           .catch((err) => {
+            this.showLoadingHint = false;
+            this.loadingContent = '加载中,请稍候···';
             this.$dialog.alert({
               message: `${err.message}`,
               closeOnPopstate: true
