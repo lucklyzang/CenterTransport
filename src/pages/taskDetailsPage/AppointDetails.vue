@@ -172,7 +172,7 @@
            </div>
         </div>
       </div>
-      <div class="office-list-item-start-point" :class="{listItemStyle: appointDetailsMessage.scanPatient == 1 &&  (appointDetailsMessage.scanDepartment == 1 || appointDetailsMessage.scanDepartment == 2)}">
+      <div class="office-list-item-start-point" :class="{listItemStyle: appointDetailsMessage.scanPatient == 1 || appointDetailsMessage.scanDepartment == 1 || appointDetailsMessage.scanDepartment == 2}">
         <div class="office-list-left">
           <p>{{appointDetailsMessage.planStartTime}}</p>
           <p>{{appointDetailsMessage.setOutPlaceName}}</p>
