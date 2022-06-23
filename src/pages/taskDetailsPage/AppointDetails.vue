@@ -705,7 +705,7 @@ export default {
         // 判断检查科室是否全部检查完成
         let isCheckDepartmentAllCompleted = this.isCheckDepartmentAllCompleted(this.appointDetailsMessage['depCheckItems']);
         // 判断所有科室是否全部扫码完成
-        if (isCheckDepartmentAllCompleted && this.appointDetailsMessage['scanDepartment'] == 2 && this.appointDetailsMessage['scanPatient'] == 1) {
+        if (isCheckDepartmentAllCompleted && this.appointDetailsMessage['scanDepartment'] == 2) {
           // 所有科室都扫码成功直接完成任务
           this.$dialog.alert({
             message: '是否确认完成任务',
