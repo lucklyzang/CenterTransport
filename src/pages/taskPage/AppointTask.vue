@@ -1390,8 +1390,7 @@
                 }
               };
               this.onlinePersonLlist.push({text: temporaryWorkerMessageArray[1], value: temporaryWorkerMessageArray[0],depName: temporaryWorkerMessageArray[2]})
-            };
-            console.log(this.onlinePersonLlist)
+            }
           }
         })
           .catch((err) => {
