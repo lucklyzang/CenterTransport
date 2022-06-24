@@ -1025,7 +1025,7 @@
         this.taskId = item.id;
         this.toolShow = true;
         this.tempFlagId = this.templateType == 'template_one' ? item.tempFlag : null;
-        querySendBackDispatchTaskReason(this.proId)
+        querySendBackDispatchTaskReason(this.proId,1)
         .then((res) => {
           this.vehicleOperationList = [];
           if (res && res.data.code == 200) {

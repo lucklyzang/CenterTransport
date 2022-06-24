@@ -314,7 +314,7 @@ export default {
       that.gotoURL(() => {
         pushHistory();
         if (this.dispatchTaskMessage.state == 7) {
-          this.changeIsFreshDispatchTaskPage(false)
+          this.changeIsFreshDispatchTaskPage(true)
         } else {
           this.changeIsFreshDispatchTaskPage(true)
         };
@@ -507,7 +507,7 @@ export default {
     // 返回上一页
     backTo () {
       if (this.dispatchTaskMessage.state == 7) {
-        this.changeIsFreshDispatchTaskPage(false)
+        this.changeIsFreshDispatchTaskPage(true)
       } else {
         this.changeIsFreshDispatchTaskPage(true)
       };

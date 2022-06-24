@@ -75,12 +75,13 @@ export function getDispatchTask(taskId,workerId,tempFlag) {
   })
 };
 // 调度任务退回原因查询
-export function querySendBackDispatchTaskReason(proId) {
+export function querySendBackDispatchTaskReason(proId,type) {
   return request({
     url: 'back/dict',
     method: 'get',
     params: {
-      proId
+      proId,
+      type
     }
   })
 };
@@ -110,10 +111,11 @@ export function queryDispatchTaskCancelReason(data) {
 };
 
 // 退回原因查询
-export function queryAppointTaskSendbackReason() {
+export function queryAppointTaskSendbackReason(data) {
   return request({
     url: 'undo/queryAll',
-    method: 'get'
+    method: 'get',
+    params: data
   })
 };
 

@@ -718,7 +718,7 @@
       cancelTaskEvent (item) {
         this.taskId = item.id;
         this.reasonShow = true;
-        queryDispatchTaskCancelReason({proId:this.proId,state: 0})
+        queryDispatchTaskCancelReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
           this.reasonOperationList = [];
           if (res && res.data.code == 200) {
@@ -748,7 +748,7 @@
       sendbackTaskEvent (item) {
         this.taskId = item.id;
         this.sendbackShow = true;
-        queryAppointTaskSendbackReason({proId:this.proId,state: 0})
+        queryAppointTaskSendbackReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
           this.sendbackOperationList = [];
           if (res && res.data.code == 200) {

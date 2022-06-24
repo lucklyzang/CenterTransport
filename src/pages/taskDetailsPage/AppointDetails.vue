@@ -329,7 +329,7 @@ export default {
       that.gotoURL(() => {
         pushHistory();
         if (this.appointTaskMessage.state == 7) {
-          this.changeIsFreshAppointTaskPage(false)
+          this.changeIsFreshAppointTaskPage(true)
         } else {
           this.changeIsFreshAppointTaskPage(true)
         };
@@ -355,7 +355,7 @@ export default {
     // 返回上一页
     backTo () {
       if (this.appointTaskMessage.state == 7) {
-        this.changeIsFreshAppointTaskPage(false)
+        this.changeIsFreshAppointTaskPage(true)
       } else {
         this.changeIsFreshAppointTaskPage(true)
       };
