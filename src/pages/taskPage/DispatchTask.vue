@@ -376,7 +376,7 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import FooterBottom from '@/components/FooterBottom'
-  import {getDispatchTaskMessage, getDispatchTaskComplete, querySendBackDispatchTaskReason, updateDispatchTask, getDispatchTask,userSignOut, sendBackDispatchTask} from '@/api/workerPort.js'
+  import {getDispatchTaskMessage, getDispatchTaskComplete, querySendBackDispatchTaskReason, updateDispatchTask, getDispatchTask,userSignOut, sendBackDispatchTask, queryAppointTaskSendbackReason} from '@/api/workerPort.js'
   import NoData from '@/components/NoData'
   import Loading from '@/components/Loading'
   import { mapGetters, mapMutations } from 'vuex'
@@ -1025,15 +1025,15 @@
         this.taskId = item.id;
         this.toolShow = true;
         this.tempFlagId = this.templateType == 'template_one' ? item.tempFlag : null;
-        querySendBackDispatchTaskReason(this.proId,1)
+        queryAppointTaskSendbackReason({proId:this.proId,state: 0,type: 1})
         .then((res) => {
           this.vehicleOperationList = [];
           if (res && res.data.code == 200) {
             if (res.data.data && res.data.data.length > 0) {
               for (let item of res.data.data) {
                 this.vehicleOperationList.push({
-                  text: item.name,
-                  value: item.code
+                  text: item.undoName,
+                  value: item.id
                 })
               }
             } else {

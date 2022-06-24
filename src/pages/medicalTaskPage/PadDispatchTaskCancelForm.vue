@@ -66,7 +66,7 @@ export default {
         setStore('currentTitle','中央运送')
       })
     };
-    this.getDispatchTaskCancelReason({proId: this.proId, state: 0})
+    this.getDispatchTaskCancelReason({proId: this.proId, state: 0,type: 1})
   },
 
   computed:{
