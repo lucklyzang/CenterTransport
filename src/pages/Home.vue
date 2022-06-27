@@ -1316,9 +1316,9 @@
 
       //模板二时不展示意见反馈
       isShowFeedbackEvent () {
-        // if (this.templateType == 'template_two') {
-        //   this.operateList = this.operateList.filter((item) => {return item.tit != '意见反馈'})
-        // }
+        if (this.templateType == 'template_two') {
+          this.operateList = this.operateList.filter((item) => {return item.tit != '意见反馈'})
+        }
       },
 
       // 并行查询任务数量和排名
