@@ -54,7 +54,7 @@ export default {
   },
 
   mounted () {
-    // 控制设备物理返回按键测试
+    // 控制设备物理返回按键测试type: 1
     if (!IsPC()) {
       let that = this;
       pushHistory();
@@ -66,7 +66,7 @@ export default {
         setStore('currentTitle','中央运送')
       })
     };
-    this.getDispatchTaskCancelReason({proId: this.proId, state: 0,type: 1})
+    this.getDispatchTaskCancelReason({proId: this.proId, state: 0})
   },
 
   computed:{

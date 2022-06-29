@@ -1020,12 +1020,12 @@
         this.queryStateFilterDispatchTask(this.proId, this.workerId, index)
       },
 
-      // 退回接口
+      // 退回接口type: 1
       sendBack (item) {
         this.taskId = item.id;
         this.toolShow = true;
         this.tempFlagId = this.templateType == 'template_one' ? item.tempFlag : null;
-        queryAppointTaskSendbackReason({proId:this.proId,state: 0,type: 1})
+        queryAppointTaskSendbackReason({proId:this.proId,state: 0})
         .then((res) => {
           this.vehicleOperationList = [];
           if (res && res.data.code == 200) {
