@@ -192,7 +192,7 @@ import { base64ImgtoFile } from '@/common/js/utils'
 </script>
 <style lang='less' scoped>
   .signatureBox {
-    width: 96%;
+    width: 100%;
     height: 100%;
     margin:0 auto;
     box-sizing: border-box;

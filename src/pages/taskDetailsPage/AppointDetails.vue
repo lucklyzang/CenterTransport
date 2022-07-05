@@ -40,6 +40,8 @@
     <div class="completet-details">
       <van-dialog v-model="completeTaskShow"  show-cancel-button width="92%"
         title="完成任务"
+        :before-close="beforeCloseEvent"
+        confirm-button-text="提交"
         @confirm="completetTaskSure" @cancel="completetTaskCancel"
       >
         <div class="task-content">
@@ -72,19 +74,15 @@
           </div>
           <div class="signature-box">
             <div class="signature-title">
-              签字<span>*</span>
+              点击签字<span>*</span>
             </div>
-            <div class="signature-content">
-              <ElectronicSignature ref="mychild"></ElectronicSignature>
-            </div>
-            <div class="rewrite-box">
-              <span @click="rewrite">重 签</span>
+            <div class="signature-content" @click="signatureEvent">
             </div>
           </div>
         </div>
       </van-dialog>
     </div>    
-    <div class="content">
+    <div class="content" v-if="detailsBox">
       <div class="basic-message">
           <p class="basic-mesage-state">
             <img :src="stateTransferImg(appointDetailsMessage.state)" alt="">
@@ -234,13 +232,27 @@
         </div>
       </div>
     </div>
-    <div class="circultion-task-btn">
+    <div class="circultion-task-btn" v-if="detailsBox">
       <p class="circultion-task-btn-bottom" v-show="appointTaskMessage.state != 7">
         <span @click="endTask">完成任务</span>
       </p>
       <p class="circultion-task-btn-bottom" v-show="appointTaskMessage.state == 7">
         <span @click="backTo">返回</span>
       </p>
+    </div>
+    <!-- 签字区域 -->
+    <div class="signature-area" v-if="signatureBoxShow">
+      <div class="signature-content-box">
+        <ElectronicSignature ref="mychild"></ElectronicSignature>
+      </div>
+      <div class="btn-area">
+        <div class="sure-box">
+          <span @click="signatureSure">确 定</span>
+        </div>
+        <div class="rewrite-box">
+          <span @click="rewrite">重 置</span>
+        </div>
+      </div>  
     </div>
   </div>
 </template>
@@ -258,6 +270,8 @@ export default {
   data () {
     return {
       leftDropdownDataList: ['退出登录'],
+      detailsBox: true,
+      signatureBoxShow: false,
       leftDownShow: false,
       detailDescribeContent: '',
       reasonValue: 0,
@@ -345,6 +359,7 @@ export default {
   methods: {
     ...mapMutations([
       'changeTitleTxt',
+      'changeOriginalSignature',
       'changeCurrentElectronicSignature',
       'changeIsFreshAppointTaskPage',
       'changeCompleteCheckedItemInfo',
@@ -371,25 +386,33 @@ export default {
 
     //检查详情弹框取消事件
     checkDetailsCancel () {
+    },
 
+    // 弹框关闭前的事件
+    beforeCloseEvent (action, done) {
+      if (action == 'confirm') {
+        if (!this.completeTaskReason) {
+          this.$toast('请选择结束原因');
+          done(false);
+          return
+        };
+        if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
+          this.$toast('签名不能为空');
+          done(false);
+          return
+        };
+        this.completeTaskSign()
+      } else {
+        done()
+      }
     },
 
     //完成任务弹框确定
     completetTaskSure () {
-      this.$refs.mychild.commitSure();
-      if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
-        return
-      };
-      if (!this.completeTaskReason) {
-        this.$toast('请选择结束原因');
-        return
-      };
-      this.completeTaskSign()
     },
 
     //完成任务弹框取消
     completetTaskCancel () {
-
     },
 
     //原因下拉选项选中值改变事件
@@ -425,6 +448,25 @@ export default {
         }).then(() => {
         })
       })
+    },
+
+    // 点击签字事件
+    signatureEvent () {
+      this.changeCurrentElectronicSignature({DtMsg :null});
+      this.signatureBoxShow = true;
+      this.detailsBox = false;
+      this.completeTaskShow = false
+    },
+
+    // 签名确定
+    signatureSure () {
+      this.$refs.mychild.commitSure();
+      if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
+        return
+      };
+      this.detailsBox = true;
+      this.completeTaskShow = true;
+      this.signatureBoxShow = false
     },
 
     // 签名重写
@@ -767,6 +809,7 @@ export default {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
           this.emptyCompleteCheckedItem();
+          this.changeCurrentElectronicSignature({DtMsg :null});
           this.emptyCompleteDestinationDepartment();
           this.emptyCompleteDepartureDepartment();
           this.$router.push({path:'/appointTask'});
@@ -985,9 +1028,9 @@ export default {
         };
         .van-dialog__content {
           .task-content {
+            max-height: 85vh;
             padding: 0 6px 6px 6px;
             box-sizing: border-box;
-            height: 85vh;
             overflow: auto;
             font-size: 14px;
             display: flex;
@@ -1025,7 +1068,7 @@ export default {
                     }
                   };
                   .van-dropdown-item {
-                    top: 120px !important
+                    top: 32vw !important
                   }
                 }
               }
@@ -1047,7 +1090,7 @@ export default {
               }
             };
             .signature-box {
-              flex: 1;
+              height: 100px;
               display: flex;
               flex-direction: column;
               .signature-title {
@@ -1059,30 +1102,8 @@ export default {
                 }
               };
               .signature-content {
-                flex: 1;
-                display: flex;
-                .signature {
-                  width: 100%;
-                  .signatureBox {
-                    width: 100%
-                  }
-                }
-              };
-              .rewrite-box {
-                height: 40px;
-                margin: 10px 0;
-                width: 100%;
-                text-align: center;
-                span {
-                  display: inline-block;
-                  width: 120px;
-                  height: 40px;
-                  line-height: 40px;
-                  background: #fff;
-                  border-radius: 4px;
-                  color: #fff;
-                  background: #2895ea
-                }
+                height: 60px;
+                background: #dedede
               }
             }
           }
@@ -1532,6 +1553,60 @@ export default {
           border-radius: 4px
         }
       }
+    };
+    .signature-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      .signature-content-box {
+        width: 100%;
+        flex: 1;
+        display: flex;
+        .signature {
+          width: 100%;
+          /deep/ .signatureBox {
+            width: 100% !important
+          }
+        }
+      };
+      .btn-area {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-around;
+        align-items: center;
+        width: 80%;
+        margin: 0 auto;
+        .rewrite-box {
+          height: 40px;
+          margin: 10px 0;
+          width: 100px;
+          text-align: center;
+          span {
+            display: inline-block;
+            width: 120px;
+            height: 40px;
+            line-height: 40px;
+            background: #fff;
+            border-radius: 4px;
+            color: black
+          }
+        };
+        .sure-box {
+          height: 40px;
+          margin: 10px 0;
+          width: 100px;
+          text-align: center;
+          span {
+            display: inline-block;
+            width: 120px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 4px;
+            color: #fff;
+            background: #2895ea
+          }
+        }
+      }  
     }
   }
 </style>

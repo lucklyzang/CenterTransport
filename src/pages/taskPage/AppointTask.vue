@@ -714,11 +714,11 @@
         this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, state: -1, isMobile: 1,startDate: '',endDate: ''}, this.stateIndex);
       },
 
-      // 任务取消/type: 2
+      // 任务取消
       cancelTaskEvent (item) {
         this.taskId = item.id;
         this.reasonShow = true;
-        queryDispatchTaskCancelReason({proId:this.proId,state: 0})
+        queryDispatchTaskCancelReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
           this.reasonOperationList = [];
           if (res && res.data.code == 200) {
@@ -744,11 +744,11 @@
         this.reasonIndex = ''
       },
 
-      // 任务退回type: 2
+      // 任务退回
       sendbackTaskEvent (item) {
         this.taskId = item.id;
         this.sendbackShow = true;
-        queryAppointTaskSendbackReason({proId:this.proId,state: 0})
+        queryAppointTaskSendbackReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
           this.sendbackOperationList = [];
           if (res && res.data.code == 200) {
