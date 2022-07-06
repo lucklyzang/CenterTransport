@@ -505,8 +505,8 @@ export default {
         this.checkItemList.push({
           checkDepartment: item.depName,
           checkType: item.checkTypeName,
-          checkRoom: '',
-          signNumber: ''
+          checkRoom: this.appointDetailsMessage.room ? this.appointDetailsMessage.room : '无',
+          signNumber: this.appointDetailsMessage.registerNo ? this.appointDetailsMessage.registerNo : '无'
         })
       };
       this.checkDetailsShow = true

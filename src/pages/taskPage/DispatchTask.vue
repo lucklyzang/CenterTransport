@@ -4,7 +4,7 @@
       <NoData></NoData>
     </div>
     <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor=""></loading>
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
@@ -1217,17 +1217,20 @@
     font-size: 14px;
     .no-data {
       position: absolute;
-      top: 200px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2000;
       left: 0;
       width: 100%;
       text-align: center;
     }
     .loading {
       position: absolute;
-      top: 260px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2000;
       left: 0;
       width: 100%;
-      height: 50px;
       text-align: center;
     };
     .left-dropDown {

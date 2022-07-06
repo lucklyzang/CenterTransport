@@ -4,7 +4,7 @@
       <NoData></NoData>
     </div>
     <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor="#2895ea"></loading>
+      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor=""></loading>
     </div>
     <!-- 工作人员操作区域 v-if="workerShow-->
     <div class="worker-show" v-if="workerShow">
@@ -2745,10 +2745,10 @@
     }
     .loading {
       position: absolute;
-      top: 280px;
-      left: 13%;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0;
       width: 100%;
-      height: 100px;
       text-align: center;
     };
     .play-voive-box {
