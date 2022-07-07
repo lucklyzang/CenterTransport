@@ -360,7 +360,6 @@ export default {
     ...mapMutations([
       'changeTitleTxt',
       'changeOriginalSignature',
-      'changeCurrentElectronicSignature',
       'changeIsFreshAppointTaskPage',
       'changeCompleteCheckedItemInfo',
       'changeCompleteSweepcodeDestinationInfo',
@@ -452,7 +451,7 @@ export default {
 
     // 点击签字事件
     signatureEvent () {
-      this.changeCurrentElectronicSignature({DtMsg :null});
+      this.rewrite();
       this.signatureBoxShow = true;
       this.detailsBox = false;
       this.completeTaskShow = false
@@ -809,7 +808,7 @@ export default {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
           this.emptyCompleteCheckedItem();
-          this.changeCurrentElectronicSignature({DtMsg :null});
+          this.rewrite();
           this.emptyCompleteDestinationDepartment();
           this.emptyCompleteDepartureDepartment();
           this.$router.push({path:'/appointTask'});
