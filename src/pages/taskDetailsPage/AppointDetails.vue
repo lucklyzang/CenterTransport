@@ -452,10 +452,12 @@ export default {
 
     // 点击签字事件
     signatureEvent () {
-      this.changeCurrentElectronicSignature({DtMsg :null});
-      this.signatureBoxShow = true;
-      this.detailsBox = false;
-      this.completeTaskShow = false
+      setTimeout(() => {
+        this.changeCurrentElectronicSignature({DtMsg :null});
+        this.signatureBoxShow = true;
+        this.detailsBox = false;
+        this.completeTaskShow = false
+      },500)
     },
 
     // 签名确定
