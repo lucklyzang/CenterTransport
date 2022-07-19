@@ -13,7 +13,7 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="创建中,请稍候····" textColor="#2895ea"></loading>
     </div>
-    <div class="templateOne" v-if="templateType === 'template_one'">
+    <div class="templateOne" v-if="templateType === 'template_two'">
       <div class="transport-type-title">
         <h3>{{transportantTaskMessage.value}}</h3>
       </div>
@@ -92,7 +92,7 @@
         </div>
       </div>
     </div>
-    <div class="templateTwo" v-else-if="templateType === 'template_two'">
+    <div class="templateTwo" v-else-if="templateType === 'template_one'">
       <div class="transport-type-area">
         <div class="destination-box">
           <div class="destination-title">优先级</div>
@@ -1291,6 +1291,7 @@ export default {
                     top: 50%;
                     left: 0;
                     transform: translateY(-50%);
+                    padding: 0;
                     min-height: 59px !important;
                     border-bottom: 1px solid #f9f9f9;
 
@@ -1349,11 +1350,11 @@ export default {
             .transportBox {
               height: 60px;
               line-height: 60px;
-
+              display: flex;
               > div {
                 &:first-child {
                   float: left;
-                  width: 25%;
+                  width: 90px;
                   font-size: 16px;
                   color: @color-text-left;
                   box-sizing: border-box
@@ -1364,7 +1365,7 @@ export default {
                   height: 60px;
                   float: right;
                   position: relative;
-                  width: 75%;
+                  flex: 1;
                   border-bottom: 1px solid #ececec;
 
                   .show-box {
@@ -1409,16 +1410,19 @@ export default {
                 justify-content: space-between;
                 > div {
                   &:first-child {
-                    flex:0 0 90px;
+                    width: 50%;
+                    margin-right: 6px;
                     height: 60px;
                     font-size: 16px;
                     color: @color-text-left;
                     overflow-x: auto;
                   };
                   &:last-child {
+                    flex: 1;
                     height: 60px;
                     .num-box {
                       align-items: center;
+                      justify-content: space-between;
                       .subtract-box {
                         width: 26px;
                         height: 26px;
