@@ -13,7 +13,7 @@
     <div class="loading">
       <loading :isShow="showLoadingHint" textContent="创建中,请稍候····" textColor="#2895ea"></loading>
     </div>
-    <div class="templateOne" v-if="templateType === 'template_two'">
+    <div class="templateOne" v-if="templateType === 'template_one'">
       <div class="transport-type-title">
         <h3>{{transportantTaskMessage.value}}</h3>
       </div>
@@ -92,7 +92,7 @@
         </div>
       </div>
     </div>
-    <div class="templateTwo" v-else-if="templateType === 'template_one'">
+    <div class="templateTwo" v-else-if="templateType === 'template_two'">
       <div class="transport-type-area">
         <div class="destination-box">
           <div class="destination-title">优先级</div>
