@@ -2149,6 +2149,7 @@
 
       //提取预约任务检查类型
 			extractAppointTaskCheckType (checkItems) {
+        if (checkItems == null) {return []};
 				let AppointTypeList = [];
 				if (checkItems.length > 0) {
 					for (let item of checkItems) {
@@ -2160,6 +2161,7 @@
 
       //提取预约任务目的地
 			extractAppointTaskDist (checkItems) {
+        if (checkItems == null) {return []};
 				let AppointDistList = [];
 				if (checkItems.length > 0) {
 					for (let item of checkItems) {
