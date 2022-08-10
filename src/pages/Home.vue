@@ -1525,13 +1525,13 @@
     scanQRcodeCallback(code) {
       if (code) {
         // 判断校验类型
-        let codeData = code.split('|');
-        if (codeData.length > 0) {
-          this.appointTaskRawPeopleId = codeData[0];
-          this.currentAppointTaskId = codeData[1];
+        if (code.indexOf('|') != -1) {
+          let cutoutIndex = code.indexOf('|');
+          this.appointTaskRawPeopleId = code.substr(0,cutoutIndex);
+          this.currentAppointTaskId = (code.substr(cutoutIndex + 1)).split(',');
           // 转移任务
           this.sureTransferDispatchTask({
-            taskIds: [this.currentAppointTaskId],
+            taskIds: this.currentAppointTaskId,
             afterWorkerId: this.workerId,   //任务接受者ID
             beforeWorkerId: this.appointTaskRawPeopleId //转移者ID
           })
