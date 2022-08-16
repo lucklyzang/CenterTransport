@@ -305,8 +305,7 @@ export default {
       height: 140px;
       margin: 0 auto;
       img {
-        width: 100%;
-        height: 60px
+        width: 100%
       }
    }
   .bg-icon-wrapper {
