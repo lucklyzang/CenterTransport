@@ -2,7 +2,7 @@
   <div id="LoginBox">
     <div class="bg-icon-wrapper" ref="bgIconWrapper">
       <div class="bg-icon">
-        <img :src="logoTopPng" alt="">
+        <img :src="logoPng" alt="">
       </div>
     </div>
     <div class="input-box"  ref="inputBox">
@@ -37,7 +37,9 @@ export default {
       showLoadingHint: false,
       sweepMsg: null,
       proId: '',
+      logoPng: '',
       logoTopPng: require('@/components/images/logo-top.png'),
+      logoTopPcPng: require('@/components/images/logo-top-pc.png'),
       loginBtnPng: require('@/components/images/login-btn.png'),
       temporaryUsername: ''
     }
@@ -62,27 +64,29 @@ export default {
     this.password = getStore('userPassword') ? getStore('userPassword') : '';
     // 控制设备物理返回按键
     if (!IsPC()) {
+      this.logoPng = this.logoTopPng;
       let that = this;
       pushHistory()
       that.gotoURL(() => {
         pushHistory();
         this.$router.push({path: '/'});  //输入要返回的上一级路由地址
       });
-      this.changeRouterFlag(false)
-    };
-
-    // 监控键盘弹起
-    let originalHeight = document.documentElement.clientHeight || document.body.clientHeight;
-    window.onresize = ()=>{
-      let resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
-      if (resizeHeight < originalHeight) {
-        return (()=>{
-          this.$refs['bgIconWrapper'].style.cssText='flex:none;height:220px'
-        })()
-      } else {
-        this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0'
+      this.changeRouterFlag(false);
+      // 监控键盘弹起
+      let originalHeight = document.documentElement.clientHeight || document.body.clientHeight;
+      window.onresize = ()=>{
+        let resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        if (resizeHeight < originalHeight) {
+          return (()=>{
+            this.$refs['bgIconWrapper'].style.cssText='flex:none;height:220px'
+          })()
+        } else {
+          this.$refs['bgIconWrapper'].style.cssText='flex:1;height:0'
+        }
       }
-    };
+    } else {
+      this.logoPng = this.logoTopPcPng
+    }
   },
 
   methods: {
@@ -288,29 +292,11 @@ export default {
 @import "../common/stylus/variable.less";
 @import "../common/stylus/mixin.less";
 @import "../common/stylus/modifyUi.less";
+@import "../common/stylus/media.less";
   #LoginBox {
     .content-wrapper();
-    .input-box {
-      width: 100%;
-      height: 190px;
-      padding-top: 50px;
-      box-sizing: border-box;
-    }
-    .loading-btn {
-      width: 100%;
-      height: 50px;
-    }
-   .btn-box {
-      width: 80%;
-      height: 140px;
-      margin: 0 auto;
-      img {
-        width: 100%
-      }
-   }
   .bg-icon-wrapper {
       flex:1;
-      overflow: auto;
       margin: 0 auto;
       width: 100%;
       .bg-icon {
