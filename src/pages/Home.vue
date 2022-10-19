@@ -1939,7 +1939,7 @@
           feedbackId : this.workerId, // 反馈者ID
           typeFlag: this.opinionTypeIndex + 1, //意见类型
           feedbackName : this.name, // 反馈者名称
-          feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+          feedbackRole : this.userInfo.roleName, //反馈角色，暂定为医务人员的 role 字段
           depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
           depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
           content : this.deedbackContent , //反馈内容，可以为空，点赞默认为空
@@ -1975,7 +1975,7 @@
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
 					feedbackName : this.name, // 反馈者名称
-					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+					feedbackRole : this.userInfo.roleName, //反馈角色，暂定为医务人员的 role 字段
 					depId : this.userInfo.depId  , //反馈科室ID，医务人员depId字段
 					depName:  this.userInfo.depName , //反馈科室名称医务人员depName字段
 					content : this.stateCompleteList[index]['deedbackContent'] , //反馈内容，可以为空，点赞默认为空
@@ -2074,7 +2074,7 @@
 				let data = {
 					feedbackId : this.workerId, // 反馈者ID
 					feedbackName : this.name, // 反馈者名称
-					feedbackRole : '', //反馈角色，暂定为医务人员的 role 字段
+					feedbackRole : this.userInfo.roleName, //反馈角色，暂定为医务人员的 role 字段
 					depId : this.userInfo.depId, //反馈科室ID，医务人员depId字段
           isIssueFeedback: item.isIssueFeedback,
           isShowFeedBack: item.isShowFeedBack,
