@@ -2607,6 +2607,7 @@
                   priority: item.priority,
                   patientNumber: item.hospitalNo,
                   id: item.id,
+                  distDepartments: item.distDepartments,
                   distName: this.extractAppointTaskDist(item.checkItems),
                   deedbackContent: '',
                   isIssueFeedback: false,
