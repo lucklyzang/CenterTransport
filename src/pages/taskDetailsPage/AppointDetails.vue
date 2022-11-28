@@ -770,7 +770,9 @@ export default {
       let completeInfo = {
         proId: this.proId, //项目ID
         workerId: this.workerId, //运送员ID即当前登录人
-        taskId: this.taskId   //任务ID
+        taskId: this.taskId,   //任务ID
+        endType: 1, //1-安卓APP，2-微信小程序
+        endUser: this.userInfo.name //结束用户名
       };
       appointTaskCompleted(completeInfo).then((res) => {
         if (res && res.data.code == 200) {
@@ -805,7 +807,9 @@ export default {
         sign: this.currentElectronicSignature, //签名信息bese64编码
         signPath: '', //签名信息上传OSS后地址
         completeReason: this.completeTaskReason, //任务完成原因
-        operationRemark: this.detailDescribeContent //任务完成备注信息
+        operationRemark: this.detailDescribeContent, //任务完成备注信息
+        endType: 1, //1-安卓APP，2-微信小程序
+        endUser: this.userInfo.name //结束用户名
       };
       appointTaskSignCompleted(completeInfo).then((res) => {
         if (res && res.data.code == 200) {
