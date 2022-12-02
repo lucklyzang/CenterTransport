@@ -659,7 +659,8 @@ export default {
       let checkedItemsInfo = {
         proId: this.proId, //项目ID
         workerId: this.workerId, //运送员ID即当前登录人
-        itemId: item['itemList'][0]['id']   //检查项ID
+        itemId: item['itemList'][0]['id'],   //检查项ID
+        endUser: this.userInfo.name //结束用户名
       };
       checkItemsCompleted(checkedItemsInfo).then((res) => {
         if (res && res.data.code == 200) {
