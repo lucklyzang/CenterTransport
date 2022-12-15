@@ -153,6 +153,7 @@ export default {
       'isCompletePhotoList',
       'currentElectronicSignature',
       'isBack',
+      'userInfo',
       'isSign',
       'isSingleDestination',
       'isCompleteSweepCodeDestinationList',
@@ -654,7 +655,9 @@ export default {
                 proId: this.proId, //当前项目ID
                 id: this.dispatchTaskMessage.id, //当前任务ID
                 tempFlag: this.dispatchTaskMessage.tempFlag,
-                state: this.dispatchTaskState//更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+                state: this.dispatchTaskState, //更新后的状态 {0: '未分配', 1: '未查阅', 2: '未开始', 3: '进行中', 4: '未结束', 5: '已延迟', 6: '已取消', 7: '已完成'
+                endType: 1, //1-安卓APP，2-微信小程序
+                endUser: this.userInfo.name //结束用户名  
               })
             }
           }
