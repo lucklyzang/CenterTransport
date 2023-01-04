@@ -33,6 +33,7 @@ const DispatchDetails = () => import('@/pages/taskDetailsPage/DispatchDetails')
 const AppointDetails = () => import('@/pages/taskDetailsPage/AppointDetails')
 const DispatchTaskPhotoSure = () => import('@/pages/sweepCodePage/DispatchTaskPhotoSure')
 const DispatchTakePhoto = () => import('@/pages/takePhotoPage/DispatchTakePhoto')
+const TaskScheduling = () => import('@/pages/taskSchedulingPage/TaskScheduling')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -190,6 +191,11 @@ let baseRoute  = [
     path: '/dispatchTakePhoto',
     name: 'dispatchTakePhoto',
     component: DispatchTakePhoto
+  },
+  {
+    path: '/taskScheduling',
+    name: 'taskScheduling',
+    component: TaskScheduling
   }
 ];
 let router = new Router({

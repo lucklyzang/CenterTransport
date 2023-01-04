@@ -1094,6 +1094,7 @@
           {tit:'调度任务',imgUrl: dispatchTaskPng},
           {tit:'循环任务',imgUrl: circulationTaskPng},
           {tit:'预约任务',imgUrl: appointTaskPng},
+          {tit:'任务调度',imgUrl: appointTaskPng},
           {tit:'下班签退',imgUrl: offWorkSignOutPng}
         ],
         operateList: [
@@ -1705,6 +1706,10 @@
           })
           .catch(() => {
           })
+        } else if (name === '任务调度') {
+          this.$router.push({path:'/taskScheduling'});
+          this.changeTitleTxt({tit:'中央运送任务管理'});
+          setStore('currentTitle','中央运送任务管理')
         }
       },
 
