@@ -2,8 +2,65 @@
   <div class="page-box" ref="wrapper">
     <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
     <van-overlay :show="overlayShow" z-index="100000" />
+    <!-- 筛选弹窗 -->
+    <div class="screen-box">
+      <van-dialog v-model="screenDialogShow" width="100%" show-cancel-button 
+        confirm-button-color="#2390fe"
+        :before-close="beforeCloseDialogEvent"
+        @confirm="screenDialogSure"
+        @cancel="screenDialogCancel"
+        confirm-button-text="确认"
+        cancel-button-text="重置"
+      >
+        <div class="dialog-top">
+          <div class="select-title">全部筛选</div>
+          <van-icon name="cross" size="24" @click="closeScreenDialogEvent" />
+        </div>
+        <div class="dialog-center">
+          <div class="dialog-center-one-line">
+            <span>起点科室选择</span>
+            <SelectSearch ref="departmentOption" :isNeedSearch="false" :itemData="startPointDepartmentOption" :curData="startPointDepartmentValue" @change="startPointDepartmentOptionChange" />
+            <span @click="startPointDepartmentClear">清除</span>
+          </div>
+          <div class="dialog-center-one-line">
+            <span>运送员</span>
+            <SelectSearch ref="transporterOption" :isNeedSearch="false" :itemData="transporterOption" :curData="transporterValue" @change="transporterOptionChange" />
+            <span  @click="transporterValueClear">清除</span>
+          </div>
+          <div class="priority-box">
+            <div class="priority-title">
+              优先级
+            </div>
+            <van-checkbox-group v-model="priorityResult" direction="horizontal">
+              <van-checkbox name="1" shape="square">正常</van-checkbox>
+              <van-checkbox name="2" shape="square">重要</van-checkbox>
+              <van-checkbox name="3" shape="square">紧急</van-checkbox>
+              <van-checkbox name="4" shape="square">紧急重要</van-checkbox>
+            </van-checkbox-group>
+          </div>
+        </div>
+      </van-dialog>
+    </div>
+    <!-- 分配弹框   -->
+    <div class="allocation-box">
+      <van-dialog v-model="allocationShow" width="80%" show-cancel-button 
+        confirm-button-color="#2390fe"
+        :before-close="beforeCloseAllocationDialogEvent"
+        @confirm="allocationDialogSure"
+        @cancel="allocationDialogCancel"
+        confirm-button-text="确定"
+        cancel-button-text="取消"
+      >
+        <div class="dialog-top">
+          请选择分配至
+        </div>
+        <div class="dialog-center">
+          <SelectSearch :itemData="allocationOption" :curData="allocationValue" @change="allocationOptionChange" />
+        </div>
+      </van-dialog>
+    </div>
     <!-- 右侧菜单 -->
-    <van-popup v-model="rightMenuShow" position="right" :style="{ width: '60%', height: '100%' }">
+    <van-popup v-model="rightMenuShow" position="right" ref="vanPopup" :style="{ width: '60%', height: '100%' }">
         <div class="top-icon">
             <img :src="switchHiddenPng" alt="切换隐藏" @click="switchHiddenEvent">
         </div>
@@ -37,22 +94,135 @@
         <div class="content-top-area">
 			<img :src="statusBackgroundPng" />
 		</div>
-        <div class="content-box" ref="contentBox">
+        <div class="content-box">
             <van-tabs v-model="activeName" type="card" color="#fff" title-inactive-color="#9E9E9A" title-active-color="#174E97" @change="vanTabsChangeEvent">
                 <van-tab title="调度任务" name="dispatchTask">
+                    <div class="task-message-top">
+                      <div class="message-left">
+                        <span>当前任务数:</span>
+                        <span>{{ dispatchTaskList.length }}</span>
+                      </div>
+                      <div class="message-right">
+                        <span @click="createTask">创建任务</span>
+                        <span @click="screenEvent">筛选</span>
+                      </div>
+                    </div>
                     <van-empty description="暂无数据" v-show="dispatchEmptyShow" />
                     <div class="backlog-task-list-box" ref="scrollDispatchTask" v-show="!dispatchEmptyShow">
-                        <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index">
+                        <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterTaskEvent(item,index,'调度任务')">
+                          <div class="list-top">
+                            <div class="list-top-left">
+                              <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
+                              <span>{{ item.dateTime }}</span>
+                              <span v-show="item.personName">{{ item.personName }}</span>
+                            </div>
+                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 2,'underwayStyle':item.state == 3}">
+                              {{ taskStatusTransition(item.state) }}
+                            </div>
+                          </div>
+                          <div class="list-center">
+                            <div class="list-center-left">
+                              <span>{{ item.sampleType }}</span>
+                              <span>{{ item.department }}</span>
+                            </div>
+                            <div class="list-center-right">
+                              <van-icon name="arrow" color="#101010" size="22" />
+                            </div>
+                          </div>
+                          <div class="list-bottom">
+                            <div class="list-bottom-left">
+                              <span>已催单</span>
+                              <span>已延迟</span>
+                            </div>
+                            <div class="list-bottom-right">
+                              <span class="operate-one" @click="allocationEvent(item,index,'调度任务')">分配</span>
+                              <span class="operate-two">编辑</span>
+                              <span class="operate-three">延迟</span>
+                              <span class="operate-four">取消</span>
+                            </div>
+                          </div>
                         </div>
                         <div class="no-more-data" v-show="isShowDispatchTaskNoMoreData">没有更多数据了</div>
                     </div>    
                 </van-tab>
                 <van-tab title="预约任务" name="appointTask">
+                    <div class="task-message-top">
+                      <div class="message-left">
+                        <span>当前任务数:</span>
+                        <span>{{ appointTaskList.length }}</span>
+                      </div>
+                      <div class="message-right">
+                        <span @click="createTask">创建任务</span>
+                        <span @click="screenEvent">筛选</span>
+                      </div>
+                    </div>
                     <van-empty description="暂无数据" v-show="appointTaskEmptyShow" />
                     <div class="backlog-task-list-box" ref="scrollAppointTask" v-show="!appointTaskEmptyShow">
-                        <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index">
+                      <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterTaskEvent(item,index,'预约任务')">
+                          <div class="list-top appoint-list-top">
+                            <div class="list-top-left">
+                              <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
+                              <span>{{ item.department }}</span>
+                            </div>
+                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 2,'underwayStyle':item.state == 3}">
+                              {{ taskStatusTransition(item.state) }}
+                            </div>
+                          </div>
+                          <div class="list-center appoint-list-center">
+                            <div class="center-one-line">
+                              <div class="center-one-line-left">
+                                <span>病人姓名:</span>
+                                <span>沙克撒骄傲</span>
+                              </div>
+                               <div class="center-one-line-right">
+                                <span>床号:</span>
+                                <span>a12</span>
+                              </div>
+                            </div>
+                            <div class="center-one-line">
+                              <div class="center-one-line-left">
+                                <span>检查时间:</span>
+                                <span>2022-11-04 12:35:08</span>
+                              </div>
+                               <div class="center-one-line-right">
+                                <span>开始时间:</span>
+                                <span>2022-11-04 12:35:08</span>
+                              </div>
+                            </div>
+                            <div class="center-one-line">
+                              <div class="center-one-line-left">
+                                <span>已经历时间:</span>
+                                <span>12</span>
+                              </div>
+                               <div class="center-one-line-right">
+                                <span>运送员:</span>
+                                <span>张三</span>
+                              </div>
+                            </div>
+                            <div class="center-one-line">
+                              <div class="center-one-line-left">
+                                <span>检查:</span>
+                                <span>CT、B超</span>
+                              </div>
+                               <div class="center-one-line-right">
+                                <span>运送工具:</span>
+                                <span>轮椅</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="list-bottom appoint-list-bottom">
+                            <div class="list-bottom-left">
+                              <span>已延迟</span>
+                            </div>
+                            <div class="list-bottom-right">
+                              <span class="operate-one">分配</span>
+                              <span class="operate-two">编辑</span>
+                              <span class="operate-three">延迟</span>
+                              <span class="operate-four">取消</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="no-more-data" v-show="isShowAppointTaskNoMoreData">没有更多数据了</div>
+                      <div class="no-more-data" v-show="isShowAppointTaskNoMoreData">没有更多数据了</div>
                     </div>    
                 </van-tab>
             </van-tabs>
@@ -64,13 +234,19 @@
 import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
- import { setStore,removeAllLocalStorage } from '@/common/js/utils'
+import { setStore,removeAllLocalStorage } from '@/common/js/utils'
+import SelectSearch from "@/components/SelectSearch";
 export default {
   name: "TaskScheduling",
+  components: {
+    SelectSearch
+  },
   mixins:[mixinsDeviceReturn],
   data() {
     return {
       loadingShow: false,
+      screenDialogShow: false,
+      allocationShow: false,
       moveInfo: {
         startX: ''
       },
@@ -85,14 +261,133 @@ export default {
       statusBackgroundPng: require("@/common/images/home/status-background.png"),
       switchShowPng: require("@/common/images/home/switch-show.png"),
       switchHiddenPng: require("@/common/images/home/switch-hidden.png"),
+      anxiousSignPng: require("@/common/images/home/anxious-sign.png"),
       taskList: [
         {tit:'调度管理'},
         {tit:'调度任务'},
         {tit:'预约任务'},
         {tit:'循环任务'}
       ],
-      dispatchTaskList: [],
-      appointTaskList: []
+      priorityResult: ['1'],
+      startPointDepartmentValue: null,
+      startPointDepartmentOption: [
+        {
+          value: null,
+          text: '请选择'
+        },
+        {
+          value: 1,
+          text: '体检科'
+        },
+        {
+          value: 2,
+          text: '化验科'
+        }
+      ],
+      transporterValue: null,
+      transporterOption: [
+        {
+          value: null,
+          text: '请选择'
+        },
+        {
+          value: 1,
+          text: '张三'
+        },
+        {
+          value: 2,
+          text: '李四'
+        }
+      ],
+      allocationValue: null,
+      allocationOption:  [
+        {
+          value: null,
+          text: '请选择'
+        },
+        {
+          value: 1,
+          text: '张三'
+        },
+        {
+          value: 2,
+          text: '李四'
+        }
+      ],
+      dispatchTaskList: [
+        {
+          dateTime: '10-25 08:15',
+          urgencyState: 0,
+          personName: '',
+          state: 1,
+          sampleType: '标本',
+          department: '外科',
+          isReminder: 0,
+          isDelay: 0
+        },
+        {
+          dateTime: '10-24 08:15',
+          urgencyState: 1,
+          personName: '张三',
+          state: 2,
+          sampleType: '标本4',
+          department: '擦浑然斌',
+          isReminder: 1,
+          isDelay: 1
+        },
+        {
+          dateTime: '10-28 08:15',
+          urgencyState: 0,
+          state: 3,
+          personName: '李四',
+          sampleType: '血液',
+          department: '外科',
+          isReminder: 0,
+          isDelay: 1
+        }
+      ],
+      appointTaskList: [
+        {
+          dateTime: '10-25 08:15',
+          urgencyState: 0,
+          personName: '',
+          state: 1,
+          sampleType: '标本',
+          department: '外科',
+          isReminder: 0,
+          isDelay: 0
+        },
+        {
+          dateTime: '10-24 08:15',
+          urgencyState: 1,
+          personName: '张三',
+          state: 2,
+          sampleType: '标本4',
+          department: '擦浑然斌',
+          isReminder: 1,
+          isDelay: 1
+        },
+        {
+          dateTime: '10-24 08:15',
+          urgencyState: 1,
+          personName: '张三',
+          state: 2,
+          sampleType: '标本4',
+          department: '擦浑然斌',
+          isReminder: 1,
+          isDelay: 1
+        },
+        {
+          dateTime: '10-28 08:15',
+          urgencyState: 0,
+          state: 3,
+          personName: '李四',
+          sampleType: '血液',
+          department: '外科',
+          isReminder: 0,
+          isDelay: 1
+        }
+      ]
     }
   },
 
@@ -144,8 +439,8 @@ export default {
 
     // 注册滑动事件  
     registerSlideEvent () {
-        this.$refs.contentBox.addEventListener('touchstart',this.touchstartHandle,false);
-        this.$refs.contentBox.addEventListener('touchmove',this.touchmoveHandle,false)
+      this.$refs.wrapper.addEventListener('touchstart',this.touchstartHandle,false);
+      this.$refs.wrapper.addEventListener('touchmove',this.touchmoveHandle,false)
     },
 
     // 滑动开始
@@ -174,14 +469,107 @@ export default {
         }        
     },
 
+    // 分配点击事件
+    allocationEvent (item,index,text) {
+      this.allocationShow = true
+    },
+
+    // 筛选弹框起点科室下拉框值清除事件
+    startPointDepartmentClear () {
+      this.$refs['departmentOption'].clearSelectValue()
+    },
+
+    // 筛选弹框运送员下拉框值清除事件
+    transporterValueClear () {
+      this.$refs['transporterOption'].clearSelectValue()
+    },
+
+    // 筛选弹框起点科室下拉框选值变化事件
+    startPointDepartmentOptionChange (item) {
+      console.log(item)
+    },
+
+    // 筛选弹框运送员下拉框选值变化事件
+    transporterOptionChange (item) {
+
+    },
+
+    // 筛选弹框关闭前事件
+    beforeCloseDialogEvent (action, done) {
+      console.log(action);
+      if (action == 'cancel') {
+        this.$refs['departmentOption'].clearSelectValue();
+        this.$refs['transporterOption'].clearSelectValue();
+        this.priorityResult = []
+        done(false);
+        return
+      } else {
+        done()
+      }
+    },
+
+    // 筛选弹框确定事件
+    screenDialogSure () {
+
+    },
+
+    // 筛选弹框取消事件
+    screenDialogCancel () {
+
+    },
+
+    // 关闭筛选弹框
+    closeScreenDialogEvent () {
+      this.screenDialogShow = false
+    },
+
+    // 分配弹框运送员下拉框选值变化事件
+    allocationOptionChange (item) {
+
+    },
+
+    // 分配弹框关闭前事件
+    beforeCloseAllocationDialogEvent (action, done) {
+      if (action == 'cancel') {
+        done()
+      } else {
+        done()
+      }
+    },
+
+    // 分配弹框确定事件
+    allocationDialogSure () {
+
+    },
+
+    // 分配弹框取消事件
+    allocationDialogCancel () {
+
+    },
+
     // 切换显示右侧菜单事件
     onClickRight () {
-        this.rightMenuShow = true
+      this.rightMenuShow = true
     },
 
     // 切换隐藏右侧菜单事件
     switchHiddenEvent () {
-        this.rightMenuShow = false
+      this.rightMenuShow = false
+    },
+
+    // 进入任务事件
+    enterTaskEvent (item,index,taskType) {
+    
+    },
+
+    // 创建任务
+    createTask () {
+
+    },
+
+    // 筛选事件
+    screenEvent () {
+      this.screenDialogShow = true
     },
 
     // 右侧菜单任务列表点击事件
@@ -251,20 +639,17 @@ export default {
 
 
     // 任务状态转换
-    taskStatusTransition (num) {
-        switch(num) {
+    taskStatusTransition (state) {
+        switch(state) {
             case 1 :
-                return '未开始'
+                return '未分配'
                 break;
             case 2 :
-                return '进行中'
+                return '未查阅'
                 break;
             case 3 :
-                return '待签字'
-                break;
-            case 4 :
-                return '已完成'
-                break;
+                return '进行中'
+                break
         }
     },
 
@@ -354,6 +739,159 @@ export default {
 @import "~@/common/stylus/modifyUi.less";
 .page-box {
   .content-wrapper();
+  .screen-box {
+    /deep/ .van-dialog {
+      top: auto !important;
+      left: 0 !important;
+      border-right: 1px solid #fff;
+      bottom: 0 !important;
+      border-top-left-radius: 20px !important;
+      border-top-right-radius: 20px !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      transform: translate3d(0,0,0) !important;
+      .van-dialog__content {
+        padding: 0 20px 10px 20px !important;
+        box-sizing: border-box;
+        height: 30vh;
+        .dialog-top {
+          height: 60px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .select-title {
+            font-size: 18px;
+            color: #101010;
+            text-align: center
+          };
+          /deep/ .van-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 0
+          }
+        };
+        .dialog-center {
+          .dialog-center-one-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            >span {
+              display: inline-block;
+              &:nth-child(1) {
+                width: 30%;
+                font-size: 14px;
+                color: #101010;
+                font-weight: bold
+              };
+              &:nth-child(3) {
+                color: #fff;
+                font-size: 12px;
+                padding: 4px;
+                box-sizing: border-box;
+                background: #E86F50
+              }
+            };
+            /deep/ .vue-dropdown {
+              width: 55%
+            }
+          };
+          .priority-box {
+            .priority-title {
+              font-size: 14px;
+              color: #101010;
+              font-weight: bold;
+              padding-top: 10px;
+              margin-bottom: 20px
+            }
+          }
+        }
+      };
+      .van-dialog__footer {
+          padding: 20px !important;
+          box-sizing: border-box;
+          justify-content: space-between;
+          ::after {
+            content: none
+          };
+        .van-dialog__cancel {
+            color: #1864FF;
+            box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+            background: #fff;
+            border-radius: 30px;
+            margin-right: 20px
+        };
+        .van-dialog__confirm {
+            background: linear-gradient(to right, #6cd2f8, #2390fe);
+            box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+            color: #fff !important;
+            border-radius: 30px;
+        }
+      };
+      .van-hairline--top::after {
+        border-top-width: 0 !important
+      }
+    }
+  };
+  .allocation-box {
+    /deep/ .van-dialog {
+      border-radius: 10px !important;
+      .van-dialog__content {
+          padding: 0 !important;
+          box-sizing: border-box;
+          height: 20vh;
+          .dialog-top {
+            height: 40px;
+            padding-left: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #fff;
+            background: #3B9DF9;
+            text-align: left
+          };
+          .dialog-center {
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 20px
+          }
+      };
+      .van-dialog__footer {
+          padding: 20px !important;
+          box-sizing: border-box;
+          justify-content: center;
+          ::after {
+            content: none
+          };
+        .van-dialog__cancel {
+            color: #3B9DF9;
+            width: 40%;
+            height: 40px;
+            line-height: 40px;
+            background: #fff;
+            flex: none !important;
+            border-radius: 10px;
+            border: 1px solid #3B9DF9;
+            margin-right: 30px
+        };
+        .van-dialog__confirm {
+            color: #fff !important;
+            height: 40px;
+            line-height: 40px;
+            flex: none !important;
+            width: 40%;
+            background: #3B9DF9;
+            border-radius: 10px;
+        }
+      };
+      .van-hairline--top::after {
+        border-top-width: 0 !important
+      }
+    }  
+  }
   /deep/ .van-popup--right {
     padding: 20px 0 80px 0;
     box-sizing: border-box;
@@ -465,6 +1003,7 @@ export default {
                 height: 0.8rem;
                 padding: 10px 0;
                 .van-tabs__nav {
+                    border: none !important;
                     background: #f7f7f7 !important;
                     .van-tab {
                         border-radius: 4px
@@ -477,6 +1016,8 @@ export default {
                 box-sizing: border-box;
                 background: #f7f7f7;
                 overflow: scroll;
+                height: 0;
+                display: flex;
                 .van-tab__pane {
                     height: 100%;
                     position: relative;
@@ -486,17 +1027,234 @@ export default {
                         left: 50%;
                         transform: translate(-50%,-50%)
                     };
+                    .task-message-top {
+                      width: 100%;
+                      padding: 0 8px;
+                      margin-bottom: 10px;
+                      height: 42px;
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      box-sizing: border-box;
+                      background: #fff;
+                      .message-left {
+                        >span {
+                          font-size: 14px;
+                          &:nth-child(1) {
+                            color: #4B4B4B
+                          };
+                          &:nth-child(2) {
+                            color: #3B9DF9
+                          }
+                        }
+                      };
+                      .message-right {
+                        flex: 1;
+                        display: flex;
+                        justify-content: flex-end;
+                        >span {
+                          display: inline-block;
+                          width: 76px;
+                          height: 26px;
+                          border-radius: 6px;
+                          text-align: center;
+                          line-height: 26px;
+                          font-size: 14px;
+                          &:nth-child(1) {
+                            color: #fff;
+                            background: #3B9DF9;
+                            margin-right: 8px;
+                          };
+                          &:nth-child(2) {
+                            color: #3B9DF9;
+                            background: #fff;
+                            box-sizing: border-box;
+                            border: 1px solid #3B9DF9
+                          }
+                        }
+                      }
+                    };
                     .backlog-task-list-box {
                         overflow: scroll;
-                        height: 100%;
+                        flex: 1;
                         .backlog-task-list {
-                            padding: 0 8px 4px 8px;
+                            padding: 2px 8px 4px 8px;
                             box-sizing: border-box;
-                            height: 100px;
                             border-radius: 6px;
                             background: #fff;
                             box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.23);
                             margin-bottom: 10px;
+                            .list-top {
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              height: 40px;
+                              .list-top-left {
+                                flex: 1;
+                                font-size: 14px;
+                                color: #101010;
+                                display: flex;
+                                align-items: center;
+                                img {
+                                  width: 40px;
+                                  height: 40px;
+                                  margin-right: 2px;
+                                  margin-left: -6px;
+                                };
+                                >span {
+                                  display: inline-block;
+                                  &:nth-child(2) {
+                                    margin-right: 8px
+                                  };
+                                  &:nth-child(3) {
+                                    height: 20px;
+                                    padding-left: 8px;
+                                    line-height: 20px;
+                                    border-left: 1px solid #BBBBBB
+                                  }
+                                }  
+                              };
+                              .list-top-right {
+                                font-size: 16px;
+                                color: #E86F50
+                              };
+                              .noLookupStyle {
+                                color: #E8CB51 !important
+                              };
+                              .underwayStyle {
+                                color: #289E8E !important
+                              }
+                            };
+                            .list-center {
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              margin: 8px 0;
+                              .list-center-left {
+                                flex: 1;
+                                font-size: 14px;
+                                color: #101010;
+                                display: flex;
+                                align-items: center;
+                                >span {
+                                  font-weight: bold;
+                                  display: inline-block;
+                                  &:nth-child(1) {
+                                    margin-right: 8px
+                                  };
+                                  &:nth-child(2) {
+                                    height: 20px;
+                                    padding-left: 8px;
+                                    line-height: 20px;
+                                    border-left: 1px solid #BBBBBB
+                                  }
+                                }  
+                              };
+                              .list-center-right {
+                                
+                              }
+                            };
+                            .list-bottom {
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              height: 40px;
+                              .list-bottom-left {
+                                flex: 1;
+                                font-size: 14px;
+                                color: #101010;
+                                display: flex;
+                                align-items: center;
+                                >span {
+                                  font-weight: bold;
+                                  display: inline-block;
+                                  color: #fff;
+                                  border-radius: 16px;
+                                  font-size: 12px;
+                                  width: 54px;
+                                  height: 25px;
+                                  text-align: center;
+                                  line-height: 25px;
+                                  &:nth-child(1) {
+                                    margin-right: 4px;
+                                    background: #F2A15F
+                                  };
+                                  &:nth-child(2) {
+                                    background: #174E97
+                                  }
+                                }  
+                              };
+                              .list-bottom-right {
+                                >span {
+                                  font-weight: bold;
+                                  display: inline-block;
+                                  color: #fff;
+                                  border-radius: 10px;
+                                  font-size: 14px;
+                                  width: 48px;
+                                  height: 26px;
+                                  text-align: center;
+                                  line-height: 26px;
+                                  box-sizing: border-box;
+                                  border-radius: 2px;
+                                  margin-right: 4px
+                                };
+                                .operate-one {
+                                  color: #F2A15F;
+                                  border: 1px solid #F2A15F
+                                };
+                                .operate-two {
+                                  color: #174E97;
+                                  border: 1px solid #174E97
+                                };
+                                .operate-three {
+                                  color: #254550;
+                                  border: 1px solid #254550
+                                };
+                                .operate-four {
+                                  color: #E86F50;
+                                  border: 1px solid #E86F50;
+                                  margin-right: 0
+                                }                   
+                              }
+                            };
+                            .appoint-list-top {
+                              padding: 4px 0;
+                              .bottom-border-1px(#afafaf);
+                              .list-top-left {
+                                >span {
+                                  font-weight: bold
+                                }
+                              }
+                            };
+                            .appoint-list-center {
+                              margin-top: 0;
+                              flex-direction: column;
+                              .center-one-line {
+                                display: flex;
+                                width: 100%;
+                                line-height: 20px;
+                                margin-top: 10px;
+                                .center-one-line-left {
+                                  flex: 1;
+                                  word-break: break-all;
+                                  margin-right: 6px
+                                };
+                                .center-one-line-right {
+                                  flex: 1;
+                                  word-break: break-all
+                                }
+                              }
+                            };
+                            .appoint-list-bottom {
+                              .list-bottom-left {
+                                >span {
+                                  &:nth-child(1) {
+                                    background: #174E97
+                                  }
+                                }  
+                              }
+                            }   
                         };
                         .no-more-data {
                             font-size: 12px;
