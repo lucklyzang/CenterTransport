@@ -59,6 +59,42 @@
         </div>
       </van-dialog>
     </div>
+    <!-- 延迟原因弹框 -->
+    <div class="allocation-box">
+      <van-dialog v-model="delayReasonShow" width="80%" show-cancel-button 
+        confirm-button-color="#2390fe"
+        :before-close="beforeCloseDelayReasonDialogEvent"
+        @confirm="delayReasonDialogSure"
+        @cancel="delayReasonDialogCancel"
+        confirm-button-text="确定"
+        cancel-button-text="取消"
+      >
+        <div class="dialog-top">
+          请选择延迟原因
+        </div>
+        <div class="dialog-center">
+          <SelectSearch :itemData="delayReasonOption" :isNeedSearch="false" :curData="delayReasonValue" @change="delayReasonOptionChange" />
+        </div>
+      </van-dialog>
+    </div>
+     <!-- 取消原因弹框 -->
+    <div class="allocation-box">
+      <van-dialog v-model="cancelReasonShow" width="80%" show-cancel-button 
+        confirm-button-color="#2390fe"
+        :before-close="beforeCloseCancelReasonDialogEvent"
+        @confirm="cancelReasonDialogSure"
+        @cancel="cancelReasonDialogCancel"
+        confirm-button-text="确定"
+        cancel-button-text="取消"
+      >
+        <div class="dialog-top">
+          请选择取消原因
+        </div>
+        <div class="dialog-center">
+          <SelectSearch :itemData="cancelReasonOption" :isNeedSearch="false" :curData="cancelReasonValue" @change="cancelReasonOptionChange" />
+        </div>
+      </van-dialog>
+    </div>
     <!-- 右侧菜单 -->
     <van-popup v-model="rightMenuShow" position="right" ref="vanPopup" :style="{ width: '60%', height: '100%' }">
         <div class="top-icon">
@@ -103,13 +139,13 @@
                         <span>{{ dispatchTaskList.length }}</span>
                       </div>
                       <div class="message-right">
-                        <span @click="createTask">创建任务</span>
+                        <span @click="createTask('调度任务')">创建任务</span>
                         <span @click="screenEvent">筛选</span>
                       </div>
                     </div>
                     <van-empty description="暂无数据" v-show="dispatchEmptyShow" />
                     <div class="backlog-task-list-box" ref="scrollDispatchTask" v-show="!dispatchEmptyShow">
-                        <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterTaskEvent(item,index,'调度任务')">
+                        <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'调度任务')">
                           <div class="list-top">
                             <div class="list-top-left">
                               <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
@@ -135,10 +171,10 @@
                               <span>已延迟</span>
                             </div>
                             <div class="list-bottom-right">
-                              <span class="operate-one" @click="allocationEvent(item,index,'调度任务')">分配</span>
-                              <span class="operate-two">编辑</span>
-                              <span class="operate-three">延迟</span>
-                              <span class="operate-four">取消</span>
+                              <span class="operate-one" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
+                              <span class="operate-two" @click.stop="editEvent(item,index,'调度任务')">编辑</span>
+                              <span class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
+                              <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'调度任务')">取消</span>
                             </div>
                           </div>
                         </div>
@@ -152,13 +188,13 @@
                         <span>{{ appointTaskList.length }}</span>
                       </div>
                       <div class="message-right">
-                        <span @click="createTask">创建任务</span>
+                        <span @click="createTask('预约任务')">创建任务</span>
                         <span @click="screenEvent">筛选</span>
                       </div>
                     </div>
                     <van-empty description="暂无数据" v-show="appointTaskEmptyShow" />
                     <div class="backlog-task-list-box" ref="scrollAppointTask" v-show="!appointTaskEmptyShow">
-                      <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterTaskEvent(item,index,'预约任务')">
+                      <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'预约任务')">
                           <div class="list-top appoint-list-top">
                             <div class="list-top-left">
                               <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
@@ -215,10 +251,10 @@
                               <span>已延迟</span>
                             </div>
                             <div class="list-bottom-right">
-                              <span class="operate-one">分配</span>
-                              <span class="operate-two">编辑</span>
-                              <span class="operate-three">延迟</span>
-                              <span class="operate-four">取消</span>
+                              <span class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
+                              <span class="operate-two" @click.stop="editEvent(item,index,'预约任务')">编辑</span>
+                              <span class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
+                              <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'预约任务')">取消</span>
                             </div>
                           </div>
                         </div>
@@ -247,6 +283,8 @@ export default {
       loadingShow: false,
       screenDialogShow: false,
       allocationShow: false,
+      delayReasonShow: false,
+      cancelReasonShow: false,
       moveInfo: {
         startX: ''
       },
@@ -273,7 +311,7 @@ export default {
       startPointDepartmentOption: [
         {
           value: null,
-          text: '请选择'
+          text: '请选择起点科室'
         },
         {
           value: 1,
@@ -288,7 +326,7 @@ export default {
       transporterOption: [
         {
           value: null,
-          text: '请选择'
+          text: '请选择运送员'
         },
         {
           value: 1,
@@ -299,11 +337,12 @@ export default {
           text: '李四'
         }
       ],
+      selectAllocation: {},
       allocationValue: null,
       allocationOption:  [
         {
           value: null,
-          text: '请选择'
+          text: '请选择运送员'
         },
         {
           value: 1,
@@ -312,6 +351,38 @@ export default {
         {
           value: 2,
           text: '李四'
+        }
+      ],
+      selectDelayReason: {},
+      delayReasonValue: null,
+      delayReasonOption: [
+        {
+          value: null,
+          text: '请选择延迟原因'
+        },
+        {
+          value: 1,
+          text: '突发因素'
+        },
+        {
+          value: 2,
+          text: '忙不过来'
+        }
+      ],
+      selectCancelReason: {},
+      cancelReasonValue: null,
+      cancelReasonOption: [
+        {
+          value: null,
+          text: '请选择取消原因'
+        },
+        {
+          value: 1,
+          text: '不想干了'
+        },
+        {
+          value: 2,
+          text: '更重要的活'
         }
       ],
       dispatchTaskList: [
@@ -412,8 +483,19 @@ export default {
       if (from.path == '/home') {
         // vm.queryTaskList(1)
       } else {
+        // 回显调度页面点击的任务类型
         if (vm.taskType.taskTypeName) {
-            vm.activeName = vm.taskType.taskTypeName
+          vm.activeName = vm.taskType.taskTypeName
+        };
+        // 根据任务详情页面点击的按钮,显示对应的弹框
+        if (vm.operateBtnClickRecord) {
+          if (vm.operateBtnClickRecord['allocationBtnClick']) {
+            vm.allocationShow = true
+          } else if (vm.operateBtnClickRecord['delayBtnClick']) {
+            vm.delayReasonShow = true
+          } else if (vm.operateBtnClickRecord['cancelBtnClick']) {
+            vm.cancelReasonShow = true
+          }
         };
         // vm.queryTaskList(vm.taskType.taskTypeName ? vm.taskType.taskTypeName == 'dispatchTask' ? 1 : 4 : 1)
       }
@@ -424,14 +506,14 @@ export default {
   watch: {},
 
   computed: {
-    ...mapGetters(["userInfo","taskType"]),
+    ...mapGetters(["userInfo","taskType","operateBtnClickRecord"]),
     proId () {
-        return this.userInfo.extendData.proId
+      return this.userInfo.extendData.proId
     }
   },
 
   methods: {
-    ...mapMutations(["changeTaskType","changeTitleTxt","changeCatchComponent","changeOverDueWay"]),
+    ...mapMutations(["changeTaskType","changeTitleTxt","changeCatchComponent","changeOverDueWay","changeSchedulingTaskDetails","changeOperateBtnClickRecord"]),
 
      onClickLeft() {
       this.$router.push({ path: "/home"})
@@ -469,9 +551,9 @@ export default {
         }        
     },
 
-    // 分配点击事件
-    allocationEvent (item,index,text) {
-      this.allocationShow = true
+    // 筛选事件
+    screenEvent () {
+      this.screenDialogShow = true
     },
 
     // 筛选弹框起点科室下拉框值清除事件
@@ -523,15 +605,25 @@ export default {
       this.screenDialogShow = false
     },
 
+    // 分配点击事件
+    allocationEvent (item,index,text) {
+      this.allocationShow = true
+    },
+
     // 分配弹框运送员下拉框选值变化事件
     allocationOptionChange (item) {
-
+      this.selectAllocation = item
     },
 
     // 分配弹框关闭前事件
     beforeCloseAllocationDialogEvent (action, done) {
-      if (action == 'cancel') {
-        done()
+      if (action == 'confirm') {
+        if (this.selectAllocation.value == null) {
+          this.$toast('请选择运送员');
+          done(false)
+        } else {
+          done()
+        }
       } else {
         done()
       }
@@ -547,6 +639,93 @@ export default {
 
     },
 
+    // 编辑点击事件
+    editEvent (item,index,text) {
+      let temporaryTaskType = this.taskType;
+      if (text == '调度任务') {
+        temporaryTaskType['taskTypeName'] = 'dispatchTask';
+        this.$router.push({path: '/editDispathTask'})
+      } else if (text == '预约任务') {
+        temporaryTaskType['taskTypeName'] = 'appointTask';
+        this.$router.push({path: '/editAppintTask'})
+      };
+      // 保存调度页面任务详情
+      this.changeSchedulingTaskDetails(item);
+      // 保存调度页面任务点击的类型
+      this.changeTaskType(temporaryTaskType)
+      this.resetBtnClickStatus()
+    },
+
+    // 延迟点击事件
+    delayReasonEvent(item,index,text) {
+      this.delayReasonShow = true
+    },
+
+    // 延迟原因弹框下拉框选值变化事件
+    delayReasonOptionChange (item) {
+      this.selectDelayReason = item
+    },
+
+    // 延迟原因弹框关闭前事件
+    beforeCloseDelayReasonDialogEvent (action, done) {
+      if (action == 'confirm') {
+        if (this.selectDelayReason.value == null) {
+          this.$toast('请选择延迟原因');
+          done(false)
+        } else {
+          done()
+        }
+      } else {
+        done()
+      }
+    },
+
+    // 延迟原因弹框确定事件
+    delayReasonDialogSure () {
+
+    },
+
+    // 延迟原因弹框取消事件
+    delayReasonDialogCancel () {
+
+    },
+
+    // 取消点击事件
+    cancelReasonEvent(item,index,text) {
+      this.cancelReasonShow = true;
+      this.selectCancelReason = item
+    },
+
+    // 取消原因弹框下拉框选值变化事件
+    cancelReasonOptionChange (item) {
+      this.selectCancelReason = item
+    },
+
+    // 取消原因弹框关闭前事件
+    beforeCloseCancelReasonDialogEvent (action, done) {
+      if (action == 'confirm') {
+        if (this.selectCancelReason.value == null) {
+          this.$toast('请选择取消原因');
+          done(false)
+        } else {
+          done()
+        }
+      } else {
+        done()
+      }
+    },
+
+    // 取消原因弹框确定事件
+    cancelReasonDialogSure () {
+
+    },
+
+    // 取消原因弹框取消事件
+    cancelReasonDialogCancel () {
+
+    },
+
+
     // 切换显示右侧菜单事件
     onClickRight () {
       this.rightMenuShow = true
@@ -557,40 +736,66 @@ export default {
       this.rightMenuShow = false
     },
 
-    // 进入任务事件
-    enterTaskEvent (item,index,taskType) {
-    
+    // 进入任务详情事件
+    enterDispathTaskEvent (item,index,text) {
+      let temporaryTaskType = this.taskType;
+      if (text == '调度任务') {
+        temporaryTaskType['taskTypeName'] = 'dispatchTask';
+        this.$router.push({path:'/schedulingDispathTaskDetails'})
+      } else if (text == '预约任务') {
+        temporaryTaskType['taskTypeName'] = 'appointTask';
+        this.$router.push({path:'/schedulingAppointTaskDetails'})
+      };
+      // 保存调度页面任务详情
+      this.changeSchedulingTaskDetails(item);
+      // 保存调度页面任务点击的类型
+      this.changeTaskType(temporaryTaskType);
+      this.resetBtnClickStatus()
+    },
+
+    // 重置按钮点击状态
+    resetBtnClickStatus () {
+      let temporaryOperateBtnClickRecord = this.operateBtnClickRecord;
+      temporaryOperateBtnClickRecord['delayBtnClick'] = false;
+      temporaryOperateBtnClickRecord['allocationBtnClick'] = false;
+      temporaryOperateBtnClickRecord['cancelBtnClick'] = false;
+      this.changeOperateBtnClickRecord(temporaryOperateBtnClickRecord)
     },
 
     // 创建任务
-    createTask () {
-
-    },
-
-    // 筛选事件
-    screenEvent () {
-      this.screenDialogShow = true
+    createTask (text) {
+      let temporaryTaskType = this.taskType;
+      if (text == '调度任务') {
+        temporaryTaskType['taskTypeName'] = 'dispatchTask'
+        this.$router.push({path: '/createDispathTask'})
+      } else if (text == '预约任务') {
+        temporaryTaskType['taskTypeName'] = 'appointTask';
+        this.$router.push({path: '/createAppointTask'})
+      };
+      // 保存调度页面任务点击的类型
+      this.changeTaskType(temporaryTaskType)
+      this.resetBtnClickStatus()
     },
 
     // 右侧菜单任务列表点击事件
     taskRouterSkip (name, index) {
         this.functionListIndex = index;
         if (name === '调度任务') {
+          this.resetBtnClickStatus();
           this.$router.push({path:'/dispatchTask'});
           this.changeTitleTxt({tit:'调度任务'});
           setStore('currentTitle','调度任务')
         } else if (name === '循环任务') {
+          this.resetBtnClickStatus();
           this.$router.push({path:'/circulationTask'})
           this.changeTitleTxt({tit:'循环任务'});
           setStore('currentTitle','循环任务')
         } else if (name === '预约任务') {
+          this.resetBtnClickStatus();
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
-        } else if (name === '任务调度') {
-          this.$router.push({path:'/taskScheduling'});
-          this.changeTitleTxt({tit:'中央运送任务管理'});
-          setStore('currentTitle','中央运送任务管理')
+        } else if (name === '调度管理') {
         }
       },
 

@@ -46,16 +46,19 @@
   watch: {
     curData: {
         handler: function(newVal, oldVal) {
-		   console.log('监听到了');
+		   console.log('监听到了',newVal);
            this.current = this.datalist.filter((item) => { return item.value == newVal})[0]['text'];
         },
-        deep: true
+        deep: true,
+		immediate: true
     },
 	itemData: {
         handler: function(newVal, oldVal) {
+			console.log('监听到了啊');
            this.datalist = newVal
         },
-        deep: true
+        deep: true,
+		immediate: true
     }
   },
   
@@ -93,8 +96,8 @@
 
 		//供父组件调用的清除选择框值的方法
 		clearSelectValue () {
-			this.current = '请选择';
-			this.$emit('change',{text:'请选择',value: null})
+			this.current = this.datalist[0]['text'];
+			this.$emit('change',{text:this.datalist[0]['text'],value: null})
 		}
 	}
 }

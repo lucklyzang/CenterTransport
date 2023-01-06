@@ -34,6 +34,12 @@ const AppointDetails = () => import('@/pages/taskDetailsPage/AppointDetails')
 const DispatchTaskPhotoSure = () => import('@/pages/sweepCodePage/DispatchTaskPhotoSure')
 const DispatchTakePhoto = () => import('@/pages/takePhotoPage/DispatchTakePhoto')
 const TaskScheduling = () => import('@/pages/taskSchedulingPage/TaskScheduling')
+const SchedulingDispathTaskDetails = () => import('@/pages/taskSchedulingPage/SchedulingDispathTaskDetails')
+const SchedulingAppointTaskDetails = () => import('@/pages/taskSchedulingPage/SchedulingAppointTaskDetails')
+const CreateDispathTask = () => import('@/pages/taskSchedulingPage/CreateDispathTask')
+const CreateAppointTask = () => import('@/pages/taskSchedulingPage/CreateAppointTask')
+const EditDispathTask = () => import('@/pages/taskSchedulingPage/EditDispathTask')
+const EditAppointTask = () => import('@/pages/taskSchedulingPage/EditAppointTask')
 Vue.use(Router)
 
 let baseRoute  = [
@@ -196,6 +202,36 @@ let baseRoute  = [
     path: '/taskScheduling',
     name: 'taskScheduling',
     component: TaskScheduling
+  },
+  {
+    path: '/schedulingDispathTaskDetails',
+    name: 'schedulingDispathTaskDetails',
+    component: SchedulingDispathTaskDetails
+  },
+  {
+    path: '/schedulingAppointTaskDetails',
+    name: 'schedulingAppointTaskDetails',
+    component: SchedulingAppointTaskDetails
+  },
+  {
+    path: '/createDispathTask',
+    name: 'createDispathTask',
+    component: CreateDispathTask
+  },
+  {
+    path: '/createAppointTask',
+    name: 'createAppointTask',
+    component: CreateAppointTask
+  },
+  {
+    path: '/editDispathTask',
+    name: 'editDispathTask',
+    component: EditDispathTask
+  },
+  {
+    path: '/editAppintTask',
+    name: 'editAppintTask',
+    component: EditAppointTask
   }
 ];
 let router = new Router({
