@@ -16,6 +16,30 @@
             下班签退
         </div>
     </van-popup>
+    <!-- 运送大类 -->
+    <div class="transport-rice-box" v-if="showTransportRice">
+      <ScrollSelection :columns="transportRiceList" title="运送大类" @sure="transportRiceSureEvent" @cancel="transportRiceCancelEvent" @close="transportRiceCloseEvent" :isShowSearch="true" />
+    </div>
+    <!-- 起点科室 -->
+    <div class="transport-rice-box" v-if="showStartDepartment">
+      <ScrollSelection :columns="startDepartmentList" title="起点科室" @sure="startDepartmentSureEvent" @cancel="startDepartmentCancelEvent" @close="startDepartmentCloseEvent" />
+    </div>
+    <!-- 终点科室 -->
+    <div class="transport-rice-box" v-if="showEndDepartment">
+      <ScrollSelection :columns="endDepartmentList" title="终点科室" @sure="endDepartmentSureEvent" @cancel="endDepartmentCancelEvent" @close="endDepartmentCloseEvent" />
+    </div>
+    <!-- 运送员 -->
+    <div class="transport-rice-box" v-if="showTransporter">
+      <ScrollSelection :columns="transporterList" title="运送员" @sure="transporterSureEvent" @cancel="transporterCancelEvent" @close="transporterCloseEvent" />
+    </div>
+    <!-- 转运工具 -->
+    <div class="transport-rice-box" v-if="showTransportTool">
+      <ScrollSelection :columns="transportToolList" title="转运工具" @sure="transportToolSureEvent" @cancel="transportToolCancelEvent" @close="transportToolCloseEvent" />
+    </div>
+     <!-- 性别 -->
+    <div class="transport-rice-box" v-if="showGender">
+      <ScrollSelection :columns="genderList" title="性别" @sure="genderSureEvent" @cancel="genderCancelEvent" @close="genderCloseEvent" />
+    </div>
     <div class="nav">
        <van-nav-bar
         title="创建调度任务"
@@ -37,12 +61,141 @@
         <div class="content-top-area">
 			<img :src="statusBackgroundPng" />
 		</div>
-        <div class="content-box">
-            <div class="message-box">
+      <div class="content-box">
+        <div class="message-box">
+          <div class="message-one">
+            <div class="message-one-left">
+              优先级
             </div>
-            <div class="btn-box">
+            <div class="message-one-right">
+              <van-radio-group v-model="priorityRadioValue" direction="horizontal">
+                <van-radio name="1" checked-color="#289E8E">正常</van-radio>
+                <van-radio name="2" checked-color="#E8CB51">紧急</van-radio>
+                <van-radio name="3" checked-color="#F2A15F">重要</van-radio>
+                <van-radio name="4" checked-color="#E86F50">紧急重要</van-radio>
+              </van-radio-group>
             </div>
+          </div>
+          <div class="select-box">
+            <div class="select-box-left">
+              <span>*</span>
+              <span>运送大类</span>
+            </div>
+            <div class="select-box-right" @click="showTransportRice = true">
+              <span>{{ currentTransportRice }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="transport-type">
+            <div class="transport-type-left">
+              <span>运送类型</span>
+            </div>
+            <div class="transport-type-right">
+              <span class="transport-type-list" :class="{'transportTypeListStyle': transportTypeIndex == index}" 
+                v-for="(item,index) in transportTypeList"
+                @click="transportTypeEvent(item,index)" 
+                :key="index"
+                >
+                {{ item }}
+              </span>
+            </div>
+          </div>
+          <div class="select-box">
+            <div class="select-box-left">
+              <span>*</span>
+              <span>起点科室</span>
+            </div>
+            <div class="select-box-right" @click="showStartDepartment = true">
+              <span>{{ currentStartDepartment }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>终点科室</span>
+            </div>
+            <div class="select-box-right" @click="showEndDepartment = true">
+              <span>{{ currentEndDepartment }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>运送员</span>
+            </div>
+            <div class="select-box-right" @click="showTransporter = true">
+              <span>{{ currentTransporter }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>转运工具</span>
+            </div>
+            <div class="select-box-right" @click="showTransportTool = true">
+              <span>{{ currentTransportTool }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="patient-message-box">
+            <div class="patient-message-top">
+              <div class="patient-message-top-left">
+                <van-field v-model="patientNumberValue" label="床号" placeholder="请输入" />
+              </div>
+              <div class="patient-message-top-right">
+                <van-field v-model="patientNameValue" label="姓名" placeholder="请输入" />
+              </div>
+            </div>
+            <div class="patient-message-bottom">
+              <div class="patient-message-bottom-left">
+                <van-field v-model="admissionNumberValue" label="住院号" placeholder="请输入" />
+              </div>
+              <div class="patient-message-bottom-right">
+                <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
+              </div>
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>性别</span>
+            </div>
+            <div class="select-box-right" @click="showGender = true">
+              <span>{{ currentGender }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="message-one is-back">
+            <div class="message-one-left">
+              运送员是否返回
+            </div>
+            <div class="message-one-right">
+              <van-radio-group v-model="isBackRadioValue" direction="horizontal" checked-color="#3B9DF9">
+                <van-radio name="1">否</van-radio>
+                <van-radio name="2">是</van-radio>
+              </van-radio-group>
+            </div>
+          </div>
+          <div class="task-describe transport-type">
+            <div class="transport-type-left">
+              <span>任务描述</span>
+            </div>
+            <div class="transport-type-right">
+              <van-field
+                v-model="taskDescribe"
+                rows="3"
+                autosize
+                type="textarea"
+                placeholder="请输入任务描述"
+              />
+            </div>
+          </div>
         </div>
+        <div class="btn-box">
+          <span class="operate-one" @click="sureEvent">确认</span>
+          <span class="operate-two" @click="temporaryStorageEvent">暂存</span>
+          <span class="operate-three" @click="cancelEvent">取消</span>
+        </div>
+      </div>
     </div> 
   </div>
 </template>
@@ -51,19 +204,153 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
-import SelectSearch from "@/components/SelectSearch";
+import ScrollSelection from "@/components/ScrollSelection";
 export default {
   name: "CreateDispathTask",
   components: {
-    SelectSearch
+    ScrollSelection
   },
   mixins:[mixinsDeviceReturn],
   data() {
     return {
       loadingShow: false,
+      taskDescribe: '',
+      patientNumberValue: '',
+      patientNameValue: '',
+      admissionNumberValue: '',
+      transportNumberValue: '',
+      showStartDepartment: false,
+      currentStartDepartment: '请选择',
+      startDepartmentList: [
+        { 
+          id: '0',
+          text: '体检科'
+        },
+        { 
+          id: '1',
+          text: '妇科'
+        },
+        { 
+          id: '2',
+          text: '儿科'
+        },
+        { 
+          id: '3',
+          text: '内科'
+        },
+        { 
+          id: '4',
+          text: '外科'
+        }
+      ],
+      showEndDepartment: false,
+      currentEndDepartment: '请选择',
+      endDepartmentList: [
+        { 
+          id: '0',
+          text: '体检科'
+        },
+        { 
+          id: '1',
+          text: '妇科'
+        },
+        { 
+          id: '2',
+          text: '儿科'
+        },
+        { 
+          id: '3',
+          text: '内科'
+        },
+        { 
+          id: '4',
+          text: '外科'
+        }
+      ],
+      showTransporter: false,
+      currentTransporter: '请选择',
+      transporterList: [
+        { 
+          id: '0',
+          text: '站萨'
+        },
+        { 
+          id: '1',
+          text: '好像就这些'
+        },
+        { 
+          id: '2',
+          text: '导航是'
+        },
+        { 
+          id: '3',
+          text: '精彩时刻'
+        },
+        { 
+          id: '4',
+          text: '到杉德'
+        }
+      ],
+      showTransportTool: false,
+      currentTransportTool: '请选择',
+      transportToolList: [
+        { 
+          id: '0',
+          text: '小推车'
+        },
+        { 
+          id: '1',
+          text: '轮椅'
+        },
+        { 
+          id: '2',
+          text: '平推车'
+        }
+      ],
+      showGender: false,
+      currentGender: '请选择',
+      genderList: [
+        { 
+          id: '0',
+          text: '女'
+        },
+        { 
+          id: '1',
+          text: '男'
+        }
+      ],
+      showTransportRice: false,
+      currentTransportRice: '请选择',
+      transportRiceList: [
+        { 
+          id: '0',
+          text: '法国'
+        },
+        { 
+          id: '1',
+          text: '英国'
+        },
+        { 
+          id: '2',
+          text: '德国'
+        },
+        { 
+          id: '3',
+          text: '中国'
+        },
+        { 
+          id: '4',
+          text: '中踢人'
+        }
+      ],
+      transportTypeIndex: null,
+      currentTransportType: '',
+      transportTypeList: ['核酸标本','领是资管','领培养被','急查标本','标本'],
       moveInfo: {
         startX: ''
       },
+      priorityRadioValue: '1',
+      isBackRadioValue: '1',
       functionListIndex: 0,
       overlayShow: false,
       rightMenuShow: false,
@@ -124,14 +411,140 @@ export default {
         if (e.targetTouches.length == 1) {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
-        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
-        if (moveX < 0) {
+        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏,滑动距离大于10才判定为滑动)
+        if (moveX < -10) {
             this.rightMenuShow = true
         } else {
             this.rightMenuShow = false
         };
         e.preventDefault();
         }        
+    },
+
+    // 运送大类下拉选择框确认事件
+    transportRiceSureEvent (val) {
+      if (val) {
+        this.currentTransportRice = val
+      } else {
+        this.currentTransportRice = '请选择'
+      };
+      this.showTransportRice = false
+    },
+
+    // 运送大类下拉选择框取消事件
+    transportRiceCancelEvent () {
+      this.showTransportRice = false
+    },
+
+    // 运送大类下拉选择框关闭事件
+    transportRiceCloseEvent () {
+      this.showTransportRice = false
+    },
+
+    // 起点科室下拉选择框确认事件
+    startDepartmentSureEvent (val) {
+      if (val) {
+        this.currentStartDepartment =  val
+      } else {
+        this.currentStartDepartment = '请选择'
+      };
+      this.showStartDepartment = false
+    },
+
+    // 起点科室下拉选择框取消事件
+    startDepartmentCancelEvent () {
+      this.showStartDepartment = false
+    },
+
+    // 起点科室下拉选择框关闭事件
+    startDepartmentCloseEvent () {
+      this.showStartDepartment = false
+    },
+
+    // 终点科室下拉选择框确认事件
+    endDepartmentSureEvent (val) {
+      if (val) {
+        this.currentEndDepartment =  val
+      } else {
+        this.currentEndDepartment = '请选择'
+      };
+      this.showEndDepartment = false
+    },
+
+    // 终点科室下拉选择框取消事件
+    endDepartmentCancelEvent () {
+      this.showEndDepartment = false
+    },
+
+    // 终点科室下拉选择框关闭事件
+    endDepartmentCloseEvent () {
+      this.showEndDepartment = false
+    },
+
+    // 运送员下拉选择框确认事件
+    transporterSureEvent (val) {
+      if (val) {
+        this.currentTransporter =  val
+      } else {
+        this.currentTransporter = '请选择'
+      };
+      this.showTransporter = false
+    },
+
+    // 运送员下拉选择框取消事件
+    transporterCancelEvent () {
+      this.showTransporter = false
+    },
+
+    // 运送员下拉选择框关闭事件
+    transporterCloseEvent () {
+      this.showTransporter = false
+    },
+
+    // 转运工具下拉选择框确认事件
+    transportToolSureEvent (val) {
+      if (val) {
+        this.currentTransportTool =  val
+      } else {
+        this.currentTransportTool = '请选择'
+      };
+      this.showTransportTool = false
+    },
+
+    // 转运工具下拉选择框取消事件
+    transportToolCancelEvent () {
+      this.showTransportTool = false
+    },
+
+    // 转运工具下拉选择框关闭事件
+    transportToolCloseEvent () {
+      this.showTransportTool = false
+    },
+
+    // 性别下拉选择框确认事件
+    genderSureEvent (val) {
+      if (val) {
+        this.currentGender =  val
+      } else {
+        this.currentGender = '请选择'
+      };
+      this.showGender = false
+    },
+
+    // 性别下拉选择框取消事件
+    genderCancelEvent () {
+      this.showGender = false
+    },
+
+    // 性别下拉选择框关闭事件
+    genderCloseEvent () {
+      this.showGender = false
+    },
+
+    // 运送类型点击事件
+    transportTypeEvent (item,index) {
+      this.transportTypeIndex = index;
+      this.currentTransportType = item
     },
 
     // 切换显示右侧菜单事件
@@ -207,7 +620,16 @@ export default {
           }).then(() => {
           });
         })
-      }
+      },
+
+    // 确认事件
+    sureEvent () {},
+
+    // 暂存事件
+    temporaryStorageEvent () {},
+
+    // 取消事件
+    cancelEvent () {}
   }
 };
 </script>
@@ -321,15 +743,293 @@ export default {
         background: #f7f7f7;
         z-index: 10;
         .message-box {
-            flex: 1;
+          flex: 1;
+          width: 100%;
+          overflow: auto;
+          .message-one {
             width: 100%;
-            overflow: auto;
-        };
-        .btn-box {
-            height: 50px;
+            padding: 10px 6px 10px 16px;
+            box-sizing: border-box;
+            background: #fff;
             display: flex;
             align-items: center;
-            justify-content: center
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .message-one-left {
+              width: 20%;
+              color: #101010
+            };
+            .message-one-right {
+              flex: 1;
+              /deep/ .van-radio-group {
+                justify-content: space-between;
+                .van-radio--horizontal {
+                  margin-right: 0 !important;
+                  &:nth-child(1) {
+                    .van-radio__label {
+                      color: #289E8E !important
+                    }
+                  };
+                  &:nth-child(2) {
+                    .van-radio__label {
+                      color: #E8CB51 !important
+                    }
+                  };
+                  &:nth-child(3) {
+                    .van-radio__label {
+                      color: #F2A15F !important
+                    }
+                  };
+                  &:nth-child(4) {
+                    .van-radio__label {
+                      color: #E86F50 !important
+                    }
+                  }
+                }
+              }
+            }
+          };
+          .select-box {
+            width: 100%;
+            padding: 8px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .select-box-left {
+              padding-right: 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: red
+                };
+                &:nth-child(2) {
+                  color: #9E9E9A;
+                  padding-right: 6px;
+                  box-sizing: border-box
+                };
+              }
+            };
+            .select-box-right {
+              flex: 1;
+              justify-content: flex-end;
+              align-items: center;
+              display: flex;
+              width: 0;
+              >span {
+                color: #101010;
+                text-align: right;
+                flex: 1;
+                .no-wrap()
+              }
+            }
+          };
+          .end-select-box {
+            .select-box-left {
+              padding: 0 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: #9E9E9A;
+                  padding-right: 6px;
+                  box-sizing: border-box
+                };
+              }
+            };
+          };
+          .transport-type {
+            width: 100%;
+            padding: 10px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .transport-type-left {
+              padding: 0 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: #9E9E9A
+                }
+              }
+            };
+            .transport-type-right {
+              flex: 1;
+              width: 0;
+              display: flex;
+              flex-wrap: wrap;
+              .transport-type-list {
+                display: inline-block;
+                font-size: 13px;
+                color: #9E9E9A;
+                background: #F9F9F9;
+                height: 23px;
+                line-height: 23px;
+                text-align: center;
+                border-radius: 10px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                padding: 0 10px;
+                box-sizing: border-box
+              };
+              .transportTypeListStyle {
+                color: #fff !important;
+                background: #3B9DF9 !important
+              }
+            }
+          };
+          .patient-message-box {
+            width: 100%;
+            padding: 10px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            font-size: 14px;
+            margin-top: 6px;
+            .patient-message-top {
+              display: flex;
+              .patient-message-top-left {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              };
+              .patient-message-top-right {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              }
+            };
+            .patient-message-bottom {
+              display: flex;
+              .patient-message-bottom-left {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              };
+              .patient-message-bottom-right {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              }
+            }
+          };
+          .is-back {
+            .message-one-left {
+              width: 30% !important;
+              color: #9E9E9A !important
+            };
+            .message-one-right {
+              /deep/ .van-radio-group {
+                justify-content: flex-end !important;
+                .van-radio--horizontal {
+                  margin-right: 10px !important;
+                  &:last-child {
+                    margin-right: 0 !important
+                  }; 
+                  &:nth-child(1) {
+                    .van-radio__label {
+                      color: #101010 !important
+                    }
+                  };
+                  &:nth-child(2) {
+                    .van-radio__label {
+                      color: #101010 !important
+                    }
+                  }
+                }
+              }
+            }
+          };
+          .transport-type {
+            .transport-type-right {
+              /deep/ .van-cell {
+                padding: 4px 6px !important;
+                background: #F9F9F9
+              }
+            }
+          }
+        };
+        .btn-box {
+          width: 90%;
+          margin: 0 auto;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          >span {
+            width: 40%;
+            display: inline-block;
+            height: 45px;
+            font-size: 18px;
+            line-height: 45px;
+            background: #fff;
+            text-align: center;
+            border-radius: 30px;
+            &:nth-child(1) {
+              color: #fff;
+              background: linear-gradient(to right, #6cd2f8, #2390fe);
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+              margin-right: 30px
+            };
+            &:nth-child(2) {
+              color: #1864FF;
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+              margin-right: 30px
+            };
+            &:last-child {
+              color: #1864FF;
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1)
+            }
+          }
         }
     }
   }
