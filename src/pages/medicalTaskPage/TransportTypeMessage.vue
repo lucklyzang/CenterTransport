@@ -265,8 +265,8 @@
           <div>运送类型</div>
           <div v-if="xflSelectShow">
             <Vselect :list="patienModalMessage.sampleList" disabled :clearable="false" :showItemNum="5" :isCanInput="true" :showList="transportParentControlListShow"
-                        :style_Container="'height: 50px; font-size: 16px;'" :initValue="patienModalMessage.sampleValue" @change="transportParentChange"
-                        @input="transportParentInputEvent" @visible-change="transportParentVisibleChange">
+              :style_Container="'height: 50px; font-size: 16px;'" :initValue="patienModalMessage.sampleValue" @change="transportParentChange"
+              @input="transportParentInputEvent" @visible-change="transportParentVisibleChange">
             </Vselect>
           </div>
         </div>
@@ -599,32 +599,32 @@ export default {
       },
 
     // 根据运送类型大类查询运送类型小类
-      querytransportChildByTransportParent (index,id, flag) {
-        queryTransportType({
-          proId: this.proId,
-          state: 0,
-          parentId: id
-        }).then((res) => {
-          if (res && res.data.code == 200) {
-            this.patienModalMessage['transportList'] = [];
-            for(let item of res.data.data) {
-              this.patienModalMessage['transportList'].push({
-                text: item.typeName,
-                value: item.id,
-                checked: false,
-                typerNumber: 0
-              })
-            };
-            console.log('飒飒',this.patienModalMessage);
-          }
-        })
-        .catch((err) => {
-          this.$dialog.alert({
-            message: `${err.message}`,
-            closeOnPopstate: true
-          }).then(() => {})
-        })
-      },
+    querytransportChildByTransportParent (index,id, flag) {
+      queryTransportType({
+        proId: this.proId,
+        state: 0,
+        parentId: id
+      }).then((res) => {
+        if (res && res.data.code == 200) {
+          this.patienModalMessage['transportList'] = [];
+          for(let item of res.data.data) {
+            this.patienModalMessage['transportList'].push({
+              text: item.typeName,
+              value: item.id,
+              checked: false,
+              typerNumber: 0
+            })
+          };
+          console.log('飒飒',this.patienModalMessage);
+        }
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {})
+      })
+    },
 
       // 查询运送类型小类
       getTransPorttype (data) {

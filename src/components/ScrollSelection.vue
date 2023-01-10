@@ -4,7 +4,7 @@
       v-if="show"
       class="picker"
     >
-      <section class="picker-main" ref="pickerMain">
+      <section class="picker-main" ref="pickerMain" :class="{'picker-box-activate': show,'picker-box-inertia': !show}">
         <h3 ref="chooseBox">
           {{ title }}
           <van-icon name="cross" size="25" @click="close" />
@@ -184,7 +184,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .picker {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0,0,0,.7);
   max-height: 100vh;
   width: 100%;
   position: absolute;
@@ -287,8 +287,22 @@ export default {
             }
         }
     }
+  };
+  // 渐出动画
+  .picker-box-activate {
+    transition: 0.6s all;
+    transform: translateY(0%);
+    opacity: 1;
+    visibility: visible
+  };
+  // 渐入动画
+  .picker-box-inertia {
+    transition: 0.6s all;
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden
   }
-}
+};  
 .active {
   background-color: #f3f3f3 !important;
   color: #3B9DF9

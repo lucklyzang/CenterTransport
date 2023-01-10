@@ -2,6 +2,28 @@
   <div class="page-box" ref="wrapper">
     <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
     <van-overlay :show="overlayShow" z-index="100000" />
+    <!-- 任务开始时间 -->
+    <div class="task-start-time-box">
+      <van-popup v-model="showTaskStart" position="bottom">
+        <van-datetime-picker
+          v-model="currentTaskStartTime"
+          type="datehour"
+          :min-date="minDate"
+          :max-date="maxDate"
+        >
+          <template #default>
+            <h3>任务开始时间</h3>
+            <van-icon name="cross" size="25" @click="showTaskStart = false" />
+          </template>
+          <template #columns-bottom>
+            <div class="button-box">
+              <span @click="showTaskStart = false">取消</span>
+              <span @click="onConDayFirm">确认</span>
+            </div>
+          </template>
+        </van-datetime-picker>
+      </van-popup>
+    </div>  
     <!-- 右侧菜单 -->
     <van-popup v-model="rightMenuShow" position="right" ref="vanPopup" :style="{ width: '60%', height: '100%' }">
         <div class="top-icon">
@@ -16,6 +38,22 @@
             下班签退
         </div>
     </van-popup>
+    <!-- 起点科室 -->
+    <div class="transport-rice-box" v-if="showStartDepartment">
+      <ScrollSelection :columns="startDepartmentList" title="起点科室" @sure="startDepartmentSureEvent" @cancel="startDepartmentCancelEvent" @close="startDepartmentCloseEvent" />
+    </div>
+    <!-- 运送员 -->
+    <div class="transport-rice-box" v-if="showTransporter">
+      <ScrollSelection :columns="transporterList" title="运送员" @sure="transporterSureEvent" @cancel="transporterCancelEvent" @close="transporterCloseEvent" />
+    </div>
+    <!-- 转运工具 -->
+    <div class="transport-rice-box" v-if="showTransportTool">
+      <ScrollSelection :columns="transportToolList" title="转运工具" @sure="transportToolSureEvent" @cancel="transportToolCancelEvent" @close="transportToolCloseEvent" />
+    </div>
+     <!-- 性别 -->
+    <div class="transport-rice-box" v-if="showGender">
+      <ScrollSelection :columns="genderList" title="性别" @sure="genderSureEvent" @cancel="genderCancelEvent" @close="genderCloseEvent" :isShowSearch="false" />
+    </div>
     <div class="nav">
        <van-nav-bar
         title="编辑预约任务"
@@ -37,12 +75,120 @@
         <div class="content-top-area">
 			<img :src="statusBackgroundPng" />
 		</div>
-        <div class="content-box">
-            <div class="message-box">
+      <div class="content-box">
+        <div class="message-box">
+          <div class="message-one">
+            <div class="message-one-left">
+              优先级
             </div>
-            <div class="btn-box">
+            <div class="message-one-right">
+              <van-radio-group v-model="priorityRadioValue" direction="horizontal">
+                <van-radio name="1" checked-color="#289E8E">正常</van-radio>
+                <van-radio name="2" checked-color="#E8CB51">紧急</van-radio>
+                <van-radio name="3" checked-color="#F2A15F">重要</van-radio>
+                <van-radio name="4" checked-color="#E86F50">紧急重要</van-radio>
+              </van-radio-group>
             </div>
+          </div>
+          <div class="select-box">
+            <div class="select-box-left">
+              <span>*</span>
+              <span>起点科室</span>
+            </div>
+            <div class="select-box-right" @click="showStartDepartment = true">
+              <span>{{ currentStartDepartment }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="transport-type">
+            <div class="transport-type-left">
+              <span>运送类型</span>
+            </div>
+            <div class="transport-type-right">
+              <span class="transport-type-list" :class="{'transportTypeListStyle': transportTypeIndex == index}" 
+                v-for="(item,index) in transportTypeList"
+                @click="transportTypeEvent(item,index)" 
+                :key="index"
+                >
+                {{ item.text }}
+              </span>
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>任务开始时间</span>
+            </div>
+            <div class="select-box-right" @click="showTaskStart = true">
+              <span>{{ getNowFormatDate(currentTaskStartTime) }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>运送员</span>
+            </div>
+            <div class="select-box-right" @click="showTransporter = true">
+              <span>{{ currentTransporter }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>转运工具</span>
+            </div>
+            <div class="select-box-right" @click="showTransportTool = true">
+              <span>{{ currentTransportTool }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="patient-message-box">
+            <div class="patient-message-top">
+              <div class="patient-message-top-left">
+                <van-field v-model="patientNumberValue" label="床号" placeholder="请输入" />
+              </div>
+              <div class="patient-message-top-right">
+                <van-field v-model="patientNameValue" label="姓名" placeholder="请输入" />
+              </div>
+            </div>
+            <div class="patient-message-bottom">
+              <div class="patient-message-bottom-left">
+                <van-field v-model="admissionNumberValue" label="住院号" placeholder="请输入" />
+              </div>
+              <div class="patient-message-bottom-right">
+                <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
+              </div>
+            </div>
+          </div>
+          <div class="select-box end-select-box">
+            <div class="select-box-left">
+              <span>性别</span>
+            </div>
+            <div class="select-box-right" @click="showGender = true">
+              <span>{{ currentGender }}</span>
+              <van-icon name="arrow" color="#989999" size="20" />
+            </div>
+          </div>
+          <div class="task-describe transport-type">
+            <div class="transport-type-left">
+              <span>任务描述</span>
+            </div>
+            <div class="transport-type-right">
+              <van-field
+                v-model="taskDescribe"
+                rows="3"
+                autosize
+                type="textarea"
+                placeholder="请输入任务描述"
+              />
+            </div>
+          </div>
         </div>
+        <div class="btn-box">
+          <span class="operate-one" @click="sureEvent">确认</span>
+          <span class="operate-two" @click="temporaryStorageEvent">暂存</span>
+          <span class="operate-three" @click="cancelEvent">取消</span>
+        </div>
+      </div>
     </div> 
   </div>
 </template>
@@ -50,23 +196,101 @@
 import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
+import Ldselect from '@/components/Ldselect'
+import {queryAllDestination, queryTransportTools, generateDispatchTask, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
+import Vselect from '@/components/Vselect'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
-import SelectSearch from "@/components/SelectSearch";
+import _ from 'lodash'
+import ScrollSelection from "@/components/ScrollSelection";
 export default {
-  name: "EditAppointTask",
+  name: "CreateDispathTask",
   components: {
-    SelectSearch
+    ScrollSelection,
+    Ldselect,
+    Vselect
   },
   mixins:[mixinsDeviceReturn],
   data() {
     return {
       loadingShow: false,
+      taskDescribe: '',
+      patientNumberValue: '',
+      patientNameValue: '',
+      showTaskStart: false,
+      minDate: new Date(2010, 0, 1),
+      maxDate: new Date(2050, 10, 1),
+      currentTaskStartTime: new Date(),
+      admissionNumberValue: '',
+      transportNumberValue: '',
+      showStartDepartment: false,
+      currentStartDepartment: '请选择',
+      startDepartmentList: [],
+      showTransporter: false,
+      currentTransporter: '请选择',
+      transporterList: [
+        { 
+          id: '0',
+          text: '站萨'
+        },
+        { 
+          id: '1',
+          text: '好像就这些'
+        },
+        { 
+          id: '2',
+          text: '导航是'
+        },
+        { 
+          id: '3',
+          text: '精彩时刻'
+        },
+        { 
+          id: '4',
+          text: '到杉德'
+        }
+      ],
+      showTransportTool: false,
+      currentTransportTool: '请选择',
+      transportToolList: [],
+      showGender: false,
+      currentGender: '请选择',
+      genderList: [
+        { 
+          id: '0',
+          text: '女'
+        },
+        { 
+          id: '1',
+          text: '男'
+        }
+      ],
+      transportTypeIndex: null,
+      currentTransportType: '',
+      transportTypeList: [{text: '穿刺',value: 1},{text: '病理',value: 2}],
       moveInfo: {
         startX: ''
       },
+      priorityRadioValue: '1',
       functionListIndex: 0,
       overlayShow: false,
       rightMenuShow: false,
+      transportParentControlListShow: false,
+      transportTypeParent: [],
+      transportTypeChild: [],
+      patienModalMessage: {
+        bedNumber: '',
+        patientName: '',
+        patientNumber: '',
+        actualData: 0,
+        genderValue: '0',
+        transportList: [],
+        sampleList: [],
+        sampleValue: '',
+        sampleId: ''
+      },
+      xflSelectShow: false,
+      isPressEdit: false,
+      updateIndex: 0,
       statusBackgroundPng: require("@/common/images/home/status-background.png"),
       switchShowPng: require("@/common/images/home/switch-show.png"),
       switchHiddenPng: require("@/common/images/home/switch-hidden.png"),
@@ -83,24 +307,134 @@ export default {
   mounted() {
     // 控制设备物理返回按键
     this.deviceReturn('/taskScheduling');
-    this.registerSlideEvent()
+    this.registerSlideEvent();
+    this.parallelFunction()
   },
 
-  watch: {},
+  watch: {
+  },
 
   computed: {
-    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord"]),
+    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord","transportantTaskMessage","templateType"]),
     proId () {
-        return this.userInfo.extendData.proId
+      return this.userInfo.extendData.proId
     }
   },
 
   methods: {
-    ...mapMutations(["changeTitleTxt","changeCatchComponent","changeOverDueWay","changeOperateBtnClickRecord"]),
+    ...mapMutations(["changeTitleTxt","changeCatchComponent","changeOverDueWay","changeOperateBtnClickRecord","changetransportTypeMessage"]),
 
-     onClickLeft() {
+    onClickLeft() {
       this.$router.push({ path: "/taskScheduling"})
     },
+
+    // 任务开始事件弹框确认事件
+     onConDayFirm() {
+      this.showTaskStart = false
+    },
+
+     // 格式化时间
+    getNowFormatDate(currentDate) {
+      let currentdate;
+      let strDate = currentDate.getDate();
+      let seperator1 = "-";
+      let month = currentDate.getMonth() + 1;
+      let hour = currentDate.getHours();
+      if (month >= 1 && month <= 9) {
+        month = "0" + month;
+      };
+      if (hour >= 1 && hour <= 9) {
+        hour = "0" + hour;
+      };
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+      };
+      currentdate = currentDate.getFullYear() + seperator1 + month + seperator1 + strDate + ' ' + hour
+      return currentdate
+    },
+    
+    // 查询运送类型小类
+    getTransPorttype (data) {
+      return new Promise((resolve,reject) => {
+        queryTransportType(data)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
+    // 并行查询目的地、转运工具
+    parallelFunction (type) {
+        Promise.all([this.getAllDestination(),this.getTransportTools()])
+        .then((res) => {
+          if (res && res.length > 0) {
+            this.transportToolList = [];
+            this.startDepartmentList = [];
+            let [item1,item2] = res;
+            if (item1) {
+              Object.keys(item1).forEach((item,index) => {
+                // 起点科室
+                this.startDepartmentList.push({
+                  text: item1[item],
+                  value: item,
+                  id: index
+                })
+              })
+            };
+            if (item2) {
+              // 转运工具
+              for (let i = 0, len = item2.length; i < len; i++) {
+                this.transportToolList.push({
+                  text: item2[i].toolName,
+                  value: item2[i].id,
+                  id: i
+                })
+              }
+            }
+          }
+        })
+        .catch((err) => {
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+
+      // 查询目的地
+      getAllDestination () {
+        return new Promise((resolve,reject) => {
+          queryAllDestination(this.proId).then((res) => {
+            if (res && res.data.code == 200) {
+              resolve(res.data.data)
+            }
+          })
+          .catch((err) => {
+            reject(err.message)
+          })
+        })
+      },
+
+    // 查询转运工具
+    getTransportTools () {
+      return new Promise((resolve,reject) => {
+        queryTransportTools({proId: this.proId, state: 0})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
 
     // 注册滑动事件  
     registerSlideEvent () {
@@ -124,14 +458,100 @@ export default {
         if (e.targetTouches.length == 1) {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
-        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
-        if (moveX < 0) {
+        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏,滑动距离大于10才判定为滑动)
+        if (moveX < -10) {
             this.rightMenuShow = true
         } else {
             this.rightMenuShow = false
         };
         e.preventDefault();
         }        
+    },
+
+    // 起点科室下拉选择框确认事件
+    startDepartmentSureEvent (val) {
+      if (val) {
+        this.currentStartDepartment =  val
+      } else {
+        this.currentStartDepartment = '请选择'
+      };
+      this.showStartDepartment = false
+    },
+
+    // 起点科室下拉选择框取消事件
+    startDepartmentCancelEvent () {
+      this.showStartDepartment = false
+    },
+
+    // 起点科室下拉选择框关闭事件
+    startDepartmentCloseEvent () {
+      this.showStartDepartment = false
+    },
+
+    // 运送员下拉选择框确认事件
+    transporterSureEvent (val) {
+      if (val) {
+        this.currentTransporter =  val
+      } else {
+        this.currentTransporter = '请选择'
+      };
+      this.showTransporter = false
+    },
+
+    // 运送员下拉选择框取消事件
+    transporterCancelEvent () {
+      this.showTransporter = false
+    },
+
+    // 运送员下拉选择框关闭事件
+    transporterCloseEvent () {
+      this.showTransporter = false
+    },
+
+    // 转运工具下拉选择框确认事件
+    transportToolSureEvent (val) {
+      if (val) {
+        this.currentTransportTool =  val
+      } else {
+        this.currentTransportTool = '请选择'
+      };
+      this.showTransportTool = false
+    },
+
+    // 转运工具下拉选择框取消事件
+    transportToolCancelEvent () {
+      this.showTransportTool = false
+    },
+
+    // 转运工具下拉选择框关闭事件
+    transportToolCloseEvent () {
+      this.showTransportTool = false
+    },
+
+    // 性别下拉选择框确认事件
+    genderSureEvent (val) {
+      if (val) {
+        this.currentGender =  val
+      } else {
+        this.currentGender = '请选择'
+      };
+      this.showGender = false
+    },
+
+    // 性别下拉选择框取消事件
+    genderCancelEvent () {
+      this.showGender = false
+    },
+
+    // 性别下拉选择框关闭事件
+    genderCloseEvent () {
+      this.showGender = false
+    },
+
+    // 运送类型点击事件
+    transportTypeEvent (item,index) {
+      this.transportTypeIndex = index;
+      this.currentTransportType = item
     },
 
     // 切换显示右侧菜单事件
@@ -207,7 +627,208 @@ export default {
           }).then(() => {
           });
         })
+      },
+
+    // 确认事件(创建调度任务)
+    sureEvent () {
+      if (this.templateType === 'template_one') {
+        // if (!this.destinationListOneValue) {
+        //   this.$dialog.alert({
+        //     message: '科室不能为空',
+        //     closeOnPopstate: true
+        //   }).then(() => {
+        //   });
+        //   return
+        // };
+        let taskMessage = {
+          // setOutPlaceId: this.userInfo.depId,  //出发地ID
+          // setOutPlaceName: this.userInfo.depName,  //出发地名称
+          setOutPlaceId: this.destinationListOneValue == '' ? this.userInfo.depId : this.destinationListOneValue, //出发地ID
+          setOutPlaceName: this.destinationListOneValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListOneValue),//出发地名称
+          // destinationId: !this.destinationListOneValue ? '' : this.destinationListOneValue,   //目的地ID
+          // destinationName: !this.destinationListOneValue ? '' : this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
+          parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
+          parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
+          taskTypeId: this.typeValue,  //运送类型 ID
+          taskTypeName: this.typeText,  //运送类型 名 称
+          priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+          toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
+          toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
+          actualCount: this.actualData,   //实际数量
+          patientName: this.patientName,  //病人姓名
+          sex: 0,    //病人性别  0-未指定,1-男, 2-女
+          age: "",   //年龄
+          number: this.patientNumber,   //住院号
+          bedNumber: this.bedNumber,  //床号
+          taskRemark: this.taskDescribe,   //备注
+          createId: this.workerId,   //创建者ID  当前登录者
+          createName: this.userName,   //创建者名称  当前登陆者
+          proId: this.proId,   //项目ID
+          proName: this.proName,   //项目名称
+          isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
+          createType: 1,   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
+          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序  
+        };
+        // 创建调度任务
+        this.postGenerateDispatchTask(taskMessage);
+      } else if (this.templateType === 'template_two') {
+        // if (this.destinationListValue.length == 0) {
+        //   this.$dialog.alert({
+        //     message: '科室不能为空',
+        //     closeOnPopstate: true
+        //   }).then(() => {
+        //   });
+        //   return
+        // };
+        let taskMessageTwo = {
+          setOutPlaceId: this.destinationListValue == '' ? this.userInfo.depId : this.destinationListValue, //出发地ID
+          setOutPlaceName: this.destinationListValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListValue),//出发地名称
+          destinations: [],//多个目的地列表
+          patientInfoList: [], //多个病人信息列表
+          priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+          toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
+          toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
+          actualCount: this.totalNumber, //实际数量
+          taskRemark: this.taskDescribe, //备注
+          createId: this.workerId,   //创建者ID  当前登录者
+          createName: this.userName,   //创建者名称  当前登陆者
+          proId: this.proId, //项目ID
+          proName: this.proName, //项目名称
+          isBack: this.judgeResult, //是否返回出发地  0-不返回，1-返回
+          createType: 1, //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
+          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序
+        };
+        // 获取目的地列表数据
+        // if (this.destinationListValue.length > 0) {
+        //   for (let item of this.destinationListValue) {
+        //     taskMessageTwo.destinations.push({
+        //       destinationId: item,
+        //       destinationName: this.getDepartmentNameById(item)
+        //     })
+        //   }
+        // };
+        // 获取多个病人信息列表数据
+        for (let patientItem of this.templatelistTwo) {
+          taskMessageTwo.patientInfoList.push({
+            bedNumber: patientItem['bedNumber'],
+            patientName: patientItem['patientName'],
+            number: patientItem['patientNumber'],
+            sex:  patientItem['genderValue'] == '男' ? 1 : 2,
+            quantity: patientItem['actualData'],
+            typeList: []
+          })
+        };
+        // 获取每个病人的运送类型数据
+        for (let i = 0, len = this.templatelistTwo.length; i < len; i++) {
+          if (this.templatelistTwo[i]['transportList'].length > 0) {
+            // 获取选中的运送类型小类
+            let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.typerNumber > 0});
+            // 运送类型小类存在没选的情况
+            if (checkChildTypeList.length > 0) {
+              for (let innerItem of checkChildTypeList) {
+                taskMessageTwo.patientInfoList[i]['typeList'].push({
+                  quantity: innerItem['typerNumber'],
+                  parentTypeId: this.templatelistTwo[i]['sampleId'],
+                  parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                  taskTypeId: innerItem['value'],
+                  taskTypeName: innerItem['text']
+                })
+              }
+            } else {
+              taskMessageTwo.patientInfoList[i]['typeList'].push({
+                quantity: 1,
+                parentTypeId: this.templatelistTwo[i]['sampleId'],
+                parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                taskTypeId: '',
+                taskTypeName: ''
+              });
+              // 没选运送类型小类时,大类也算一个数量
+              taskMessageTwo.patientInfoList[i]['quantity'] = 1;
+              this.templatelistTwo[i]['actualData'] = 1;
+              // 重新计算运送类型总数
+              this.totalNumber  = this.templatelistTwo.reduce((accumulator, currentValue) => {
+                return accumulator + Number(currentValue.actualData)
+              },0);
+              taskMessageTwo['actualCount'] = this.totalNumber
+            }
+          }
+        };
+        this.postGenerateDispatchTaskMany(taskMessageTwo);
+        console.log('最终数据',taskMessageTwo)
       }
+    },
+
+    // 生成调度任务(一个病人)
+    postGenerateDispatchTask (data) {
+      this.showLoadingHint = true;
+      this.overlayShow = true;
+      generateDispatchTask(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$toast(`${res.data.msg}`);
+          this.$router.push({path:'/taskScheduling'});
+          this.changeTitleTxt({tit:'中央运送任务管理'});
+          setStore('currentTitle','中央运送任务管理');
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        };
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+    },
+
+    //生成调度任务(多个病人)
+    postGenerateDispatchTaskMany(data) {
+      this.showLoadingHint = true;
+      this.overlayShow = true;
+      generateDispatchTaskMany(data).then((res) => {
+        if (res && res.data.code == 200) {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+          setTimeout(() => {
+            this.backTo()
+          }, 1000)
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        };
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.showLoadingHint = false;
+        this.overlayShow = false
+      })
+    },
+
+    // 暂存事件
+    temporaryStorageEvent () {},
+
+    // 取消事件
+    cancelEvent () {}
   }
 };
 </script>
@@ -217,6 +838,62 @@ export default {
 @import "~@/common/stylus/modifyUi.less";
 .page-box {
   .content-wrapper();
+  .task-start-time-box {
+    /deep/ .van-popup {
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      .van-picker {
+        padding: 20px 10px;
+        box-sizing: border-box;
+        .van-picker__toolbar {
+          h3 {
+            display: flex;
+            justify-content: space-around;
+            font-size: 18px;
+            width: 100%;
+            line-height: 40px;
+            color: #101010;
+            height: 40px;
+            position: relative;
+            /deep/ .van-icon {
+              position: absolute;
+              top: 50%;
+              transform: translateY(-50%);
+              right: 0
+            }
+          }
+        };
+        .button-box {
+          height: 60px;
+          display: flex;
+          width: 100%;
+          margin: 0 auto;
+          align-items: center;
+          justify-content: center;
+          >span {
+              width: 40%;
+              display: inline-block;
+              height: 45px;
+              font-size: 18px;
+              line-height: 45px;
+              background: #fff;
+              text-align: center;
+              border-radius: 30px;
+              &:nth-child(1) {
+                  color: #1864FF;
+                  box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+                  margin-right: 40px
+              };
+              &:last-child {
+                  color: #fff;
+                  background: linear-gradient(to right, #6cd2f8, #2390fe);
+                  box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+              }
+          }
+        }
+      }
+    }
+  };
   /deep/ .van-popup--right {
     padding: 20px 0 80px 0;
     box-sizing: border-box;
@@ -321,15 +998,285 @@ export default {
         background: #f7f7f7;
         z-index: 10;
         .message-box {
-            flex: 1;
+          flex: 1;
+          width: 100%;
+          overflow: auto;
+          .message-one {
             width: 100%;
-            overflow: auto;
-        };
-        .btn-box {
-            height: 50px;
+            padding: 10px 6px 10px 16px;
+            box-sizing: border-box;
+            background: #fff;
             display: flex;
             align-items: center;
-            justify-content: center
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .message-one-left {
+              width: 20%;
+              color: #101010
+            };
+            .message-one-right {
+              flex: 1;
+              /deep/ .van-radio-group {
+                justify-content: space-between;
+                .van-radio--horizontal {
+                  margin-right: 0 !important;
+                  &:nth-child(1) {
+                    .van-radio__label {
+                      color: #289E8E !important
+                    }
+                  };
+                  &:nth-child(2) {
+                    .van-radio__label {
+                      color: #E8CB51 !important
+                    }
+                  };
+                  &:nth-child(3) {
+                    .van-radio__label {
+                      color: #F2A15F !important
+                    }
+                  };
+                  &:nth-child(4) {
+                    .van-radio__label {
+                      color: #E86F50 !important
+                    }
+                  }
+                }
+              }
+            }
+          };
+          .select-box {
+            width: 100%;
+            padding: 8px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .select-box-left {
+              padding-right: 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: red
+                };
+                &:nth-child(2) {
+                  color: #9E9E9A;
+                  padding-right: 6px;
+                  box-sizing: border-box
+                };
+              }
+            };
+            .select-box-right {
+              flex: 1;
+              justify-content: flex-end;
+              align-items: center;
+              display: flex;
+              width: 0;
+              >span {
+                color: #101010;
+                text-align: right;
+                flex: 1;
+                .no-wrap()
+              }
+            }
+          };
+          .end-select-box {
+            .select-box-left {
+              padding: 0 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: #9E9E9A;
+                  padding-right: 6px;
+                  box-sizing: border-box
+                };
+              }
+            };
+          };
+          .transport-type {
+            width: 100%;
+            padding: 10px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 6px;
+            .transport-type-left {
+              padding: 0 10px;
+              box-sizing: border-box;
+              >span {
+                &:nth-child(1) {
+                  color: #9E9E9A
+                }
+              }
+            };
+            .transport-type-right {
+              flex: 1;
+              width: 0;
+              display: flex;
+              flex-wrap: wrap;
+              .transport-type-list {
+                display: inline-block;
+                font-size: 13px;
+                color: #9E9E9A;
+                background: #F9F9F9;
+                text-align: center;
+                border-radius: 10px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                line-height: 20px;
+                padding: 6px 10px;
+                box-sizing: border-box
+              };
+              .transportTypeListStyle {
+                color: #fff !important;
+                background: #3B9DF9 !important
+              }
+            }
+          };
+          .patient-message-box {
+            width: 100%;
+            padding: 10px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            font-size: 14px;
+            margin-top: 6px;
+            .patient-message-top {
+              display: flex;
+              .patient-message-top-left {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              };
+              .patient-message-top-right {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              }
+            };
+            .patient-message-bottom {
+              display: flex;
+              .patient-message-bottom-left {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              };
+              .patient-message-bottom-right {
+                flex: 1;
+                /deep/ .van-cell {
+                  padding: 10px !important;
+                  .van-field__label {
+                    width: 60px !important;
+                    color: #9E9E9A !important
+                  };
+                  .van-cell__value {
+                    background: #F9F9F9 !important;
+                    color: #101010 !important;
+                    font-size: 14px !important;
+                    padding-left: 4px !important
+                  }
+                }
+              }
+            }
+          };
+          .task-total {
+            padding: 6px !important;
+            .message-one-left {
+              padding-left: 10px;
+              box-sizing: border-box
+            };
+            .message-one-right {
+              width: 20%;
+              flex: none !important;
+              /deep/ .van-cell {
+                padding: 2px 6px !important;
+                background: #F9F9F9;
+                .van-cell__value {
+                  .van-field__control {
+                    text-align: center !important
+                  }
+                }
+              }
+            }
+          };
+          .transport-type {
+            .transport-type-right {
+              /deep/ .van-cell {
+                padding: 4px 6px !important;
+                background: #F9F9F9
+              }
+            }
+          }
+        };
+        .btn-box {
+          width: 90%;
+          margin: 0 auto;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          >span {
+            width: 40%;
+            display: inline-block;
+            height: 45px;
+            font-size: 18px;
+            line-height: 45px;
+            background: #fff;
+            text-align: center;
+            border-radius: 30px;
+            &:nth-child(1) {
+              color: #fff;
+              background: linear-gradient(to right, #6cd2f8, #2390fe);
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+              margin-right: 30px
+            };
+            &:nth-child(2) {
+              color: #1864FF;
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1);
+              margin-right: 30px
+            };
+            &:last-child {
+              color: #1864FF;
+              box-shadow: 0px 2px 6px 0 rgba(36, 149, 213, 1)
+            }
+          }
         }
     }
   }
