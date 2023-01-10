@@ -7,7 +7,7 @@
       <van-popup v-model="showTaskStart" position="bottom">
         <van-datetime-picker
           v-model="currentTaskStartTime"
-          type="datehour"
+          type="datetime"
           :min-date="minDate"
           :max-date="maxDate"
         >
@@ -338,18 +338,23 @@ export default {
       let currentdate;
       let strDate = currentDate.getDate();
       let seperator1 = "-";
+      let seperator2 = ":";
       let month = currentDate.getMonth() + 1;
       let hour = currentDate.getHours();
+      let minutes = currentDate.getMinutes();
       if (month >= 1 && month <= 9) {
         month = "0" + month;
       };
       if (hour >= 0 && hour <= 9) {
         hour = "0" + hour;
       };
+      if (minutes >= 0 && minutes <= 9) {
+        minutes = "0" + minutes;
+      };
       if (strDate >= 0 && strDate <= 9) {
         strDate = "0" + strDate;
       };
-      currentdate = currentDate.getFullYear() + seperator1 + month + seperator1 + strDate + ' ' + hour
+      currentdate = currentDate.getFullYear() + seperator1 + month + seperator1 + strDate + ' ' + hour + seperator2 + minutes
       return currentdate
     },
     
