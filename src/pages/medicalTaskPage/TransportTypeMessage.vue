@@ -1076,7 +1076,7 @@ export default {
               bedNumber: patientItem['bedNumber'],
               patientName: patientItem['patientName'],
               number: patientItem['patientNumber'],
-              sex:  patientItem['genderValue'] == '男' ? 1 : 2,
+              sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
               quantity: patientItem['actualData'],
               typeList: []
             })

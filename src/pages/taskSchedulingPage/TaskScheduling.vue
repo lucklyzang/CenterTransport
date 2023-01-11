@@ -484,8 +484,8 @@ export default {
         // vm.queryTaskList(1)
       } else {
         // 回显调度页面点击的任务类型
-        if (vm.taskType.taskTypeName) {
-          vm.activeName = vm.taskType.taskTypeName
+        if (vm.schedulingTaskType.taskTypeName) {
+          vm.activeName = vm.schedulingTaskType.taskTypeName
         };
         // 根据任务详情页面点击的按钮,显示对应的弹框
         if (vm.operateBtnClickRecord) {
@@ -506,14 +506,14 @@ export default {
   watch: {},
 
   computed: {
-    ...mapGetters(["userInfo","taskType","operateBtnClickRecord"]),
+    ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord"]),
     proId () {
       return this.userInfo.extendData.proId
     }
   },
 
   methods: {
-    ...mapMutations(["changeTaskType","changeTitleTxt","changeCatchComponent","changeOverDueWay","changeSchedulingTaskDetails","changeOperateBtnClickRecord"]),
+    ...mapMutations(["changeSchedulingTaskType","changeTitleTxt","changeCatchComponent","changeOverDueWay","changeSchedulingTaskDetails","changeOperateBtnClickRecord"]),
 
      onClickLeft() {
       this.$router.push({ path: "/home"})
@@ -641,7 +641,7 @@ export default {
 
     // 编辑点击事件
     editEvent (item,index,text) {
-      let temporaryTaskType = this.taskType;
+      let temporaryTaskType = this.schedulingTaskType;
       if (text == '调度任务') {
         temporaryTaskType['taskTypeName'] = 'dispatchTask';
         this.$router.push({path: '/editDispathTask'})
@@ -652,7 +652,7 @@ export default {
       // 保存调度页面任务详情
       this.changeSchedulingTaskDetails(item);
       // 保存调度页面任务点击的类型
-      this.changeTaskType(temporaryTaskType)
+      this.changeSchedulingTaskType(temporaryTaskType)
       this.resetBtnClickStatus()
     },
 
@@ -738,7 +738,7 @@ export default {
 
     // 进入任务详情事件
     enterDispathTaskEvent (item,index,text) {
-      let temporaryTaskType = this.taskType;
+      let temporaryTaskType = this.schedulingTaskType;
       if (text == '调度任务') {
         temporaryTaskType['taskTypeName'] = 'dispatchTask';
         this.$router.push({path:'/schedulingDispathTaskDetails'})
@@ -749,7 +749,7 @@ export default {
       // 保存调度页面任务详情
       this.changeSchedulingTaskDetails(item);
       // 保存调度页面任务点击的类型
-      this.changeTaskType(temporaryTaskType);
+      this.changeSchedulingTaskType(temporaryTaskType);
       this.resetBtnClickStatus()
     },
 
@@ -764,7 +764,7 @@ export default {
 
     // 创建任务
     createTask (text) {
-      let temporaryTaskType = this.taskType;
+      let temporaryTaskType = this.schedulingTaskType;
       if (text == '调度任务') {
         temporaryTaskType['taskTypeName'] = 'dispatchTask'
         this.$router.push({path: '/createDispathTask'})
@@ -773,7 +773,7 @@ export default {
         this.$router.push({path: '/createAppointTask'})
       };
       // 保存调度页面任务点击的类型
-      this.changeTaskType(temporaryTaskType)
+      this.changeSchedulingTaskType(temporaryTaskType)
       this.resetBtnClickStatus()
     },
 

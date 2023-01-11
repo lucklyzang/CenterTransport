@@ -315,14 +315,14 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord","transportantTaskMessage","templateType"]),
+    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord","transportantTaskMessage","templateType","temporaryStorageCreateAppointTaskMessage"]),
     proId () {
       return this.userInfo.extendData.proId
     }
   },
 
   methods: {
-    ...mapMutations(["changeTitleTxt","changeCatchComponent","changeOverDueWay","changeOperateBtnClickRecord","changetransportTypeMessage"]),
+    ...mapMutations(["changeTitleTxt","changeCatchComponent","changeOverDueWay","changeOperateBtnClickRecord","changetransportTypeMessage","changeTemporaryStorageCreateAppointTaskMessage"]),
 
     onClickLeft() {
       this.$router.push({ path: "/taskScheduling"})
@@ -333,7 +333,7 @@ export default {
       this.showTaskStart = false
     },
 
-     // 格式化时间
+    // 格式化时间
     getNowFormatDate(currentDate) {
       let currentdate;
       let strDate = currentDate.getDate();
@@ -833,7 +833,9 @@ export default {
     temporaryStorageEvent () {},
 
     // 取消事件
-    cancelEvent () {}
+    cancelEvent () {
+      this.$router.push({ path: "/taskScheduling"})
+    }
   }
 };
 </script>

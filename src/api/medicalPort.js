@@ -98,3 +98,11 @@ export function submitTaskFeedback(data, type) {
         data
     })
 };
+
+// 查询运送员
+export function getTransporter(proId,workerId) {
+    return request({
+      url: `worker/assignWorker/${proId}?workerId=${workerId}`,
+      method: 'get'
+    })
+  };

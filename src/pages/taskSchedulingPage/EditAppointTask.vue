@@ -185,7 +185,6 @@
         </div>
         <div class="btn-box">
           <span class="operate-one" @click="sureEvent">确认</span>
-          <span class="operate-two" @click="temporaryStorageEvent">暂存</span>
           <span class="operate-three" @click="cancelEvent">取消</span>
         </div>
       </div>
@@ -824,11 +823,10 @@ export default {
       })
     },
 
-    // 暂存事件
-    temporaryStorageEvent () {},
-
     // 取消事件
-    cancelEvent () {}
+    cancelEvent () {
+      this.$router.push({ path: "/taskScheduling"})
+    }
   }
 };
 </script>
