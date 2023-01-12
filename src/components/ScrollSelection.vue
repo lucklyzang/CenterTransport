@@ -132,9 +132,9 @@ export default {
     // 确认事件
     sure() {
       this.list.map((item, index) => {
-        item.id == this.active ? (this.city = item.text) : null;
-        this.$emit('sure',this.city)
+        item.id == this.active ? (this.city = item.text) : null
       });
+      this.$emit('sure',this.city);
       // 没有搜索结果时点确认
       if (this.list.length == 0) {
         this.$emit('sure',null)

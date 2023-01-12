@@ -203,7 +203,7 @@ import { setStore,removeAllLocalStorage } from '@/common/js/utils'
 import _ from 'lodash'
 import ScrollSelection from "@/components/ScrollSelection";
 export default {
-  name: "CreateDispathTask",
+  name: "CreateAppointTask",
   components: {
     ScrollSelection,
     Ldselect,
@@ -253,7 +253,7 @@ export default {
       currentTransportTool: '请选择',
       transportToolList: [],
       showGender: false,
-      currentGender: '请选择',
+      currentGender: '未选择',
       genderList: [
         { 
           id: '0',
@@ -306,9 +306,21 @@ export default {
 
   mounted() {
     // 控制设备物理返回按键
-    this.deviceReturn('/taskScheduling');
+    if (!IsPC()) {
+      let that = this;
+      pushHistory();
+      that.gotoURL(() => {
+        that.commonIsTemporaryStorageMethods();
+        pushHistory();
+        that.$router.push({path: 'taskScheduling'})
+      })
+    };
     this.registerSlideEvent();
-    this.parallelFunction()
+    this.parallelFunction();
+    //判断是否回显暂存的数据
+    if (JSON.stringify(this.temporaryStorageCreateAppointTaskMessage) != '{}' && this.temporaryStorageCreateAppointTaskMessage['isTemporaryStorage']) {
+      this.echoTemporaryStorageMessage()
+    }
   },
 
   watch: {
@@ -325,7 +337,34 @@ export default {
     ...mapMutations(["changeTitleTxt","changeCatchComponent","changeOverDueWay","changeOperateBtnClickRecord","changetransportTypeMessage","changeTemporaryStorageCreateAppointTaskMessage"]),
 
     onClickLeft() {
+      this.commonIsTemporaryStorageMethods();
       this.$router.push({ path: "/taskScheduling"})
+    },
+
+    // 回显暂存的信息
+    echoTemporaryStorageMessage () {
+      let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateAppointTaskMessage;
+      this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
+      this.transportTypeIndex = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'];
+      this.currentTransportType = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'];
+      this.transportTypeList = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'];
+      this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
+      this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
+      this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
+      this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'];
+      this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'];
+      this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['admissionNumberValue'];
+      this.transportNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['transportNumberValue'];
+      this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['currentGender'];
+      this.currentTaskStartTime = casuallyTemporaryStorageCreateDispathTaskMessage['currentTaskStartTime'];
+      this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe']
+    },
+
+    // 公共修改是否暂存的方法
+    commonIsTemporaryStorageMethods () {
+      let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateAppointTaskMessage;
+      casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = false;
+      this.changeTemporaryStorageCreateAppointTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage)
     },
 
     // 任务开始事件弹框确认事件
@@ -830,10 +869,30 @@ export default {
     },
 
     // 暂存事件
-    temporaryStorageEvent () {},
+    temporaryStorageEvent () {
+      let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateAppointTaskMessage;
+      casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'] = this.transportTypeIndex;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'] = this.currentTransportType;
+      casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'] = this.transportTypeList;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'] = this.currentStartDepartment;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'] = this.currentTransporter;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'] = this.currentTransportTool;
+      casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'] = this.patientNumberValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'] = this.patientNameValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['admissionNumberValue'] = this.admissionNumberValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['transportNumberValue'] = this.transportNumberValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentGender'] = this.currentGender;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentTaskStartTime'] = this.currentTaskStartTime;
+      casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'] = this.taskDescribe;
+      casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = true;
+      this.changeTemporaryStorageCreateAppointTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage);
+      this.$router.push({path: 'taskScheduling'})
+    },
 
     // 取消事件
     cancelEvent () {
+      this.commonIsTemporaryStorageMethods();
       this.$router.push({ path: "/taskScheduling"})
     }
   }

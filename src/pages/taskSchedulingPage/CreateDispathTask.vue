@@ -113,7 +113,7 @@
     </div>
     <div class="nav">
        <van-nav-bar
-        title="调度任务编辑"
+        title="创建调度任务"
         left-text=""
         :left-arrow="true"
         :placeholder="true"
@@ -152,9 +152,9 @@
               <span>*</span>
               <span>运送大类</span>
             </div>
-            <div class="select-box-right" @click="showTransportRice = true">
-              <span>{{ currentTransportRice }}</span>
-              <van-icon name="arrow" color="#989999" size="20" />
+            <div class="select-box-right" @click=" transportPartentClickEvent">
+              <span :class="{'selectBoxRightStyle': !transportPartentSelected}">{{ currentTransportRice }}</span>
+              <van-icon name="arrow" :color="transportPartentSelected ? '#989999' : '#d6d6d6'" size="20" />
             </div>
           </div>
           <div class="transport-type">
@@ -238,32 +238,32 @@
             <div class="field-box-two" v-for="(item,index) in templatelistTwo" :key="`${item}-${index}`">
               <div class="field-title">
                 <div class="patient-name">病人{{index+1}}</div>
-                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)" color="red"  size="20" />
-                <van-icon name="records" @click="editMessage(index)" color="#000000" size="20" />
+                <van-icon v-show="index > 0" name="delete"  @click="deletetMessage(index)" color="#E86F50"  size="20" />
+                <van-icon name="records" @click="editMessage(index)" color="#3B9DF9" size="20" />
               </div>
               <div class="field-wrapper">
                 <div class="field-one">
                   <p>
-                    <van-field v-model="item.bedNumber" label="床号" disabled/>
+                    <van-field v-model="item.bedNumber" label="床号:" disabled/>
                   </p>
                   <p>
-                    <van-field v-model="item.patientName"  label="姓名" disabled/>
+                    <van-field v-model="item.patientName"  label="姓名:" disabled/>
                   </p>
                   <p>
-                    <van-field v-model="item.genderValue" label="性别" disabled/>
+                    <van-field v-model="item.genderValue" label="性别:" disabled/>
                   </p>
                 </div>
                 <div class="field-two">
                   <p class="admission-number">
-                    <van-field v-model="item.patientNumber"  label="住院号" disabled/>
+                    <van-field v-model="item.patientNumber"  label="住院号:" disabled/>
                   </p>
                   <p>
-                    <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
+                    <van-field v-model="item.actualData"  type="number" label="运送数量:" placeholder="" disabled/>
                   </p>
                 </div>
                 <div class="field-three">
                   <div class="sample-box">
-                    <p>运送类型</p>
+                    <p>运送类型:</p>
                     <p>
                       {{item.sampleValue}}
                     </p>
@@ -355,6 +355,8 @@ export default {
       taskTransportTotal: 12,
       admissionNumberValue: '',
       transportNumberValue: '',
+      commonTransportList: [],
+      transportPartentSelected: true,
       showStartDepartment: false,
       currentStartDepartment: '请选择',
       startDepartmentList: [],
@@ -477,13 +479,18 @@ export default {
     }
   },
 
-  // 监听每个病人对应的运送类型数量
   watch: {
+    // 监听每个病人对应的运送类型数量
     templatelistTwo: {
       handler(newVal,oldVal) {
         this.taskTransportTotal  = this.templatelistTwo.reduce((accumulator, currentValue) => {
           return accumulator + Number(currentValue.actualData)
         },0);
+        if (this.taskTransportTotal >= 1) {
+          this.transportPartentSelected = false
+        } else {
+          this.transportPartentSelected = true
+        }
       },
       deep: true,
       immediate: true
@@ -540,7 +547,7 @@ export default {
         this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['currentGender'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'];
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'];
-      } else if (this.templateType === 'template_one') {
+      } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
@@ -550,7 +557,8 @@ export default {
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'];
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'];
         this.templatelistTwo = casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'];
-        this.patienModalMessage = casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage']
+        this.patienModalMessage = casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'];
+        this.commonTransportList = casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList']
       }
     },
 
@@ -571,14 +579,11 @@ export default {
         patientNumber: '',
         actualData: 0,
         genderValue: '0',
-        transportList: [], //病人信息模态框中根据运送大类查询出的运送小类列表
+        transportList: _.cloneDeep(this.commonTransportList), //病人信息模态框中根据运送大类查询出的运送小类列表
         sampleList: this.transportTypeParent, //病人信息模态框中运送大类列表
         sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
         sampleId: this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'] //病人信息模态框中选中的运送大类id
-      });
-      // 查询病人模态框中要显示的运送小类列表
-      this.querytransportChildByTransportParent (0, this.patienModalMessage['sampleId'], 'template_two');
-      console.log('病人信息',this.templatelistTwo)
+      })
     },
 
     // 病人信息删除事件
@@ -588,32 +593,27 @@ export default {
 
     // 病人信息编辑事件
     editMessage(index) {
-      // 只有一个病人时(初始病人信息状态,给编辑病人信息模态框的运送大类和小类赋值)
-      if (this.templatelistTwo.length == 1 && !this.templatelistTwo[0]['sampleValue']) {
-        if (this.currentTransportRice == '请选择') {
-          this.$toast({message: '请选择运送大类',type: 'fail'});
-          return
-        };
-        this.updateIndex = index;
-        this.isPressEdit = true;
-        this.xflSelectShow = true;
-        this.patienModalShow = true;
-        this.patienModalMessage = {};
-        this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
-        this.transferGenderTwo();
+      // 没有选择运送大类时禁止编辑
+      if (this.currentTransportRice == '请选择') {
+        this.$toast({message: '请选择运送大类',type: 'fail'});
+        return
+      };
+      this.updateIndex = index;
+      this.isPressEdit = true;
+      this.xflSelectShow = true;
+      this.patienModalShow = true;
+      this.patienModalMessage = {};
+      this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
+      this.transferGenderTwo();
+      //病人信息展示框运送大类、运送小类为空时,给编辑病人信息模态框的运送大类和小类赋值)
+      if (!this.templatelistTwo[index]['sampleValue']) {
         this.patienModalMessage['sampleList']  = this.transportTypeParent; //病人信息模态框中运送大类列表 
         this.patienModalMessage['sampleValue'] = this.currentTransportRice; //病人信息模态框中选中的运送大类名称
         this.patienModalMessage['sampleId'] = this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'] //病人信息模态框中选中的运送大类id
-        // 根据选择的运送大类查询病人模态框中要显示的运送小类列表
-        this.querytransportChildByTransportParent (0, this.patienModalMessage['sampleId'], 'template_two')
-      } else {
-        this.updateIndex = index;
-        this.isPressEdit = true;
-        this.xflSelectShow = true;
-        this.patienModalShow = true;
-        this.patienModalMessage = {};
-        this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
-        this.transferGenderTwo()
+        this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
+      };
+      if (this.templatelistTwo[index].actualData == 0) {
+        this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
       }
     },
 
@@ -643,8 +643,7 @@ export default {
     // 运送类型大类下拉框值变化时事件
     sampleListValueChange (index) {
       this.querytransportChildByTransportParent(index,this.templatelistTwo[index].sampleValue,this.templateType);
-      this.templatelistTwo[index].actualData = 0;
-      console.log('飒飒',this.templatelistTwo[index].sampleValue)
+      this.templatelistTwo[index].actualData = 0
     },
 
     // 运送类型大类选择列表变化时
@@ -701,16 +700,23 @@ export default {
     
     // 根据运送类型大类查询运送类型小类
     querytransportChildByTransportParent (index,id, flag) {
+      this.commonTransportList = [];
       queryTransportType({
         proId: this.proId,
         state: 0,
         parentId: id
       }).then((res) => {
         if (res && res.data.code == 200) {
-          if (flag == 'template_two') {
+          if (true) {
             this.patienModalMessage['transportList'] = [];
             for(let item of res.data.data) {
               this.patienModalMessage['transportList'].push({
+                text: item.typeName,
+                value: item.id,
+                checked: false,
+                typerNumber: 0
+              });
+              this.commonTransportList.push({
                 text: item.typeName,
                 value: item.id,
                 checked: false,
@@ -725,8 +731,7 @@ export default {
                 value: item.id
               })
             }
-          };  
-          console.log('飒飒',this.patienModalMessage);
+          }
         }
       })
       .catch((err) => {
@@ -810,8 +815,6 @@ export default {
             this.endDepartmentList = [];
             this.transportTypeParent = [];
             this.transporterList = [];
-            this.templatelistTwo[0].sampleList = [];
-            this.templatelistTwo[0].transportList = [];
             let [item1,item2,item3,item4] = res;
             if (item1) {
               Object.keys(item1).forEach((item,index) => {
@@ -961,16 +964,33 @@ export default {
         }        
     },
 
+    // 运送大类点击显示下拉框事件
+    transportPartentClickEvent () {
+      if (this.transportPartentSelected) {
+        this.showTransportRice = true
+      }
+    },
+
     // 运送大类下拉选择框确认事件
     transportRiceSureEvent (val) {
       if (val) {
         this.currentTransportRice = val;
+        this.synchronizationPatientTransportType(val);
         // 根据运送大类查询运送小类
         this.querytransportChildByTransportParent(0,this.transportRiceList.filter((item) => { return item.text == val })[0]['value'],this.templateType);
       } else {
         this.currentTransportRice = '请选择'
       };
       this.showTransportRice = false
+    },
+
+    // 同步病人运送类型
+    synchronizationPatientTransportType (value) {
+      this.templatelistTwo.forEach((item) => {
+        if (item['sampleValue']) {
+          item['sampleValue'] = value
+        }
+      })
     },
 
     // 运送大类下拉选择框取消事件
@@ -1282,8 +1302,7 @@ export default {
             }
           }
         };
-        this.postGenerateDispatchTaskMany(taskMessageTwo);
-        console.log('最终数据',taskMessageTwo)
+        this.postGenerateDispatchTaskMany(taskMessageTwo)
       }
     },
 
@@ -1382,7 +1401,8 @@ export default {
         casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'] = this.isBackRadioValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'] = this.taskDescribe;
         casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'] = this.templatelistTwo;
-        casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'] = this.patienModalMessage
+        casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'] = this.patienModalMessage;
+        casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList'] = this.commonTransportList
       };
       casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = true;
       this.changeTemporaryStorageCreateDispathTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage);
@@ -1804,6 +1824,9 @@ export default {
                 text-align: right;
                 flex: 1;
                 .no-wrap()
+              };
+              .selectBoxRightStyle {
+                color: #d6d6d6 !important 
               }
             }
           };
@@ -2060,7 +2083,7 @@ export default {
                         font-size: 16px;
                         .van-field__body {
                           .van-field__control:disabled {
-                            color: @color-text-right !important;
+                            -webkit-text-fill-color: #101010 !important;
                           }
                         }
                       }
@@ -2070,11 +2093,28 @@ export default {
                 .field-one {
                   display: flex;
                   flex-flow: row nowrap;
-                  justify-content: flex-start;
+                  justify-content: space-between;
                   > p {
                     margin-right: 4px;
+                    &:first-child {
+                      width: 30%
+                    };
+                    &:nth-child(2) {
+                      width: 38%;
+                      margin: 0 2%;
+                      /deep/ .van-cell {
+                        justify-content: center
+                      }
+                    };
                     &:last-child {
-                      margin-right: 0;
+                      width: 30%;
+                      margin-right: 0 !important
+                    };
+                    /deep/ .van-cell {
+                      .van-field__label {
+                        width: 40px;
+                        margin-right: 0 !important
+                      }
                     }
                   }
                 };
@@ -2089,6 +2129,12 @@ export default {
                     &:first-child {
                       color: @color-text-left;
                       text-align: left;
+                      margin-right: 6px;
+                      /deep/ .van-cell {
+                        .van-field__label {
+                          margin-right: 0 !important
+                        }
+                      }
                     };
                     &:last-child {
                       /deep/ .van-cell {
@@ -2096,7 +2142,7 @@ export default {
                         height: 34px;
                         background: #f9f9f9;
                         .van-field__label {
-                          width: 50px;
+                          width: 60px;
                           text-align: left;
                           height: 34px;
                           line-height: 34px;
@@ -2119,62 +2165,27 @@ export default {
                   }
                 };
                 .field-three {
+                  margin-top: 4px;
                   .sample-box {
                     width: 100%;
-                    height: 40px;
-                    line-height: 40px;
+                    line-height: 20px;
                     display: flex;
                     flex-flow: row nowrap;
                     > p {
+                      font-size: 14px;
                       display: inline-block;
                       height: 100%;
                       &:first-child {
                         color: @color-text-left;
-                        font-size: 15px;
                         margin-right: 4px;
                         vertical-align: top;
                       };
                       &:nth-child(2) {
                         vertical-align: top;
-                        margin-right: 4px;
-                        /deep/.van-dropdown-menu {
-                          height: 100%;
-                          .van-dropdown-menu__bar {
-                            height: 100%;
-                            box-shadow: none;
-                            .van-dropdown-menu__item {
-                              background: #f9f9f9;
-                              .van-dropdown-menu__title {
-                                color: @color-text-right;
-                                font-size: 15px;
-                                line-height: normal !important;
-                                :after {
-                                  display: none
-                                }
-                              }
-                            }
-                          };
-                          /deep/ .van-dropdown-item {
-                            .van-popup {
-                              .van-cell {
-                                .van-cell__title {
-                                  font-size: 18px;
-                                }
-                              }
-                            }
-                          }
-                        }
+                        margin-right: 4px
                       };
                       &:last-child {
-                        height: 40px;
-                        flex: 1;
-                        overflow-y: auto;
-                        > p {
-                          &:first-child {
-                            color: @color-text-right;
-                            font-size: 15px;
-                          };
-                        }
+                        flex: 1
                       }
                     }
                   };

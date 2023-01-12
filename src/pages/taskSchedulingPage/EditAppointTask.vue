@@ -202,7 +202,7 @@ import { setStore,removeAllLocalStorage } from '@/common/js/utils'
 import _ from 'lodash'
 import ScrollSelection from "@/components/ScrollSelection";
 export default {
-  name: "CreateDispathTask",
+  name: "EditAppointTask",
   components: {
     ScrollSelection,
     Ldselect,
