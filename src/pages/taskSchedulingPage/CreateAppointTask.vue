@@ -105,7 +105,7 @@
               <span>运送类型</span>
             </div>
             <div class="transport-type-right">
-              <span class="transport-type-list" :class="{'transportTypeListStyle': transportTypeIndex == index}" 
+              <span class="transport-type-list" :class="{'transportTypeListStyle':item.selected}" 
                 v-for="(item,index) in transportTypeList"
                 @click="transportTypeEvent(item,index)" 
                 :key="index"
@@ -264,9 +264,7 @@ export default {
           text: '男'
         }
       ],
-      transportTypeIndex: null,
-      currentTransportType: '',
-      transportTypeList: [{text: '穿刺',value: 1},{text: '病理',value: 2}],
+      transportTypeList: [{text: '穿刺',value: 1,selected: false},{text: '病理',value: 2,selected: false},{text: '穿刺2',value: 3,selected: false},{text: '病理2',value: 4,selected: false}],
       moveInfo: {
         startX: ''
       },
@@ -345,8 +343,6 @@ export default {
     echoTemporaryStorageMessage () {
       let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateAppointTaskMessage;
       this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
-      this.transportTypeIndex = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'];
-      this.currentTransportType = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'];
       this.transportTypeList = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'];
       this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
       this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
@@ -592,10 +588,9 @@ export default {
       this.showGender = false
     },
 
-    // 运送类型点击事件
+    // 运送类型点击事件(可以选择多个运送类型)
     transportTypeEvent (item,index) {
-      this.transportTypeIndex = index;
-      this.currentTransportType = item
+      this.transportTypeList[index]['selected'] = !this.transportTypeList[index]['selected']
     },
 
     // 切换显示右侧菜单事件
@@ -872,8 +867,6 @@ export default {
     temporaryStorageEvent () {
       let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateAppointTaskMessage;
       casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;
-      casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'] = this.transportTypeIndex;
-      casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'] = this.currentTransportType;
       casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'] = this.transportTypeList;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'] = this.currentStartDepartment;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'] = this.currentTransporter;

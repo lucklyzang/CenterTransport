@@ -1,6 +1,6 @@
 <template>
   <div class="page-box" ref="wrapper">
-    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">{{ loadingText }}</van-loading>
     <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 筛选弹窗 -->
     <div class="screen-box">
@@ -148,18 +148,18 @@
                         <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'调度任务')">
                           <div class="list-top">
                             <div class="list-top-left">
-                              <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
-                              <span>{{ item.dateTime }}</span>
-                              <span v-show="item.personName">{{ item.personName }}</span>
+                              <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
+                              <span>{{ item.createTime }}</span>
+                              <span v-show="item.personName">{{ item.workerName }}</span>
                             </div>
-                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 2,'underwayStyle':item.state == 3}">
+                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
                               {{ taskStatusTransition(item.state) }}
                             </div>
                           </div>
                           <div class="list-center">
                             <div class="list-center-left">
-                              <span>{{ item.sampleType }}</span>
-                              <span>{{ item.department }}</span>
+                              <span>{{ item.parentTypeName }}</span>
+                              <span>{{ `${item.setOutPlaceName}-${item.destinationName}` }}</span>
                             </div>
                             <div class="list-center-right">
                               <van-icon name="arrow" color="#101010" size="22" />
@@ -167,8 +167,8 @@
                           </div>
                           <div class="list-bottom">
                             <div class="list-bottom-left">
-                              <span>已催单</span>
-                              <span>已延迟</span>
+                              <span :class="{'listBottomLeftStyle': item.reminder == 0 }">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
+                              <span v-if="item.hasDelay == 1">已延迟</span>
                             </div>
                             <div class="list-bottom-right">
                               <span class="operate-one" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
@@ -197,10 +197,10 @@
                       <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'预约任务')">
                           <div class="list-top appoint-list-top">
                             <div class="list-top-left">
-                              <img :src="anxiousSignPng" alt="急" v-show="item.urgencyState == 1">
-                              <span>{{ item.department }}</span>
+                              <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
+                              <span>{{ item.setOutPlaceName }}</span>
                             </div>
-                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 2,'underwayStyle':item.state == 3}">
+                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
                               {{ taskStatusTransition(item.state) }}
                             </div>
                           </div>
@@ -208,47 +208,47 @@
                             <div class="center-one-line">
                               <div class="center-one-line-left">
                                 <span>病人姓名:</span>
-                                <span>沙克撒骄傲</span>
+                                <span>{{ item.patientName }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>床号:</span>
-                                <span>a12</span>
+                                <span>{{ item.badNumber }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
                               <div class="center-one-line-left">
                                 <span>检查时间:</span>
-                                <span>2022-11-04 12:35:08</span>
+                                <span>{{ item.planStartTime }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>开始时间:</span>
-                                <span>2022-11-04 12:35:08</span>
+                                <span>{{ item.startTime }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
                               <div class="center-one-line-left">
                                 <span>已经历时间:</span>
-                                <span>12</span>
+                                <span>{{ elapsedTime(item.planStartTime) }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>运送员:</span>
-                                <span>张三</span>
+                                <span>{{ item. workerName }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
-                              <div class="center-one-line-left">
+                              <div class="center-one-line-left center-one-line-checkItem">
                                 <span>检查:</span>
-                                <span>CT、B超</span>
+                                <span>{{ item.checkItems }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>运送工具:</span>
-                                <span>轮椅</span>
+                                <span>{{ item.toolName }}</span>
                               </div>
                             </div>
                           </div>
                           <div class="list-bottom appoint-list-bottom">
                             <div class="list-bottom-left">
-                              <span>已延迟</span>
+                              <span v-if="item.hasDelay == 1">已延迟</span>
                             </div>
                             <div class="list-bottom-right">
                               <span class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
@@ -269,6 +269,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
+import { dispathSinglePatientList, appointList } from '@/api/taskScheduling.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
 import SelectSearch from "@/components/SelectSearch";
@@ -281,6 +282,7 @@ export default {
   data() {
     return {
       loadingShow: false,
+      loadingText: '加载中...',
       screenDialogShow: false,
       allocationShow: false,
       delayReasonShow: false,
@@ -385,80 +387,8 @@ export default {
           text: '更重要的活'
         }
       ],
-      dispatchTaskList: [
-        {
-          dateTime: '10-25 08:15',
-          urgencyState: 0,
-          personName: '',
-          state: 1,
-          sampleType: '标本',
-          department: '外科',
-          isReminder: 0,
-          isDelay: 0
-        },
-        {
-          dateTime: '10-24 08:15',
-          urgencyState: 1,
-          personName: '张三',
-          state: 2,
-          sampleType: '标本4',
-          department: '擦浑然斌',
-          isReminder: 1,
-          isDelay: 1
-        },
-        {
-          dateTime: '10-28 08:15',
-          urgencyState: 0,
-          state: 3,
-          personName: '李四',
-          sampleType: '血液',
-          department: '外科',
-          isReminder: 0,
-          isDelay: 1
-        }
-      ],
-      appointTaskList: [
-        {
-          dateTime: '10-25 08:15',
-          urgencyState: 0,
-          personName: '',
-          state: 1,
-          sampleType: '标本',
-          department: '外科',
-          isReminder: 0,
-          isDelay: 0
-        },
-        {
-          dateTime: '10-24 08:15',
-          urgencyState: 1,
-          personName: '张三',
-          state: 2,
-          sampleType: '标本4',
-          department: '擦浑然斌',
-          isReminder: 1,
-          isDelay: 1
-        },
-        {
-          dateTime: '10-24 08:15',
-          urgencyState: 1,
-          personName: '张三',
-          state: 2,
-          sampleType: '标本4',
-          department: '擦浑然斌',
-          isReminder: 1,
-          isDelay: 1
-        },
-        {
-          dateTime: '10-28 08:15',
-          urgencyState: 0,
-          state: 3,
-          personName: '李四',
-          sampleType: '血液',
-          department: '外科',
-          isReminder: 0,
-          isDelay: 1
-        }
-      ]
+      dispatchTaskList: [],
+      appointTaskList: []
     }
   },
 
@@ -466,22 +396,27 @@ export default {
     // 控制设备物理返回按键
     this.deviceReturn('/home');
     this.$nextTick(()=> {
-        try {
-            this.initScrollChange();
-            this.registerSlideEvent()
-        } catch (error) {
-            this.$toast({
-                type: 'fail',
-                message: error
-            })
-        }
+      try {
+          this.initScrollChange();
+          this.registerSlideEvent()
+      } catch (error) {
+          this.$toast({
+              type: 'fail',
+              message: error
+          })
+      }
     })
   },
 
   beforeRouteEnter(to, from, next) {
     next(vm=>{
       if (from.path == '/home') {
-        // vm.queryTaskList(1)
+        // 查询单病人调度任务列表(模板一)
+        if (vm.templateType === 'template_one') {
+          vm.getDispathSinglePatientList ()
+        } else if (vm.templateType === 'template_two') {
+
+        }
       } else {
         // 回显调度页面点击的任务类型
         if (vm.schedulingTaskType.taskTypeName) {
@@ -497,7 +432,15 @@ export default {
             vm.cancelReasonShow = true
           }
         };
-        // vm.queryTaskList(vm.taskType.taskTypeName ? vm.taskType.taskTypeName == 'dispatchTask' ? 1 : 4 : 1)
+        if (vm.schedulingTaskType.taskTypeName) {
+          if (vm.schedulingTaskType.taskTypeName == 'dispatchTask') {
+            vm.getDispathSinglePatientList()
+          } else {
+            vm.getAppointList()
+          }
+        } else {
+          vm.getDispathSinglePatientList()
+        }
       }
 	});
     next() 
@@ -506,7 +449,7 @@ export default {
   watch: {},
 
   computed: {
-    ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord"]),
+    ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord","templateType"]),
     proId () {
       return this.userInfo.extendData.proId
     }
@@ -517,6 +460,91 @@ export default {
 
      onClickLeft() {
       this.$router.push({ path: "/home"})
+    },
+
+    // 调度任务列表(单病人)
+    getDispathSinglePatientList () {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '加载中...';
+      this.dispatchEmptyShow = false;
+      dispathSinglePatientList(-1,this.proId)
+      .then((res) => {
+        this.loadingShow = false;
+        this.overlayShow = false;
+        if (res && res.data.code == 200) {
+          console.log('调度',res.data.data);
+          this.dispatchTaskList = res.data.data;
+          // 只显示未分配、未查阅、进行中三种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          if (this.dispatchTaskList.length == 0) {
+            this.dispatchEmptyShow = true
+          }
+        } else {
+          this.loadingText = '';
+          this.$toast({
+            type: 'fail',
+            message: res.data.msg
+          })
+        }
+      })
+      .catch((err) => {
+        this.loadingText = '';
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.$toast({
+          type: 'fail',
+          message: err
+        })
+      })
+    },
+
+    // 预约任务列表
+    getAppointList () {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '加载中...';
+      this.appointTaskEmptyShow = false;
+      dispathSinglePatientList(-1,this.proId)
+      .then((res) => {
+        this.loadingShow = false;
+        this.overlayShow = false;
+        if (res && res.data.code == 200) {
+          console.log('预约',res.data.data);
+          this.appointTaskList = res.data.data;
+          // 只显示未分配、未查阅、进行中三种任务的状态
+          this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          if (this.appointTaskList.length == 0) {
+            this.appointTaskEmptyShow = true
+          }
+        } else {
+          this.loadingText = '';
+          this.$toast({
+            type: 'fail',
+            message: res.data.msg
+          })
+        }
+      })
+      .catch((err) => {
+        this.loadingText = '';
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.$toast({
+          type: 'fail',
+          message: err
+        })
+      })
+    },
+
+    // 计算已经历时间
+    elapsedTime (planStartTme) {
+      let currentTime = new Date().getTime();
+      let transferPlanStartTme = new Date(planStartTme).getTime();
+      if (transferPlanStartTme > currentTime) {
+        return ''
+      } else {
+        return `${this.$moment(currentTime).diff(transferPlanStartTme, 'minutes')}分钟`
+      }
     },
 
     // 注册滑动事件  
@@ -845,17 +873,17 @@ export default {
 
     // 任务状态转换
     taskStatusTransition (state) {
-        switch(state) {
-            case 1 :
-                return '未分配'
-                break;
-            case 2 :
-                return '未查阅'
-                break;
-            case 3 :
-                return '进行中'
-                break
-        }
+      switch(state) {
+        case 0 :
+          return '未分配'
+          break;
+        case 1 :
+          return '未查阅'
+          break;
+        case 3 :
+          return '进行中'
+          break
+      }
     },
 
     // 元素滚动事件
@@ -881,56 +909,17 @@ export default {
         }    
     },
 
-    // 获取任务列表
-    queryTaskList (value) {
-        console.log(value);
-        this.loadingShow = true;
-        this.overlayShow = true;
-        this.backlogEmptyShow = false;
-        this.completedEmptyShow = false;
-		getAllTaskList({proId : this.userInfo.proIds[0], workerId: this.userInfo.id})
-        .then((res) => {
-            this.loadingShow = false;
-            this.overlayShow = false;
-        if (res && res.data.code == 200) {
-            if (value == 1) {
-                this.dispatchTaskList = res.data.data.filter((item) => { return item.state == value || item.state == 2 || item.state == 3 });
-                if (this.dispatchTaskList.length == 0) {
-                    this.backlogEmptyShow = true
-                }
-            } else if (value == 4) {
-                this.completedTaskList = res.data.data.filter((item) => { return item.state == value});
-                if (this.completedTaskList.length == 0) {
-                    this.completedEmptyShow = true
-                }
-            }
-        } else {
-          this.$toast({
-            type: 'fail',
-            message: res.data.msg
-          })
-        }
-      })
-      .catch((err) => {
-        this.loadingShow = false;
-        this.overlayShow = false;
-        this.$toast({
-          type: 'fail',
-          message: err
-        })
-      })
-    },
-
     // tab切换值变化事件
     vanTabsChangeEvent (value) {
-        console.log(this.activeName);
-        let temporaryText;
         if (value == 'dispatchTask') {
-            temporaryText = 1;
+          if (this.templateType === 'template_one') {
+            this.getDispathSinglePatientList()
+          } else if (this.templateType === 'template_two') {
+
+          }
         } else if (value == 'appointTask') {
-            temporaryText = 4
+          this.getAppointList()
         };
-        // this.queryTaskList(temporaryText);
         this.$nextTick(()=> {
             this.initScrollChange()
         })
@@ -1341,6 +1330,8 @@ export default {
                                 color: #101010;
                                 display: flex;
                                 align-items: center;
+                                margin-right: 6px;
+                                width: 0;
                                 >span {
                                   font-weight: bold;
                                   display: inline-block;
@@ -1348,6 +1339,8 @@ export default {
                                     margin-right: 8px
                                   };
                                   &:nth-child(2) {
+                                    flex: 1;
+                                    .no-wrap();
                                     height: 20px;
                                     padding-left: 8px;
                                     line-height: 20px;
@@ -1387,6 +1380,12 @@ export default {
                                   &:nth-child(2) {
                                     background: #174E97
                                   }
+                                };
+                                .listBottomLeftStyle {
+                                  color: #F2A15F !important;
+                                  border: 1px solid #F2A15F;
+                                  background: #fff !important;
+                                  box-sizing: border-box
                                 }  
                               };
                               .list-bottom-right {
@@ -1444,6 +1443,9 @@ export default {
                                   flex: 1;
                                   word-break: break-all;
                                   margin-right: 6px
+                                };
+                                .center-one-line-checkItem {
+
                                 };
                                 .center-one-line-right {
                                   flex: 1;

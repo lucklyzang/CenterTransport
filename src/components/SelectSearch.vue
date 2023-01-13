@@ -1,7 +1,7 @@
 <template>
 	<div class="vue-dropdown">
 		<div class="cur-name" @click="curNameClickEvent">
-            <span>{{current}}</span>
+            <span :class="{'spanStyle': current == '请选择医院'}">{{current}}</span>
             <van-icon :name="isShow ? 'arrow-down':'arrow-up'" size="16" />
         </div>
 		<div class="list-and-search" :class="isShow?'on':''">
@@ -31,7 +31,7 @@
 		}
   },
   props:{
-		curData:String | Number | null, // 当前选中数据
+		curData:String | Number | null,	// 当前选中数据
 		itemData:Array,	// 所有选项数据
 		isNeedSearch:{	// 是否需要搜索
 			type: Boolean,
@@ -46,7 +46,6 @@
   watch: {
     curData: {
         handler: function(newVal, oldVal) {
-		   console.log('监听到了',newVal);
            this.current = this.datalist.filter((item) => { return item.value == newVal})[0]['text'];
         },
         deep: true,
@@ -54,7 +53,6 @@
     },
 	itemData: {
         handler: function(newVal, oldVal) {
-			console.log('监听到了啊');
            this.datalist = newVal
         },
         deep: true,
@@ -63,6 +61,7 @@
   },
   
   created(){
+	  console.log('值',this.curData,this.itemData);
 		this.datalist = this.itemData;
         this.current = this.datalist.filter((item) => { return item.value == this.curData})[0]['text'];
 		//点击组件以外的地方，收起
@@ -187,6 +186,9 @@
             box-sizing: border-box;
             .no-wrap()
         };
+		.spanStyle {
+			color: #dadada !important
+		};
         /deep/ .van-icon {
             position: relative;
         };

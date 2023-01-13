@@ -42,10 +42,10 @@
                 <div class="message-one">
                     <div class="message-one-left">
                         <span>序号:</span>
-                        <span>a12</span>
+                        <span>{{ schedulingTaskDetails.serial }}</span>
                     </div>
-                    <div class="message-one-right">
-                        进行中
+                    <div class="message-one-right" :class="{'noLookupStyle':schedulingTaskDetails.state == 1,'underwayStyle':schedulingTaskDetails.state == 3}">
+                        {{ taskStatusTransition(schedulingTaskDetails.state) }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -53,7 +53,7 @@
                         <span>创建时间</span>
                     </div>
                     <div class="message-two-right">
-                        05-31 17:21
+                        {{ schedulingTaskDetails.createTime }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -61,7 +61,7 @@
                         <span>起点</span>
                     </div>
                     <div class="message-two-right">
-                        妇科病区
+                        {{ schedulingTaskDetails.setOutPlaceName }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -69,7 +69,7 @@
                         <span>病人姓名</span>
                     </div>
                     <div class="message-two-right">
-                        李四
+                       {{ schedulingTaskDetails.patientName }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -77,7 +77,7 @@
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        a12
+                        {{ schedulingTaskDetails.badNumber }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -85,15 +85,22 @@
                         <span>住院号</span>
                     </div>
                     <div class="message-two-right">
-                        w12
+                        {{ schedulingTaskDetails.patientNumber }}
                     </div>
                 </div>
                 <div class="message-one message-two message-six">
                     <div class="message-two-left">
                         <span>优先级</span>
                     </div>
-                    <div class="message-two-right">
-                        儿童科
+                    <div class="message-two-right" 
+                    :class="{
+                        'priorityNormalStyle' : schedulingTaskDetails.priority == 1,
+                        'priorityUrgencyStyle' : schedulingTaskDetails.priority == 2,
+                        'priorityImportanceStyle' : schedulingTaskDetails.priority == 3,
+                        'priorityUrgentImportanceStyle' : schedulingTaskDetails.priority == 4,
+                     
+                     }">
+                        {{ taskPriotityTransition(schedulingTaskDetails.priority) }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -101,7 +108,7 @@
                         <span>运送员</span>
                     </div>
                     <div class="message-two-right">
-                        王五
+                        {{ schedulingTaskDetails.workerName }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -109,7 +116,7 @@
                         <span>检查时间</span>
                     </div>
                     <div class="message-two-right">
-                        as
+                        {{ schedulingTaskDetails.responseTime }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -117,7 +124,7 @@
                         <span>开始时间</span>
                     </div>
                     <div class="message-two-right">
-                        轮椅
+                        {{ schedulingTaskDetails.startTime }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -125,7 +132,7 @@
                         <span>已经历时间</span>
                     </div>
                     <div class="message-two-right">
-                        培养被
+                        {{ elapsedTime(schedulingTaskDetails.planStartTime) }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -133,7 +140,7 @@
                         <span>运送工具</span>
                     </div>
                     <div class="message-two-right">
-                        轮椅
+                        {{ schedulingTaskDetails.toolName }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -141,15 +148,15 @@
                         <span>检查</span>
                     </div>
                     <div class="message-two-right">
-                        飒飒飒飒
+                        {{ schedulingTaskDetails.checkItems }}
                     </div>
                 </div>
                 <div class="message-one message-two">
                     <div class="message-two-left">
                         <span>描述</span>
                     </div>
-                    <div class="message-two-right">
-                        大大大大大大大大大大大苏打asaaaaasddsssssssssssssssssssssssssssssssssssssssssssssssssss
+                    <div class="message-two-right task-remark">
+                        {{ schedulingTaskDetails.taskRemark }}
                     </div>
                 </div>
             </div>
@@ -251,6 +258,37 @@ export default {
         }        
     },
 
+    // 计算已经历时间
+    elapsedTime (planStartTme) {
+      let currentTime = new Date().getTime();
+      let transferPlanStartTme = new Date(planStartTme).getTime();
+      if (transferPlanStartTme > currentTime) {
+        return ''
+      } else {
+        return `${this.$moment(currentTime).diff(transferPlanStartTme, 'minutes')}分钟`
+      }
+    },
+
+
+
+    // 优先级转换
+    taskPriotityTransition (state) {
+      switch(state) {
+        case 1 :
+          return '正常'
+          break;
+        case 2 :
+          return '紧急'
+          break;
+        case 3 :
+          return '重要'
+          break;
+        case 4 :
+          return '紧急重要'
+          break
+      }
+    },
+
     // 切换显示右侧菜单事件
     onClickRight () {
       this.rightMenuShow = true
@@ -330,10 +368,10 @@ export default {
     // 任务状态转换
     taskStatusTransition (state) {
         switch(state) {
-            case 1 :
+            case 0 :
                 return '未分配'
                 break;
-            case 2 :
+            case 1 :
                 return '未查阅'
                 break;
             case 3 :
@@ -507,6 +545,12 @@ export default {
                     color: #fff;
                     background: #289E8E;
                     border-radius: 4px
+                };
+                .noLookupStyle {
+                    background: #E8CB51 !important
+                };
+                .underwayStyle {
+                    background: #289E8E !important
                 }
             };
             .message-two {
@@ -522,12 +566,24 @@ export default {
                     padding-left: 10px;
                     box-align: border-box;
                     text-align: right
+                };
+                .task-remark {
+                    text-align: left !important
                 }
             };
             .message-six {
                 align-items: flex-start !important;
-                .message-two-right {
+                .priorityNormalStyle { 
+                    color: #289E8E !important
+                };
+                .priorityUrgencyStyle { 
                     color: #E8CB51 !important
+                };
+                .priorityImportanceStyle { 
+                    color: #F2A15F !important
+                };
+                .priorityUrgentImportanceStyle { 
+                    color: #E86F50 !important
                 }
             }
         };
