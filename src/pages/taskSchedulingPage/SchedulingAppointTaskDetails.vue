@@ -77,7 +77,7 @@
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.badNumber }}
+                        {{ schedulingTaskDetails.bedNumber }}
                     </div>
                 </div>
                 <div class="message-one message-two">

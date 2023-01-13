@@ -212,7 +212,7 @@
                               </div>
                                <div class="center-one-line-right">
                                 <span>床号:</span>
-                                <span>{{ item.badNumber }}</span>
+                                <span>{{ item.bedNumber }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
