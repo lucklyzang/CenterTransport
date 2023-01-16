@@ -15,3 +15,32 @@ export function appointList (state,proId) {
       method: 'get'
     })
   };
+
+
+// 预约任务创建
+export function createAppoint (data) {
+  return request({
+    url: 'bookTask/save',
+    method: 'post',
+    data
+  })
+};
+
+// 预约任务编辑
+
+export function editAppoint (data) {
+  return request({
+    url: 'bookTask/modify',
+    method: 'put',
+    data
+  })
+};
+
+// 调度任务编辑(单病人)
+export function editDispathTaskSingle (data) {
+  return request({
+    url: 'task/updateTrans',
+    method: 'post',
+    data
+  })
+};

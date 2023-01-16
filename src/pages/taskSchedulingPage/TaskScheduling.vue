@@ -159,7 +159,7 @@
                           <div class="list-center">
                             <div class="list-center-left">
                               <span>{{ item.parentTypeName }}</span>
-                              <span>{{ `${item.setOutPlaceName}-${item.destinationName}` }}</span>
+                              <span>{{ `${item.setOutPlaceName}-${item.destinationName ? item.destinationName : ''}` }}</span>
                             </div>
                             <div class="list-center-right">
                               <van-icon name="arrow" color="#101010" size="22" />
@@ -505,7 +505,7 @@ export default {
       this.overlayShow = true;
       this.loadingText = '加载中...';
       this.appointTaskEmptyShow = false;
-      dispathSinglePatientList(-1,this.proId)
+      appointList(-1,this.proId)
       .then((res) => {
         this.loadingShow = false;
         this.overlayShow = false;

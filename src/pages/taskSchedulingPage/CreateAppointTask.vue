@@ -1,6 +1,6 @@
 <template>
   <div class="page-box" ref="wrapper">
-    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">{{loadingText}}</van-loading>
     <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 任务开始时间 -->
     <div class="task-start-time-box">
@@ -197,7 +197,8 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import {queryAllDestination, queryTransportTools, generateDispatchTask, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
+import { createAppoint } from '@/api/taskScheduling.js'
+import {queryAllDestination, queryTransportTools, getTransporter, queryTransportType } from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
 import _ from 'lodash'
@@ -213,6 +214,7 @@ export default {
   data() {
     return {
       loadingShow: false,
+      loadingText: '加载中...',
       taskDescribe: '',
       patientNumberValue: '',
       patientNameValue: '',
@@ -250,18 +252,22 @@ export default {
         }
       ],
       showTransportTool: false,
-      currentTransportTool: '请选择',
+      currentTransportTool: '无工具',
       transportToolList: [],
       showGender: false,
       currentGender: '未选择',
       genderList: [
         { 
-          id: '0',
+          id: '2',
           text: '女'
         },
         { 
           id: '1',
           text: '男'
+        },
+        {
+          id: '0',
+          text: '未知'
         }
       ],
       transportTypeList: [{text: '穿刺',value: 1,selected: false},{text: '病理',value: 2,selected: false},{text: '穿刺2',value: 3,selected: false},{text: '病理2',value: 4,selected: false}],
@@ -328,6 +334,15 @@ export default {
     ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord","transportantTaskMessage","templateType","temporaryStorageCreateAppointTaskMessage"]),
     proId () {
       return this.userInfo.extendData.proId
+    },
+    userName () {
+      return this.userInfo.userName
+    },
+    proName () {
+      return this.userInfo.extendData.proName
+    },
+    workerId () {
+      return this.userInfo.extendData.userId
     }
   },
 
@@ -408,14 +423,21 @@ export default {
       })
     },
 
-    // 并行查询目的地、转运工具
+    // 并行查询目的地、转运工具、运送员
     parallelFunction (type) {
-        Promise.all([this.getAllDestination(),this.getTransportTools()])
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
+        this.overlayShow = true;
+        Promise.all([this.getAllDestination(),this.getTransportTools(),this.queryTransporter()])
         .then((res) => {
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
           if (res && res.length > 0) {
             this.transportToolList = [];
             this.startDepartmentList = [];
-            let [item1,item2] = res;
+            this.transporterList = [];
+            let [item1,item2,item3] = res;
             if (item1) {
               Object.keys(item1).forEach((item,index) => {
                 // 起点科室
@@ -435,10 +457,24 @@ export default {
                   id: i
                 })
               }
+            };
+            if (item3) {
+              for (let i = 0, len = item3.length; i < len; i++) {
+                this.transporterList.push({
+                  text: item3[i].name,
+                  value: item3[i]['workerId'],
+                  complete: item3[i].complete, // 完成数量
+                  ongoing: item3[i].ongoing, // 进行中数量
+                  id: i
+                })
+              }
             }
           }
         })
         .catch((err) => {
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
           this.$dialog.alert({
             message: `${err}`,
             closeOnPopstate: true
@@ -464,6 +500,21 @@ export default {
     getTransportTools () {
       return new Promise((resolve,reject) => {
         queryTransportTools({proId: this.proId, state: 0})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
+    // 查询运送员
+    queryTransporter () {
+      return new Promise((resolve,reject) => {
+        getTransporter(this.proId, this.workerId)
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
@@ -553,7 +604,7 @@ export default {
       if (val) {
         this.currentTransportTool =  val
       } else {
-        this.currentTransportTool = '请选择'
+        this.currentTransportTool = '无工具'
       };
       this.showTransportTool = false
     },
@@ -625,6 +676,16 @@ export default {
         }
       },
 
+      // 根据科室名称获取科室id
+      getDepartmentIdByName(text) {
+        return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
+      },
+
+      // 根据运送员名称获取运送员id
+      getCurrentTransporterIdByName(text) {
+        return this.transporterList.filter((item) => {return item['text'] == text })[0]['value']
+      },
+
       // 下班签退事件
       signOutEvent () {
           this.$dialog.alert({
@@ -668,180 +729,53 @@ export default {
         })
       },
 
-    // 确认事件(创建调度任务)
+    // 确认事件(创建预约任务)
     sureEvent () {
-      if (this.templateType === 'template_one') {
-        // if (!this.destinationListOneValue) {
-        //   this.$dialog.alert({
-        //     message: '科室不能为空',
-        //     closeOnPopstate: true
-        //   }).then(() => {
-        //   });
-        //   return
-        // };
-        let taskMessage = {
-          // setOutPlaceId: this.userInfo.depId,  //出发地ID
-          // setOutPlaceName: this.userInfo.depName,  //出发地名称
-          setOutPlaceId: this.destinationListOneValue == '' ? this.userInfo.depId : this.destinationListOneValue, //出发地ID
-          setOutPlaceName: this.destinationListOneValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListOneValue),//出发地名称
-          // destinationId: !this.destinationListOneValue ? '' : this.destinationListOneValue,   //目的地ID
-          // destinationName: !this.destinationListOneValue ? '' : this.getDepartmentNameById(this.destinationListOneValue),  //目的地名称
-          parentTypeId:  this.transportantTaskMessage.id, //运送父类型Id
-          parentTypeName: this.transportantTaskMessage.value,//运送父类型名称
-          taskTypeId: this.typeValue,  //运送类型 ID
-          taskTypeName: this.typeText,  //运送类型 名 称
-          priority: this.checkResult,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-          toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
-          toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
-          actualCount: this.actualData,   //实际数量
-          patientName: this.patientName,  //病人姓名
-          sex: 0,    //病人性别  0-未指定,1-男, 2-女
-          age: "",   //年龄
-          number: this.patientNumber,   //住院号
-          bedNumber: this.bedNumber,  //床号
-          taskRemark: this.taskDescribe,   //备注
-          createId: this.workerId,   //创建者ID  当前登录者
-          createName: this.userName,   //创建者名称  当前登陆者
-          proId: this.proId,   //项目ID
-          proName: this.proName,   //项目名称
-          isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
-          createType: 1,   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序  
-        };
-        // 创建调度任务
-        this.postGenerateDispatchTask(taskMessage);
-      } else if (this.templateType === 'template_two') {
-        // if (this.destinationListValue.length == 0) {
-        //   this.$dialog.alert({
-        //     message: '科室不能为空',
-        //     closeOnPopstate: true
-        //   }).then(() => {
-        //   });
-        //   return
-        // };
-        let taskMessageTwo = {
-          setOutPlaceId: this.destinationListValue == '' ? this.userInfo.depId : this.destinationListValue, //出发地ID
-          setOutPlaceName: this.destinationListValue == '' ? this.userInfo.depName : this.getDepartmentNameById(this.destinationListValue),//出发地名称
-          destinations: [],//多个目的地列表
-          patientInfoList: [], //多个病人信息列表
-          priority: this.checkResult, //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-          toolId: this.toolValue === 0 ? 0 : this.toolValue === '' ? '' : this.toolValue, //运送工具ID
-          toolName: this.toolName === '无工具' ? '无工具' : this.toolName === '' ? '' : this.toolName, //运送工具名称
-          actualCount: this.totalNumber, //实际数量
-          taskRemark: this.taskDescribe, //备注
-          createId: this.workerId,   //创建者ID  当前登录者
-          createName: this.userName,   //创建者名称  当前登陆者
-          proId: this.proId, //项目ID
-          proName: this.proName, //项目名称
-          isBack: this.judgeResult, //是否返回出发地  0-不返回，1-返回
-          createType: 1, //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序
-        };
-        // 获取目的地列表数据
-        // if (this.destinationListValue.length > 0) {
-        //   for (let item of this.destinationListValue) {
-        //     taskMessageTwo.destinations.push({
-        //       destinationId: item,
-        //       destinationName: this.getDepartmentNameById(item)
-        //     })
-        //   }
-        // };
-        // 获取多个病人信息列表数据
-        for (let patientItem of this.templatelistTwo) {
-          taskMessageTwo.patientInfoList.push({
-            bedNumber: patientItem['bedNumber'],
-            patientName: patientItem['patientName'],
-            number: patientItem['patientNumber'],
-            sex:  patientItem['genderValue'] == '男' ? 1 : 2,
-            quantity: patientItem['actualData'],
-            typeList: []
-          })
-        };
-        // 获取每个病人的运送类型数据
-        for (let i = 0, len = this.templatelistTwo.length; i < len; i++) {
-          if (this.templatelistTwo[i]['transportList'].length > 0) {
-            // 获取选中的运送类型小类
-            let checkChildTypeList = this.templatelistTwo[i]['transportList'].filter((item) => {return item.typerNumber > 0});
-            // 运送类型小类存在没选的情况
-            if (checkChildTypeList.length > 0) {
-              for (let innerItem of checkChildTypeList) {
-                taskMessageTwo.patientInfoList[i]['typeList'].push({
-                  quantity: innerItem['typerNumber'],
-                  parentTypeId: this.templatelistTwo[i]['sampleId'],
-                  parentTypeName: this.templatelistTwo[i]['sampleValue'],
-                  taskTypeId: innerItem['value'],
-                  taskTypeName: innerItem['text']
-                })
-              }
-            } else {
-              taskMessageTwo.patientInfoList[i]['typeList'].push({
-                quantity: 1,
-                parentTypeId: this.templatelistTwo[i]['sampleId'],
-                parentTypeName: this.templatelistTwo[i]['sampleValue'],
-                taskTypeId: '',
-                taskTypeName: ''
-              });
-              // 没选运送类型小类时,大类也算一个数量
-              taskMessageTwo.patientInfoList[i]['quantity'] = 1;
-              this.templatelistTwo[i]['actualData'] = 1;
-              // 重新计算运送类型总数
-              this.totalNumber  = this.templatelistTwo.reduce((accumulator, currentValue) => {
-                return accumulator + Number(currentValue.actualData)
-              },0);
-              taskMessageTwo['actualCount'] = this.totalNumber
-            }
-          }
-        };
-        this.postGenerateDispatchTaskMany(taskMessageTwo);
-        console.log('最终数据',taskMessageTwo)
-      }
+      if (this.currentStartDepartment == '请选择') {
+        this.$toast({message: '请选择起点科室',type: 'fail'});
+        return
+      };
+      let taskMessage = {
+        depId: this.currentStartDepartment ? this.getDepartmentIdByName(this.currentStartDepartment) : '', //出发地ID
+        department: this.currentStartDepartment,//出发地名称
+        items: [], //检查项
+        priority: this.priorityRadioValue,   //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
+        toolId: this.currentTransportTool == '无工具' ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
+        transTool: this.currentTransportTool, //运送工具名称
+        name: this.patientNameValue,  //病人姓名
+        planStartTime: this.getNowFormatDate(this.currentTaskStartTime), //计划开始时间
+        sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
+        age: "",   //年龄
+        hospitalNo: this.admissionNumberValue,   //住院号
+        bedNumber: this.patientNumberValue,  //床号
+        taskRemark: this.taskDescribe,   //备注
+        // startUser: this.workerId,   //创建者ID  当前登录者
+        startUser: this.userName,   //创建者名称  当前登陆者
+        modifyId: '', //修改人ID
+        modifyName: '', // 修改人
+        workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+        workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
+        proId: this.proId,   //项目ID
+        proName: this.proName,   //项目名称
+        assignerId: '', //分配人id
+        assignerName: '', // 分配人
+        createType: 1,   //创建类型 0-接入，1-调度员
+        startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
+      };
+      // 创建预约任务
+      this.postGenerateAppointTask(taskMessage)
     },
 
-    // 生成调度任务(一个病人)
-    postGenerateDispatchTask (data) {
+    // 生成预约任务
+    postGenerateAppointTask (data) {
       this.showLoadingHint = true;
       this.overlayShow = true;
-      generateDispatchTask(data).then((res) => {
+      createAppoint(data).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
           this.$router.push({path:'/taskScheduling'});
           this.changeTitleTxt({tit:'中央运送任务管理'});
           setStore('currentTitle','中央运送任务管理');
-        } else {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        };
-        this.showLoadingHint = false;
-        this.overlayShow = false
-      })
-      .catch((err) => {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
-        this.showLoadingHint = false;
-        this.overlayShow = false
-      })
-    },
-
-    //生成调度任务(多个病人)
-    postGenerateDispatchTaskMany(data) {
-      this.showLoadingHint = true;
-      this.overlayShow = true;
-      generateDispatchTaskMany(data).then((res) => {
-        if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          setTimeout(() => {
-            this.backTo()
-          }, 1000)
         } else {
           this.$dialog.alert({
             message: `${res.data.msg}`,

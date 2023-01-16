@@ -103,7 +103,7 @@
                         {{ schedulingTaskDetails.workerName }}
                     </div>
                 </div>
-                <div class="message-one message-two">
+                <div class="message-one message-two" v-if="templateType === 'template_one'">
                     <div class="message-two-left">
                         <span>床号</span>
                     </div>
@@ -143,7 +143,7 @@
                         {{ schedulingTaskDetails.toolName }}
                     </div>
                 </div>
-                <div class="message-one message-two">
+                <div class="message-one message-two" v-if="templateType === 'template_one'">
                     <div class="message-two-left">
                         <span>运送类型</span>
                     </div>
@@ -156,44 +156,29 @@
                         <span>运送员是否返回</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.isBack == 0 ? '不返回' : '返回' }}
+                        {{ schedulingTaskDetails.isBack == 0 ? '否' : '是' }}
                     </div>
                 </div>
-                <div class="patient-list">
-                    <div class="patient-name">病人一</div>
-                    <div class="message-box">
-                        <div class="message-box-one">
-                            <div class="message-box-left">
-                                <span>床号:</span>
-                                <span>12</span>
-                            </div>
-                            <div class="message-box-center">
-                                <span>姓名:</span>
-                                <span>张三</span>
-                            </div>
-                            <div class="message-box-right">
-                                <span>性别:</span>
-                                <span>未知</span>
-                            </div>
-                        </div>
-                        <div class="message-box-two">
-                            <div class="message-box-two-left">
-                                <span>住院号:</span>
-                                <span>12306</span>
-                            </div>
-                            <div class="message-box-two-right">
-                                <span>运送数:</span>
-                                <span>6</span>
-                            </div>
-                        </div>
-                        <div class="message-box-three">
-                            <span>运送类型:</span>
-                            <span>沙克撒还是卡上</span>
-                        </div>
-                    </div>
+                <div class="patient-list" v-if="templateType === 'template_two'">
+                   <div class="patient-list-left">
+                       运送类型
+                   </div>
+                   <div class="patient-list-right">
+                        <span class="transport-partent">运送类型:</span>
+                        <span class="transport-partent">标本一</span>
+                        <span>床号:</span>
+                        <span>未输入</span>
+                        <span>姓名:</span>
+                        <span>未输入</span>
+                        <span>性别:</span>
+                        <span>未输入</span>
+                        <span>住院号:</span>
+                        <span>未输入</span>
+                        <span class="patient-subclass">血标本×1</span>
+                   </div>
                 </div>
                 <div class="message-one message-two">
-                    <div class="message-two-left">
+                    <div class="message-two-left task-remark-left">
                         <span>描述</span>
                     </div>
                     <div class="message-two-right task-remark">
@@ -255,7 +240,7 @@ export default {
   watch: {},
 
   computed: {
-    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord"]),
+    ...mapGetters(["userInfo","schedulingTaskDetails","operateBtnClickRecord","templateType"]),
     proId () {
         return this.userInfo.extendData.proId
     }
@@ -297,16 +282,16 @@ export default {
     // 优先级装换
     taskPriotityTransition (state) {
       switch(state) {
-        case 1 :
+        case 0 :
           return '正常'
           break;
-        case 2 :
+        case 1 :
           return '紧急'
           break;
-        case 3 :
+        case 2 :
           return '重要'
           break;
-        case 4 :
+        case 3 :
           return '紧急重要'
           break
       }
@@ -614,6 +599,9 @@ export default {
                 .message-two-left {
                     color: #9E9E9A
                 };
+                .task-remark-left {
+                    width: 70px
+                };
                 .message-two-right {
                     flex: 1;
                     color: #101010;
@@ -643,101 +631,27 @@ export default {
             };
             .patient-list {
                 width: 100%;
-                padding: 8px 10px;
                 box-sizing: border-box;
                 background: #fff;
+                display: flex;
+                justify-content: space-between;
                 font-size: 14px;
                 margin-top: 6px;
-                .patient-name {
-                    color: #101010;
-                    font-size: 16px;
-                    margin-bottom: 10px
+                align-items: flex-start !important;
+                padding: 11px 6px;
+                .patient-list-left {
+                    color: #9E9E9A;
+                    width: 70px
                 };
-                .message-box {
-                    background: #F9F9F9;
-                    border-radius: 4px;
-                    padding: 12px 8px;
-                    box-sizing: border-box;
-                    .message-box-one {
-                        display: flex;
-                        .message-box-left {
-                            flex: 1;
-                            >span {
-                                font-size: 14px;
-                                color: #9E9E9A;
-                                &:nth-child(2) {
-                                   margin-left: 4px;
-                                   color: #101010 !important;
-                                   word-break: break-all
-                                }
-                            }
-                        };
-                        .message-box-center {
-                            padding: 0 6px;
-                            flex: 1;
-                             >span {
-                                font-size: 14px;
-                                color: #9E9E9A;
-                                &:nth-child(2) {
-                                   margin-left: 4px;
-                                   color: #101010 !important;
-                                   word-break: break-all
-                                }
-                            }
-                        };
-                        .message-box-right {
-                            flex: 1;
-                             >span {
-                                font-size: 14px;
-                                color: #9E9E9A;
-                                &:nth-child(2) {
-                                   margin-left: 4px;
-                                   color: #101010 !important;
-                                   word-break: break-all
-                                }
-                            }
-                        }
-                    };
-                    .message-box-two {
-                        margin: 14px 0;
-                        display: flex;
-                        .message-box-two-left {
-                            flex: 1;
-                            >span {
-                                font-size: 14px;
-                                color: #9E9E9A;
-                                &:nth-child(2) {
-                                   margin-left: 4px;
-                                   color: #101010 !important;
-                                   word-break: break-all
-                                }
-                            }
-                        };
-                        .message-box-two-right {
-                            flex: 1;
-                             >span {
-                                font-size: 14px;
-                                color: #9E9E9A;
-                                &:nth-child(2) {
-                                   margin-left: 4px;
-                                   color: #101010 !important;
-                                   word-break: break-all
-                                }
-                            }
-                        }
-                    };
-                    .message-box-three {
-                        display: flex;
-                         >span {
-                            font-size: 14px;
-                            color: #9E9E9A;
-                            &:nth-child(2) {
-                                margin-left: 4px;
-                                color: #101010 !important;
-                                word-break: break-all;
-                                flex: 1
-                            }
-                        }
+                .patient-list-right {
+                    color: #9E9E9A;
+                    flex: 1;
+                    line-height: 20px;
+                    padding-left: 10px;
+                    box-align: border-box;
+                    word-break: break-all;
+                    .transport-partent {
+                        color: #101010 !important
                     }
                 }
             }
