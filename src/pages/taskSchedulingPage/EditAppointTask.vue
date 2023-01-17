@@ -314,7 +314,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        that.$router.push({path: 'taskScheduling'})
+        that.$router.push({path: '/taskScheduling'})
       })
     };
     this.registerSlideEvent();
@@ -735,7 +735,7 @@ export default {
           department: this.currentStartDepartment,//出发地名称
           items: [], //检查项
           priority: this.priorityRadioValue,   //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
-          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
+          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
           transTool: this.currentTransportTool, //运送工具名称
           name: this.patientNameValue,  //病人姓名
           planStartTime: this.getNowFormatDate(this.currentTaskStartTime), //计划开始时间
@@ -746,8 +746,8 @@ export default {
           taskRemark: this.taskDescribe,   //备注
           // startUser: this.workerId,   //创建者ID  当前登录者
           startUser: this.userName,   //创建者名称  当前登陆者
-          workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
-          workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           proId: this.proId,   //项目ID
           proName: this.proName,   //项目名称
           assignerId: '', //分配人id

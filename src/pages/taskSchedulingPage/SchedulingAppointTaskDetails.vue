@@ -163,7 +163,7 @@
             <div class="btn-box">
                 <span class="operate-one" @click="allocationEvent">分配</span>
                 <span class="operate-two" @click="editEvent">编辑</span>
-                <span class="operate-three" @click="delayReasonEvent">延迟</span>
+                <span class="operate-three" @click="delayReasonEvent" v-if="schedulingTaskDetails.hasDelay == 0">延迟</span>
                 <span class="operate-four" @click="cancelReasonEvent">取消</span>
             </div>
         </div>

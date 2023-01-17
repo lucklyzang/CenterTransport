@@ -461,7 +461,7 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        that.$router.push({path: 'taskScheduling'})
+        that.$router.push({path: '/taskScheduling'})
       })
     };
     this.echoTemporaryStorageMessage();
@@ -526,17 +526,17 @@ export default {
         this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
-        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage.parentTypeId, this.templateType);
+        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage.parentTypeId, this.templateType,true);
       } else if (this.templateType === 'template_two') {
-        this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
-        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'];
-        this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
-        this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentEndDepartment'];
-        this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
-        this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
-        this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['taskTransportTotal'];
-        this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'];
-        this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'];
+        this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
+        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
+        this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
+        this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinationName'];
+        this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
+        this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
+        this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
+        this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
+        this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
         this.templatelistTwo = casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'];
         this.patienModalMessage = casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'];
         this.commonTransportList = casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList']
@@ -623,13 +623,13 @@ export default {
 
     // 运送类型大类下拉框值变化时事件
     sampleListValueChange (index) {
-      this.querytransportChildByTransportParent(index,this.templatelistTwo[index].sampleValue,this.templateType);
+      this.querytransportChildByTransportParent(index,this.templatelistTwo[index].sampleValue,this.templateType,false);
       this.templatelistTwo[index].actualData = 0
     },
 
     // 运送类型大类选择列表变化时
     transportParentChange(val) {
-      this.querytransportChildByTransportParent(val.parentIndex, val.orignItem.id,this.templateType);
+      this.querytransportChildByTransportParent(val.parentIndex, val.orignItem.id,this.templateType,false);
       this.patienModalMessage.actualData = 0;
       this.patienModalMessage.sampleValue = val.orignItem.value;
       this.patienModalMessage.sampleId = val.orignItem.id;
@@ -680,7 +680,7 @@ export default {
     },
     
     // 根据运送类型大类查询运送类型小类
-    querytransportChildByTransportParent (index,id, flag) {
+    querytransportChildByTransportParent (index,id, flag,isEcho) {
       this.loadingText = '加载中...';
       this.loadingShow = true;
       this.overlayShow = true;
@@ -718,8 +718,13 @@ export default {
                 value: item.id
               })
             };
-            this.transportTypeIndex = this.schedulingTaskDetails['taskTypeId'];
-            this.currentTransportType = this.schedulingTaskDetails['taskTypeName'];
+            if (isEcho) {
+              this.transportTypeIndex = this.transportTypeList.findIndex((innerItem) => { return innerItem.value == this.schedulingTaskDetails['taskTypeId']});
+              this.currentTransportType = {
+                text: this.schedulingTaskDetails['taskTypeName'],
+                value: this.schedulingTaskDetails['taskTypeId']
+              }
+            }
             console.log('运送类型',this.transportTypeList);
           }
         }
@@ -975,7 +980,7 @@ export default {
         this.currentTransportRice = val;
         this.synchronizationPatientTransportType(val);
         // 根据运送大类查询运送小类
-        this.querytransportChildByTransportParent(0,this.transportRiceList.filter((item) => { return item.text == val })[0]['value'],this.templateType);
+        this.querytransportChildByTransportParent(0,this.transportRiceList.filter((item) => { return item.text == val })[0]['value'],this.templateType,false);
       } else {
         this.currentTransportRice = '请选择'
       };
@@ -1201,14 +1206,14 @@ export default {
         let taskMessage = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment,//出发地名称
-          destinationId: this.currentEndDepartment == '请选择' ? '' : this.getDepartmentIdByName(this.currentEndDepartment), //目的地ID
-          destinationName: this.currentEndDepartment == '请选择' ? '' : this.currentEndDepartment,  //目的地名称
+          destinationId: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.getDepartmentIdByName(this.currentEndDepartment), //目的地ID
+          destinationName: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.currentEndDepartment,  //目的地名称
           parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: this.currentTransportType['value'],  //运送类型 ID
           taskTypeName: this.currentTransportType['text'],  //运送类型名称
           priority: this.priorityRadioValue,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
-          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
+          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.transportNumberValue,   //实际数量
           patientName: this.patientNameValue,  //病人姓名
@@ -1217,8 +1222,8 @@ export default {
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
-          workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
-          workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
           proId: this.proId,   //项目ID
@@ -1244,12 +1249,12 @@ export default {
           destinations: [],//多个目的地列表
           patientInfoList: [], //多个病人信息列表
           priority: this.priorityRadioValue, //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
-          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
+          toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.taskTransportTotal, //实际数量
           taskRemark: this.taskDescribe, //备注
-          workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
-          workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
           proId: this.proId, //项目ID

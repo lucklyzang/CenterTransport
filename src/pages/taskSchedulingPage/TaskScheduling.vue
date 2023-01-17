@@ -167,13 +167,13 @@
                           </div>
                           <div class="list-bottom">
                             <div class="list-bottom-left">
-                              <span :class="{'listBottomLeftStyle': item.reminder == 0 }">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
+                              <span :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
                               <span v-if="item.hasDelay == 1">已延迟</span>
                             </div>
                             <div class="list-bottom-right">
                               <span class="operate-one" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
                               <span class="operate-two" @click.stop="editEvent(item,index,'调度任务')">编辑</span>
-                              <span class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
+                              <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
                               <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'调度任务')">取消</span>
                             </div>
                           </div>
@@ -253,7 +253,7 @@
                             <div class="list-bottom-right">
                               <span class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
                               <span class="operate-two" @click.stop="editEvent(item,index,'预约任务')">编辑</span>
-                              <span class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
+                              <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
                               <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'预约任务')">取消</span>
                             </div>
                           </div>
@@ -268,10 +268,11 @@
 </template>
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { userSignOut } from '@/api/workerPort.js'
+import { userSignOut,queryDispatchTaskCancelReason,queryTaskDelayReason } from '@/api/workerPort.js'
+import { queryAllDestination, taskReminder,getTransporter } from '@/api/medicalPort.js'
 import { dispathSinglePatientList, appointList } from '@/api/taskScheduling.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
-import { setStore,removeAllLocalStorage } from '@/common/js/utils'
+import { IsPC,setStore,removeAllLocalStorage } from '@/common/js/utils'
 import SelectSearch from "@/components/SelectSearch";
 export default {
   name: "TaskScheduling",
@@ -310,35 +311,9 @@ export default {
       ],
       priorityResult: ['1'],
       startPointDepartmentValue: null,
-      startPointDepartmentOption: [
-        {
-          value: null,
-          text: '请选择起点科室'
-        },
-        {
-          value: 1,
-          text: '体检科'
-        },
-        {
-          value: 2,
-          text: '化验科'
-        }
-      ],
+      startPointDepartmentOption: [],
       transporterValue: null,
-      transporterOption: [
-        {
-          value: null,
-          text: '请选择运送员'
-        },
-        {
-          value: 1,
-          text: '张三'
-        },
-        {
-          value: 2,
-          text: '李四'
-        }
-      ],
+      transporterOption: [],
       selectAllocation: {},
       allocationValue: null,
       allocationOption:  [
@@ -357,36 +332,18 @@ export default {
       ],
       selectDelayReason: {},
       delayReasonValue: null,
-      delayReasonOption: [
-        {
-          value: null,
-          text: '请选择延迟原因'
-        },
-        {
-          value: 1,
-          text: '突发因素'
-        },
-        {
-          value: 2,
-          text: '忙不过来'
-        }
-      ],
+      delayReasonOption: [],
+      dispathDelayReasonOption: [],
+      appointDelayReasonOption: [],
       selectCancelReason: {},
       cancelReasonValue: null,
-      cancelReasonOption: [
-        {
-          value: null,
-          text: '请选择取消原因'
-        },
-        {
-          value: 1,
-          text: '不想干了'
-        },
-        {
-          value: 2,
-          text: '更重要的活'
-        }
-      ],
+      cancelReasonOption: [],
+      dispathDelayReasonOption: [],
+      appointDelayReasonOption: [],
+      dispathCancelReasonOption: [],
+      appointCancelReasonOption: [],
+      echoDispatchTaskList: [],
+      echoAppointTaskList: [],
       dispatchTaskList: [],
       appointTaskList: []
     }
@@ -394,7 +351,15 @@ export default {
 
   mounted() {
     // 控制设备物理返回按键
-    this.deviceReturn('/home');
+    if (!IsPC()) {
+      let that = this;
+      pushHistory();
+      that.gotoURL(() => {
+        pushHistory();
+        that.resetBtnClickStatus();
+        that.$router.push({path: '/home'})
+      })
+    };
     this.$nextTick(()=> {
       try {
           this.initScrollChange();
@@ -405,7 +370,8 @@ export default {
               message: error
           })
       }
-    })
+    });
+    this.parallelFunction()
   },
 
   beforeRouteEnter(to, from, next) {
@@ -422,16 +388,16 @@ export default {
         if (vm.schedulingTaskType.taskTypeName) {
           vm.activeName = vm.schedulingTaskType.taskTypeName
         };
-        // 根据任务详情页面点击的按钮,显示对应的弹框
-        if (vm.operateBtnClickRecord) {
-          if (vm.operateBtnClickRecord['allocationBtnClick']) {
-            vm.allocationShow = true
-          } else if (vm.operateBtnClickRecord['delayBtnClick']) {
-            vm.delayReasonShow = true
-          } else if (vm.operateBtnClickRecord['cancelBtnClick']) {
-            vm.cancelReasonShow = true
-          }
-        };
+        // // 根据任务详情页面点击的按钮,显示对应的弹框
+        // if (vm.operateBtnClickRecord) {
+        //   if (vm.operateBtnClickRecord['allocationBtnClick']) {
+        //     vm.allocationShow = true
+        //   } else if (vm.operateBtnClickRecord['delayBtnClick']) {
+        //     vm.delayReasonShow = true
+        //   } else if (vm.operateBtnClickRecord['cancelBtnClick']) {
+        //     vm.cancelReasonShow = true
+        //   }
+        // };
         if (vm.schedulingTaskType.taskTypeName) {
           if (vm.schedulingTaskType.taskTypeName == 'dispatchTask') {
             vm.getDispathSinglePatientList()
@@ -446,12 +412,28 @@ export default {
     next() 
   },
 
+   beforeRouteLeave(to, from, next) {
+   if (to.path == '/home') {
+      this.resetBtnClickStatus()
+   };
+   next() 
+  },
+
   watch: {},
 
   computed: {
     ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord","templateType"]),
     proId () {
       return this.userInfo.extendData.proId
+    },
+    userName () {
+      return this.userInfo.userName
+    },
+    proName () {
+      return this.userInfo.extendData.proName
+    },
+    workerId () {
+      return this.userInfo.extendData.userId
     }
   },
 
@@ -477,6 +459,7 @@ export default {
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、进行中三种任务的状态
           this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          this.echoDispatchTaskList = this.dispatchTaskList;
           if (this.dispatchTaskList.length == 0) {
             this.dispatchEmptyShow = true
           }
@@ -514,6 +497,7 @@ export default {
           this.appointTaskList = res.data.data;
           // 只显示未分配、未查阅、进行中三种任务的状态
           this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          this.echoAppointTaskList = this.appointTaskList;
           if (this.appointTaskList.length == 0) {
             this.appointTaskEmptyShow = true
           }
@@ -545,6 +529,186 @@ export default {
       } else {
         return `${this.$moment(currentTime).diff(transferPlanStartTme, 'minutes')}分钟`
       }
+    },
+
+    // 并行查询目的地、运送员、调度任务取消原因、预约任务取消原因、调度任务延迟原因、预约任务延迟原因
+    parallelFunction () {
+        this.loadingText = '加载中...';
+        this.loadingShow = true;
+        this.overlayShow = true;
+        Promise.all([this.getAllDestination(),this.queryTransporter(),this.getCancelReason(1),this.getCancelReason(2),this.getDelayReason(1),this.getDelayReason(2)])
+        .then((res) => {
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
+          if (res && res.length > 0) {
+            this.startPointDepartmentOption = [{
+              text: '请选择',
+              value: null
+            }];
+            this.transporterOption = [{
+              text: '请选择',
+              value: null
+            }];
+            this.dispathCancelReasonOption = [{
+              text: '请选择取消原因',
+              value: null
+            }];
+            this.appointCancelReasonOption = [{
+              text: '请选择取消原因',
+              value: null
+            }];
+            this.dispathDelayReasonOption = [{
+              text: '请选择延迟原因',
+              value: null
+            }];
+            this.appointDelayReasonOption = [{
+              text: '请选择延迟原因',
+              value: null
+            }];
+            let [item1,item2,item3,item4,item5,item6] = res;
+            if (item1) {
+              Object.keys(item1).forEach((item,index) => {
+                // 起点科室
+                this.startPointDepartmentOption.push({
+                  text: item1[item],
+                  value: item
+                });
+              })
+            };
+            if (item2) {
+              for (let i = 0, len = item2.length; i < len; i++) {
+                this.transporterOption.push({
+                  text: item2[i].name,
+                  value: item2[i]['workerId'],
+                  complete: item2[i].complete, // 完成数量
+                  ongoing: item2[i].ongoing, // 进行中数量
+                  id: i
+                })
+              }
+            };
+            if (item3) {
+              for (let i = 0, len = item3.length; i < len; i++) {
+                this.dispathCancelReasonOption.push({
+                  text: item3[i]['cancelName'],
+                  value: item3[i]['id']
+                })
+              }
+            };
+            if (item4) {
+              for (let i = 0, len = item4.length; i < len; i++) {
+                this.appointCancelReasonOption.push({
+                  text: item4[i]['cancelName'],
+                  value: item4[i]['id']
+                })
+              }
+            };
+            if (item5) {
+              for (let i = 0, len = item5.length; i < len; i++) {
+                this.dispathDelayReasonOption.push({
+                  text: item5[i]['delayName'],
+                  value: item5[i]['id']
+                })
+              }
+            };
+            if (item6) {
+              for (let i = 0, len = item6.length; i < len; i++) {
+                this.appointDelayReasonOption.push({
+                  text: item6[i]['delayName'],
+                  value: item6[i]['id']
+                })
+              }
+            }
+          };
+          // 根据任务详情页面点击的按钮,显示对应的弹框及为对应的弹框列表数据赋值
+          if (this.operateBtnClickRecord) {
+            if (this.operateBtnClickRecord['allocationBtnClick']) {
+              this.allocationShow = true
+            } else if (this.operateBtnClickRecord['delayBtnClick']) {
+              if (this.activeName == 'dispathTask') {
+                this.delayReasonOption = this.dispathDelayReasonOption
+              } else {
+                this.delayReasonOption = this.appointDelayReasonOption
+              };
+              this.delayReasonShow = true
+            } else if (this.operateBtnClickRecord['cancelBtnClick']) {
+              if (this.activeName == 'dispathTask') {
+                this.cancelReasonOption = this.dispathCancelReasonOption
+              } else {
+                this.cancelReasonOption = this.appointCancelReasonOption
+              };
+              this.cancelReasonShow = true
+            }
+          };
+        })
+        .catch((err) => {
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
+          this.$dialog.alert({
+            message: `${err}`,
+            closeOnPopstate: true
+          }).then(() => {})
+        })
+      },
+    
+     // 查询目的地
+    getAllDestination () {
+      return new Promise((resolve,reject) => {
+        queryAllDestination(this.proId).then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
+    // 查询运送员
+    queryTransporter () {
+      return new Promise((resolve,reject) => {
+        getTransporter(this.proId, this.workerId)
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
+    // 获取取消原因列表
+    getCancelReason (type) {
+       return new Promise((resolve,reject) => {
+        queryDispatchTaskCancelReason({proId: this.proId, state: 0,type})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
+    },
+
+    // 获取延迟原因列表
+    getDelayReason (type) {
+       return new Promise((resolve,reject) => {
+        queryTaskDelayReason({proId: this.proId, state: 0,type})
+        .then((res) => {
+          if (res && res.data.code == 200) {
+            resolve(res.data.data)
+          }
+        })
+        .catch((err) => {
+          reject(err.message)
+        })
+      })
     },
 
     // 注册滑动事件  
@@ -596,12 +760,12 @@ export default {
 
     // 筛选弹框起点科室下拉框选值变化事件
     startPointDepartmentOptionChange (item) {
-      console.log(item)
+      this.startPointDepartmentValue = item.value
     },
 
     // 筛选弹框运送员下拉框选值变化事件
     transporterOptionChange (item) {
-
+      this.transporterValue = item.value
     },
 
     // 筛选弹框关闭前事件
@@ -620,7 +784,90 @@ export default {
 
     // 筛选弹框确定事件
     screenDialogSure () {
-
+      console.log( '过滤数据' ,this.startPointDepartmentValue,this.transporterValue,this.priorityResult);
+      if (this.activeName == 'dispatchTask') {
+        if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+          this.dispatchTaskList = this.echoDispatchTaskList;
+          if (this.dispatchTaskList.length == 0) {
+            this.dispatchEmptyShow = true
+          } else {
+            this.dispatchEmptyShow = false
+          }
+        } else {
+          this.dispatchTaskList = this.echoDispatchTaskList.filter((item) => {
+            if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                return item['setOutPlaceId'] == this.startPointDepartmentValue &&
+                item['workerId'] == this.transporterValue &&
+                this.priorityResult.indexOf(item.priority.toString()) != -1
+              } else {
+                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue
+                };
+                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                  return item['workerId'] == this.transporterValue
+                };
+                if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                  return this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+                if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
+                };
+                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                  return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+              }
+          });
+          if (this.dispatchTaskList.length == 0) {
+            this.dispatchEmptyShow = true
+          } else {
+            this.dispatchEmptyShow = false
+          }
+        }
+      } else if (this.activeName == 'appointTask') {
+        if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+          this.appointTaskList = this.echoAppointTaskList;
+          if (this.appointTaskList.length == 0) {
+            this.appointTaskEmptyShow = true
+          } else {
+            this.appointTaskEmptyShow = false
+          }
+        } else {
+          this.appointTaskList = this.echoAppointTaskList.filter((item) => {
+            if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                return item['setOutPlaceId'] == this.startPointDepartmentValue &&
+                item['workerId'] == this.transporterValue &&
+                this.priorityResult.indexOf(item.priority.toString()) != -1
+              } else {
+                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue
+                };
+                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                  return item['workerId'] == this.transporterValue
+                };
+                if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                  return this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+                if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
+                };
+                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                  return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                };
+              }
+          });
+          if (this.appointTaskList.length == 0) {
+            this.appointTaskEmptyShow = true
+          } else {
+            this.appointTaskEmptyShow = false
+          }
+        }
+      }
     },
 
     // 筛选弹框取消事件
@@ -631,6 +878,43 @@ export default {
     // 关闭筛选弹框
     closeScreenDialogEvent () {
       this.screenDialogShow = false
+    },
+
+    // 催单事件
+    reminderTask(item) {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '催单中...';
+      taskReminder(this.proId,item.id).then((res) => {
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = '';
+        if (res && res.data.code == 200) {
+          this.$toast(`${res.data.data}`);
+          // 更新任务信息
+          if (this.templateType === 'template_one') {
+            this.getDispathSinglePatientList ()
+          } else if (this.templateType === 'template_two') {
+
+          }
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          });
+        }
+      })
+      .catch((err) => {
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = '';
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+      })
     },
 
     // 分配点击事件
@@ -686,7 +970,12 @@ export default {
 
     // 延迟点击事件
     delayReasonEvent(item,index,text) {
-      this.delayReasonShow = true
+      this.delayReasonShow = true;
+      if (this.activeName == 'dispathTask') {
+        this.delayReasonOption = this.dispathDelayReasonOption
+      } else {
+        this.delayReasonOption = this.appointDelayReasonOption
+      }
     },
 
     // 延迟原因弹框下拉框选值变化事件
@@ -721,7 +1010,11 @@ export default {
     // 取消点击事件
     cancelReasonEvent(item,index,text) {
       this.cancelReasonShow = true;
-      this.selectCancelReason = item
+      if (this.activeName == 'dispathTask') {
+        this.cancelReasonOption = this.dispathCancelReasonOption
+      } else {
+        this.cancelReasonOption = this.appointCancelReasonOption
+      }
     },
 
     // 取消原因弹框下拉框选值变化事件

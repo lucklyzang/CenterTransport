@@ -316,7 +316,7 @@ export default {
       that.gotoURL(() => {
         that.commonIsTemporaryStorageMethods();
         pushHistory();
-        that.$router.push({path: 'taskScheduling'})
+        that.$router.push({path: '/taskScheduling'})
       })
     };
     this.registerSlideEvent();

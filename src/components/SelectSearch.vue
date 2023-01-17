@@ -46,7 +46,7 @@
   watch: {
     curData: {
         handler: function(newVal, oldVal) {
-           this.current = this.datalist.filter((item) => { return item.value == newVal})[0]['text'];
+           this.current = this.datalist.length > 0 ? this.datalist.filter((item) => { return item.value == newVal})[0]['text'] : '';
         },
         deep: true,
 		immediate: true
