@@ -1328,7 +1328,8 @@ export default {
       .van-dialog__content {
           padding: 0 !important;
           box-sizing: border-box;
-          height: 20vh;
+          max-height: 80vh;
+          overflow: auto;
           .dialog-top {
             height: 40px;
             padding-left: 10px;
@@ -1343,6 +1344,8 @@ export default {
           .dialog-center {
             width: 80%;
             margin: 0 auto;
+            height: 30vh;
+            overflow: auto;
             margin-top: 20px
           }
       };
