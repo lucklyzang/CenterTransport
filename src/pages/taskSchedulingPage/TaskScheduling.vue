@@ -55,7 +55,7 @@
           请选择分配至
         </div>
         <div class="dialog-center">
-          <SelectSearch :itemData="allocationOption" :curData="allocationValue" @change="allocationOptionChange" />
+          <SelectSearch :itemData="allocationOption" ref="allocationOption" :curData="allocationValue" @change="allocationOptionChange" />
         </div>
       </van-dialog>
     </div>
@@ -73,7 +73,7 @@
           请选择延迟原因
         </div>
         <div class="dialog-center">
-          <SelectSearch :itemData="delayReasonOption" :isNeedSearch="false" :curData="delayReasonValue" @change="delayReasonOptionChange" />
+          <SelectSearch :itemData="delayReasonOption" ref="delayOption" :isNeedSearch="false" :curData="delayReasonValue" @change="delayReasonOptionChange" />
         </div>
       </van-dialog>
     </div>
@@ -91,7 +91,7 @@
           请选择取消原因
         </div>
         <div class="dialog-center">
-          <SelectSearch :itemData="cancelReasonOption" :isNeedSearch="false" :curData="cancelReasonValue" @change="cancelReasonOptionChange" />
+          <SelectSearch :itemData="cancelReasonOption" ref="cancelOption" :isNeedSearch="false" :curData="cancelReasonValue" @change="cancelReasonOptionChange" />
         </div>
       </van-dialog>
     </div>
@@ -270,7 +270,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import { userSignOut,queryDispatchTaskCancelReason,queryTaskDelayReason } from '@/api/workerPort.js'
 import { queryAllDestination, taskReminder,getTransporter } from '@/api/medicalPort.js'
-import { dispathSinglePatientList, appointList } from '@/api/taskScheduling.js'
+import { dispathSinglePatientList, appointList, assignDispathTask, delayDispathTask, cancelDispathTask, assignAppointTask, delayAppointTask, cancelAppointTask } from '@/api/taskScheduling.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import { IsPC,setStore,removeAllLocalStorage } from '@/common/js/utils'
 import SelectSearch from "@/components/SelectSearch";
@@ -292,6 +292,7 @@ export default {
         startX: ''
       },
       functionListIndex: 0,
+      taskId: '',
       overlayShow: false,
       rightMenuShow: false,
       dispatchEmptyShow: false,
@@ -316,20 +317,7 @@ export default {
       transporterOption: [],
       selectAllocation: {},
       allocationValue: null,
-      allocationOption:  [
-        {
-          value: null,
-          text: '请选择运送员'
-        },
-        {
-          value: 1,
-          text: '张三'
-        },
-        {
-          value: 2,
-          text: '李四'
-        }
-      ],
+      allocationOption:  [],
       selectDelayReason: {},
       delayReasonValue: null,
       delayReasonOption: [],
@@ -386,7 +374,8 @@ export default {
       } else {
         // 回显调度页面点击的任务类型
         if (vm.schedulingTaskType.taskTypeName) {
-          vm.activeName = vm.schedulingTaskType.taskTypeName
+          vm.activeName = vm.schedulingTaskType.taskTypeName;
+          vm.taskId = vm.schedulingTaskDetails.id
         };
         // // 根据任务详情页面点击的按钮,显示对应的弹框
         // if (vm.operateBtnClickRecord) {
@@ -422,7 +411,7 @@ export default {
   watch: {},
 
   computed: {
-    ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord","templateType"]),
+    ...mapGetters(["userInfo","schedulingTaskType","operateBtnClickRecord","templateType","schedulingTaskDetails"]),
     proId () {
       return this.userInfo.extendData.proId
     },
@@ -550,6 +539,10 @@ export default {
               text: '请选择',
               value: null
             }];
+            this.allocationOption = [{
+              text: '请选择',
+              value: null
+            }];
             this.dispathCancelReasonOption = [{
               text: '请选择取消原因',
               value: null
@@ -579,6 +572,13 @@ export default {
             if (item2) {
               for (let i = 0, len = item2.length; i < len; i++) {
                 this.transporterOption.push({
+                  text: item2[i].name,
+                  value: item2[i]['workerId'],
+                  complete: item2[i].complete, // 完成数量
+                  ongoing: item2[i].ongoing, // 进行中数量
+                  id: i
+                });
+                this.allocationOption.push({
                   text: item2[i].name,
                   value: item2[i]['workerId'],
                   complete: item2[i].complete, // 完成数量
@@ -625,14 +625,14 @@ export default {
             if (this.operateBtnClickRecord['allocationBtnClick']) {
               this.allocationShow = true
             } else if (this.operateBtnClickRecord['delayBtnClick']) {
-              if (this.activeName == 'dispathTask') {
+              if (this.activeName == 'dispatchTask') {
                 this.delayReasonOption = this.dispathDelayReasonOption
               } else {
                 this.delayReasonOption = this.appointDelayReasonOption
               };
               this.delayReasonShow = true
             } else if (this.operateBtnClickRecord['cancelBtnClick']) {
-              if (this.activeName == 'dispathTask') {
+              if (this.activeName == 'dispatchTask') {
                 this.cancelReasonOption = this.dispathCancelReasonOption
               } else {
                 this.cancelReasonOption = this.appointCancelReasonOption
@@ -882,6 +882,7 @@ export default {
 
     // 催单事件
     reminderTask(item) {
+      if (item.reminder == 1) { return };
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '催单中...';
@@ -919,7 +920,8 @@ export default {
 
     // 分配点击事件
     allocationEvent (item,index,text) {
-      this.allocationShow = true
+      this.allocationShow = true;
+      this.taskId = item.id
     },
 
     // 分配弹框运送员下拉框选值变化事件
@@ -943,12 +945,93 @@ export default {
 
     // 分配弹框确定事件
     allocationDialogSure () {
+      if (this.selectAllocation.value == null) { return };
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '分配中...';
+      // 调度任务分配
+      if (this.activeName == 'dispatchTask') {
+          assignDispathTask({
+            assignId: this.workerId, //分配者id(当前登录用户id)
+            assignName: this.userName, //分配者姓名(当前登录用户姓名)
+            id: this.taskId, //任务id
+            proId: this.proId, // 医院id
+            tempFlag: this.templateType === 'template_one' ? 1 : 2, //模板(1:旧模板,2:新模板)
+            workerId: this.selectAllocation['value'], //运送员id
+            workerName: this.selectAllocation['text'] //运送员姓名
+          })
+          .then((res) => {
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$refs['allocationOption'].clearSelectValue();
+            if (res && res.data.code == 200) {
+              this.$toast('分配成功');
+              // 更新任务信息
+              if (this.templateType === 'template_one') {
+                this.getDispathSinglePatientList ()
+              } else if (this.templateType === 'template_two') {
 
+              }
+            } else {
+              this.loadingText = '';
+              this.$toast({
+                type: 'fail',
+                message: res.data.msg
+              })
+            }
+          })
+          .catch((err) => {
+            this.$refs['allocationOption'].clearSelectValue();
+            this.loadingText = '';
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$toast({
+              type: 'fail',
+              message: err
+            })
+        })
+        // 预约任务分配
+      } else if (this.activeName == 'appointTask') {
+        assignAppointTask({
+            assignerId: this.workerId, //分配者id(当前登录用户id)
+            assignerName: this.userName, //分配者姓名(当前登录用户姓名)
+            id: this.taskId, //任务id
+            tempFlag: this.templateType === 'template_one' ? 1 : 2, //模板(1:旧模板,2:新模板)
+            workerId: this.selectAllocation['value'], //运送员id
+            workerName: this.selectAllocation['text'] //运送员姓名
+          })
+          .then((res) => {
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$refs['allocationOption'].clearSelectValue();
+            if (res && res.data.code == 200) {
+              this.$toast('分配成功');
+              // 更新任务信息
+              this.getAppointList()
+            } else {
+              this.loadingText = '';
+              this.$toast({
+                type: 'fail',
+                message: res.data.msg
+              })
+            }
+          })
+          .catch((err) => {
+            this.$refs['allocationOption'].clearSelectValue();
+            this.loadingText = '';
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$toast({
+              type: 'fail',
+              message: err
+            })
+        })
+      }
     },
 
     // 分配弹框取消事件
     allocationDialogCancel () {
-
+      this.$refs['allocationOption'].clearSelectValue()
     },
 
     // 编辑点击事件
@@ -971,7 +1054,8 @@ export default {
     // 延迟点击事件
     delayReasonEvent(item,index,text) {
       this.delayReasonShow = true;
-      if (this.activeName == 'dispathTask') {
+      this.taskId = item.id;
+      if (this.activeName == 'dispatchTask') {
         this.delayReasonOption = this.dispathDelayReasonOption
       } else {
         this.delayReasonOption = this.appointDelayReasonOption
@@ -999,18 +1083,97 @@ export default {
 
     // 延迟原因弹框确定事件
     delayReasonDialogSure () {
+      if (this.selectDelayReason.value == null) { return };
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '延迟中...';
+      // 调度任务延迟
+      if (this.activeName == 'dispatchTask') {
+        delayDispathTask({
+            id: this.taskId, //任务id
+            proId: this.proId, // 医院id
+            tempFlag: this.templateType === 'template_one' ? 1 : 2, //模板(1:旧模板,2:新模板)
+            delayReason: this.selectDelayReason['text'] //延迟原因
+          })
+        .then((res) => {
+          this.loadingShow = false;
+          this.overlayShow = false;
+          this.$refs['delayOption'].clearSelectValue();
+          if (res && res.data.code == 200) {
+            this.$toast('延迟成功');
+            // 更新任务信息
+            if (this.templateType === 'template_one') {
+              this.getDispathSinglePatientList ()
+            } else if (this.templateType === 'template_two') {
 
+            }
+          } else {
+            this.loadingText = '';
+            this.$toast({
+              type: 'fail',
+              message: res.data.msg
+            })
+          }
+        })
+        .catch((err) => {
+          this.$refs['delayOption'].clearSelectValue();
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
+          this.$toast({
+            type: 'fail',
+            message: err
+          })
+        })
+        // 预约任务延迟
+      } else if (this.activeName == 'appointTask') {
+        delayAppointTask({
+            taskId: this.taskId, //任务id
+            proId: this.proId, // 医院id
+            reason: this.selectDelayReason['text'], //延迟原因
+            workerId: this.workerId, //操作人id
+            endUser: this.userName, //操作人姓名
+            endType: 1, //终止类型(0-web,1-安卓APP，2-微信小程序)
+          })
+          .then((res) => {
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$refs['delayOption'].clearSelectValue();
+            if (res && res.data.code == 200) {
+              this.$toast('延迟成功');
+              // 更新任务信息
+              this.getAppointList()
+            } else {
+              this.loadingText = '';
+              this.$toast({
+                type: 'fail',
+                message: res.data.msg
+              })
+            }
+          })
+          .catch((err) => {
+            this.$refs['delayOption'].clearSelectValue();
+            this.loadingText = '';
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$toast({
+              type: 'fail',
+              message: err
+            })
+        })
+      }
     },
 
     // 延迟原因弹框取消事件
     delayReasonDialogCancel () {
-
+      this.$refs['delayOption'].clearSelectValue()
     },
 
     // 取消点击事件
     cancelReasonEvent(item,index,text) {
       this.cancelReasonShow = true;
-      if (this.activeName == 'dispathTask') {
+      this.taskId = item.id;
+      if (this.activeName == 'dispatchTask') {
         this.cancelReasonOption = this.dispathCancelReasonOption
       } else {
         this.cancelReasonOption = this.appointCancelReasonOption
@@ -1038,12 +1201,94 @@ export default {
 
     // 取消原因弹框确定事件
     cancelReasonDialogSure () {
+      if (this.selectCancelReason.value == null) { return };
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '取消中...';
+      // 调度任务取消
+      if (this.activeName == 'dispatchTask') {
+        cancelDispathTask({
+            id: this.taskId, //任务id
+            state: 6, //固定值6
+            proId: this.proId, // 医院id
+            tempFlag: this.templateType === 'template_one' ? 1 : 2, //模板(1:旧模板,2:新模板)
+            endType: 1, //终止类型(0-web,1-安卓APP，2-微信小程序)
+            endUser: this.userName, // 取消者(当前登录用户名)
+            cancelReason: this.selectDelayReason['text'] //延迟原因
+          })
+        .then((res) => {
+          this.loadingShow = false;
+          this.overlayShow = false;
+          this.$refs['cancelOption'].clearSelectValue();
+          if (res && res.data.code == 200) {
+            this.$toast('取消成功');
+            // 更新任务信息
+            if (this.templateType === 'template_one') {
+              this.getDispathSinglePatientList ()
+            } else if (this.templateType === 'template_two') {
 
+            }
+          } else {
+            this.loadingText = '';
+            this.$toast({
+              type: 'fail',
+              message: res.data.msg
+            })
+          }
+        })
+        .catch((err) => {
+          this.$refs['cancelOption'].clearSelectValue();
+          this.loadingText = '';
+          this.loadingShow = false;
+          this.overlayShow = false;
+          this.$toast({
+            type: 'fail',
+            message: err
+          })
+        })
+        // 预约任务取消
+      } else if (this.activeName == 'appointTask') {
+        cancelAppointTask({
+            taskId: this.taskId, //任务id
+            state: 6,
+            proId: this.proId, // 医院id
+            reason: this.selectCancelReason['text'], //延迟原因
+            workerId: this.workerId, //操作人id
+            endUser: this.userName, //操作人姓名
+            endType: 1 //终止类型(0-web,1-安卓APP，2-微信小程序)
+          })
+          .then((res) => {
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$refs['cancelOption'].clearSelectValue();
+            if (res && res.data.code == 200) {
+              this.$toast('取消成功');
+              // 更新任务信息
+              this.getAppointList()
+            } else {
+              this.loadingText = '';
+              this.$toast({
+                type: 'fail',
+                message: res.data.msg
+              })
+            }
+          })
+          .catch((err) => {
+            this.$refs['cancelOption'].clearSelectValue();
+            this.loadingText = '';
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$toast({
+              type: 'fail',
+              message: err
+            })
+        })
+      }
     },
 
     // 取消原因弹框取消事件
     cancelReasonDialogCancel () {
-
+      this.$refs['cancelOption'].clearSelectValue()
     },
 
 
@@ -1325,11 +1570,10 @@ export default {
   .allocation-box {
     /deep/ .van-dialog {
       border-radius: 10px !important;
+      overflow: inherit !important;
       .van-dialog__content {
           padding: 0 !important;
           box-sizing: border-box;
-          max-height: 80vh;
-          overflow: auto;
           .dialog-top {
             height: 40px;
             padding-left: 10px;
@@ -1343,9 +1587,8 @@ export default {
           };
           .dialog-center {
             width: 80%;
+            height: 20vh;
             margin: 0 auto;
-            height: 30vh;
-            overflow: auto;
             margin-top: 20px
           }
       };

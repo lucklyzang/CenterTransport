@@ -165,6 +165,7 @@
 		z-index: 100;
 		background: #fff;
 		border: 1px solid #ccc;
+		position: absolute;
         box-sizing: border-box;
 		width: 100%;
 		&.on{
