@@ -77,7 +77,7 @@
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.bedNumber }}
+                        {{ schedulingTaskDetails.badNumber }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -85,7 +85,7 @@
                         <span>住院号</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.patientNumber }}
+                        {{ schedulingTaskDetails.hospitalNo }}
                     </div>
                 </div>
                 <div class="message-one message-two message-six">
@@ -124,7 +124,7 @@
                         <span>开始时间</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.startTime }}
+                        {{ schedulingTaskDetails.planStartTime }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -148,7 +148,7 @@
                         <span>检查</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.checkItems }}
+                        {{ disposeCheckType(schedulingTaskDetails.checkItems) }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -269,7 +269,14 @@ export default {
       }
     },
 
-
+    // 处理预约任务检查项
+    disposeCheckType (item) {
+      let temporaryArray = [];
+      for (let item of item) {
+        temporaryArray.push(item.checkTypeName)
+      };
+      return temporaryArray.join('、')
+    },
 
     // 优先级转换
     taskPriotityTransition (state) {

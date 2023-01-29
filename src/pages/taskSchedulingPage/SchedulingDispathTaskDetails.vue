@@ -282,16 +282,16 @@ export default {
     // 优先级装换
     taskPriotityTransition (state) {
       switch(state) {
-        case 0 :
+        case 1 :
           return '正常'
           break;
-        case 1 :
+        case 2 :
           return '紧急'
           break;
-        case 2 :
+        case 3 :
           return '重要'
           break;
-        case 3 :
+        case 4 :
           return '紧急重要'
           break
       }

@@ -140,10 +140,10 @@
             </div>
             <div class="message-one-right">
               <van-radio-group v-model="priorityRadioValue" direction="horizontal">
-                <van-radio name="0" checked-color="#289E8E">正常</van-radio>
-                <van-radio name="1" checked-color="#E8CB51">紧急</van-radio>
-                <van-radio name="2" checked-color="#F2A15F">重要</van-radio>
-                <van-radio name="3" checked-color="#E86F50">紧急重要</van-radio>
+                <van-radio name="1" checked-color="#289E8E">正常</van-radio>
+                <van-radio name="2" checked-color="#E8CB51">紧急</van-radio>
+                <van-radio name="3" checked-color="#F2A15F">重要</van-radio>
+                <van-radio name="4" checked-color="#E86F50">紧急重要</van-radio>
               </van-radio-group>
             </div>
           </div>
@@ -330,7 +330,8 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, getTransporter, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
+import { generateDispatchTaskManyNew } from '@/api/taskScheduling.js'
+import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, getTransporter, queryTransportType } from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import StepNumberBox from '@/components/StepNumberBox'
 import { setStore,removeAllLocalStorage, IsPC } from '@/common/js/utils'
@@ -415,7 +416,7 @@ export default {
       moveInfo: {
         startX: ''
       },
-      priorityRadioValue: '0',
+      priorityRadioValue: '1',
       isBackRadioValue: '0',
       functionListIndex: 0,
       overlayShow: false,
@@ -741,6 +742,10 @@ export default {
                 text: item.typeName,
                 value: item.id
               })
+            };
+            // 如果有暂存信息，怎回显选中的运送类型
+            if (this.temporaryStorageCreateDispathTaskMessage['isTemporaryStorage']) {
+              this.transportTypeIndex = this.transportTypeList.findIndex((innerItem) => { return innerItem.value == this.temporaryStorageCreateDispathTaskMessage['currentTransportType']['value']});
             }
           }
         }
@@ -942,72 +947,6 @@ export default {
         .catch((err) => {
           reject(err.message)
         })
-      })
-    },
-
-    // 生成调度任务(一个病人)
-    postGenerateDispatchTask (data) {
-      this.showLoadingHint = true;
-      this.overlayShow = true;
-      generateDispatchTask(data).then((res) => {
-        if (res && res.data.code == 200) {
-          this.$toast(`${res.data.msg}`);
-          this.$router.push({path:'/taskScheduling'});
-          this.changeTitleTxt({tit:'中央运送任务管理'});
-          setStore('currentTitle','中央运送任务管理');
-        } else {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        };
-        this.showLoadingHint = false;
-        this.overlayShow = false
-      })
-      .catch((err) => {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
-        this.showLoadingHint = false;
-        this.overlayShow = false
-      })
-    },
-
-    //生成调度任务(多个病人)
-    postGenerateDispatchTaskMany(data) {
-      this.showLoadingHint = true;
-      this.overlayShow = true;
-      generateDispatchTaskMany(data).then((res) => {
-        if (res && res.data.code == 200) {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-          setTimeout(() => {
-            this.backTo()
-          }, 1000)
-        } else {
-          this.$dialog.alert({
-            message: `${res.data.msg}`,
-            closeOnPopstate: true
-          }).then(() => {
-          });
-        };
-        this.showLoadingHint = false;
-        this.overlayShow = false
-      })
-      .catch((err) => {
-        this.$dialog.alert({
-          message: `${err.message}`,
-          closeOnPopstate: true
-        }).then(() => {
-        });
-        this.showLoadingHint = false;
-        this.overlayShow = false
       })
     },
 
@@ -1337,15 +1276,22 @@ export default {
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.taskTransportTotal, //实际数量
           taskRemark: this.taskDescribe, //备注
+          parentTypeId: '', // 运送大类id
+          parentTypeName: '', // 运送大类名称
+          taskTypeId: '',
+          taskTypeName: '',
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
+          modifyId: '', //修改者id
+          modifyName: '', //修改者姓名
+          goodsId: '', //物品归属地
+          originalWorkerId: '', // 原始运送员id
           workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员id
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 0, //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序
+          createType: 1 //创建类型   0-web端,1-手机端
         };
         // 获取多个病人信息列表数据
         for (let patientItem of this.templatelistTwo) {
@@ -1433,7 +1379,7 @@ export default {
       this.loadingText = '创建中...';
       this.loadingShow = true;
       this.overlayShow = true;
-      generateDispatchTaskMany(data).then((res) => {
+      generateDispatchTaskManyNew(data).then((res) => {
         if (res && res.data.code == 200) {
           this.commonIsTemporaryStorageMethods();
           this.$toast({message: '创建成功',type: 'success'});
@@ -1463,7 +1409,7 @@ export default {
 
     // 暂存事件
     temporaryStorageEvent () {
-      //模板一单个病人,//模板二多个病人
+      //模板一单个病人,模板二多个病人
       let casuallyTemporaryStorageCreateDispathTaskMessage = this.temporaryStorageCreateDispathTaskMessage;
       if (this.templateType === 'template_one') {
         casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;

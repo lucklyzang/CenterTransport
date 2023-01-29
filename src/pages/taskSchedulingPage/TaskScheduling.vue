@@ -212,17 +212,17 @@
                               </div>
                                <div class="center-one-line-right">
                                 <span>床号:</span>
-                                <span>{{ item.bedNumber }}</span>
+                                <span>{{ item.badNumber }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
                               <div class="center-one-line-left">
                                 <span>检查时间:</span>
-                                <span>{{ item.planStartTime }}</span>
+                                <span>{{ item.responseTime }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>开始时间:</span>
-                                <span>{{ item.startTime }}</span>
+                                <span>{{ item.planStartTime }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
@@ -232,17 +232,17 @@
                               </div>
                                <div class="center-one-line-right">
                                 <span>运送员:</span>
-                                <span>{{ item. workerName }}</span>
+                                <span>{{ item.workerName }}</span>
                               </div>
                             </div>
                             <div class="center-one-line">
                               <div class="center-one-line-left center-one-line-checkItem">
                                 <span>检查:</span>
-                                <span>{{ item.checkItems }}</span>
+                                <span>{{ disposeCheckType(item.checkItems) }}</span>
                               </div>
                                <div class="center-one-line-right">
                                 <span>运送工具:</span>
-                                <span>{{ item.toolName }}</span>
+                                <span >{{ item.toolName }}</span>
                               </div>
                             </div>
                           </div>
@@ -270,7 +270,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import { userSignOut,queryDispatchTaskCancelReason,queryTaskDelayReason } from '@/api/workerPort.js'
 import { queryAllDestination, taskReminder,getTransporter } from '@/api/medicalPort.js'
-import { dispathSinglePatientList, appointList, assignDispathTask, delayDispathTask, cancelDispathTask, assignAppointTask, delayAppointTask, cancelAppointTask } from '@/api/taskScheduling.js'
+import { dispathSinglePatientList, dispathManyPatientList, appointList, assignDispathTask, delayDispathTask, cancelDispathTask, assignAppointTask, delayAppointTask, cancelAppointTask } from '@/api/taskScheduling.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import { IsPC,setStore,removeAllLocalStorage } from '@/common/js/utils'
 import SelectSearch from "@/components/SelectSearch";
@@ -369,7 +369,7 @@ export default {
         if (vm.templateType === 'template_one') {
           vm.getDispathSinglePatientList ()
         } else if (vm.templateType === 'template_two') {
-
+          vm.getDispathManyPatientList ()
         }
       } else {
         // 回显调度页面点击的任务类型
@@ -389,12 +389,20 @@ export default {
         // };
         if (vm.schedulingTaskType.taskTypeName) {
           if (vm.schedulingTaskType.taskTypeName == 'dispatchTask') {
-            vm.getDispathSinglePatientList()
+            if (vm.templateType === 'template_one') {
+              vm.getDispathSinglePatientList ()
+            } else if (vm.templateType === 'template_two') {
+              vm.getDispathManyPatientList ()
+            }
           } else {
             vm.getAppointList()
           }
         } else {
-          vm.getDispathSinglePatientList()
+          if (vm.templateType === 'template_one') {
+            vm.getDispathSinglePatientList ()
+          } else if (vm.templateType === 'template_two') {
+            vm.getDispathManyPatientList ()
+          }
         }
       }
 	});
@@ -433,6 +441,15 @@ export default {
       this.$router.push({ path: "/home"})
     },
 
+    // 处理预约任务检查项
+    disposeCheckType (item) {
+      let temporaryArray = [];
+      for (let item of item) {
+        temporaryArray.push(item.checkTypeName)
+      };
+      return temporaryArray.join('、')
+    },
+
     // 调度任务列表(单病人)
     getDispathSinglePatientList () {
       this.loadingShow = true;
@@ -444,7 +461,43 @@ export default {
         this.loadingShow = false;
         this.overlayShow = false;
         if (res && res.data.code == 200) {
-          console.log('调度',res.data.data);
+          this.dispatchTaskList = res.data.data;
+          // 只显示未分配、未查阅、进行中三种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          this.echoDispatchTaskList = this.dispatchTaskList;
+          if (this.dispatchTaskList.length == 0) {
+            this.dispatchEmptyShow = true
+          }
+        } else {
+          this.loadingText = '';
+          this.$toast({
+            type: 'fail',
+            message: res.data.msg
+          })
+        }
+      })
+      .catch((err) => {
+        this.loadingText = '';
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.$toast({
+          type: 'fail',
+          message: err
+        })
+      })
+    },
+
+    // 调度任务列表(多病人)
+    getDispathManyPatientList () {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '加载中...';
+      this.dispatchEmptyShow = false;
+      dispathManyPatientList(-1,this.proId)
+      .then((res) => {
+        this.loadingShow = false;
+        this.overlayShow = false;
+        if (res && res.data.code == 200) {
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、进行中三种任务的状态
           this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
@@ -482,7 +535,6 @@ export default {
         this.loadingShow = false;
         this.overlayShow = false;
         if (res && res.data.code == 200) {
-          console.log('预约',res.data.data);
           this.appointTaskList = res.data.data;
           // 只显示未分配、未查阅、进行中三种任务的状态
           this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
@@ -896,7 +948,7 @@ export default {
           if (this.templateType === 'template_one') {
             this.getDispathSinglePatientList ()
           } else if (this.templateType === 'template_two') {
-
+            this.getDispathManyPatientList ()
           }
         } else {
           this.$dialog.alert({
@@ -970,7 +1022,7 @@ export default {
               if (this.templateType === 'template_one') {
                 this.getDispathSinglePatientList ()
               } else if (this.templateType === 'template_two') {
-
+                this.getDispathManyPatientList ()
               }
             } else {
               this.loadingText = '';
@@ -1105,7 +1157,7 @@ export default {
             if (this.templateType === 'template_one') {
               this.getDispathSinglePatientList ()
             } else if (this.templateType === 'template_two') {
-
+              this.getDispathManyPatientList ()
             }
           } else {
             this.loadingText = '';
@@ -1226,7 +1278,7 @@ export default {
             if (this.templateType === 'template_one') {
               this.getDispathSinglePatientList ()
             } else if (this.templateType === 'template_two') {
-
+              this.getDispathManyPatientList ()
             }
           } else {
             this.loadingText = '';
@@ -1453,7 +1505,7 @@ export default {
           if (this.templateType === 'template_one') {
             this.getDispathSinglePatientList()
           } else if (this.templateType === 'template_two') {
-
+            this.getDispathManyPatientList ()
           }
         } else if (value == 'appointTask') {
           this.getAppointList()

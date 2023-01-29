@@ -50,7 +50,7 @@ export function generateDispatchTask(data) {
         data
     })
 };
-// 生成调度任务(多个个病人)
+// 生成调度任务(多个病人)
 export function generateDispatchTaskMany(data) {
     return request({
         url: 'dispatch/app/save',

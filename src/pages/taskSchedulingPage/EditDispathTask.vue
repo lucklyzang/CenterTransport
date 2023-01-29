@@ -140,10 +140,10 @@
             </div>
             <div class="message-one-right">
               <van-radio-group v-model="priorityRadioValue" direction="horizontal">
-                <van-radio name="0" checked-color="#289E8E">正常</van-radio>
-                <van-radio name="1" checked-color="#E8CB51">紧急</van-radio>
-                <van-radio name="2" checked-color="#F2A15F">重要</van-radio>
-                <van-radio name="3" checked-color="#E86F50">紧急重要</van-radio>
+                <van-radio name="1" checked-color="#289E8E">正常</van-radio>
+                <van-radio name="2" checked-color="#E8CB51">紧急</van-radio>
+                <van-radio name="3" checked-color="#F2A15F">重要</van-radio>
+                <van-radio name="4" checked-color="#E86F50">紧急重要</van-radio>
               </van-radio-group>
             </div>
           </div>
@@ -318,7 +318,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import { editDispathTaskSingle } from '@/api/taskScheduling.js'
+import { editDispathTaskSingle,editDispatchTaskManyNew } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, getTransporter, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import StepNumberBox from '@/components/StepNumberBox'
@@ -404,7 +404,7 @@ export default {
       moveInfo: {
         startX: ''
       },
-      priorityRadioValue: '0',
+      priorityRadioValue: '1',
       isBackRadioValue: '0',
       functionListIndex: 0,
       overlayShow: false,
@@ -724,7 +724,9 @@ export default {
                 text: this.schedulingTaskDetails['taskTypeName'],
                 value: this.schedulingTaskDetails['taskTypeId']
               }
-            }
+            } else {
+              this.transportTypeIndex = null
+            };
             console.log('运送类型',this.transportTypeList);
           }
         }
@@ -1211,8 +1213,9 @@ export default {
           parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: this.currentTransportType['value'],  //运送类型 ID
+          id: this.schedulingTaskDetails.id, // 任务id
           taskTypeName: this.currentTransportType['text'],  //运送类型名称
-          priority: this.priorityRadioValue,   //优先级   0-正常, 1-重要,2-紧急, 3-紧急重要
+          priority: this.priorityRadioValue,   //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
           toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.transportNumberValue,   //实际数量
@@ -1255,8 +1258,15 @@ export default {
           taskRemark: this.taskDescribe, //备注
           workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
           workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
-          createId: this.workerId,   //创建者ID  当前登录者
-          createName: this.userName,   //创建者名称  当前登陆者
+          modifyId: this.workerId, //修改者id
+          modifyName: this.userName, //修改者姓名
+          id: this.schedulingTaskDetails.id, // 任务id
+          parentTypeId: '', // 运送大类id
+          parentTypeName: '', // 运送大类名称
+          originalWorkerId: '', // 原始运送员id
+          goodsId: '', //物品归属地
+          taskTypeId: '',
+          taskTypeName: '',
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
@@ -1320,7 +1330,7 @@ export default {
       this.overlayShow = true;
       editDispathTaskSingle(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.$toast({message: '创建成功',type: 'success'});
+          this.$toast({message: '编辑成功',type: 'success'});
           this.$router.push({ path: "/taskScheduling"})
         } else {
           this.$dialog.alert({
@@ -1348,9 +1358,9 @@ export default {
       this.loadingText = '编辑中...';
       this.loadingShow = true;
       this.overlayShow = true;
-      generateDispatchTaskMany(data).then((res) => {
+      editDispatchTaskManyNew(data).then((res) => {
         if (res && res.data.code == 200) {
-          this.$toast({message: '创建成功',type: 'success'});
+          this.$toast({message: '编辑成功',type: 'success'});
           this.$router.push({ path: "/taskScheduling"})
         } else {
           this.$dialog.alert({

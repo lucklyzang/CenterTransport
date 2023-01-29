@@ -8,6 +8,32 @@ export function dispathSinglePatientList (state,proId) {
     })
   };
 
+// 调度任务列表查询(多病人)
+export function dispathManyPatientList (state,proId) {
+  return request({
+    url: `dispatch/index/qtdTask?state=${state}&proId=${proId}`,
+    method: 'get'
+  })
+};
+
+// 生成调度任务(多个病人)
+export function generateDispatchTaskManyNew(data) {
+  return request({
+      url: 'dispatch/saveTransDispatchTask',
+      method: 'post',
+      data
+  })
+};
+
+// 编辑调度任务(多个病人)
+export function editDispatchTaskManyNew(data) {
+  return request({
+      url: 'dispatch/updateTransDispatchTask',
+      method: 'post',
+      data
+  })
+};
+
 // 调度任务分配
 export function assignDispathTask (data) {
   return request({
@@ -35,6 +61,15 @@ export function cancelDispathTask (data) {
   })
 };
 
+// 调度任务编辑(单病人)
+export function editDispathTaskSingle (data) {
+  return request({
+    url: 'task/updateTransForApp',
+    method: 'post',
+    data
+  })
+};
+
 // 预约任务列表查询(单病人)
 export function appointList (state,proId) {
     return request({
@@ -43,6 +78,13 @@ export function appointList (state,proId) {
     })
   };
 
+// 预约任务检查类型查询
+export function getAppointCheckType (state,proId,typeName) {
+  return request({
+    url: `taskTypeClass/queryByTypeName?state=${state}&proId=${proId}&typeName=${encodeURI(typeName)}`,
+    method: 'get'
+  })
+};
 
 // 预约任务创建
 export function createAppoint (data) {
@@ -86,15 +128,6 @@ export function editAppoint (data) {
   return request({
     url: 'bookTask/modify',
     method: 'put',
-    data
-  })
-};
-
-// 调度任务编辑(单病人)
-export function editDispathTaskSingle (data) {
-  return request({
-    url: 'task/updateTrans',
-    method: 'post',
     data
   })
 };

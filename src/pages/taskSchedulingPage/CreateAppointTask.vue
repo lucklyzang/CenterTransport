@@ -197,7 +197,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import { createAppoint } from '@/api/taskScheduling.js'
+import { createAppoint, getAppointCheckType } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTools, getTransporter, queryTransportType } from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
@@ -229,28 +229,7 @@ export default {
       startDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
-      transporterList: [
-        { 
-          id: '0',
-          text: '站萨'
-        },
-        { 
-          id: '1',
-          text: '好像就这些'
-        },
-        { 
-          id: '2',
-          text: '导航是'
-        },
-        { 
-          id: '3',
-          text: '精彩时刻'
-        },
-        { 
-          id: '4',
-          text: '到杉德'
-        }
-      ],
+      transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
       transportToolList: [],
@@ -270,7 +249,7 @@ export default {
           text: '未知'
         }
       ],
-      transportTypeList: [{text: '穿刺',value: 1,selected: false},{text: '病理',value: 2,selected: false},{text: '穿刺2',value: 3,selected: false},{text: '病理2',value: 4,selected: false}],
+      transportTypeList: [],
       moveInfo: {
         startX: ''
       },
@@ -408,10 +387,10 @@ export default {
       return currentdate
     },
     
-    // 查询运送类型小类
-    getTransPorttype (data) {
+    // 查询检查类型
+    queryAppointCheckType () {
       return new Promise((resolve,reject) => {
-        queryTransportType(data)
+        getAppointCheckType(0,this.proId,'检查')
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
@@ -423,12 +402,12 @@ export default {
       })
     },
 
-    // 并行查询目的地、转运工具、运送员
+    // 并行查询目的地、转运工具、运送员、检查类型
     parallelFunction (type) {
         this.loadingText = '加载中...';
         this.loadingShow = true;
         this.overlayShow = true;
-        Promise.all([this.getAllDestination(),this.getTransportTools(),this.queryTransporter()])
+        Promise.all([this.getAllDestination(),this.getTransportTools(),this.queryTransporter(),this.queryAppointCheckType()])
         .then((res) => {
           this.loadingText = '';
           this.loadingShow = false;
@@ -437,7 +416,8 @@ export default {
             this.transportToolList = [];
             this.startDepartmentList = [];
             this.transporterList = [];
-            let [item1,item2,item3] = res;
+            this.transportTypeList = [];
+            let [item1,item2,item3,item4] = res;
             if (item1) {
               Object.keys(item1).forEach((item,index) => {
                 // 起点科室
@@ -459,6 +439,7 @@ export default {
               }
             };
             if (item3) {
+              // 运送员
               for (let i = 0, len = item3.length; i < len; i++) {
                 this.transporterList.push({
                   text: item3[i].name,
@@ -467,6 +448,20 @@ export default {
                   ongoing: item3[i].ongoing, // 进行中数量
                   id: i
                 })
+              }
+            };
+            if (item4) {
+              //检查类型
+              for (let item of item4) {
+                this.transportTypeList.push({
+                  text: item['typeName'],
+                  value: item['id'],
+                  selected: false
+                })
+              };
+              // 有暂存的话,则回显该暂存信息
+              if (this.temporaryStorageCreateAppointTaskMessage['isTemporaryStorage']) {
+                this.transportTypeList = this.temporaryStorageCreateAppointTaskMessage['transportTypeList']
               }
             }
           }
@@ -747,7 +742,8 @@ export default {
         sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
         age: "",   //年龄
         hospitalNo: this.admissionNumberValue,   //住院号
-        bedNumber: this.patientNumberValue,  //床号
+        isBack: 0,
+        badNumber: this.patientNumberValue,  //床号
         taskRemark: this.taskDescribe,   //备注
         // startUser: this.workerId,   //创建者ID  当前登录者
         startUser: this.userName,   //创建者名称  当前登陆者
@@ -757,10 +753,22 @@ export default {
         workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
         proId: this.proId,   //项目ID
         proName: this.proName,   //项目名称
-        assignerId: '', //分配人id
-        assignerName: '', // 分配人
+        assignerId: this.workerId, //分配人id
+        assignerName: this.userName, // 分配人姓名
         createType: 1,   //创建类型 0-接入，1-调度员
         startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
+      };
+      // 处理选中的检查类型
+      let temporaryDateTime = this.getNowFormatDate(this.currentTaskStartTime).split(" ");
+      for (let item of this.transportTypeList) {
+        if (item['selected']) {
+          taskMessage['items'].push({
+            checkTypeId: item['value'],
+            checkType: item['text'],
+            bookTime: temporaryDateTime[1],
+            bookDate: temporaryDateTime[0]
+          })
+        }
       };
       // 创建预约任务
       this.postGenerateAppointTask(taskMessage)
