@@ -261,6 +261,17 @@
                     <van-field v-model="item.actualData"  type="number" label="运送数量:" placeholder="" disabled/>
                   </p>
                 </div>
+                <div class="field-three">
+                  <div class="sample-box">
+                    <p>运送类型:</p>
+                    <p>
+                      {{item.sampleValue}}
+                    </p>
+                    <p>
+                    {{jointTransportMessage(index)}}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="add-message" @click="addMessageEvent" v-if="templateType === 'template_two'">
@@ -354,28 +365,7 @@ export default {
       endDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
-      transporterList: [
-        { 
-          id: '0',
-          text: '站萨'
-        },
-        { 
-          id: '1',
-          text: '好像就这些'
-        },
-        { 
-          id: '2',
-          text: '导航是'
-        },
-        { 
-          id: '3',
-          text: '精彩时刻'
-        },
-        { 
-          id: '4',
-          text: '到杉德'
-        }
-      ],
+      transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
       transportToolList: [],
@@ -412,20 +402,7 @@ export default {
       patienModalShow: false,
       transportParentControlListShow: false,
       transportTypeParent: [],
-      templatelistTwo: [
-        {
-          bedNumber: '',
-          patientName: '',
-          patientNumber: '',
-          genderValue: '未知',
-          actualData: 0,
-          sampleValue: '',
-          sampleList: [],
-          sampleId: '',
-          transportList: [],
-          generList: []
-        }
-      ],
+      templatelistTwo: [],
       patienModalMessage: {
         bedNumber: '',
         patientName: '',
@@ -529,17 +506,37 @@ export default {
         this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage.parentTypeId, this.templateType,true);
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
-        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
+        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeName'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
-        this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinationName'];
+        this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinations'][0]['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
-        this.templatelistTwo = casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'];
-        this.patienModalMessage = casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'];
-        this.commonTransportList = casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList']
+        for (let i = 0,len = casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'].length; i < len; i++) {
+          this.templatelistTwo.push({
+            bedNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber,
+            patientName: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName,
+            patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
+            genderValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 1 ? '男': '女',
+            actualData: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].quantity,
+            sampleList: [], //病人信息模态框中运送大类列表 
+            sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
+            sampleId: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeId'], //病人信息模态框中选中的运送大类id
+            transportList: [],
+            generList: []
+          });
+          for (let innerItem of casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i]['typeList']) {
+            this.templatelistTwo[i]['transportList'].push({
+              text: innerItem.taskTypeName,
+              value: innerItem.taskTypeId,
+              checked: true,
+              typerNumber: innerItem['quantity']
+            })
+          }
+        };
+        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeId'], this.templateType,true);
       }
     },
 
@@ -550,6 +547,7 @@ export default {
         this.$toast({message: '请选择运送大类',type: 'fail'});
         return
       };
+      console.log('运送大类',this.transportTypeParent);
       this.isPressEdit = false;
       this.patienModalShow = true;
       this.xflSelectShow = true;
@@ -592,6 +590,10 @@ export default {
         this.patienModalMessage['sampleValue'] = this.currentTransportRice; //病人信息模态框中选中的运送大类名称
         this.patienModalMessage['sampleId'] = this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'] //病人信息模态框中选中的运送大类id
         this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
+      };
+      //运送大类列表为空时,给编辑病人信息模态框的运送大类赋值
+      if (this.templatelistTwo[index]['sampleList'].length == 0) {
+        this.patienModalMessage['sampleList']  = this.transportTypeParent //病人信息模态框中运送大类列表 
       };
       if (this.templatelistTwo[index].actualData == 0) {
         this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
@@ -697,18 +699,31 @@ export default {
           if (flag == 'template_two') {
             this.patienModalMessage['transportList'] = [];
             for(let item of res.data.data) {
-              this.patienModalMessage['transportList'].push({
-                text: item.typeName,
-                value: item.id,
-                checked: false,
-                typerNumber: 0
-              });
               this.commonTransportList.push({
                 text: item.typeName,
                 value: item.id,
                 checked: false,
                 typerNumber: 0
-              })
+              });
+              if (!isEcho) {
+                this.patienModalMessage['transportList'].push({
+                  text: item.typeName,
+                  value: item.id,
+                  checked: false,
+                  typerNumber: 0
+                });
+              } else {
+                for (let innerItem of this.templatelistTwo) {
+                if (innerItem['transportList'].filter((typeItem) => { return typeItem['value'] == item.id}).length == 0) {
+                    innerItem['transportList'].push({
+                      text: item.typeName,
+                      value: item.id,
+                      checked: false,
+                      typerNumber: 0
+                    })
+                  }
+                }
+              } 
             }
           } else if (flag == 'template_one') {
             this.transportTypeList = [];
@@ -1227,13 +1242,15 @@ export default {
           taskRemark: this.taskDescribe,   //备注
           workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
           workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
-          createId: this.workerId,   //创建者ID  当前登录者
-          createName: this.userName,   //创建者名称  当前登陆者
+          assignId: this.workerId,   //分配者ID  当前登录者
+          assignName: this.userName,   //分配者名称  当前登陆者
+          modifyId: this.workerId, //修改者id
+          modifyName: this.userName, //修改者姓名
           proId: this.proId,   //项目ID
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: 0,   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
+          createType: 1 //创建类型   0-web端,1-手机端
+
         };
         // 编辑调度任务
         this.editDispatchTask(taskMessage);
@@ -1249,7 +1266,10 @@ export default {
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
-          destinations: [],//多个目的地列表
+          destinations: JSON.stringify([{
+            destinationId: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.getDepartmentIdByName(this.currentEndDepartment),
+            destinationName: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.currentEndDepartment
+          }]),//多个目的地列表
           patientInfoList: [], //多个病人信息列表
           priority: this.priorityRadioValue, //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
           toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
@@ -1261,17 +1281,15 @@ export default {
           modifyId: this.workerId, //修改者id
           modifyName: this.userName, //修改者姓名
           id: this.schedulingTaskDetails.id, // 任务id
-          parentTypeId: '', // 运送大类id
-          parentTypeName: '', // 运送大类名称
-          originalWorkerId: '', // 原始运送员id
-          goodsId: '', //物品归属地
+          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeName: this.currentTransportRice,//运送父类型名称
+          originalWorkerId: this.schedulingTaskDetails.workerId, // 原始运送员id
           taskTypeId: '',
           taskTypeName: '',
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 0, //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序
+          createType: 1 //创建类型   0-web端,1-手机端
         };
         // 获取多个病人信息列表数据
         for (let patientItem of this.templatelistTwo) {
@@ -1319,6 +1337,7 @@ export default {
             }
           }
         };
+        taskMessageTwo['patientInfoList'] = JSON.stringify(taskMessageTwo['patientInfoList']);
         this.postGenerateDispatchTaskMany(taskMessageTwo)
       }
     },

@@ -19,7 +19,7 @@ export function dispathManyPatientList (state,proId) {
 // 生成调度任务(多个病人)
 export function generateDispatchTaskManyNew(data) {
   return request({
-      url: 'dispatch/saveTransDispatchTask',
+      url: 'dispatch/saveTransDispatchTaskForApp',
       method: 'post',
       data
   })
@@ -28,7 +28,7 @@ export function generateDispatchTaskManyNew(data) {
 // 编辑调度任务(多个病人)
 export function editDispatchTaskManyNew(data) {
   return request({
-      url: 'dispatch/updateTransDispatchTask',
+      url: 'dispatch/updateTransDispatchTaskForApp',
       method: 'post',
       data
   })

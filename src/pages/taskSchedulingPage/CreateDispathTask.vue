@@ -1243,6 +1243,8 @@ export default {
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
+          assignId: this.workerId,   //分配者ID  当前登录者
+          assignName: this.userName,   //分配者名称  当前登陆者
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
           proId: this.proId,   //项目ID
@@ -1250,8 +1252,7 @@ export default {
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: 0,   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-          startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
+          createType: 1 //创建类型   0-web端,1-手机端
         };
         // 创建调度任务
         this.postGenerateDispatchTask(taskMessage);
@@ -1267,25 +1268,26 @@ export default {
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
-          destinationId: this.currentEndDepartment == '请选择' ? '' : this.getDepartmentIdByName(this.currentEndDepartment), //目的地ID
-          destinationName: this.currentEndDepartment == '请选择' ? '' : this.currentEndDepartment,  //目的地名称
-          destinations: [],//多个目的地列表
+          destinations: JSON.stringify([{
+            destinationId: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.getDepartmentIdByName(this.currentEndDepartment),
+            destinationName: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.currentEndDepartment
+          }]),//多个目的地列表
           patientInfoList: [], //多个病人信息列表
           priority: this.priorityRadioValue, //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
           toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.taskTransportTotal, //实际数量
           taskRemark: this.taskDescribe, //备注
-          parentTypeId: '', // 运送大类id
-          parentTypeName: '', // 运送大类名称
+          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: '',
           taskTypeName: '',
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
           modifyId: '', //修改者id
           modifyName: '', //修改者姓名
-          goodsId: '', //物品归属地
           originalWorkerId: '', // 原始运送员id
+          id: '', // 任务id
           workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员id
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proId: this.proId, //项目ID
@@ -1339,6 +1341,7 @@ export default {
             }
           }
         };
+        taskMessageTwo['patientInfoList'] = JSON.stringify(taskMessageTwo['patientInfoList']);
         this.postGenerateDispatchTaskMany(taskMessageTwo)
       }
     },

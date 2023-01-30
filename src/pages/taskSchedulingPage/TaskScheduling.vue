@@ -158,8 +158,14 @@
                           </div>
                           <div class="list-center">
                             <div class="list-center-left">
-                              <span>{{ item.parentTypeName }}</span>
-                              <span>{{ `${item.setOutPlaceName}-${item.destinationName ? item.destinationName : ''}` }}</span>
+                              <div v-if="templateType == 'template_one'">
+                                <span>{{ item.parentTypeName }}</span>
+                                <span>{{ `${item.setOutPlaceName}-${item.destinationName ? item.destinationName : ''}` }}</span>
+                              </div>
+                              <div v-else>
+                                <span>{{ item['patientInfoList'].length > 0 ? item['patientInfoList'][0]['typeList'][0]['parentTypeName'] : '' }}</span>
+                                <span>{{ `${item.setOutPlaceName}-${disposeDestinations(item.destinations)}` }}</span>
+                              </div>
                             </div>
                             <div class="list-center-right">
                               <van-icon name="arrow" color="#101010" size="22" />
@@ -446,6 +452,15 @@ export default {
       let temporaryArray = [];
       for (let item of item) {
         temporaryArray.push(item.checkTypeName)
+      };
+      return temporaryArray.join('、')
+    },
+
+    // 处理调度任务目的地(模板二)
+    disposeDestinations (item) {
+      let temporaryArray = [];
+      for (let item of item) {
+        temporaryArray.push(item.destinationName)
       };
       return temporaryArray.join('、')
     },
@@ -1923,21 +1938,27 @@ export default {
                                 align-items: center;
                                 margin-right: 6px;
                                 width: 0;
-                                >span {
-                                  font-weight: bold;
-                                  display: inline-block;
-                                  &:nth-child(1) {
-                                    margin-right: 8px
-                                  };
-                                  &:nth-child(2) {
-                                    flex: 1;
-                                    .no-wrap();
-                                    height: 20px;
-                                    padding-left: 8px;
-                                    line-height: 20px;
-                                    border-left: 1px solid #BBBBBB
+                                >div {
+                                  width: 0;
+                                  display: flex;
+                                  flex: 1;
+                                  align-items: center;
+                                  >span {
+                                    font-weight: bold;
+                                    display: inline-block;
+                                    &:nth-child(1) {
+                                      margin-right: 8px
+                                    };
+                                    &:nth-child(2) {
+                                      flex: 1;
+                                      .no-wrap();
+                                      height: 20px;
+                                      padding-left: 8px;
+                                      line-height: 20px;
+                                      border-left: 1px solid #BBBBBB
+                                    }
                                   }
-                                }  
+                                }    
                               };
                               .list-center-right {
                                 

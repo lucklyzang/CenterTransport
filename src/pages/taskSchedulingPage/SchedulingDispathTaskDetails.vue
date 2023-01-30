@@ -60,8 +60,11 @@
                     <div class="message-two-left">
                         <span>运送大类</span>
                     </div>
-                    <div class="message-two-right">
+                    <div class="message-two-right" v-if="templateType == 'template_one'">
                         {{ schedulingTaskDetails.parentTypeName }}
+                    </div>
+                    <div class="message-two-right" v-if="templateType == 'template_two'">
+                        {{ schedulingTaskDetails['patientInfoList'].length > 0 ? schedulingTaskDetails['patientInfoList'][0]['typeList'][0]['parentTypeName'] : '' }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -76,8 +79,11 @@
                     <div class="message-two-left">
                         <span>终点</span>
                     </div>
-                    <div class="message-two-right">
+                    <div class="message-two-right" v-if="templateType == 'template_one'">
                         {{ schedulingTaskDetails.destinationName }}
+                    </div>
+                    <div class="message-two-right" v-if="templateType == 'template_two'">
+                        {{ disposeDestinations(schedulingTaskDetails.destinations) }}
                     </div>
                 </div>
                 <div class="message-one message-two message-six">
@@ -103,7 +109,7 @@
                         {{ schedulingTaskDetails.workerName }}
                     </div>
                 </div>
-                <div class="message-one message-two" v-if="templateType === 'template_one'">
+                <div class="message-one message-two" v-if="templateType == 'template_one'">
                     <div class="message-two-left">
                         <span>床号</span>
                     </div>
@@ -143,13 +149,31 @@
                         {{ schedulingTaskDetails.toolName }}
                     </div>
                 </div>
-                <div class="message-one message-two" v-if="templateType === 'template_one'">
+                <div class="message-one message-two" v-if="templateType == 'template_one'">
                     <div class="message-two-left">
                         <span>运送类型</span>
                     </div>
                     <div class="message-two-right">
                         {{ schedulingTaskDetails.taskTypeName }}
                     </div>
+                </div>
+                <div class="patient-list" v-if="templateType == 'template_two'">
+                   <div class="patient-list-left">
+                       <span>运送类型</span>
+                   </div>
+                   <div class="patient-list-right">
+                       <div v-for="(item,index) in schedulingTaskDetails['patientInfoList']" :key="index">
+                            <span class="transport-partent">运送类型:</span>
+                            <span class="transport-partent">{{`${item['typeList'][0]['parentTypeName']}${index+1}`}}</span>
+                            <span>{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
+                            <span>{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
+                            <span>{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
+                            <span>{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
+                            <span class="patient-subclass" v-for="(innerItem,innerIndex) in item.typeList" :key="innerIndex">
+                                {{`${innerItem['taskTypeName']}×${innerItem['quantity']};`}}
+                            </span>
+                        </div>    
+                   </div>
                 </div>
                 <div class="message-one message-two">
                     <div class="message-two-left">
@@ -158,24 +182,6 @@
                     <div class="message-two-right">
                         {{ schedulingTaskDetails.isBack == 0 ? '否' : '是' }}
                     </div>
-                </div>
-                <div class="patient-list" v-if="templateType === 'template_two'">
-                   <div class="patient-list-left">
-                       运送类型
-                   </div>
-                   <div class="patient-list-right">
-                        <span class="transport-partent">运送类型:</span>
-                        <span class="transport-partent">标本一</span>
-                        <span>床号:</span>
-                        <span>未输入</span>
-                        <span>姓名:</span>
-                        <span>未输入</span>
-                        <span>性别:</span>
-                        <span>未输入</span>
-                        <span>住院号:</span>
-                        <span>未输入</span>
-                        <span class="patient-subclass">血标本×1</span>
-                   </div>
                 </div>
                 <div class="message-one message-two">
                     <div class="message-two-left task-remark-left">
@@ -231,7 +237,7 @@ export default {
   },
 
   mounted() {
-      console.log(this.schedulingTaskDetails);
+      console.log(this.templateType);
     // 控制设备物理返回按键
     this.deviceReturn('/taskScheduling');
     this.registerSlideEvent()
@@ -360,6 +366,15 @@ export default {
           setStore('currentTitle','中央运送任务管理')
         }
       },
+
+      // 处理调度任务目的地(模板二)
+    disposeDestinations (item) {
+      let temporaryArray = [];
+      for (let item of item) {
+        temporaryArray.push(item.destinationName)
+      };
+      return temporaryArray.join('、')
+    },
 
       // 下班签退事件
       signOutEvent () {
@@ -634,6 +649,7 @@ export default {
                 box-sizing: border-box;
                 background: #fff;
                 display: flex;
+                flex-wrap: wrap;
                 justify-content: space-between;
                 font-size: 14px;
                 margin-top: 6px;
@@ -644,11 +660,15 @@ export default {
                     width: 70px
                 };
                 .patient-list-right {
+                    > div {
+                        width: 100%;
+                        margin-bottom: 4px;
+                    };
                     color: #9E9E9A;
                     flex: 1;
-                    line-height: 20px;
+                    line-height: 18px;
                     padding-left: 10px;
-                    box-align: border-box;
+                    box-sizing: border-box;
                     word-break: break-all;
                     .transport-partent {
                         color: #101010 !important
