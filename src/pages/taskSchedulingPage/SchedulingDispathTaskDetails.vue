@@ -60,11 +60,8 @@
                     <div class="message-two-left">
                         <span>运送大类</span>
                     </div>
-                    <div class="message-two-right" v-if="templateType == 'template_one'">
+                    <div class="message-two-right">
                         {{ schedulingTaskDetails.parentTypeName }}
-                    </div>
-                    <div class="message-two-right" v-if="templateType == 'template_two'">
-                        {{ schedulingTaskDetails['patientInfoList'].length > 0 ? schedulingTaskDetails['patientInfoList'][0]['typeList'][0]['parentTypeName'] : '' }}
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -164,13 +161,13 @@
                    <div class="patient-list-right">
                        <div v-for="(item,index) in schedulingTaskDetails['patientInfoList']" :key="index">
                             <span class="transport-partent">运送类型:</span>
-                            <span class="transport-partent">{{`${item['typeList'][0]['parentTypeName']}${index+1}`}}</span>
+                            <span class="transport-partent">{{`${schedulingTaskDetails['parentTypeName']}${index+1}`}}</span>
                             <span>{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
                             <span>{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
                             <span>{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
                             <span>{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
-                            <span class="patient-subclass" v-for="(innerItem,innerIndex) in item.typeList" :key="innerIndex">
-                                {{`${innerItem['taskTypeName']}×${innerItem['quantity']};`}}
+                            <span v-show="item.typeList.length > 0" class="patient-subclass" v-for="(innerItem,innerIndex) in item.typeList" :key="innerIndex">
+                                {{ `${innerItem['taskTypeName']}` ? `${innerItem['taskTypeName']}×${innerItem['quantity']};`: ''}}
                             </span>
                         </div>    
                    </div>
@@ -193,7 +190,7 @@
                 </div>
             </div>
             <div class="btn-box">
-                <span class="operate-one" @click="allocationEvent">分配</span>
+                <span class="operate-one" @click="allocationEvent" v-if="schedulingTaskDetails.state == 0">分配</span>
                 <span class="operate-two" @click="editEvent">编辑</span>
                 <span class="operate-three" @click="delayReasonEvent" v-if="schedulingTaskDetails.hasDelay == 0">延迟</span>
                 <span class="operate-four" @click="cancelReasonEvent">取消</span>
@@ -237,7 +234,7 @@ export default {
   },
 
   mounted() {
-      console.log(this.templateType);
+      console.log(this.schedulingTaskDetails);
     // 控制设备物理返回按键
     this.deviceReturn('/taskScheduling');
     this.registerSlideEvent()

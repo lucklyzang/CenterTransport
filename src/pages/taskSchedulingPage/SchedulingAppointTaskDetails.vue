@@ -161,7 +161,7 @@
                 </div>
             </div>
             <div class="btn-box">
-                <span class="operate-one" @click="allocationEvent">分配</span>
+                <span class="operate-one" @click="allocationEvent" v-if="schedulingTaskDetails.state == 0">分配</span>
                 <span class="operate-two" @click="editEvent">编辑</span>
                 <span class="operate-three" @click="delayReasonEvent" v-if="schedulingTaskDetails.hasDelay == 0">延迟</span>
                 <span class="operate-four" @click="cancelReasonEvent">取消</span>
@@ -569,6 +569,7 @@ export default {
                 .message-two-right {
                     flex: 1;
                     color: #101010;
+                    line-height: 20px;
                     word-break: break-all;
                     padding-left: 10px;
                     box-align: border-box;

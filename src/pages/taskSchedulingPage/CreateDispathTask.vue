@@ -1224,6 +1224,11 @@ export default {
           this.$toast({message: '请选择起点科室',type: 'fail'});
           return
         };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
+          return
+        };
         let taskMessage = {
           setOutPlaceId: this.currentStartDepartment == '请选择' ? '' : this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment == '请选择' ? '' : this.currentStartDepartment,//出发地名称
@@ -1263,6 +1268,11 @@ export default {
         };
         if (this.currentStartDepartment == '请选择') {
           this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
           return
         };
         let taskMessageTwo = {
@@ -1324,7 +1334,7 @@ export default {
               }
             } else {
               taskMessageTwo.patientInfoList[i]['typeList'].push({
-                quantity: 1,
+                quantity: 0,
                 parentTypeId: this.templatelistTwo[i]['sampleId'],
                 parentTypeName: this.templatelistTwo[i]['sampleValue'],
                 taskTypeId: '',

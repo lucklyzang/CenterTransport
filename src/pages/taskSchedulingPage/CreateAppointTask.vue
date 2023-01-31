@@ -756,7 +756,6 @@ export default {
         assignerId: this.workerId, //分配人id
         assignerName: this.userName, // 分配人姓名
         createType: 1,   //创建类型 0-接入，1-调度员
-        startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
       };
       // 处理选中的检查类型
       let temporaryDateTime = this.getNowFormatDate(this.currentTaskStartTime).split(" ");

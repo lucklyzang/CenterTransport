@@ -1031,6 +1031,7 @@
   import circulationTaskPng from '@/common/images/home/circulation-task.png'
   import offWorkSignOutPng from '@/common/images/home/offWork-signOut.png'
   import appointTaskPng from '@/common/images/home/appoint-task.png'
+  import schedulingPng  from '@/common/images/home/scheduling.png'
   import medicalMessagePng from '@/common/images/home/medical-message.png'
   import medicalCallPng from '@/common/images/home/medical-call.png'
   import taskTailPng from '@/common/images/home/task-tail.png'
@@ -1094,7 +1095,7 @@
           {tit:'调度任务',imgUrl: dispatchTaskPng},
           {tit:'循环任务',imgUrl: circulationTaskPng},
           {tit:'预约任务',imgUrl: appointTaskPng},
-          {tit:'任务调度',imgUrl: appointTaskPng},
+          {tit:'任务调度',imgUrl: schedulingPng},
           {tit:'下班签退',imgUrl: offWorkSignOutPng}
         ],
         operateList: [

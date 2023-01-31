@@ -265,7 +265,7 @@
                   <div class="sample-box">
                     <p>运送类型:</p>
                     <p>
-                      {{item.sampleValue}}
+                      {{item.transportList.length > 0 ? item.sampleValue : ''}}
                     </p>
                     <p>
                     {{jointTransportMessage(index)}}
@@ -506,7 +506,7 @@ export default {
         this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage.parentTypeId, this.templateType,true);
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
-        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeName'];
+        this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinations'][0]['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
@@ -516,14 +516,14 @@ export default {
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
         for (let i = 0,len = casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'].length; i < len; i++) {
           this.templatelistTwo.push({
-            bedNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber,
-            patientName: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName,
-            patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
+            bedNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber == '床号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber,
+            patientName: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName == '姓名未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName,
+            patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number == '住院号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
             genderValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 1 ? '男': '女',
             actualData: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].quantity,
             sampleList: [], //病人信息模态框中运送大类列表 
             sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
-            sampleId: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeId'], //病人信息模态框中选中的运送大类id
+            sampleId: casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'], //病人信息模态框中选中的运送大类id
             transportList: [],
             generList: []
           });
@@ -536,7 +536,7 @@ export default {
             })
           }
         };
-        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][0]['typeList'][0]['parentTypeId'], this.templateType,true);
+        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList']['parentTypeId'], this.templateType,true);
       }
     },
 
@@ -583,6 +583,8 @@ export default {
       this.patienModalShow = true;
       this.patienModalMessage = {};
       this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
+      // 过滤掉运送类型小类值为空的情况
+      this.patienModalMessage['transportList'] = this.patienModalMessage['transportList'].filter((item) => { return !item['text'] != true });
       this.transferGenderTwo();
       //病人信息展示框运送大类、运送小类为空时,给编辑病人信息模态框的运送大类和小类赋值)
       if (!this.templatelistTwo[index]['sampleValue']) {
@@ -670,7 +672,7 @@ export default {
     jointTransportMessage (index) {
       let finalMsg = '';
       let targetMsg = this.templatelistTwo[index].transportList.filter((item) => {
-        return item.typerNumber > 0
+        return item.typerNumber > 0 && item.text
       });
       for (let item of targetMsg) {
         finalMsg += `${item.text}${item.typerNumber}个,`
@@ -1220,6 +1222,11 @@ export default {
           this.$toast({message: '请选择起点科室',type: 'fail'});
           return
         };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
+          return
+        };
         let taskMessage = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment,//出发地名称
@@ -1261,6 +1268,11 @@ export default {
         };
         if (this.currentStartDepartment == '请选择') {
           this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
           return
         };
         let taskMessageTwo = {
@@ -1320,7 +1332,7 @@ export default {
               }
             } else {
               taskMessageTwo.patientInfoList[i]['typeList'].push({
-                quantity: 1,
+                quantity: 0,
                 parentTypeId: this.templatelistTwo[i]['sampleId'],
                 parentTypeName: this.templatelistTwo[i]['sampleValue'],
                 taskTypeId: '',

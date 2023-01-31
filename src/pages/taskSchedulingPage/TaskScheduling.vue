@@ -160,11 +160,11 @@
                             <div class="list-center-left">
                               <div v-if="templateType == 'template_one'">
                                 <span>{{ item.parentTypeName }}</span>
-                                <span>{{ `${item.setOutPlaceName}-${item.destinationName ? item.destinationName : ''}` }}</span>
+                                <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
                               </div>
                               <div v-else>
-                                <span>{{ item['patientInfoList'].length > 0 ? item['patientInfoList'][0]['typeList'][0]['parentTypeName'] : '' }}</span>
-                                <span>{{ `${item.setOutPlaceName}-${disposeDestinations(item.destinations)}` }}</span>
+                                <span>{{ item['parentTypeName'] }}</span>
+                                <span>{{ `${item.setOutPlaceName}- ${disposeDestinations(item.destinations)}` }}</span>
                               </div>
                             </div>
                             <div class="list-center-right">
@@ -173,11 +173,12 @@
                           </div>
                           <div class="list-bottom">
                             <div class="list-bottom-left">
-                              <span :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
-                              <span v-if="item.hasDelay == 1">已延迟</span>
+                              <span class="reminder-btn" :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
+                              <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
+                              <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span>
                             </div>
                             <div class="list-bottom-right">
-                              <span class="operate-one" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
+                              <span class="operate-one" v-if="item.state == 0" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
                               <span class="operate-two" @click.stop="editEvent(item,index,'调度任务')">编辑</span>
                               <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
                               <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'调度任务')">取消</span>
@@ -254,10 +255,11 @@
                           </div>
                           <div class="list-bottom appoint-list-bottom">
                             <div class="list-bottom-left">
-                              <span v-if="item.hasDelay == 1">已延迟</span>
+                              <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
+                              <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span>
                             </div>
                             <div class="list-bottom-right">
-                              <span class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
+                              <span  v-if="item.state == 0" class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
                               <span class="operate-two" @click.stop="editEvent(item,index,'预约任务')">编辑</span>
                               <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
                               <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'预约任务')">取消</span>
@@ -1989,9 +1991,13 @@ export default {
                                     margin-right: 4px;
                                     background: #F2A15F
                                   };
-                                  &:nth-child(2) {
-                                    background: #174E97
-                                  }
+                                };
+                                .delay-btn {
+                                  margin-right: 4px;
+                                  background: #254550
+                                };
+                                .allocation-btn {
+                                  background: #ffb77d
                                 };
                                 .listBottomLeftStyle {
                                   color: #F2A15F !important;
@@ -2067,11 +2073,12 @@ export default {
                             };
                             .appoint-list-bottom {
                               .list-bottom-left {
-                                >span {
-                                  &:nth-child(1) {
-                                    background: #174E97
-                                  }
-                                }  
+                                .delay-btn {
+                                  background: #254550 !important
+                                };
+                                .allocation-btn {
+                                  background: #ffb77d !important
+                                }
                               }
                             }   
                         };
