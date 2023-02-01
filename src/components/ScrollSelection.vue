@@ -24,7 +24,7 @@
           <li
             v-for="(item, index) in list"
             :key="index"
-            :class="active==item.id?'active':active==item.id-1||active==item.id+1?'active2':null"
+            :class="{'active':active == item.id}"
             :ref="'li'+item.id"
           >{{item.text}}</li>
         </ul>
@@ -56,7 +56,7 @@ export default {
     // 是否显示搜索框
     isShowSearch: {
       type: Boolean,
-      default: true
+      default: false
     },
     // 是否显示重置按钮
     isShowReset: {
@@ -71,7 +71,7 @@ export default {
       cacheList: '',
       list: [],
       show: false,
-      active: 0,
+      active: null,
       city: "",
       listOffsetTop: [],
       timer: null
@@ -119,14 +119,14 @@ export default {
     // 初始化事件
     showPicker() {
       this.show = true;
-      this.active = 0;
+      this.active = null;
       this.timer = setTimeout(() => {
         clearTimeout(this.timer);
         this.getOffsetTop();
         this.computeActive();
         this.list = this.cacheList.filter((item) => { return item.text.indexOf(this.searchValue) != -1});
-        this.list.map((item,index) => { item.id = index });
-      }, 50);
+        this.list.map((item,index) => { item.id = index })
+      }, 50)
     },
 
     // 确认事件
@@ -158,7 +158,8 @@ export default {
       this.listOffsetTop = [];
       this.list.map((item, index) => {
         let liTop = this.$refs["li" + item.id];
-        this.listOffsetTop.push(liTop[0].offsetTop - 41)
+        this.listOffsetTop.push(liTop[0].offsetTop - liTop[0]['offsetHeight']);
+        console.log('偏移数据',this.listOffsetTop)
       });
     },
 
@@ -247,6 +248,7 @@ export default {
       background-color: #fff;
       li {
         list-style: none;
+        color: #101010;
         font-size: 18px;
         line-height: 40px;
         text-align: center;
@@ -305,9 +307,6 @@ export default {
 };  
 .active {
   background-color: #f3f3f3 !important;
-  color: #3B9DF9
-}
-.active2 {
-  color: #101010
+  color: #3B9DF9 !important
 }
 </style>

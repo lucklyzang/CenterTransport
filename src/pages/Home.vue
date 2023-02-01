@@ -71,7 +71,7 @@
           </li>
         </ul>
         <p class="task-version">
-          <span>{{versionNumber}}</span>
+          <span>{{ versionNumber }}</span>
         </p>
       </div>
     </div>
@@ -2947,13 +2947,16 @@
         }
       }
       .content-bottom {
+        flex-direction: column;
         flex:1;
+        display: flex;
+        height: 0;
         overflow: auto;
         margin: 0 auto;
         margin-top: 16px;
         width: 100%;
         .task-button  {
-          height: 85%;
+          flex: 1;
           box-sizing: border-box;
           padding: 0 16px;
           li {
@@ -3003,14 +3006,11 @@
           }
         }
         .task-version {
-          height: 15%;
-          position: relative;
+          line-height: 30px;
           span {
             width: 100%;
             display: inline-block;
             text-align: center;
-            position: absolute;
-            bottom: 2px;
             color:#bebebe;
             font-size: 16px
           }

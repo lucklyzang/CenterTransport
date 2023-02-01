@@ -249,7 +249,7 @@ export default {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
         //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
-        if (moveX < 0) {
+        if (moveX < -50) {
             this.rightMenuShow = true
         } else {
             this.rightMenuShow = false

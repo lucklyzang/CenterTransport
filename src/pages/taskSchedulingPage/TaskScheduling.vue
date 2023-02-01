@@ -42,7 +42,7 @@
       </van-dialog>
     </div>
     <!-- 分配弹框   -->
-    <div class="allocation-box">
+    <div class="allocation-box allocation-box-one">
       <van-dialog v-model="allocationShow" width="80%" show-cancel-button 
         confirm-button-color="#2390fe"
         :before-close="beforeCloseAllocationDialogEvent"
@@ -55,7 +55,7 @@
           请选择分配至
         </div>
         <div class="dialog-center">
-          <SelectSearch :itemData="allocationOption" ref="allocationOption" :curData="allocationValue" @change="allocationOptionChange" />
+          <SelectSearch :isShowTaskCompleteMessage="true" :itemData="allocationOption" ref="allocationOption" :curData="allocationValue" @change="allocationOptionChange" />
         </div>
       </van-dialog>
     </div>
@@ -803,7 +803,7 @@ export default {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
         //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
-        if (moveX < 0) {
+        if (moveX < -50) {
             this.rightMenuShow = true
         } else {
             this.rightMenuShow = false
@@ -843,7 +843,7 @@ export default {
       if (action == 'cancel') {
         this.$refs['departmentOption'].clearSelectValue();
         this.$refs['transporterOption'].clearSelectValue();
-        this.priorityResult = []
+        this.priorityResult = [];
         done(false);
         return
       } else {
@@ -1644,6 +1644,8 @@ export default {
           padding: 0 !important;
           box-sizing: border-box;
           .dialog-top {
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
             height: 40px;
             padding-left: 10px;
             position: relative;
@@ -1693,7 +1695,14 @@ export default {
         border-top-width: 0 !important
       }
     }  
-  }
+  };
+  .allocation-box-one {
+    /deep/ .dialog-center {
+      .list-module {
+        max-height: 400px !important
+      }
+    }
+  };
   /deep/ .van-popup--right {
     padding: 20px 0 80px 0;
     box-sizing: border-box;
@@ -1817,7 +1826,7 @@ export default {
                 padding: 0 4px 0px 4px;
                 box-sizing: border-box;
                 background: #f7f7f7;
-                overflow: scroll;
+                overflow: auto;
                 height: 0;
                 display: flex;
                 .van-tab__pane {

@@ -89,15 +89,15 @@
     </van-popup>
     <!-- 运送大类 -->
     <div class="transport-rice-box" v-if="showTransportRice">
-      <ScrollSelection :columns="transportRiceList" title="运送大类" @sure="transportRiceSureEvent" @cancel="transportRiceCancelEvent" @close="transportRiceCloseEvent" :isShowSearch="true" />
+      <ScrollSelection :columns="transportRiceList" title="运送大类" @sure="transportRiceSureEvent" @cancel="transportRiceCancelEvent" @close="transportRiceCloseEvent" />
     </div>
     <!-- 起点科室 -->
     <div class="transport-rice-box" v-if="showStartDepartment">
-      <ScrollSelection :columns="startDepartmentList" title="起点科室" @sure="startDepartmentSureEvent" @cancel="startDepartmentCancelEvent" @close="startDepartmentCloseEvent" />
+      <ScrollSelection :columns="startDepartmentList" title="起点科室" @sure="startDepartmentSureEvent" @cancel="startDepartmentCancelEvent" @close="startDepartmentCloseEvent" :isShowSearch="true" />
     </div>
     <!-- 终点科室 -->
     <div class="transport-rice-box" v-if="showEndDepartment">
-      <ScrollSelection :columns="endDepartmentList" title="终点科室" @sure="endDepartmentSureEvent" @cancel="endDepartmentCancelEvent" @close="endDepartmentCloseEvent" />
+      <ScrollSelection :columns="endDepartmentList" title="终点科室" @sure="endDepartmentSureEvent" @cancel="endDepartmentCancelEvent" @close="endDepartmentCloseEvent" :isShowSearch="true" />
     </div>
     <!-- 运送员 -->
     <div class="transport-rice-box" v-if="showTransporter">
@@ -109,7 +109,7 @@
     </div>
      <!-- 性别 -->
     <div class="transport-rice-box" v-if="showGender">
-      <ScrollSelection :columns="genderList" title="性别" @sure="genderSureEvent" @cancel="genderCancelEvent" @close="genderCloseEvent" :isShowSearch="false" />
+      <ScrollSelection :columns="genderList" title="性别" @sure="genderSureEvent" @cancel="genderCancelEvent" @close="genderCloseEvent" />
     </div>
     <div class="nav">
        <van-nav-bar
@@ -977,7 +977,7 @@ export default {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
         //左滑(根据左右滑动来控制右侧菜单的显示与隐藏,滑动距离大于10才判定为滑动)
-        if (moveX < -10) {
+        if (moveX < -50) {
             this.rightMenuShow = true
         } else {
             this.rightMenuShow = false
