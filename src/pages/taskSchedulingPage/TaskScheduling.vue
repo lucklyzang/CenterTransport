@@ -449,18 +449,20 @@ export default {
 
     // 处理预约任务检查项
     disposeCheckType (item) {
+      if (item.length == 0) { return };
       let temporaryArray = [];
-      for (let item of item) {
-        temporaryArray.push(item.checkTypeName)
+      for (let innerItem of item) {
+        temporaryArray.push(innerItem.checkTypeName)
       };
       return temporaryArray.join('、')
     },
 
     // 处理调度任务目的地(模板二)
     disposeDestinations (item) {
+      if (item.length == 0) { return };
       let temporaryArray = [];
-      for (let item of item) {
-        temporaryArray.push(item.destinationName)
+      for (let innerItem of item) {
+        temporaryArray.push(innerItem.destinationName)
       };
       return temporaryArray.join('、')
     },
