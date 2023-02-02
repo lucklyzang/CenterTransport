@@ -154,6 +154,14 @@
                         {{ schedulingTaskDetails.taskTypeName }}
                     </div>
                 </div>
+                <div class="message-one message-two">
+                    <div class="message-two-left">
+                        <span>运送员是否返回</span>
+                    </div>
+                    <div class="message-two-right">
+                        {{ schedulingTaskDetails.isBack == 0 ? '否' : '是' }}
+                    </div>
+                </div>
                 <div class="patient-list" v-if="templateType == 'template_two'">
                    <div class="patient-list-left">
                        <span>运送类型</span>
@@ -171,14 +179,6 @@
                             </span>
                         </div>    
                    </div>
-                </div>
-                <div class="message-one message-two">
-                    <div class="message-two-left">
-                        <span>运送员是否返回</span>
-                    </div>
-                    <div class="message-two-right">
-                        {{ schedulingTaskDetails.isBack == 0 ? '否' : '是' }}
-                    </div>
                 </div>
                 <div class="message-one message-two">
                     <div class="message-two-left task-remark-left">

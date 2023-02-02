@@ -334,8 +334,6 @@ export default {
       selectCancelReason: {},
       cancelReasonValue: null,
       cancelReasonOption: [],
-      dispathDelayReasonOption: [],
-      appointDelayReasonOption: [],
       dispathCancelReasonOption: [],
       appointCancelReasonOption: [],
       echoDispatchTaskList: [],
