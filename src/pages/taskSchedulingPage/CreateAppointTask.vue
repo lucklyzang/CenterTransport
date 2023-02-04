@@ -780,6 +780,7 @@ export default {
       createAppoint(data).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
+          this.commonIsTemporaryStorageMethods();
           this.$router.push({path:'/taskScheduling'});
           this.changeTitleTxt({tit:'中央运送任务管理'});
           setStore('currentTitle','中央运送任务管理');
@@ -821,6 +822,7 @@ export default {
       casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'] = this.taskDescribe;
       casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = true;
       this.changeTemporaryStorageCreateAppointTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage);
+      this.$toast('暂存成功');
       this.$router.push({path: 'taskScheduling'})
     },
 

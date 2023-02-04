@@ -1436,6 +1436,7 @@ export default {
       };
       casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = true;
       this.changeTemporaryStorageCreateDispathTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage);
+      this.$toast('暂存成功');
       this.$router.push({path: 'taskScheduling'})
     },
 
