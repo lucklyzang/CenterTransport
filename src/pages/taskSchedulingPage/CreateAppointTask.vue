@@ -550,7 +550,7 @@ export default {
         } else {
             this.rightMenuShow = false
         };
-        e.preventDefault();
+        // e.preventDefault();
         }        
     },
 
