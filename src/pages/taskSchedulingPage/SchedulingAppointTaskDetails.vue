@@ -237,7 +237,6 @@ export default {
         //判断是否在滑动区域内滑动
         let e = e || window.event;
         if (e.targetTouches.length == 1) {
-            this.isSlideArea = true;
             this.moveInfo.startX = parseInt(e.targetTouches[0].clientX)
         }    
     },
