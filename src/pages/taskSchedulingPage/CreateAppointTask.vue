@@ -533,7 +533,6 @@ export default {
         //判断是否在滑动区域内滑动
         let e = e || window.event;
         if (e.targetTouches.length == 1) {
-            this.isSlideArea = true;
             this.moveInfo.startX = parseInt(e.targetTouches[0].clientX)
         }    
     },
@@ -546,11 +545,12 @@ export default {
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
         //左滑(根据左右滑动来控制右侧菜单的显示与隐藏,滑动距离大于10才判定为滑动)
         if (moveX < -50) {
-            this.rightMenuShow = true
-        } else {
-            this.rightMenuShow = false
-        };
-        // e.preventDefault();
+          if(this.rightMenuShow) {return};
+          this.rightMenuShow = true
+        } else if (moveX > 50) {
+          if(!this.rightMenuShow) {return};
+          this.rightMenuShow = false
+        }
         }        
     },
 
