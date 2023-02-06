@@ -575,7 +575,7 @@ export default {
         .message-box {
             flex: 1;
             width: 100%;
-            overflow: auto;
+            overflow: scroll;
             .message-one {
                 width: 100%;
                 padding: 4px 6px;

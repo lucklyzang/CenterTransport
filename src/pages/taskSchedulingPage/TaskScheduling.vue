@@ -1826,7 +1826,7 @@ export default {
                 padding: 0 4px 0px 4px;
                 box-sizing: border-box;
                 background: #f7f7f7;
-                overflow: auto;
+                overflow: scroll;
                 height: 0;
                 display: flex;
                 .van-tab__pane {

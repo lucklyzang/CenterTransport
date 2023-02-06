@@ -1518,7 +1518,7 @@ export default {
       };
       .van-dialog__content {
         flex: 1;
-        overflow: auto;
+        overflow: scroll;
         .slot-content {
           .bedNumberBox {
             display: flex;
@@ -1775,7 +1775,7 @@ export default {
         .message-box {
           flex: 1;
           width: 100%;
-          overflow: auto;
+          overflow: scroll;
           .message-one {
             width: 100%;
             padding: 10px 6px 10px 16px;
@@ -2054,7 +2054,7 @@ export default {
             margin: 10px 0;
             flex:1;
             background: #fff;
-            overflow: auto;
+            overflow: scroll;
             .field-box-two {
                 width: 100%;
                 padding: 0 12px;
@@ -2226,7 +2226,7 @@ export default {
                 border: 1px solid #bcbcbc;
                 padding: 4px 4px 0 4px;
                 flex: 1;
-                overflow: auto;
+                overflow: scroll;
                 display: flex;
                 flex-flow: row wrap;
                 justify-content: space-between;
