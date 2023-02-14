@@ -60,8 +60,8 @@
   watch: {
     curData: {
         handler: function(newVal, oldVal) {
-           this.current = this.datalist.length > 0 ? this.datalist.filter((item) => { return item.value == newVal})[0]['text'] : '';
-		   this.currentFullValue = this.datalist.length > 0 ? this.datalist.filter((item) => { return item.value == newVal})[0] : null
+           this.current = this.datalist.length > 0 ? this.datalist.filter((item) => { return item.value == newVal['value']})[0]['text'] : '';
+		   this.currentFullValue = this.datalist.length > 0 ? this.datalist.filter((item) => { return item.value == newVal['value']})[0] : null
         },
         deep: true,
 		immediate: true
