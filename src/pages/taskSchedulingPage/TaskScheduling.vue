@@ -19,12 +19,12 @@
         <div class="dialog-center">
           <div class="dialog-center-one-line">
             <span>起点科室选择</span>
-            <SelectSearch ref="departmentOption" :isNeedSearch="false" :itemData="startPointDepartmentOption" :curData="startPointDepartmentValue" @change="startPointDepartmentOptionChange" />
+            <SelectSearch ref="departmentOption" :itemData="startPointDepartmentOption" :curData="startPointDepartmentValue" @change="startPointDepartmentOptionChange" />
             <span @click="startPointDepartmentClear">清除</span>
           </div>
           <div class="dialog-center-one-line">
             <span>运送员</span>
-            <SelectSearch ref="transporterOption" :isNeedSearch="false" :itemData="transporterOption" :curData="transporterValue" @change="transporterOptionChange" />
+            <SelectSearch ref="transporterOption" :itemData="transporterOption" :curData="transporterValue" @change="transporterOptionChange" />
             <span  @click="transporterValueClear">清除</span>
           </div>
           <div class="priority-box">
@@ -149,8 +149,8 @@
                           <div class="list-top">
                             <div class="list-top-left">
                               <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
-                              <span>{{ item.createTime }}</span>
-                              <span v-show="item.personName">{{ item.workerName }}</span>
+                              <span>{{ extractionDate(item.createTime) }}</span>
+                              <span v-show="item.workerName">{{ item.workerName }}</span>
                             </div>
                             <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
                               {{ taskStatusTransition(item.state) }}
@@ -175,7 +175,7 @@
                             <div class="list-bottom-left">
                               <span class="reminder-btn" :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
                               <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
-                              <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span>
+                              <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
                             </div>
                             <div class="list-bottom-right">
                               <span class="operate-one" v-if="item.state == 0" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
@@ -256,7 +256,7 @@
                           <div class="list-bottom appoint-list-bottom">
                             <div class="list-bottom-left">
                               <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
-                              <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span>
+                              <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
                             </div>
                             <div class="list-bottom-right">
                               <span  v-if="item.state == 0" class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
@@ -318,7 +318,7 @@ export default {
         {tit:'预约任务'},
         {tit:'循环任务'}
       ],
-      priorityResult: ['1'],
+      priorityResult: ['1','2','3','4'],
       startPointDepartmentValue: null,
       startPointDepartmentOption: [],
       transporterValue: null,
@@ -447,6 +447,13 @@ export default {
       this.$router.push({ path: "/home"})
     },
 
+    // 提取时间(不显示秒)
+    extractionDate (dateMsg) {
+      if (!dateMsg) { return };
+      let currentIndex = dateMsg.lastIndexOf(':');
+      return dateMsg.substring(0,currentIndex)
+    },
+
     // 处理预约任务检查项
     disposeCheckType (item) {
       if (item.length == 0) { return };
@@ -479,8 +486,8 @@ export default {
         this.overlayShow = false;
         if (res && res.data.code == 200) {
           this.dispatchTaskList = res.data.data;
-          // 只显示未分配、未查阅、进行中三种任务的状态
-          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
           this.echoDispatchTaskList = this.dispatchTaskList;
           if (this.dispatchTaskList.length == 0) {
             this.dispatchEmptyShow = true
@@ -516,8 +523,8 @@ export default {
         this.overlayShow = false;
         if (res && res.data.code == 200) {
           this.dispatchTaskList = res.data.data;
-          // 只显示未分配、未查阅、进行中三种任务的状态
-          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
           this.echoDispatchTaskList = this.dispatchTaskList;
           if (this.dispatchTaskList.length == 0) {
             this.dispatchEmptyShow = true
@@ -553,8 +560,8 @@ export default {
         this.overlayShow = false;
         if (res && res.data.code == 200) {
           this.appointTaskList = res.data.data;
-          // 只显示未分配、未查阅、进行中三种任务的状态
-          this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
+          this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
           this.echoAppointTaskList = this.appointTaskList;
           if (this.appointTaskList.length == 0) {
             this.appointTaskEmptyShow = true
@@ -843,7 +850,7 @@ export default {
       if (action == 'cancel') {
         this.$refs['departmentOption'].clearSelectValue();
         this.$refs['transporterOption'].clearSelectValue();
-        this.priorityResult = [];
+        this.priorityResult = ['1','2','3','4'];
         done(false);
         return
       } else {
@@ -1487,6 +1494,9 @@ export default {
         case 1 :
           return '未查阅'
           break;
+        case 2 :
+          return '未开始'
+          break;
         case 3 :
           return '进行中'
           break
@@ -1566,7 +1576,7 @@ export default {
             color: #101010;
             text-align: center
           };
-          /deep/ .van-icon {
+          .van-icon {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -1595,7 +1605,7 @@ export default {
                 background: #E86F50
               }
             };
-            /deep/ .vue-dropdown {
+            .vue-dropdown {
               width: 55%
             }
           };
@@ -2003,7 +2013,7 @@ export default {
                                 };
                                 .delay-btn {
                                   margin-right: 4px;
-                                  background: #254550
+                                  background: #174E97
                                 };
                                 .allocation-btn {
                                   background: #ffb77d

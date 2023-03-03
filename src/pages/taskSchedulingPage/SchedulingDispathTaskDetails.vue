@@ -426,6 +426,9 @@ export default {
             case 1 :
                 return '未查阅'
                 break;
+            case 2 :
+                return '未开始'
+                break;
             case 3 :
                 return '进行中'
                 break
