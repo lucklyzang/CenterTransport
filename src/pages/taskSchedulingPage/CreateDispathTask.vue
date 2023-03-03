@@ -1353,7 +1353,8 @@ export default {
           });
         };
         this.loadingShow = false;
-        this.overlayShow = false
+        this.overlayShow = false;
+        this.loadingText = ''
       })
       .catch((err) => {
         this.$dialog.alert({
@@ -1362,7 +1363,8 @@ export default {
         }).then(() => {
         });
         this.loadingShow = false;
-        this.overlayShow = false
+        this.overlayShow = false;
+        this.loadingText = ''
       })
     },
 

@@ -484,6 +484,7 @@ export default {
       .then((res) => {
         this.loadingShow = false;
         this.overlayShow = false;
+        this.loadingText = '';
         if (res && res.data.code == 200) {
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
@@ -493,7 +494,6 @@ export default {
             this.dispatchEmptyShow = true
           }
         } else {
-          this.loadingText = '';
           this.$toast({
             type: 'fail',
             message: res.data.msg
@@ -521,6 +521,7 @@ export default {
       .then((res) => {
         this.loadingShow = false;
         this.overlayShow = false;
+        this.loadingText = '';
         if (res && res.data.code == 200) {
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
@@ -530,7 +531,6 @@ export default {
             this.dispatchEmptyShow = true
           }
         } else {
-          this.loadingText = '';
           this.$toast({
             type: 'fail',
             message: res.data.msg
@@ -558,6 +558,7 @@ export default {
       .then((res) => {
         this.loadingShow = false;
         this.overlayShow = false;
+        this.loadingText = '';
         if (res && res.data.code == 200) {
           this.appointTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
@@ -567,7 +568,6 @@ export default {
             this.appointTaskEmptyShow = true
           }
         } else {
-          this.loadingText = '';
           this.$toast({
             type: 'fail',
             message: res.data.msg
@@ -1039,6 +1039,7 @@ export default {
           .then((res) => {
             this.loadingShow = false;
             this.overlayShow = false;
+            this.loadingText = '';
             this.$refs['allocationOption'].clearSelectValue();
             if (res && res.data.code == 200) {
               this.$toast('分配成功');
@@ -1049,7 +1050,6 @@ export default {
                 this.getDispathManyPatientList ()
               }
             } else {
-              this.loadingText = '';
               this.$toast({
                 type: 'fail',
                 message: res.data.msg
@@ -1079,13 +1079,13 @@ export default {
           .then((res) => {
             this.loadingShow = false;
             this.overlayShow = false;
+            this.loadingText = '';
             this.$refs['allocationOption'].clearSelectValue();
             if (res && res.data.code == 200) {
               this.$toast('分配成功');
               // 更新任务信息
               this.getAppointList()
             } else {
-              this.loadingText = '';
               this.$toast({
                 type: 'fail',
                 message: res.data.msg
@@ -1174,6 +1174,7 @@ export default {
         .then((res) => {
           this.loadingShow = false;
           this.overlayShow = false;
+          this.loadingText = '';
           this.$refs['delayOption'].clearSelectValue();
           if (res && res.data.code == 200) {
             this.$toast('延迟成功');
@@ -1184,7 +1185,6 @@ export default {
               this.getDispathManyPatientList ()
             }
           } else {
-            this.loadingText = '';
             this.$toast({
               type: 'fail',
               message: res.data.msg
@@ -1214,13 +1214,13 @@ export default {
           .then((res) => {
             this.loadingShow = false;
             this.overlayShow = false;
+            this.loadingText = '';
             this.$refs['delayOption'].clearSelectValue();
             if (res && res.data.code == 200) {
               this.$toast('延迟成功');
               // 更新任务信息
               this.getAppointList()
             } else {
-              this.loadingText = '';
               this.$toast({
                 type: 'fail',
                 message: res.data.msg
@@ -1295,6 +1295,7 @@ export default {
         .then((res) => {
           this.loadingShow = false;
           this.overlayShow = false;
+          this.loadingText = '';
           this.$refs['cancelOption'].clearSelectValue();
           if (res && res.data.code == 200) {
             this.$toast('取消成功');
@@ -1305,7 +1306,6 @@ export default {
               this.getDispathManyPatientList ()
             }
           } else {
-            this.loadingText = '';
             this.$toast({
               type: 'fail',
               message: res.data.msg
@@ -1336,13 +1336,13 @@ export default {
           .then((res) => {
             this.loadingShow = false;
             this.overlayShow = false;
+            this.loadingText = '';
             this.$refs['cancelOption'].clearSelectValue();
             if (res && res.data.code == 200) {
               this.$toast('取消成功');
               // 更新任务信息
               this.getAppointList()
             } else {
-              this.loadingText = '';
               this.$toast({
                 type: 'fail',
                 message: res.data.msg

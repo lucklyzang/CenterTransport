@@ -777,6 +777,7 @@ export default {
     postGenerateAppointTask (data) {
       this.showLoadingHint = true;
       this.overlayShow = true;
+      this.loadingText = '创建中...';
       createAppoint(data).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
@@ -792,7 +793,8 @@ export default {
           });
         };
         this.showLoadingHint = false;
-        this.overlayShow = false
+        this.overlayShow = false;
+        this.loadingText = ''
       })
       .catch((err) => {
         this.$dialog.alert({
@@ -801,7 +803,8 @@ export default {
         }).then(() => {
         });
         this.showLoadingHint = false;
-        this.overlayShow = false
+        this.overlayShow = false;
+        this.loadingText = ''
       })
     },
 
