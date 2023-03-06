@@ -130,147 +130,150 @@
         <div class="content-top-area">
 			<img :src="statusBackgroundPng" />
 		</div>
+      <!-- 下拉刷新 -->
+      <van-pull-refresh v-model="isLoadingRepairsTask" loading-text="刷新中..." @refresh="onRefreshRepairsTaskEvent">
         <div class="content-box">
-            <van-tabs v-model="activeName" type="card" color="#fff" title-inactive-color="#9E9E9A" title-active-color="#174E97" @change="vanTabsChangeEvent">
-                <van-tab title="调度任务" name="dispatchTask">
-                    <div class="task-message-top">
-                      <div class="message-left">
-                        <span>当前任务数:</span>
-                        <span>{{ dispatchTaskList.length }}</span>
-                      </div>
-                      <div class="message-right">
-                        <span @click="createTask('调度任务')">创建任务</span>
-                        <span @click="screenEvent">筛选</span>
-                      </div>
+          <van-tabs v-model="activeName" type="card" color="#fff" title-inactive-color="#9E9E9A" title-active-color="#174E97" @change="vanTabsChangeEvent">
+              <van-tab title="调度任务" name="dispatchTask">
+                  <div class="task-message-top">
+                    <div class="message-left">
+                      <span>当前任务数:</span>
+                      <span>{{ dispatchTaskList.length }}</span>
                     </div>
-                    <van-empty description="暂无数据" v-show="dispatchEmptyShow" />
-                    <div class="backlog-task-list-box" ref="scrollDispatchTask" v-show="!dispatchEmptyShow">
-                        <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'调度任务')">
-                          <div class="list-top">
-                            <div class="list-top-left">
-                              <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
-                              <span>{{ extractionDate(item.createTime) }}</span>
-                              <span v-show="item.workerName">{{ item.workerName }}</span>
+                    <div class="message-right">
+                      <span @click="createTask('调度任务')">创建任务</span>
+                      <span @click="screenEvent">筛选</span>
+                    </div>
+                  </div>
+                  <van-empty description="暂无数据" v-show="dispatchEmptyShow" />
+                  <div class="backlog-task-list-box" ref="scrollDispatchTask" v-show="!dispatchEmptyShow">
+                      <div class="backlog-task-list" v-for="(item,index) in dispatchTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'调度任务')">
+                        <div class="list-top">
+                          <div class="list-top-left">
+                            <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
+                            <span>{{ extractionDate(item.createTime) }}</span>
+                            <span v-show="item.workerName">{{ item.workerName }}</span>
+                          </div>
+                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
+                            {{ taskStatusTransition(item.state) }}
+                          </div>
+                        </div>
+                        <div class="list-center">
+                          <div class="list-center-left">
+                            <div v-if="templateType == 'template_one'">
+                              <span>{{ item.parentTypeName }}</span>
+                              <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
                             </div>
-                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
-                              {{ taskStatusTransition(item.state) }}
+                            <div v-else>
+                              <span>{{ item['parentTypeName'] }}</span>
+                              <span>{{ `${item.setOutPlaceName}- ${disposeDestinations(item.destinations)}` }}</span>
                             </div>
                           </div>
-                          <div class="list-center">
-                            <div class="list-center-left">
-                              <div v-if="templateType == 'template_one'">
-                                <span>{{ item.parentTypeName }}</span>
-                                <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
-                              </div>
-                              <div v-else>
-                                <span>{{ item['parentTypeName'] }}</span>
-                                <span>{{ `${item.setOutPlaceName}- ${disposeDestinations(item.destinations)}` }}</span>
-                              </div>
+                          <div class="list-center-right">
+                            <van-icon name="arrow" color="#101010" size="22" />
+                          </div>
+                        </div>
+                        <div class="list-bottom">
+                          <div class="list-bottom-left">
+                            <span class="reminder-btn" :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
+                            <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
+                            <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
+                          </div>
+                          <div class="list-bottom-right">
+                            <span class="operate-one" v-if="item.state == 0" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
+                            <span class="operate-two" @click.stop="editEvent(item,index,'调度任务')">编辑</span>
+                            <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
+                            <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'调度任务')">取消</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="no-more-data" v-show="isShowDispatchTaskNoMoreData">没有更多数据了</div>
+                  </div>    
+              </van-tab>
+              <van-tab title="预约任务" name="appointTask">
+                  <div class="task-message-top">
+                    <div class="message-left">
+                      <span>当前任务数:</span>
+                      <span>{{ appointTaskList.length }}</span>
+                    </div>
+                    <div class="message-right">
+                      <span @click="createTask('预约任务')">创建任务</span>
+                      <span @click="screenEvent">筛选</span>
+                    </div>
+                  </div>
+                  <van-empty description="暂无数据" v-show="appointTaskEmptyShow" />
+                  <div class="backlog-task-list-box" ref="scrollAppointTask" v-show="!appointTaskEmptyShow">
+                    <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'预约任务')">
+                        <div class="list-top appoint-list-top">
+                          <div class="list-top-left">
+                            <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
+                            <span>{{ item.setOutPlaceName }}</span>
+                          </div>
+                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
+                            {{ taskStatusTransition(item.state) }}
+                          </div>
+                        </div>
+                        <div class="list-center appoint-list-center">
+                          <div class="center-one-line">
+                            <div class="center-one-line-left">
+                              <span>病人姓名:</span>
+                              <span>{{ item.patientName }}</span>
                             </div>
-                            <div class="list-center-right">
-                              <van-icon name="arrow" color="#101010" size="22" />
+                              <div class="center-one-line-right">
+                              <span>床号:</span>
+                              <span>{{ item.badNumber }}</span>
                             </div>
                           </div>
-                          <div class="list-bottom">
-                            <div class="list-bottom-left">
-                              <span class="reminder-btn" :class="{'listBottomLeftStyle': item.reminder == 0 }" @click.stop="reminderTask(item)">{{ item.reminder == 0 ? '催单' : '已催单'}}</span>
-                              <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
-                              <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
+                          <div class="center-one-line">
+                            <div class="center-one-line-left">
+                              <span>检查时间:</span>
+                              <span>{{ item.responseTime }}</span>
                             </div>
-                            <div class="list-bottom-right">
-                              <span class="operate-one" v-if="item.state == 0" @click.stop="allocationEvent(item,index,'调度任务')">分配</span>
-                              <span class="operate-two" @click.stop="editEvent(item,index,'调度任务')">编辑</span>
-                              <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'调度任务')">延迟</span>
-                              <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'调度任务')">取消</span>
+                              <div class="center-one-line-right">
+                              <span>开始时间:</span>
+                              <span>{{ item.planStartTime }}</span>
+                            </div>
+                          </div>
+                          <div class="center-one-line">
+                            <div class="center-one-line-left">
+                              <span>已经历时间:</span>
+                              <span>{{ elapsedTime(item.planStartTime) }}</span>
+                            </div>
+                              <div class="center-one-line-right">
+                              <span>运送员:</span>
+                              <span>{{ item.workerName }}</span>
+                            </div>
+                          </div>
+                          <div class="center-one-line">
+                            <div class="center-one-line-left center-one-line-checkItem">
+                              <span>检查:</span>
+                              <span>{{ disposeCheckType(item.checkItems) }}</span>
+                            </div>
+                              <div class="center-one-line-right">
+                              <span>运送工具:</span>
+                              <span >{{ item.toolName }}</span>
                             </div>
                           </div>
                         </div>
-                        <div class="no-more-data" v-show="isShowDispatchTaskNoMoreData">没有更多数据了</div>
-                    </div>    
-                </van-tab>
-                <van-tab title="预约任务" name="appointTask">
-                    <div class="task-message-top">
-                      <div class="message-left">
-                        <span>当前任务数:</span>
-                        <span>{{ appointTaskList.length }}</span>
-                      </div>
-                      <div class="message-right">
-                        <span @click="createTask('预约任务')">创建任务</span>
-                        <span @click="screenEvent">筛选</span>
-                      </div>
-                    </div>
-                    <van-empty description="暂无数据" v-show="appointTaskEmptyShow" />
-                    <div class="backlog-task-list-box" ref="scrollAppointTask" v-show="!appointTaskEmptyShow">
-                      <div class="backlog-task-list" v-for="(item,index) in appointTaskList" :key="index" @click="enterDispathTaskEvent(item,index,'预约任务')">
-                          <div class="list-top appoint-list-top">
-                            <div class="list-top-left">
-                              <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
-                              <span>{{ item.setOutPlaceName }}</span>
-                            </div>
-                            <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
-                              {{ taskStatusTransition(item.state) }}
-                            </div>
+                        <div class="list-bottom appoint-list-bottom">
+                          <div class="list-bottom-left">
+                            <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
+                            <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
                           </div>
-                          <div class="list-center appoint-list-center">
-                            <div class="center-one-line">
-                              <div class="center-one-line-left">
-                                <span>病人姓名:</span>
-                                <span>{{ item.patientName }}</span>
-                              </div>
-                               <div class="center-one-line-right">
-                                <span>床号:</span>
-                                <span>{{ item.badNumber }}</span>
-                              </div>
-                            </div>
-                            <div class="center-one-line">
-                              <div class="center-one-line-left">
-                                <span>检查时间:</span>
-                                <span>{{ item.responseTime }}</span>
-                              </div>
-                               <div class="center-one-line-right">
-                                <span>开始时间:</span>
-                                <span>{{ item.planStartTime }}</span>
-                              </div>
-                            </div>
-                            <div class="center-one-line">
-                              <div class="center-one-line-left">
-                                <span>已经历时间:</span>
-                                <span>{{ elapsedTime(item.planStartTime) }}</span>
-                              </div>
-                               <div class="center-one-line-right">
-                                <span>运送员:</span>
-                                <span>{{ item.workerName }}</span>
-                              </div>
-                            </div>
-                            <div class="center-one-line">
-                              <div class="center-one-line-left center-one-line-checkItem">
-                                <span>检查:</span>
-                                <span>{{ disposeCheckType(item.checkItems) }}</span>
-                              </div>
-                               <div class="center-one-line-right">
-                                <span>运送工具:</span>
-                                <span >{{ item.toolName }}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="list-bottom appoint-list-bottom">
-                            <div class="list-bottom-left">
-                              <span @click.stop="() => { return }" class="delay-btn" v-if="item.hasDelay == 1">已延迟</span>
-                              <!-- <span @click.stop="() => { return }" class="allocation-btn" v-if="item.state != 0">已分配</span> -->
-                            </div>
-                            <div class="list-bottom-right">
-                              <span  v-if="item.state == 0" class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
-                              <span class="operate-two" @click.stop="editEvent(item,index,'预约任务')">编辑</span>
-                              <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
-                              <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'预约任务')">取消</span>
-                            </div>
+                          <div class="list-bottom-right">
+                            <span  v-if="item.state == 0" class="operate-one" @click.stop="allocationEvent(item,index,'预约任务')">分配</span>
+                            <span class="operate-two" @click.stop="editEvent(item,index,'预约任务')">编辑</span>
+                            <span v-if="item.hasDelay == 0" class="operate-three" @click.stop="delayReasonEvent(item,index,'预约任务')">延迟</span>
+                            <span class="operate-four" @click.stop="cancelReasonEvent(item,index,'预约任务')">取消</span>
                           </div>
                         </div>
-                      <div class="no-more-data" v-show="isShowAppointTaskNoMoreData">没有更多数据了</div>
-                    </div>    
-                </van-tab>
-            </van-tabs>
+                      </div>
+                    <div class="no-more-data" v-show="isShowAppointTaskNoMoreData">没有更多数据了</div>
+                  </div>    
+              </van-tab>
+          </van-tabs>
         </div>
+      </van-pull-refresh>  
     </div> 
   </div>
 </template>
@@ -292,6 +295,8 @@ export default {
     return {
       loadingShow: false,
       loadingText: '加载中...',
+      isLoadingRepairsTask: false,
+      loadFreshTimer: null,
       screenDialogShow: false,
       allocationShow: false,
       delayReasonShow: false,
@@ -368,14 +373,18 @@ export default {
     this.parallelFunction()
   },
 
+  beforeDestroy () {
+    if (this.loadFreshTimer) {clearTimeout(this.loadFreshTimer)}
+  },
+
   beforeRouteEnter(to, from, next) {
     next(vm=>{
       if (from.path == '/home') {
         // 查询单病人调度任务列表(模板一)
         if (vm.templateType === 'template_one') {
-          vm.getDispathSinglePatientList ()
+          vm.getDispathSinglePatientList (false)
         } else if (vm.templateType === 'template_two') {
-          vm.getDispathManyPatientList ()
+          vm.getDispathManyPatientList (false)
         }
       } else {
         // 回显调度页面点击的任务类型
@@ -396,18 +405,18 @@ export default {
         if (vm.schedulingTaskType.taskTypeName) {
           if (vm.schedulingTaskType.taskTypeName == 'dispatchTask') {
             if (vm.templateType === 'template_one') {
-              vm.getDispathSinglePatientList ()
+              vm.getDispathSinglePatientList (false)
             } else if (vm.templateType === 'template_two') {
-              vm.getDispathManyPatientList ()
+              vm.getDispathManyPatientList (false)
             }
           } else {
-            vm.getAppointList()
+            vm.getAppointList(false)
           }
         } else {
           if (vm.templateType === 'template_one') {
-            vm.getDispathSinglePatientList ()
+            vm.getDispathSinglePatientList (false)
           } else if (vm.templateType === 'template_two') {
-            vm.getDispathManyPatientList ()
+            vm.getDispathManyPatientList (false)
           }
         }
       }
@@ -474,11 +483,34 @@ export default {
       return temporaryArray.join('、')
     },
 
+    // 下拉刷新事件
+    onRefreshRepairsTaskEvent () {
+      if (this.activeName == 'dispatchTask') {
+        if (this.templateType === 'template_one') {
+          this.getDispathSinglePatientList(true)
+        } else if (this.templateType === 'template_two') {
+          this.getDispathManyPatientList (true)
+        }
+      } else if (this.activeName == 'appointTask') {
+        this.getAppointList(true)
+      };
+      // 刷新时间大于3秒,则关闭刷新动画
+      this.loadFreshTimer = setTimeout(() => {
+        this.isLoadingRepairsTask = false;
+        this.loadingText = '';
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.$toast('刷新失败,请检查网络');
+        console.log(this.isLoadingRepairsTask,this.loadingText,this.loadingShow,this.overlayShow,this.loadFreshTimer);
+        if (this.loadFreshTimer) {clearTimeout(this.loadFreshTimer)}
+      }, 3100);
+    },
+
     // 调度任务列表(单病人)
-    getDispathSinglePatientList () {
+    getDispathSinglePatientList (flag) {
       this.loadingShow = true;
       this.overlayShow = true;
-      this.loadingText = '加载中...';
+      this.loadingText = flag ? '刷新中' : '加载中...';
       this.dispatchEmptyShow = false;
       dispathSinglePatientList(-1,this.proId)
       .then((res) => {
@@ -486,6 +518,14 @@ export default {
         this.overlayShow = false;
         this.loadingText = '';
         if (res && res.data.code == 200) {
+          // 是否开启下拉刷新
+          if (flag) {
+            this.isLoadingRepairsTask = false;
+            this.$toast('刷新成功');
+            if (this.loadFreshTimer) {
+              clearTimeout(this.loadFreshTimer)
+            }
+          };
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
           this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
@@ -504,18 +544,26 @@ export default {
         this.loadingText = '';
         this.loadingShow = false;
         this.overlayShow = false;
+        if (flag) {
+          this.isLoadingRepairsTask = false;
+          this.$toast('刷新失败,请检查网络');
+          if (this.loadFreshTimer) {
+            clearTimeout(this.loadFreshTimer)
+          };
+          return
+        };
         this.$toast({
           type: 'fail',
-          message: err
+          message: err.message
         })
       })
     },
 
     // 调度任务列表(多病人)
-    getDispathManyPatientList () {
+    getDispathManyPatientList (flag) {
       this.loadingShow = true;
       this.overlayShow = true;
-      this.loadingText = '加载中...';
+      this.loadingText = flag ? '刷新中' : '加载中...';
       this.dispatchEmptyShow = false;
       dispathManyPatientList(-1,this.proId)
       .then((res) => {
@@ -523,6 +571,14 @@ export default {
         this.overlayShow = false;
         this.loadingText = '';
         if (res && res.data.code == 200) {
+          // 是否开启下拉刷新
+          if (flag) {
+            this.isLoadingRepairsTask = false;
+            this.$toast('刷新成功');
+            if (this.loadFreshTimer) {
+              clearTimeout(this.loadFreshTimer)
+            }
+          };
           this.dispatchTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
           this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
@@ -541,18 +597,26 @@ export default {
         this.loadingText = '';
         this.loadingShow = false;
         this.overlayShow = false;
+        if (flag) {
+          this.isLoadingRepairsTask = false;
+          this.$toast('刷新失败,请检查网络');
+          if (this.loadFreshTimer) {
+            clearTimeout(this.loadFreshTimer)
+          };
+          return
+        };
         this.$toast({
           type: 'fail',
-          message: err
+          message: err.message
         })
       })
     },
 
     // 预约任务列表
-    getAppointList () {
+    getAppointList (flag) {
       this.loadingShow = true;
       this.overlayShow = true;
-      this.loadingText = '加载中...';
+      this.loadingText = flag ? '刷新中' : '加载中...';
       this.appointTaskEmptyShow = false;
       appointList(-1,this.proId)
       .then((res) => {
@@ -560,6 +624,14 @@ export default {
         this.overlayShow = false;
         this.loadingText = '';
         if (res && res.data.code == 200) {
+          // 是否开启下拉刷新
+          if (flag) {
+            this.isLoadingRepairsTask = false;
+            this.$toast('刷新成功');
+            if (this.loadFreshTimer) {
+              clearTimeout(this.loadFreshTimer)
+            }
+          };
           this.appointTaskList = res.data.data;
           // 只显示未分配、未查阅、未开始、进行中三种任务的状态
           this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
@@ -578,9 +650,17 @@ export default {
         this.loadingText = '';
         this.loadingShow = false;
         this.overlayShow = false;
+        if (flag) {
+          this.isLoadingRepairsTask = false;
+          this.$toast('刷新失败,请检查网络');
+          if (this.loadFreshTimer) {
+            clearTimeout(this.loadFreshTimer)
+          };
+          return
+        };
         this.$toast({
           type: 'fail',
-          message: err
+          message: err.message
         })
       })
     },
@@ -970,9 +1050,9 @@ export default {
           this.$toast(`${res.data.data}`);
           // 更新任务信息
           if (this.templateType === 'template_one') {
-            this.getDispathSinglePatientList ()
+            this.getDispathSinglePatientList (false)
           } else if (this.templateType === 'template_two') {
-            this.getDispathManyPatientList ()
+            this.getDispathManyPatientList (false)
           }
         } else {
           this.$dialog.alert({
@@ -1045,9 +1125,9 @@ export default {
               this.$toast('分配成功');
               // 更新任务信息
               if (this.templateType === 'template_one') {
-                this.getDispathSinglePatientList ()
+                this.getDispathSinglePatientList (false)
               } else if (this.templateType === 'template_two') {
-                this.getDispathManyPatientList ()
+                this.getDispathManyPatientList (false)
               }
             } else {
               this.$toast({
@@ -1084,7 +1164,7 @@ export default {
             if (res && res.data.code == 200) {
               this.$toast('分配成功');
               // 更新任务信息
-              this.getAppointList()
+              this.getAppointList(false)
             } else {
               this.$toast({
                 type: 'fail',
@@ -1180,9 +1260,9 @@ export default {
             this.$toast('延迟成功');
             // 更新任务信息
             if (this.templateType === 'template_one') {
-              this.getDispathSinglePatientList ()
+              this.getDispathSinglePatientList (false)
             } else if (this.templateType === 'template_two') {
-              this.getDispathManyPatientList ()
+              this.getDispathManyPatientList (false)
             }
           } else {
             this.$toast({
@@ -1219,7 +1299,7 @@ export default {
             if (res && res.data.code == 200) {
               this.$toast('延迟成功');
               // 更新任务信息
-              this.getAppointList()
+              this.getAppointList(false)
             } else {
               this.$toast({
                 type: 'fail',
@@ -1301,9 +1381,9 @@ export default {
             this.$toast('取消成功');
             // 更新任务信息
             if (this.templateType === 'template_one') {
-              this.getDispathSinglePatientList ()
+              this.getDispathSinglePatientList (false)
             } else if (this.templateType === 'template_two') {
-              this.getDispathManyPatientList ()
+              this.getDispathManyPatientList (false)
             }
           } else {
             this.$toast({
@@ -1341,7 +1421,7 @@ export default {
             if (res && res.data.code == 200) {
               this.$toast('取消成功');
               // 更新任务信息
-              this.getAppointList()
+              this.getAppointList(false)
             } else {
               this.$toast({
                 type: 'fail',
@@ -1528,18 +1608,18 @@ export default {
 
     // tab切换值变化事件
     vanTabsChangeEvent (value) {
-        if (value == 'dispatchTask') {
-          if (this.templateType === 'template_one') {
-            this.getDispathSinglePatientList()
-          } else if (this.templateType === 'template_two') {
-            this.getDispathManyPatientList ()
-          }
-        } else if (value == 'appointTask') {
-          this.getAppointList()
-        };
-        this.$nextTick(()=> {
-            this.initScrollChange()
-        })
+      if (value == 'dispatchTask') {
+        if (this.templateType === 'template_one') {
+          this.getDispathSinglePatientList(false)
+        } else if (this.templateType === 'template_two') {
+          this.getDispathManyPatientList (false)
+        }
+      } else if (value == 'appointTask') {
+        this.getAppointList(false)
+      };
+      this.$nextTick(()=> {
+          this.initScrollChange()
+      })
     }
   }
 };
@@ -1806,313 +1886,324 @@ export default {
         height: 100%
       }
     };
-    .content-box {
-        flex: 1;
-        margin-top: 50px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-        /deep/ .van-tabs {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 0;
-            background: #f7f7f7;
-            .van-tabs__wrap {
-                height: 0.8rem;
-                padding: 10px 0;
-                .van-tabs__nav {
-                    border: none !important;
-                    background: #f7f7f7 !important;
-                    .van-tab {
-                        border-radius: 4px
-                    }
-                }
-            };
-            .van-tabs__content {
-                flex: 1;
-                padding: 0 4px 0px 4px;
-                box-sizing: border-box;
-                background: #f7f7f7;
-                overflow: scroll;
-                height: 0;
-                display: flex;
-                .van-tab__pane {
-                    height: 100%;
-                    position: relative;
-                    .van-empty {
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%,-50%)
-                    };
-                    .task-message-top {
-                      width: 100%;
-                      padding: 0 8px;
-                      margin-bottom: 10px;
-                      height: 42px;
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      box-sizing: border-box;
-                      background: #fff;
-                      .message-left {
-                        >span {
-                          font-size: 14px;
-                          &:nth-child(1) {
-                            color: #4B4B4B
-                          };
-                          &:nth-child(2) {
-                            color: #3B9DF9
+    /deep/ .van-pull-refresh {
+      .van-pull-refresh__head {
+        color: #fff !important;
+      };
+      .van-loading {
+        color: #fff !important;
+        .van-loading__text {
+          color: #fff !important;
+        }
+      };
+      flex: 1;
+      margin-top: 50px;
+      .content-box {
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+          .van-tabs {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              height: 0;
+              background: #f7f7f7;
+              .van-tabs__wrap {
+                  height: 0.8rem;
+                  padding: 10px 0;
+                  .van-tabs__nav {
+                      border: none !important;
+                      background: #f7f7f7 !important;
+                      .van-tab {
+                          border-radius: 4px
+                      }
+                  }
+              };
+              .van-tabs__content {
+                  flex: 1;
+                  padding: 0 4px 0px 4px;
+                  box-sizing: border-box;
+                  background: #f7f7f7;
+                  overflow: scroll;
+                  height: 0;
+                  display: flex;
+                  .van-tab__pane {
+                      height: 100%;
+                      position: relative;
+                      .van-empty {
+                          position: absolute;
+                          top: 50%;
+                          left: 50%;
+                          transform: translate(-50%,-50%)
+                      };
+                      .task-message-top {
+                        width: 100%;
+                        padding: 0 8px;
+                        margin-bottom: 10px;
+                        height: 42px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        box-sizing: border-box;
+                        background: #fff;
+                        .message-left {
+                          >span {
+                            font-size: 14px;
+                            &:nth-child(1) {
+                              color: #4B4B4B
+                            };
+                            &:nth-child(2) {
+                              color: #3B9DF9
+                            }
+                          }
+                        };
+                        .message-right {
+                          flex: 1;
+                          display: flex;
+                          justify-content: flex-end;
+                          >span {
+                            display: inline-block;
+                            width: 76px;
+                            height: 26px;
+                            border-radius: 6px;
+                            text-align: center;
+                            line-height: 26px;
+                            font-size: 14px;
+                            &:nth-child(1) {
+                              color: #fff;
+                              background: #3B9DF9;
+                              margin-right: 8px;
+                            };
+                            &:nth-child(2) {
+                              color: #3B9DF9;
+                              background: #fff;
+                              box-sizing: border-box;
+                              border: 1px solid #3B9DF9
+                            }
                           }
                         }
                       };
-                      .message-right {
-                        flex: 1;
-                        display: flex;
-                        justify-content: flex-end;
-                        >span {
-                          display: inline-block;
-                          width: 76px;
-                          height: 26px;
-                          border-radius: 6px;
-                          text-align: center;
-                          line-height: 26px;
-                          font-size: 14px;
-                          &:nth-child(1) {
-                            color: #fff;
-                            background: #3B9DF9;
-                            margin-right: 8px;
-                          };
-                          &:nth-child(2) {
-                            color: #3B9DF9;
-                            background: #fff;
-                            box-sizing: border-box;
-                            border: 1px solid #3B9DF9
-                          }
-                        }
-                      }
-                    };
-                    .backlog-task-list-box {
-                        overflow: scroll;
-                        flex: 1;
-                        .backlog-task-list {
-                            padding: 2px 8px 4px 8px;
-                            box-sizing: border-box;
-                            border-radius: 6px;
-                            background: #fff;
-                            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.23);
-                            margin-bottom: 10px;
-                            .list-top {
-                              display: flex;
-                              justify-content: space-between;
-                              align-items: center;
-                              height: 40px;
-                              .list-top-left {
-                                flex: 1;
-                                font-size: 14px;
-                                color: #101010;
+                      .backlog-task-list-box {
+                          overflow: scroll;
+                          flex: 1;
+                          .backlog-task-list {
+                              padding: 2px 8px 4px 8px;
+                              box-sizing: border-box;
+                              border-radius: 6px;
+                              background: #fff;
+                              box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.23);
+                              margin-bottom: 10px;
+                              .list-top {
                                 display: flex;
+                                justify-content: space-between;
                                 align-items: center;
-                                img {
-                                  width: 40px;
-                                  height: 40px;
-                                  margin-right: 2px;
-                                  margin-left: -6px;
-                                };
-                                >span {
-                                  display: inline-block;
-                                  &:nth-child(2) {
-                                    margin-right: 8px
-                                  };
-                                  &:nth-child(3) {
-                                    height: 20px;
-                                    padding-left: 8px;
-                                    line-height: 20px;
-                                    border-left: 1px solid #BBBBBB
-                                  }
-                                }  
-                              };
-                              .list-top-right {
-                                font-size: 16px;
-                                color: #E86F50
-                              };
-                              .noLookupStyle {
-                                color: #E8CB51 !important
-                              };
-                              .underwayStyle {
-                                color: #289E8E !important
-                              }
-                            };
-                            .list-center {
-                              display: flex;
-                              justify-content: space-between;
-                              align-items: center;
-                              margin: 8px 0;
-                              .list-center-left {
-                                flex: 1;
-                                font-size: 14px;
-                                color: #101010;
-                                display: flex;
-                                align-items: center;
-                                margin-right: 6px;
-                                width: 0;
-                                >div {
-                                  width: 0;
-                                  display: flex;
+                                height: 40px;
+                                .list-top-left {
                                   flex: 1;
+                                  font-size: 14px;
+                                  color: #101010;
+                                  display: flex;
                                   align-items: center;
+                                  img {
+                                    width: 40px;
+                                    height: 40px;
+                                    margin-right: 2px;
+                                    margin-left: -6px;
+                                  };
                                   >span {
-                                    font-weight: bold;
                                     display: inline-block;
-                                    &:nth-child(1) {
+                                    &:nth-child(2) {
                                       margin-right: 8px
                                     };
-                                    &:nth-child(2) {
-                                      flex: 1;
-                                      .no-wrap();
+                                    &:nth-child(3) {
                                       height: 20px;
                                       padding-left: 8px;
                                       line-height: 20px;
                                       border-left: 1px solid #BBBBBB
                                     }
-                                  }
-                                }    
+                                  }  
+                                };
+                                .list-top-right {
+                                  font-size: 16px;
+                                  color: #E86F50
+                                };
+                                .noLookupStyle {
+                                  color: #E8CB51 !important
+                                };
+                                .underwayStyle {
+                                  color: #289E8E !important
+                                }
                               };
-                              .list-center-right {
-                                
-                              }
-                            };
-                            .list-bottom {
-                              display: flex;
-                              justify-content: space-between;
-                              align-items: center;
-                              height: 40px;
-                              .list-bottom-left {
-                                flex: 1;
-                                font-size: 14px;
-                                color: #101010;
+                              .list-center {
                                 display: flex;
+                                justify-content: space-between;
                                 align-items: center;
-                                >span {
-                                  font-weight: bold;
-                                  display: inline-block;
-                                  color: #fff;
-                                  border-radius: 16px;
-                                  font-size: 12px;
-                                  width: 54px;
-                                  height: 25px;
-                                  text-align: center;
-                                  line-height: 25px;
-                                  &:nth-child(1) {
-                                    margin-right: 4px;
-                                    background: #F2A15F
-                                  };
-                                };
-                                .delay-btn {
-                                  margin-right: 4px;
-                                  background: #174E97
-                                };
-                                .allocation-btn {
-                                  background: #ffb77d
-                                };
-                                .listBottomLeftStyle {
-                                  color: #F2A15F !important;
-                                  border: 1px solid #F2A15F;
-                                  background: #fff !important;
-                                  box-sizing: border-box
-                                }  
-                              };
-                              .list-bottom-right {
-                                >span {
-                                  font-weight: bold;
-                                  display: inline-block;
-                                  color: #fff;
-                                  border-radius: 10px;
+                                margin: 8px 0;
+                                .list-center-left {
+                                  flex: 1;
                                   font-size: 14px;
-                                  width: 48px;
-                                  height: 26px;
-                                  text-align: center;
-                                  line-height: 26px;
-                                  box-sizing: border-box;
-                                  border-radius: 2px;
-                                  margin-right: 4px
+                                  color: #101010;
+                                  display: flex;
+                                  align-items: center;
+                                  margin-right: 6px;
+                                  width: 0;
+                                  >div {
+                                    width: 0;
+                                    display: flex;
+                                    flex: 1;
+                                    align-items: center;
+                                    >span {
+                                      font-weight: bold;
+                                      display: inline-block;
+                                      &:nth-child(1) {
+                                        margin-right: 8px
+                                      };
+                                      &:nth-child(2) {
+                                        flex: 1;
+                                        .no-wrap();
+                                        height: 20px;
+                                        padding-left: 8px;
+                                        line-height: 20px;
+                                        border-left: 1px solid #BBBBBB
+                                      }
+                                    }
+                                  }    
                                 };
-                                .operate-one {
-                                  color: #F2A15F;
-                                  border: 1px solid #F2A15F
-                                };
-                                .operate-two {
-                                  color: #174E97;
-                                  border: 1px solid #174E97
-                                };
-                                .operate-three {
-                                  color: #254550;
-                                  border: 1px solid #254550
-                                };
-                                .operate-four {
-                                  color: #E86F50;
-                                  border: 1px solid #E86F50;
-                                  margin-right: 0
-                                }                   
-                              }
-                            };
-                            .appoint-list-top {
-                              padding: 4px 0;
-                              .bottom-border-1px(#afafaf);
-                              .list-top-left {
-                                >span {
-                                  font-weight: bold
+                                .list-center-right {
+                                  
                                 }
-                              }
-                            };
-                            .appoint-list-center {
-                              margin-top: 0;
-                              flex-direction: column;
-                              .center-one-line {
+                              };
+                              .list-bottom {
                                 display: flex;
-                                width: 100%;
-                                line-height: 20px;
-                                margin-top: 10px;
-                                .center-one-line-left {
+                                justify-content: space-between;
+                                align-items: center;
+                                height: 40px;
+                                .list-bottom-left {
                                   flex: 1;
-                                  word-break: break-all;
-                                  margin-right: 6px
+                                  font-size: 14px;
+                                  color: #101010;
+                                  display: flex;
+                                  align-items: center;
+                                  >span {
+                                    font-weight: bold;
+                                    display: inline-block;
+                                    color: #fff;
+                                    border-radius: 16px;
+                                    font-size: 12px;
+                                    width: 54px;
+                                    height: 25px;
+                                    text-align: center;
+                                    line-height: 25px;
+                                    &:nth-child(1) {
+                                      margin-right: 4px;
+                                      background: #F2A15F
+                                    };
+                                  };
+                                  .delay-btn {
+                                    margin-right: 4px;
+                                    background: #174E97
+                                  };
+                                  .allocation-btn {
+                                    background: #ffb77d
+                                  };
+                                  .listBottomLeftStyle {
+                                    color: #F2A15F !important;
+                                    border: 1px solid #F2A15F;
+                                    background: #fff !important;
+                                    box-sizing: border-box
+                                  }  
                                 };
-                                .center-one-line-checkItem {
+                                .list-bottom-right {
+                                  >span {
+                                    font-weight: bold;
+                                    display: inline-block;
+                                    color: #fff;
+                                    border-radius: 10px;
+                                    font-size: 14px;
+                                    width: 48px;
+                                    height: 26px;
+                                    text-align: center;
+                                    line-height: 26px;
+                                    box-sizing: border-box;
+                                    border-radius: 2px;
+                                    margin-right: 4px
+                                  };
+                                  .operate-one {
+                                    color: #F2A15F;
+                                    border: 1px solid #F2A15F
+                                  };
+                                  .operate-two {
+                                    color: #174E97;
+                                    border: 1px solid #174E97
+                                  };
+                                  .operate-three {
+                                    color: #254550;
+                                    border: 1px solid #254550
+                                  };
+                                  .operate-four {
+                                    color: #E86F50;
+                                    border: 1px solid #E86F50;
+                                    margin-right: 0
+                                  }                   
+                                }
+                              };
+                              .appoint-list-top {
+                                padding: 4px 0;
+                                .bottom-border-1px(#afafaf);
+                                .list-top-left {
+                                  >span {
+                                    font-weight: bold
+                                  }
+                                }
+                              };
+                              .appoint-list-center {
+                                margin-top: 0;
+                                flex-direction: column;
+                                .center-one-line {
+                                  display: flex;
+                                  width: 100%;
+                                  line-height: 20px;
+                                  margin-top: 10px;
+                                  .center-one-line-left {
+                                    flex: 1;
+                                    word-break: break-all;
+                                    margin-right: 6px
+                                  };
+                                  .center-one-line-checkItem {
 
-                                };
-                                .center-one-line-right {
-                                  flex: 1;
-                                  word-break: break-all
+                                  };
+                                  .center-one-line-right {
+                                    flex: 1;
+                                    word-break: break-all
+                                  }
                                 }
-                              }
-                            };
-                            .appoint-list-bottom {
-                              .list-bottom-left {
-                                .delay-btn {
-                                  background: #254550 !important
-                                };
-                                .allocation-btn {
-                                  background: #ffb77d !important
+                              };
+                              .appoint-list-bottom {
+                                .list-bottom-left {
+                                  .delay-btn {
+                                    background: #254550 !important
+                                  };
+                                  .allocation-btn {
+                                    background: #ffb77d !important
+                                  }
                                 }
-                              }
-                            }   
-                        };
-                        .no-more-data {
-                            font-size: 12px;
-                            color: #BEC7D1;
-                            width: 100%;
-                            text-align: center;
-                            line-height: 30px
-                        }
-                    }
-                }        
-            }
-        }
-    }
+                              }   
+                          };
+                          .no-more-data {
+                              font-size: 12px;
+                              color: #BEC7D1;
+                              width: 100%;
+                              text-align: center;
+                              line-height: 30px
+                          }
+                      }
+                  }        
+              }
+          }
+      }
+    }  
   }
 }
 </style>
