@@ -154,7 +154,7 @@
                             <span>{{ extractionDate(item.createTime) }}</span>
                             <span v-show="item.workerName">{{ item.workerName }}</span>
                           </div>
-                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
+                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
                           </div>
                         </div>
@@ -209,7 +209,7 @@
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ item.setOutPlaceName }}</span>
                           </div>
-                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'underwayStyle':item.state == 3}">
+                          <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
                           </div>
                         </div>
@@ -527,8 +527,8 @@ export default {
             }
           };
           this.dispatchTaskList = res.data.data;
-          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
-          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中、未结束五种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3 || item.state == 4});
           this.echoDispatchTaskList = this.dispatchTaskList;
           if (this.dispatchTaskList.length == 0) {
             this.dispatchEmptyShow = true
@@ -580,8 +580,8 @@ export default {
             }
           };
           this.dispatchTaskList = res.data.data;
-          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
-          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中、未结束五种任务的状态
+          this.dispatchTaskList = this.dispatchTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3 || item.state == 4});
           this.echoDispatchTaskList = this.dispatchTaskList;
           if (this.dispatchTaskList.length == 0) {
             this.dispatchEmptyShow = true
@@ -633,8 +633,8 @@ export default {
             }
           };
           this.appointTaskList = res.data.data;
-          // 只显示未分配、未查阅、未开始、进行中三种任务的状态
-          this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3});
+          // 只显示未分配、未查阅、未开始、进行中、未结束五种任务的状态
+          this.appointTaskList = this.appointTaskList.filter(( item ) => { return item.state == 0 || item.state == 1 || item.state == 2 || item.state == 3 || item.state == 4});
           this.echoAppointTaskList = this.appointTaskList;
           if (this.appointTaskList.length == 0) {
             this.appointTaskEmptyShow = true
@@ -1579,6 +1579,9 @@ export default {
           break;
         case 3 :
           return '进行中'
+          break;
+        case 4 :
+          return '未结束'
           break
       }
     },
@@ -2032,9 +2035,15 @@ export default {
                                 .noLookupStyle {
                                   color: #E8CB51 !important
                                 };
+                                .noStartStyle {
+                                  color: #174E97 !important
+                                };
                                 .underwayStyle {
                                   color: #289E8E !important
-                                }
+                                };
+                                .noEndStyle {
+                                  color: #F2A15F !important
+                                };
                               };
                               .list-center {
                                 display: flex;
