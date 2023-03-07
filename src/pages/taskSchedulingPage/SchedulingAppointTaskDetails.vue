@@ -555,20 +555,20 @@ export default {
                     text-align: center;
                     line-height: 27px;
                     color: #fff;
-                    background: #289E8E;
+                    background: #E86F50;
                     border-radius: 4px
                 };
                 .noLookupStyle {
-                    color: #E8CB51 !important
+                    background: #E8CB51 !important
                 };
                 .noStartStyle {
-                    color: #174E97 !important
+                    background: #174E97 !important
                 };
                 .underwayStyle {
-                    color: #289E8E !important
+                    background: #289E8E !important
                 };
                 .noEndStyle {
-                    color: #F2A15F !important
+                    background: #F2A15F !important
                 };
             };
             .message-two {

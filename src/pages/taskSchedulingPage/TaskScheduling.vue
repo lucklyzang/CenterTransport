@@ -1792,7 +1792,7 @@ export default {
   .allocation-box-one {
     /deep/ .dialog-center {
       .list-module {
-        max-height: 400px !important
+        max-height: 260px !important
       }
     }
   };
