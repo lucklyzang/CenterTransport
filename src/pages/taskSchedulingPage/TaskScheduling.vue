@@ -940,90 +940,93 @@ export default {
 
     // 筛选弹框确定事件
     screenDialogSure () {
-      console.log( '过滤数据' ,this.startPointDepartmentValue,this.transporterValue,this.priorityResult);
-      if (this.activeName == 'dispatchTask') {
-        if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
-          this.dispatchTaskList = this.echoDispatchTaskList;
-          if (this.dispatchTaskList.length == 0) {
-            this.dispatchEmptyShow = true
+      try {
+        if (this.activeName == 'dispatchTask') {
+          if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+            this.dispatchTaskList = this.echoDispatchTaskList;
+            if (this.dispatchTaskList.length == 0) {
+              this.dispatchEmptyShow = true
+            } else {
+              this.dispatchEmptyShow = false
+            }
           } else {
-            this.dispatchEmptyShow = false
+            this.dispatchTaskList = this.echoDispatchTaskList.filter((item) => {
+              if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue &&
+                  item['workerId'] == this.transporterValue &&
+                  this.priorityResult.indexOf(item.priority.toString()) != -1
+                } else {
+                  if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue
+                  };
+                  if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                    return item['workerId'] == this.transporterValue
+                  };
+                  if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                    return this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                  if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
+                  };
+                  if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                  if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                    return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                }
+            });
+            if (this.dispatchTaskList.length == 0) {
+              this.dispatchEmptyShow = true
+            } else {
+              this.dispatchEmptyShow = false
+            }
           }
-        } else {
-          this.dispatchTaskList = this.echoDispatchTaskList.filter((item) => {
-            if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
-                return item['setOutPlaceId'] == this.startPointDepartmentValue &&
-                item['workerId'] == this.transporterValue &&
-                this.priorityResult.indexOf(item.priority.toString()) != -1
-              } else {
-                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue
-                };
-                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
-                  return item['workerId'] == this.transporterValue
-                };
-                if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
-                  return this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-                if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
-                };
-                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
-                  return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-              }
-          });
-          if (this.dispatchTaskList.length == 0) {
-            this.dispatchEmptyShow = true
+        } else if (this.activeName == 'appointTask') {
+          if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+            this.appointTaskList = this.echoAppointTaskList;
+            if (this.appointTaskList.length == 0) {
+              this.appointTaskEmptyShow = true
+            } else {
+              this.appointTaskEmptyShow = false
+            }
           } else {
-            this.dispatchEmptyShow = false
+            this.appointTaskList = this.echoAppointTaskList.filter((item) => {
+              if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                  return item['setOutPlaceId'] == this.startPointDepartmentValue &&
+                  item['workerId'] == this.transporterValue &&
+                  this.priorityResult.indexOf(item.priority.toString()) != -1
+                } else {
+                  if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue
+                  };
+                  if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                    return item['workerId'] == this.transporterValue
+                  };
+                  if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                    return this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                  if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
+                  };
+                  if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
+                    return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                  if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
+                    return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
+                  };
+                }
+            });
+            if (this.appointTaskList.length == 0) {
+              this.appointTaskEmptyShow = true
+            } else {
+              this.appointTaskEmptyShow = false
+            }
           }
         }
-      } else if (this.activeName == 'appointTask') {
-        if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
-          this.appointTaskList = this.echoAppointTaskList;
-          if (this.appointTaskList.length == 0) {
-            this.appointTaskEmptyShow = true
-          } else {
-            this.appointTaskEmptyShow = false
-          }
-        } else {
-          this.appointTaskList = this.echoAppointTaskList.filter((item) => {
-            if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
-                return item['setOutPlaceId'] == this.startPointDepartmentValue &&
-                item['workerId'] == this.transporterValue &&
-                this.priorityResult.indexOf(item.priority.toString()) != -1
-              } else {
-                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length == 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue
-                };
-                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
-                  return item['workerId'] == this.transporterValue
-                };
-                if (!this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
-                  return this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-                if (this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length == 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue && item['workerId'] == this.transporterValue
-                };
-                if (this.startPointDepartmentValue && !this.transporterValue && this.priorityResult.length > 0) {
-                  return item['setOutPlaceId'] == this.startPointDepartmentValue && this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-                if (!this.startPointDepartmentValue && this.transporterValue && this.priorityResult.length > 0) {
-                  return item['workerId'] == this.transporterValue && this.priorityResult.indexOf(item.priority.toString()) != -1
-                };
-              }
-          });
-          if (this.appointTaskList.length == 0) {
-            this.appointTaskEmptyShow = true
-          } else {
-            this.appointTaskEmptyShow = false
-          }
-        }
-      }
+      } catch (err) {
+        this.$toast(`${err}`)
+      }    
     },
 
     // 筛选弹框取消事件
