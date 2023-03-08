@@ -134,7 +134,7 @@
       <van-pull-refresh v-model="isLoadingRepairsTask" loading-text="刷新中..." @refresh="onRefreshRepairsTaskEvent">
         <div class="content-box">
           <van-tabs v-model="activeName" type="card" color="#fff" title-inactive-color="#9E9E9A" title-active-color="#174E97" @change="vanTabsChangeEvent">
-              <van-tab title="调度任务" name="dispatchTask">
+              <van-tab title="调度任务" name="dispatchTask" v-if="isShowDispathModule">
                   <div class="task-message-top">
                     <div class="message-left">
                       <span>当前任务数:</span>
@@ -190,7 +190,7 @@
                       <div class="no-more-data" v-show="isShowDispatchTaskNoMoreData">没有更多数据了</div>
                   </div>    
               </van-tab>
-              <van-tab title="预约任务" name="appointTask">
+              <van-tab title="预约任务" name="appointTask" v-if="isShowAppointModule">
                   <div class="task-message-top">
                     <div class="message-left">
                       <span>当前任务数:</span>
@@ -294,6 +294,8 @@ export default {
   data() {
     return {
       loadingShow: false,
+      isShowDispathModule: true,
+      isShowAppointModule: true,
       loadingText: '加载中...',
       isLoadingRepairsTask: false,
       loadFreshTimer: null,
@@ -370,7 +372,8 @@ export default {
           })
       }
     });
-    this.parallelFunction()
+    this.parallelFunction();
+    this.controlModuleShow()
   },
 
   beforeDestroy () {
@@ -454,6 +457,18 @@ export default {
 
      onClickLeft() {
       this.$router.push({ path: "/home"})
+    },
+
+    // 控制模块显示
+    controlModuleShow () {
+      if (this.userInfo['extendData']) {
+        if (!this.userInfo['extendData']['dispAssgin']) {
+          this.isShowDispathModule = false
+        };
+        if (!this.userInfo['extendData']['bookAssgin']) {
+          this.isShowAppointModule = false
+        }
+      }  
     },
 
     // 提取时间(不显示秒)
