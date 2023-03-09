@@ -1175,7 +1175,7 @@
         this.parallelFunctionTwo();
         this.isShowFeedbackEvent()
       };
-      // this.controlModuleShow()
+      this.controlModuleShow()
     },
 
     watch: {
@@ -1237,7 +1237,7 @@
           this.leftDownShow = false;
         }
       });
-      // this.controlModuleShow()
+      this.controlModuleShow()
     },
 
     computed:{

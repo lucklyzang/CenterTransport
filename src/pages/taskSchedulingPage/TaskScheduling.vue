@@ -363,17 +363,17 @@ export default {
     };
     this.$nextTick(()=> {
       try {
-          this.initScrollChange();
-          this.registerSlideEvent()
+        this.initScrollChange();
+        this.registerSlideEvent()
       } catch (error) {
-          this.$toast({
-              type: 'fail',
-              message: error
-          })
+        // this.$toast({
+        //   type: 'fail',
+        //   message: error
+        // })
       }
     });
-    this.parallelFunction();
-    this.controlModuleShow()
+    this.controlModuleShow();
+    this.parallelFunction()
   },
 
   beforeDestroy () {
@@ -1608,22 +1608,23 @@ export default {
     initScrollChange () {
         // 待办任务列表下拉
         if (this.activeName == 'dispatchTask') {
-            let boxBackScroll = this.$refs['scrollDispatchTask'];
-            boxBackScroll.addEventListener('scroll',(e)=> {
-                if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-                    console.log('待办滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
-                }
-            },true)
-        }
+          let boxBackScroll = this.$refs['scrollDispatchTask'];
+          boxBackScroll.addEventListener('scroll',(e)=> {
+              console.log('调度滚动了');
+              if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
+              }
+          },true)  
+        };
 
-        // 完成任务列表下拉
+        // 预约任务列表下拉
         if (this.activeName == 'appointTask') {
-            let boxCompleteteScroll = this.$refs['scrollAppointTask'];
-            boxCompleteteScroll.addEventListener('scroll',(e)=> {
-                if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-                    console.log('完成滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
-                }
-            },true)
+          let boxCompleteteScroll = this.$refs['scrollAppointTask']
+          boxCompleteteScroll.addEventListener('scroll',(e)=> {
+            console.log('预约滚动了');
+              if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
+                  console.log('完成滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
+              }
+          },true)    
         }    
     },
 
@@ -1932,12 +1933,15 @@ export default {
               height: 0;
               background: #f7f7f7;
               .van-tabs__wrap {
+                  width: 100%;
                   height: 0.8rem;
                   padding: 10px 0;
                   .van-tabs__nav {
                       border: none !important;
                       background: #f7f7f7 !important;
                       .van-tab {
+                          width: 50%;
+                          flex: none;
                           border-radius: 4px
                       }
                   }
