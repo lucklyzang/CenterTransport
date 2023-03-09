@@ -1610,8 +1610,8 @@ export default {
         if (this.activeName == 'dispatchTask') {
           let boxBackScroll = this.$refs['scrollDispatchTask'];
           boxBackScroll.addEventListener('scroll',(e)=> {
-              console.log('调度滚动了');
               if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
+                console.log('调度滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
               }
           },true)  
         };
@@ -1620,9 +1620,8 @@ export default {
         if (this.activeName == 'appointTask') {
           let boxCompleteteScroll = this.$refs['scrollAppointTask']
           boxCompleteteScroll.addEventListener('scroll',(e)=> {
-            console.log('预约滚动了');
               if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-                  console.log('完成滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
+                  console.log('预约滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
               }
           },true)    
         }    
@@ -1951,7 +1950,6 @@ export default {
                   padding: 0 4px 0px 4px;
                   box-sizing: border-box;
                   background: #f7f7f7;
-                  overflow: scroll;
                   height: 0;
                   display: flex;
                   .van-tab__pane {
@@ -2013,6 +2011,7 @@ export default {
                       .backlog-task-list-box {
                           overflow: scroll;
                           flex: 1;
+                          height: 100%;
                           .backlog-task-list {
                               padding: 2px 8px 4px 8px;
                               box-sizing: border-box;
