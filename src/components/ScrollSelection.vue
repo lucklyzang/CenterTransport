@@ -70,6 +70,7 @@ export default {
       searchValue: '',
       cacheList: '',
       list: [],
+      currentValue: '',
       show: false,
       active: null,
       city: "",
@@ -132,9 +133,9 @@ export default {
     // 确认事件
     sure() {
       this.list.map((item, index) => {
-        item.id == this.active ? (this.city = item.text) : null
+        item.id == this.active ? (this.city = item.text,this.currentValue = item.value) : null
       });
-      this.$emit('sure',this.city);
+      this.$emit('sure',this.city,this.currentValue);
       // 没有搜索结果时点确认
       if (this.list.length == 0) {
         this.$emit('sure',null)

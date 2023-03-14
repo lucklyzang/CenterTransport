@@ -229,6 +229,7 @@ export default {
       startDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
+       currentTransporterValue: '',
       transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
@@ -340,6 +341,7 @@ export default {
       this.transportTypeList = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'];
       this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
       this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
+      this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'];
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'];
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'];
@@ -575,11 +577,13 @@ export default {
     },
 
     // 运送员下拉选择框确认事件
-    transporterSureEvent (val) {
+    transporterSureEvent (val,value) {
       if (val) {
-        this.currentTransporter =  val
+        this.currentTransporter =  val;
+        this.currentTransporterValue = value
       } else {
-        this.currentTransporter = '请选择'
+        this.currentTransporter = '请选择';
+        this.currentTransporterValue = ''
       };
       this.showTransporter = false
     },
@@ -749,7 +753,7 @@ export default {
         startUser: this.userName,   //创建者名称  当前登陆者
         modifyId: '', //修改人ID
         modifyName: '', // 修改人
-        workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+        workerId: this.currentTransporter == '请选择' ? '' : this.currentTransporterValue, // 运送员ID
         workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
         proId: this.proId,   //项目ID
         proName: this.proName,   //项目名称
@@ -775,7 +779,7 @@ export default {
 
     // 生成预约任务
     postGenerateAppointTask (data) {
-      this.showLoadingHint = true;
+      this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '创建中...';
       createAppoint(data).then((res) => {
@@ -792,7 +796,7 @@ export default {
           }).then(() => {
           });
         };
-        this.showLoadingHint = false;
+        this.loadingShow = false;
         this.overlayShow = false;
         this.loadingText = ''
       })
@@ -802,7 +806,7 @@ export default {
           closeOnPopstate: true
         }).then(() => {
         });
-        this.showLoadingHint = false;
+        this.loadingShow = false;
         this.overlayShow = false;
         this.loadingText = ''
       })
@@ -815,6 +819,7 @@ export default {
       casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'] = this.transportTypeList;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'] = this.currentStartDepartment;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'] = this.currentTransporter;
+      casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'] = this.currentTransporterValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'] = this.currentTransportTool;
       casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'] = this.patientNumberValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'] = this.patientNameValue;

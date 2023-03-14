@@ -62,7 +62,6 @@
             <div>
               <StepNumberBox v-model="innerItem.typerNumber"
                  @plus="plusNum(arguments)"
-                 @inputBlur="inputBlurEvent(arguments)"
                  :innerIndex="innerIndex"
                  @minus="minusNum(arguments)"
                  @change="stepperValChange(arguments)"
@@ -366,6 +365,7 @@ export default {
       endDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
+      currentTransporterValue: '',
       transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
@@ -388,6 +388,7 @@ export default {
       ],
       showTransportRice: false,
       currentTransportRice: '请选择',
+      currentTransportRiceValue: '',
       transportRiceList: [],
       transportTypeIndex: null,
       currentTransportType: '',
@@ -517,12 +518,14 @@ export default {
       if (this.templateType === 'template_one') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'];
+        this.currentTransportRiceValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRiceValue'];
         this.transportTypeIndex = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'];
         this.currentTransportType = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'];
         this.transportTypeList = casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentEndDepartment'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
+        this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'];
         this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'];
@@ -534,9 +537,11 @@ export default {
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'];
+        this.currentTransportRiceValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRiceValue'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['currentEndDepartment'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
+        this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
         this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['taskTransportTotal'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'];
@@ -970,14 +975,16 @@ export default {
     },
 
     // 运送大类下拉选择框确认事件
-    transportRiceSureEvent (val) {
+    transportRiceSureEvent (val,value) {
       if (val) {
         this.currentTransportRice = val;
+        this.currentTransportRiceValue = value;
         this.synchronizationPatientTransportType(val);
         // 根据运送大类查询运送小类
-        this.querytransportChildByTransportParent(0,this.transportRiceList.filter((item) => { return item.text == val })[0]['value'],this.templateType);
+        this.querytransportChildByTransportParent(0,this.currentTransportRiceValue,this.templateType);
       } else {
-        this.currentTransportRice = '请选择'
+        this.currentTransportRice = '请选择';
+        this.currentTransportRiceValue = ''
       };
       this.showTransportRice = false
     },
@@ -1042,11 +1049,13 @@ export default {
     },
 
     // 运送员下拉选择框确认事件
-    transporterSureEvent (val) {
+    transporterSureEvent (val,value) {
       if (val) {
-        this.currentTransporter =  val
+        this.currentTransporter =  val;
+        this.currentTransporterValue = value
       } else {
-        this.currentTransporter = '请选择'
+        this.currentTransporter = '请选择';
+        this.currentTransporterValue = ''
       };
       this.showTransporter = false
     },
@@ -1213,7 +1222,7 @@ export default {
           setOutPlaceName: this.currentStartDepartment == '请选择' ? '' : this.currentStartDepartment,//出发地名称
           destinationId: this.currentEndDepartment == '请选择' ? '' : this.getDepartmentIdByName(this.currentEndDepartment), //目的地ID
           destinationName: this.currentEndDepartment == '请选择' ? '' : this.currentEndDepartment,  //目的地名称
-          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeId:  this.currentTransportRiceValue, //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: this.currentTransportType['value'],  //运送类型 ID
           taskTypeName: this.currentTransportType['text'],  //运送类型名称
@@ -1232,7 +1241,7 @@ export default {
           createId: this.workerId,   //创建者ID  当前登录者
           createName: this.userName,   //创建者名称  当前登陆者
           proId: this.proId,   //项目ID
-          workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerId: this.currentTransporter == '请选择' ? '' : this.currentTransporterValue, // 运送员ID
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
@@ -1267,7 +1276,7 @@ export default {
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.taskTransportTotal, //实际数量
           taskRemark: this.taskDescribe, //备注
-          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeId:  this.currentTransportRiceValue, //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: '',
           taskTypeName: '',
@@ -1277,7 +1286,7 @@ export default {
           modifyName: '', //修改者姓名
           originalWorkerId: '', // 原始运送员id
           id: '', // 任务id
-          workerId: this.currentTransporter == '请选择' ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员id
+          workerId: this.currentTransporter == '请选择' ? '' : this.currentTransporterValue, // 运送员id
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
@@ -1305,8 +1314,8 @@ export default {
               for (let innerItem of checkChildTypeList) {
                 taskMessageTwo.patientInfoList[i]['typeList'].push({
                   quantity: innerItem['typerNumber'],
-                  parentTypeId: this.templatelistTwo[i]['sampleId'],
-                  parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                  parentTypeId: this.currentTransportRiceValue,
+                  parentTypeName: this.currentTransportRice,
                   taskTypeId: innerItem['value'],
                   taskTypeName: innerItem['text']
                 })
@@ -1314,8 +1323,8 @@ export default {
             } else {
               taskMessageTwo.patientInfoList[i]['typeList'].push({
                 quantity: 0,
-                parentTypeId: this.templatelistTwo[i]['sampleId'],
-                parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                parentTypeId: this.currentTransportRiceValue,
+                parentTypeName: this.currentTransportRice,
                 taskTypeId: '',
                 taskTypeName: ''
               });
@@ -1408,12 +1417,14 @@ export default {
       if (this.templateType === 'template_one') {
         casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'] = this.currentTransportRice;
+        casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRiceValue'] = this.currentTransportRiceValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeIndex'] = this.transportTypeIndex;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportType'] = this.currentTransportType;
         casuallyTemporaryStorageCreateDispathTaskMessage['transportTypeList'] = this.transportTypeList;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'] = this.currentStartDepartment;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentEndDepartment'] = this.currentEndDepartment;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'] = this.currentTransporter;
+        casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'] = this.currentTransporterValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'] = this.currentTransportTool;
         casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'] = this.patientNumberValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'] = this.patientNameValue;
@@ -1425,9 +1436,11 @@ export default {
       } else if (this.templateType === 'template_two') {
         casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'] = this.currentTransportRice;
+        casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRiceValue'] = this.currentTransportRiceValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentStartDepartment'] = this.currentStartDepartment;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentEndDepartment'] = this.currentEndDepartment;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'] = this.currentTransporter;
+        casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'] = this.currentTransporterValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'] = this.currentTransportTool;
         casuallyTemporaryStorageCreateDispathTaskMessage['taskTransportTotal'] = this.taskTransportTotal;
         casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'] = this.isBackRadioValue;

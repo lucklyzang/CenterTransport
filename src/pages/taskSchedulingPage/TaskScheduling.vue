@@ -161,8 +161,8 @@
                         <div class="list-center">
                           <div class="list-center-left">
                             <div v-if="templateType == 'template_one'">
-                              <span>{{ item.parentTypeName }}</span>
-                              <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
+                              <span>{{ item['parentTypeName'] }}</span>
+                              <span>{{ `${item.setOutPlaceName}- ${item.hasOwnProperty['destinationName'] ? item.destinationName ? item.destinationName : '' : ''}` }}</span>
                             </div>
                             <div v-else>
                               <span>{{ item['parentTypeName'] }}</span>
@@ -461,14 +461,14 @@ export default {
 
     // 控制模块显示
     controlModuleShow () {
-      if (this.userInfo['extendData']) {
-        if (!this.userInfo['extendData']['dispAssgin']) {
-          this.isShowDispathModule = false
-        };
-        if (!this.userInfo['extendData']['bookAssgin']) {
-          this.isShowAppointModule = false
-        }
-      }  
+      // if (this.userInfo['extendData']) {
+      //   if (!this.userInfo['extendData']['dispAssgin']) {
+      //     this.isShowDispathModule = false
+      //   };
+      //   if (!this.userInfo['extendData']['bookAssgin']) {
+      //     this.isShowAppointModule = false
+      //   }
+      // }  
     },
 
     // 提取时间(不显示秒)
@@ -480,6 +480,7 @@ export default {
 
     // 处理预约任务检查项
     disposeCheckType (item) {
+      if (!item) { return };
       if (item.length == 0) { return };
       let temporaryArray = [];
       for (let innerItem of item) {
@@ -490,6 +491,7 @@ export default {
 
     // 处理调度任务目的地(模板二)
     disposeDestinations (item) {
+      if (!item) { return };
       if (item.length == 0) { return };
       let temporaryArray = [];
       for (let innerItem of item) {
@@ -936,6 +938,7 @@ export default {
 
     // 筛选弹框运送员下拉框选值变化事件
     transporterOptionChange (item) {
+      console.log('运送员',item);
       this.transporterValue = item.value
     },
 

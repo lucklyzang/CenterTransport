@@ -228,6 +228,7 @@ export default {
       startDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
+      currentTransporterValue: '',
       transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
@@ -334,6 +335,7 @@ export default {
       this.transportNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'],
       this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
       this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
+      this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['badNumber'];
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
@@ -585,11 +587,13 @@ export default {
     },
 
     // 运送员下拉选择框确认事件
-    transporterSureEvent (val) {
+    transporterSureEvent (val,value) {
       if (val) {
-        this.currentTransporter =  val
+        this.currentTransporter =  val;
+        this.currentTransporterValue = value
       } else {
-        this.currentTransporter = '请选择'
+        this.currentTransporter = '请选择';
+        this.currentTransporterValue = ''
       };
       this.showTransporter = false
     },
@@ -759,7 +763,7 @@ export default {
           badNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
           startUser: this.userName,   //创建者名称  当前登陆者
-          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporterValue, // 运送员ID
           workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           proId: this.proId,   //项目ID
           proName: this.proName,   //项目名称
@@ -796,7 +800,7 @@ export default {
     // 编辑预约任务
     editAppointTask (data) {
       this.loadingText = '编辑中...';
-      this.showLoadingHint = true;
+      this.loadingShow = true;
       this.overlayShow = true;
       editAppoint(data).then((res) => {
         if (res && res.data.code == 200) {
@@ -812,7 +816,7 @@ export default {
           });
         };
         this.loadingText = '';
-        this.showLoadingHint = false;
+        this.loadingShow = false;
         this.overlayShow = false
       })
       .catch((err) => {
@@ -822,7 +826,7 @@ export default {
         }).then(() => {
         });
         this.loadingText = '';
-        this.showLoadingHint = false;
+        this.loadingShow = false;
         this.overlayShow = false
       })
     },

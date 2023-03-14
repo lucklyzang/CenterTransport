@@ -1311,14 +1311,14 @@
 
       // 控制模块显示
       controlModuleShow () {
-        if (this.userInfo['extendData']) {
-          if (!this.userInfo['extendData']['dispTask']) {
-            this.taskList = this.taskList.filter((item) => { return item.tit != '调度任务'})
-          };
-          if (!this.userInfo['extendData']['dispAssgin'] && !this.userInfo['extendData']['bookAssgin']) {
-            this.taskList = this.taskList.filter((item) => { return item.tit != '任务调度'})
-          }
-        }  
+        // if (this.userInfo['extendData']) {
+        //   if (!this.userInfo['extendData']['dispTask']) {
+        //     this.taskList = this.taskList.filter((item) => { return item.tit != '调度任务'})
+        //   };
+        //   if (!this.userInfo['extendData']['dispAssgin'] && !this.userInfo['extendData']['bookAssgin']) {
+        //     this.taskList = this.taskList.filter((item) => { return item.tit != '任务调度'})
+        //   }
+        // }  
       },
 
       juddgeIspc () {

@@ -62,7 +62,6 @@
             <div>
               <StepNumberBox v-model="innerItem.typerNumber"
                  @plus="plusNum(arguments)"
-                 @inputBlur="inputBlurEvent(arguments)"
                  :innerIndex="innerIndex"
                  @minus="minusNum(arguments)"
                  @change="stepperValChange(arguments)"
@@ -365,6 +364,7 @@ export default {
       endDepartmentList: [],
       showTransporter: false,
       currentTransporter: '请选择',
+      currentTransporterValue: '',
       transporterList: [],
       showTransportTool: false,
       currentTransportTool: '无工具',
@@ -387,6 +387,7 @@ export default {
       ],
       showTransportRice: false,
       currentTransportRice: '请选择',
+      currentTransportRiceValue: '',
       transportRiceList: [],
       transportTypeIndex: null,
       currentTransportType: '',
@@ -492,9 +493,11 @@ export default {
       if (this.templateType === 'template_one') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
+        this.currentTransportRiceValue = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
+        this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['bedNumber'];
         this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
@@ -507,9 +510,11 @@ export default {
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
+        this.currentTransportRiceValue = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinations'][0]['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
+        this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
@@ -536,7 +541,7 @@ export default {
             })
           }
         };
-        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList']['parentTypeId'], this.templateType,true);
+        this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'], this.templateType,true);
       }
     },
 
@@ -547,7 +552,6 @@ export default {
         this.$toast({message: '请选择运送大类',type: 'fail'});
         return
       };
-      console.log('运送大类',this.transportTypeParent);
       this.isPressEdit = false;
       this.patienModalShow = true;
       this.xflSelectShow = true;
@@ -561,7 +565,7 @@ export default {
         transportList: _.cloneDeep(this.commonTransportList), //病人信息模态框中根据运送大类查询出的运送小类列表
         sampleList: this.transportTypeParent, //病人信息模态框中运送大类列表
         sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
-        sampleId: this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'] //病人信息模态框中选中的运送大类id
+        sampleId: this.currentTransportRiceValue //病人信息模态框中选中的运送大类id
       })
     },
 
@@ -590,7 +594,7 @@ export default {
       if (!this.templatelistTwo[index]['sampleValue']) {
         this.patienModalMessage['sampleList']  = this.transportTypeParent; //病人信息模态框中运送大类列表 
         this.patienModalMessage['sampleValue'] = this.currentTransportRice; //病人信息模态框中选中的运送大类名称
-        this.patienModalMessage['sampleId'] = this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'] //病人信息模态框中选中的运送大类id
+        this.patienModalMessage['sampleId'] = this.currentTransportRiceValue; //病人信息模态框中选中的运送大类id
         this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
       };
       //运送大类列表为空时,给编辑病人信息模态框的运送大类赋值
@@ -994,14 +998,16 @@ export default {
     },
 
     // 运送大类下拉选择框确认事件
-    transportRiceSureEvent (val) {
+    transportRiceSureEvent (val,value) {
       if (val) {
         this.currentTransportRice = val;
+        this.currentTransportRiceValue = value;
         this.synchronizationPatientTransportType(val);
         // 根据运送大类查询运送小类
-        this.querytransportChildByTransportParent(0,this.transportRiceList.filter((item) => { return item.text == val })[0]['value'],this.templateType,false);
+        this.querytransportChildByTransportParent(0,value,this.templateType,false);
       } else {
-        this.currentTransportRice = '请选择'
+        this.currentTransportRice = '请选择';
+        this.currentTransportRiceValue = value
       };
       this.showTransportRice = false
     },
@@ -1066,11 +1072,13 @@ export default {
     },
 
     // 运送员下拉选择框确认事件
-    transporterSureEvent (val) {
+    transporterSureEvent (val,value) {
       if (val) {
-        this.currentTransporter =  val
+        this.currentTransporter =  val;
+        this.currentTransporterValue = value
       } else {
-        this.currentTransporter = '请选择'
+        this.currentTransporter = '请选择';
+        this.currentTransporterValue = ''
       };
       this.showTransporter = false
     },
@@ -1232,7 +1240,7 @@ export default {
           setOutPlaceName: this.currentStartDepartment,//出发地名称
           destinationId: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.getDepartmentIdByName(this.currentEndDepartment), //目的地ID
           destinationName: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.currentEndDepartment,  //目的地名称
-          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeId:  this.currentTransportRiceValue, //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           taskTypeId: this.currentTransportType['value'],  //运送类型 ID
           id: this.schedulingTaskDetails.id, // 任务id
@@ -1247,7 +1255,7 @@ export default {
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
-          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporterValue, // 运送员ID
           workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           assignId: this.workerId,   //分配者ID  当前登录者
           assignName: this.userName,   //分配者名称  当前登陆者
@@ -1288,12 +1296,12 @@ export default {
           toolName: this.currentTransportTool, //运送工具名称
           actualCount: this.taskTransportTotal, //实际数量
           taskRemark: this.taskDescribe, //备注
-          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.getCurrentTransporterIdByName(this.currentTransporter), // 运送员ID
+          workerId: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporterValue, // 运送员ID
           workerName: this.currentTransporter == '请选择' || !this.currentTransporter ? '' : this.currentTransporter, // 运送员姓名
           modifyId: this.workerId, //修改者id
           modifyName: this.userName, //修改者姓名
           id: this.schedulingTaskDetails.id, // 任务id
-          parentTypeId:  this.transportRiceList.filter((item) => { return item.text ==  this.currentTransportRice })[0]['value'], //运送父类型Id
+          parentTypeId: this.currentTransportRiceValue, //运送父类型Id
           parentTypeName: this.currentTransportRice,//运送父类型名称
           originalWorkerId: this.schedulingTaskDetails.workerId, // 原始运送员id
           taskTypeId: '',
@@ -1324,8 +1332,8 @@ export default {
               for (let innerItem of checkChildTypeList) {
                 taskMessageTwo.patientInfoList[i]['typeList'].push({
                   quantity: innerItem['typerNumber'],
-                  parentTypeId: this.templatelistTwo[i]['sampleId'],
-                  parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                  parentTypeId: this.currentTransportRiceValue,
+                  parentTypeName: this.currentTransportRice,
                   taskTypeId: innerItem['value'],
                   taskTypeName: innerItem['text']
                 })
@@ -1333,8 +1341,8 @@ export default {
             } else {
               taskMessageTwo.patientInfoList[i]['typeList'].push({
                 quantity: 0,
-                parentTypeId: this.templatelistTwo[i]['sampleId'],
-                parentTypeName: this.templatelistTwo[i]['sampleValue'],
+                parentTypeId: this.currentTransportRiceValue,
+                parentTypeName: this.currentTransportRice,
                 taskTypeId: '',
                 taskTypeName: ''
               });
@@ -1388,6 +1396,7 @@ export default {
 
     //编辑调度任务(多个病人)
     postGenerateDispatchTaskMany(data) {
+      console.log('病人信息',data);
       this.loadingText = '编辑中...';
       this.loadingShow = true;
       this.overlayShow = true;
