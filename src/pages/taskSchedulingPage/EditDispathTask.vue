@@ -1070,7 +1070,7 @@ export default {
         this.querytransportChildByTransportParent(0,value,this.templateType,false);
       } else {
         this.currentTransportRice = '请选择';
-        this.currentTransportRiceValue = value
+        this.currentTransportRiceValue = ''
       };
       this.showTransportRice = false
     },
@@ -1279,6 +1279,7 @@ export default {
 
     // 根据科室名称获取科室id
     getDepartmentIdByName(text) {
+      console.log('雁阵',text,text == "特需二区-txeq",this.startDepartmentList);
       return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
     },
 

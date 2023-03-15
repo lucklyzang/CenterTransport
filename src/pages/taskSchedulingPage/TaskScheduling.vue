@@ -131,7 +131,7 @@
 			<img :src="statusBackgroundPng" />
 		</div>
       <!-- 下拉刷新 -->
-      <van-pull-refresh v-model="isLoadingRepairsTask" loading-text="刷新中..." @refresh="onRefreshRepairsTaskEvent">
+      <van-pull-refresh v-model="isLoadingRepairsTask" :disabled="isDiabledPullRefresh" loading-text="刷新中..." @refresh="onRefreshRepairsTaskEvent">
         <div class="content-box">
           <van-tabs v-model="activeName" type="card" color="#fff" title-inactive-color="#9E9E9A" title-active-color="#174E97" @change="vanTabsChangeEvent">
               <van-tab title="调度任务" name="dispatchTask" v-if="isShowDispathModule">
@@ -294,6 +294,7 @@ export default {
   data() {
     return {
       loadingShow: false,
+      isDiabledPullRefresh: false,
       isShowDispathModule: true,
       isShowAppointModule: true,
       loadingText: '加载中...',
@@ -524,7 +525,7 @@ export default {
         this.$toast('刷新失败,请检查网络');
         console.log(this.isLoadingRepairsTask,this.loadingText,this.loadingShow,this.overlayShow,this.loadFreshTimer);
         if (this.loadFreshTimer) {clearTimeout(this.loadFreshTimer)}
-      }, 3100);
+      }, 3100)
     },
 
     // 调度任务列表(单病人)
@@ -1617,9 +1618,15 @@ export default {
         if (this.activeName == 'dispatchTask') {
           let boxBackScroll = this.$refs['scrollDispatchTask'];
           boxBackScroll.addEventListener('scroll',(e)=> {
-              if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-                console.log('调度滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
-              }
+            // 列表滚动到最顶部时才能下拉刷新
+            if (e.srcElement.scrollTop <= 0) {
+              this.isDiabledPullRefresh = false
+            } else {
+              this.isDiabledPullRefresh = true
+            };
+            if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
+              console.log('调度滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
+            }
           },true)  
         };
 
@@ -1627,9 +1634,15 @@ export default {
         if (this.activeName == 'appointTask') {
           let boxCompleteteScroll = this.$refs['scrollAppointTask']
           boxCompleteteScroll.addEventListener('scroll',(e)=> {
-              if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-                  console.log('预约滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
-              }
+            // 列表滚动到最顶部时才能下拉刷新
+            if (e.srcElement.scrollTop <= 0) {
+              this.isDiabledPullRefresh = false
+            } else {
+              this.isDiabledPullRefresh = true
+            };
+            if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
+              console.log('预约滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
+            }
           },true)    
         }    
     },
