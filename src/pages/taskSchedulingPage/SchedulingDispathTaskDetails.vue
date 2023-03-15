@@ -77,9 +77,9 @@
                         <span>终点</span>
                     </div>
                     <div class="message-two-right" v-if="templateType == 'template_one'">
-                        {{ schedulingTaskDetails.destinationName }}
+                        {{schedulingTaskDetails.destinationName ? schedulingTaskDetails.destinationName : ''}}
                     </div>
-                    <div class="message-two-right" v-if="templateType == 'template_two'">
+                    <div class="message-two-right message-two-right-endDepartment" v-if="templateType == 'template_two'">
                         {{ disposeDestinations(schedulingTaskDetails.destinations) }}
                     </div>
                 </div>
@@ -370,13 +370,19 @@ export default {
         }
       },
 
-      // 处理调度任务目的地(模板二)
+    // 处理调度任务目的地(模板二)
     disposeDestinations (item) {
-      let temporaryArray = [];
-      for (let item of item) {
-        temporaryArray.push(item.destinationName)
-      };
-      return temporaryArray.join('、')
+      if (!item) { return ''};
+      if (item.length == 0) { return ''};
+      if (Object.prototype.toString.call(item) === '[object Array]') {
+        let temporaryArray = [];
+        for (let innerItem of item) {
+          temporaryArray.push(innerItem.destinationName)
+        };
+        return temporaryArray.join('、')
+      } else {
+        return ''
+      }
     },
 
       // 下班签退事件
@@ -639,6 +645,9 @@ export default {
                     padding-left: 10px;
                     box-align: border-box;
                     text-align: right
+                };
+                .message-two-right-endDepartment {
+                    line-height: 20px
                 };
                 .task-remark {
                     text-align: left !important

@@ -94,9 +94,13 @@
     <div class="transport-rice-box" v-if="showStartDepartment">
       <ScrollSelection :columns="startDepartmentList" title="起点科室" @sure="startDepartmentSureEvent" @cancel="startDepartmentCancelEvent" @close="startDepartmentCloseEvent" :isShowSearch="true" />
     </div>
-    <!-- 终点科室 -->
+    <!-- 终点科室(模板一多选) -->
     <div class="transport-rice-box" v-if="showEndDepartment">
       <ScrollSelection :columns="endDepartmentList" title="终点科室" @sure="endDepartmentSureEvent" @cancel="endDepartmentCancelEvent" @close="endDepartmentCloseEvent" :isShowSearch="true" />
+    </div>
+    <!-- 终点科室(模板二多选) -->
+    <div class="transport-rice-box" v-if="showGoalSpaces">
+      <BottomSelect :columns="goalSpacesOption" title="终点科室" :currentSelectData="currentGoalSpaces" @sure="goalSpacesSureEvent" @cancel="goalSpacesCancelEvent" @close="goalSpacesCloseEvent" :isShowSearch="true"/>
     </div>
     <!-- 运送员 -->
     <div class="transport-rice-box" v-if="showTransporter">
@@ -192,8 +196,8 @@
             <div class="select-box-left">
               <span>终点科室</span>
             </div>
-            <div class="select-box-right" @click="showEndDepartment = true">
-              <span>{{ currentEndDepartment }}</span>
+            <div class="select-box-right" @click="templateType === 'template_one' ? showEndDepartment = true : showGoalSpaces = true">
+              <span>{{ templateType === 'template_one' ? currentEndDepartment : disposeTaskPresent(currentGoalSpaces) }}</span>
               <van-icon name="arrow" color="#989999" size="20" />
             </div>
           </div>
@@ -331,6 +335,7 @@ import Ldselect from '@/components/Ldselect'
 import { editDispathTaskSingle,editDispatchTaskManyNew } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, getTransporter, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
+import BottomSelect from "@/components/BottomSelect";
 import StepNumberBox from '@/components/StepNumberBox'
 import { setStore,removeAllLocalStorage, IsPC } from '@/common/js/utils'
 import _ from 'lodash'
@@ -339,6 +344,7 @@ export default {
   name: "EditDispathTask",
   components: {
     ScrollSelection,
+    BottomSelect,
     Ldselect,
     Vselect,
     StepNumberBox
@@ -392,6 +398,9 @@ export default {
       transportTypeIndex: null,
       currentTransportType: '',
       transportTypeList: [],
+      goalSpacesOption: [],
+      showGoalSpaces: false,
+      currentGoalSpaces: [],
       moveInfo: {
         startX: ''
       },
@@ -487,6 +496,38 @@ export default {
       this.$router.push({ path: "/taskScheduling"})
     },
 
+    // 处理终点科室
+    disposeTaskPresent (item) {
+      console.log('终点',item);
+      if (!item) { return '请选择'};
+      if (item.length == 0) { return '请选择'};
+      let temporaryArray = [];
+      for (let innerItem of item) {
+        temporaryArray.push(innerItem.text)
+      };
+      return temporaryArray.join('、')
+    },
+
+    // 终点科室下拉选择框确认事件(模板二)
+    goalSpacesSureEvent (val) {
+      if (val.length > 0) {
+        this.currentGoalSpaces =  val
+      } else {
+        this.currentGoalSpaces = []
+      };
+      this.showGoalSpaces = false
+    },
+
+    // 终点科室下拉选择框取消事件(模板二)
+    goalSpacesCancelEvent () {
+      this.showGoalSpaces = false
+    },
+
+    // 终点科室下拉选择框关闭事件(模板二)
+    goalSpacesCloseEvent () {
+      this.showGoalSpaces = false
+    },
+
     // 回显编辑的信息
     echoTemporaryStorageMessage () {
       let casuallyTemporaryStorageCreateDispathTaskMessage = this.schedulingTaskDetails;
@@ -512,7 +553,6 @@ export default {
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeName'];
         this.currentTransportRiceValue = casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'];
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
-        this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinations'][0]['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
         this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
@@ -548,7 +588,7 @@ export default {
     // 添加病人信息事件
     addMessageEvent () {
       // 必须选择运送大类后才能添加病人信息
-      if (this.currentTransportRice == '请选择') {
+      if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
         this.$toast({message: '请选择运送大类',type: 'fail'});
         return
       };
@@ -577,7 +617,7 @@ export default {
     // 病人信息编辑事件
     editMessage(index) {
       // 没有选择运送大类时禁止编辑
-      if (this.currentTransportRice == '请选择') {
+      if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
         this.$toast({message: '请选择运送大类',type: 'fail'});
         return
       };
@@ -839,6 +879,7 @@ export default {
             this.transportRiceList = [];
             this.startDepartmentList = [];
             this.endDepartmentList = [];
+            this.goalSpacesOption = [];
             this.transportTypeParent = [];
             this.transporterList = [];
             let [item1,item2,item3,item4] = res;
@@ -850,13 +891,35 @@ export default {
                   value: item,
                   id: index
                 });
-                // 终点科室
-                this.endDepartmentList.push({
-                  text: item1[item],
-                  value: item,
-                  id: index
-                })
-              })
+                if (this.templateType === 'template_one') {
+                  // 终点科室(模板一)
+                  this.endDepartmentList.push({
+                    text: item1[item],
+                    value: item,
+                    id: index
+                  })
+                } else {
+                  // 终点科室(模板二)
+                  this.goalSpacesOption.push({
+                    text: item1[item],
+                    value: item,
+                    selected: false
+                  })
+                }
+              });
+              // 回显目的地信息(模板二)
+              if (this.templateType === 'template_two') {
+                if (this.schedulingTaskDetails['destinations'].length == 0 || !this.schedulingTaskDetails['destinations']) {
+                  this.currentGoalSpaces = []
+                } else {
+                  for (let innerItem of this.schedulingTaskDetails['destinations']) {
+                    this.currentGoalSpaces.push({
+                      text: innerItem['destinationName'],
+                      value: innerItem['destinationId'].toString()
+                    })
+                  }
+                }
+              }  
             };
             if (item2) {
               // 转运工具
@@ -1051,7 +1114,7 @@ export default {
       this.showStartDepartment = false
     },
 
-    // 终点科室下拉选择框确认事件
+    // 终点科室下拉选择框确认事件(模板一)
     endDepartmentSureEvent (val) {
       if (val) {
         this.currentEndDepartment =  val
@@ -1061,12 +1124,12 @@ export default {
       this.showEndDepartment = false
     },
 
-    // 终点科室下拉选择框取消事件
+    // 终点科室下拉选择框取消事件(模板一)
     endDepartmentCancelEvent () {
       this.showEndDepartment = false
     },
 
-    // 终点科室下拉选择框关闭事件
+    // 终点科室下拉选择框关闭事件(模板一)
     endDepartmentCloseEvent () {
       this.showEndDepartment = false
     },
@@ -1222,11 +1285,11 @@ export default {
     // 确认事件(编辑调度任务)
     sureEvent () {
       if (this.templateType === 'template_one') {
-        if (this.currentTransportRice == '请选择') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
           this.$toast({message: '请选择运送大类',type: 'fail'});
           return
         };
-        if (this.currentStartDepartment == '请选择') {
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
           this.$toast({message: '请选择起点科室',type: 'fail'});
           return
         };
@@ -1270,11 +1333,11 @@ export default {
         // 编辑调度任务
         this.editDispatchTask(taskMessage);
       } else if (this.templateType === 'template_two') {
-        if (this.currentTransportRice == '请选择') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
           this.$toast({message: '请选择运送大类',type: 'fail'});
           return
         };
-        if (this.currentStartDepartment == '请选择') {
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
           this.$toast({message: '请选择起点科室',type: 'fail'});
           return
         };
@@ -1286,10 +1349,7 @@ export default {
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
-          destinations: JSON.stringify([{
-            destinationId: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.getDepartmentIdByName(this.currentEndDepartment),
-            destinationName: this.currentEndDepartment == '请选择' || !this.currentEndDepartment ? '' : this.currentEndDepartment
-          }]),//多个目的地列表
+          destinations: [],//多个目的地列表
           patientInfoList: [], //多个病人信息列表
           priority: this.priorityRadioValue, //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
           toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID
@@ -1309,8 +1369,19 @@ export default {
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 1 //创建类型   0-web端,1-手机端
+          createType: 0 //创建类型   0-web端,1-手机端
         };
+        // 处理多个终点科室信息
+        if (this.currentGoalSpaces.length > 0) {
+          for (let item of this.currentGoalSpaces) {
+            taskMessageTwo['destinations'].push({
+              destinationId: item.value,
+              destinationName: item.text
+            })
+          }
+        };
+        // 后端需要这种数据格式
+        taskMessageTwo['destinations'] = JSON.stringify(taskMessageTwo['destinations']);
         // 获取多个病人信息列表数据
         for (let patientItem of this.templatelistTwo) {
           taskMessageTwo.patientInfoList.push({
@@ -1396,7 +1467,6 @@ export default {
 
     //编辑调度任务(多个病人)
     postGenerateDispatchTaskMany(data) {
-      console.log('病人信息',data);
       this.loadingText = '编辑中...';
       this.loadingShow = true;
       this.overlayShow = true;

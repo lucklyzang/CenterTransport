@@ -740,15 +740,15 @@ export default {
 
     // 确认事件(编辑预约任务)
     sureEvent () {
-      if (this.currentStartDepartment == '请选择') {
+      if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
         this.$toast({message: '请选择起点科室',type: 'fail'});
         return
       };
       let taskMessage;
       try {
         taskMessage = {
-          depId: this.currentStartDepartment ? this.getDepartmentIdByName(this.currentStartDepartment) : '', //出发地ID
-          department: this.currentStartDepartment,//出发地名称
+          depId: this.currentStartDepartment == '请选择' || !this.currentStartDepartment ? '' : this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
+          department: this.currentStartDepartment == '请选择' || !this.currentStartDepartment ? '' : this.currentStartDepartment,//出发地名称
           items: [], //检查项
           priority: this.priorityRadioValue,   //优先级   1-正常, 2-重要,3-紧急, 4-紧急重要
           toolId: this.currentTransportTool == '无工具' || this.currentTransportTool == '无' || !this.currentTransportTool ? 0 : this.transportToolList.filter((item) => { return item.text == this.currentTransportTool })[0]['value'], //运送工具ID

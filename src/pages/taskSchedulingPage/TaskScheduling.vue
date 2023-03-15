@@ -162,7 +162,7 @@
                           <div class="list-center-left">
                             <div v-if="templateType == 'template_one'">
                               <span>{{ item['parentTypeName'] }}</span>
-                              <span>{{ `${item.setOutPlaceName}- ${item.hasOwnProperty['destinationName'] ? item.destinationName ? item.destinationName : '' : ''}` }}</span>
+                              <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
                             </div>
                             <div v-else>
                               <span>{{ item['parentTypeName'] }}</span>
@@ -461,14 +461,14 @@ export default {
 
     // 控制模块显示
     controlModuleShow () {
-      // if (this.userInfo['extendData']) {
-      //   if (!this.userInfo['extendData']['dispAssgin']) {
-      //     this.isShowDispathModule = false
-      //   };
-      //   if (!this.userInfo['extendData']['bookAssgin']) {
-      //     this.isShowAppointModule = false
-      //   }
-      // }  
+      if (this.userInfo['extendData']) {
+        if (!this.userInfo['extendData']['dispAssgin']) {
+          this.isShowDispathModule = false
+        };
+        if (!this.userInfo['extendData']['bookAssgin']) {
+          this.isShowAppointModule = false
+        }
+      }  
     },
 
     // 提取时间(不显示秒)
@@ -491,13 +491,17 @@ export default {
 
     // 处理调度任务目的地(模板二)
     disposeDestinations (item) {
-      if (!item) { return };
-      if (item.length == 0) { return };
-      let temporaryArray = [];
-      for (let innerItem of item) {
-        temporaryArray.push(innerItem.destinationName)
-      };
-      return temporaryArray.join('、')
+      if (!item) { return ''};
+      if (item.length == 0) { return ''};
+      if (Object.prototype.toString.call(item) === '[object Array]') {
+        let temporaryArray = [];
+        for (let innerItem of item) {
+          temporaryArray.push(innerItem.destinationName)
+        };
+        return temporaryArray.join('、')
+      } else {
+        return ''
+      }
     },
 
     // 下拉刷新事件
