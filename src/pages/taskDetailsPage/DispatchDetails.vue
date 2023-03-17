@@ -87,7 +87,7 @@
                 <p class="describe-line-wrapper">
                   <span class="message-tit">语音备注 :&nbsp;</span>
                   <span class="message-tit-real-audio" v-if="showChildrenComponent">
-                    <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://ver.blinktech.cn/trans/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+                    <MyAudio v-show="dispatchTaskMessage.recordTime > 0" :src="`http://show.blinktech.cn/trans/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
                   </span>
                   <span class="message-tit-real" v-show="dispatchTaskMessage.recordTime == 0">
                     无语音信息
@@ -507,7 +507,7 @@ export default {
     // 返回上一页
     backTo () {
       if (this.dispatchTaskMessage.state == 7) {
-        this.changeIsFreshDispatchTaskPage(true)
+        this.changeIsFreshDispatchTaskPage(false)
       } else {
         this.changeIsFreshDispatchTaskPage(true)
       };

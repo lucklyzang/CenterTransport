@@ -225,10 +225,10 @@
                             </div>
                           </div>
                           <div class="center-one-line">
-                            <div class="center-one-line-left">
-                              <span>检查时间:</span>
-                              <span>{{ item.responseTime }}</span>
-                            </div>
+                              <div class="center-one-line-left">
+                                <span>运送工具:</span>
+                                <span >{{ item.toolName }}</span>
+                              </div>
                               <div class="center-one-line-right">
                               <span>开始时间:</span>
                               <span>{{ item.planStartTime }}</span>
@@ -248,10 +248,6 @@
                             <div class="center-one-line-left center-one-line-checkItem">
                               <span>检查:</span>
                               <span>{{ disposeCheckType(item.checkItems) }}</span>
-                            </div>
-                              <div class="center-one-line-right">
-                              <span>运送工具:</span>
-                              <span >{{ item.toolName }}</span>
                             </div>
                           </div>
                         </div>

@@ -1150,8 +1150,7 @@
               closeOnPopstate: true
             }).then(() => {
             });
-            this.appointTaskListShow = false;
-            this.noDataShow = true
+            this.appointTaskListShow = false
           }
         })
         .catch((err) => {
@@ -1161,7 +1160,6 @@
           }).then(() => {
           });
           this.appointTaskListShow = false;
-          this.noDataShow = true
           this.showLoadingHint = false;
           this.isRefresh = false
         })
@@ -1232,8 +1230,7 @@
               closeOnPopstate: true
             }).then(() => {
             });
-            this.appointTaskListShow = false;
-            this.noDataShow = true
+            this.appointTaskListShow = false
           }
         })
         .catch((err) => {
@@ -1243,7 +1240,6 @@
           }).then(() => {
           });
           this.appointTaskListShow = false;
-          this.noDataShow = true
           this.showLoadingHint = false;
           this.isRefresh = false
         })

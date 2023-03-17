@@ -26,7 +26,16 @@
             :key="index"
             :class="{'active':active == item.id}"
             :ref="'li'+item.id"
-          >{{item.text}}</li>
+          >
+            <span>
+              {{item.text}}
+            </span>
+            <span v-show="isShowTaskCompleteMessage">(</span>
+            <span v-show="isShowTaskCompleteMessage">{{ `${item.ongoing}` }}</span>
+            <span v-show="isShowTaskCompleteMessage">{{ `/ ${item.complete} /` }}</span>
+            <span v-show="isShowTaskCompleteMessage">{{ `${item.complete + item.ongoing}` }}</span>
+            <span v-show="isShowTaskCompleteMessage">)</span>
+          </li>
         </ul>
         <div class="button-box" ref="buttonBox">
             <span @click="resetEvent" v-show="isShowReset">重置</span>
@@ -53,6 +62,10 @@ export default {
       type: Array,
       default: []
     },
+    isShowTaskCompleteMessage:{	// 是否显示选项后面任务完成情况(列表为运送员)
+			type: Boolean,
+			default: false
+		},
     // 是否显示搜索框
     isShowSearch: {
       type: Boolean,
@@ -255,6 +268,26 @@ export default {
         text-align: center;
         height: 40px;
         background-color: #fff;
+        >span {
+					&:nth-child(1) {
+						margin-right: 10px
+					};
+					&:nth-child(2) {
+						color: #101010 !important
+					};
+					&:nth-child(3) {
+						color: #E86F50 !important
+					};
+					&:nth-child(4) {
+						color: #289E8E !important
+					};
+					&:nth-child(5) {
+						color: #174E97 !important
+					};
+					&:nth-child(6) {
+						color: #101010 !important
+					}
+				}
       }
     };
     .button-box {

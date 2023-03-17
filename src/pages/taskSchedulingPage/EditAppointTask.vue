@@ -101,8 +101,9 @@
             </div>
           </div>
           <div class="transport-type">
-            <div class="transport-type-left">
-              <span>运送类型</span>
+            <div class="transport-type-left check-type-left">
+              <span>*</span>
+              <span>检查类型</span>
             </div>
             <div class="transport-type-right">
               <span class="transport-type-list" :class="{'transportTypeListStyle':item.selected}" 
@@ -687,7 +688,11 @@ export default {
 
       // 根据科室名称获取科室id
       getDepartmentIdByName(text) {
-        return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
+        if (this.startDepartmentList.filter((item) => {return item['text'] == text }).length == 0) {
+          return 0
+        } else {
+          return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
+        }
       },
 
       // 根据运送员名称获取运送员id
@@ -742,6 +747,10 @@ export default {
     sureEvent () {
       if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
         this.$toast({message: '请选择起点科室',type: 'fail'});
+        return
+      };
+      if (this.transportTypeList.every((item) => { return item.selected == false})) {
+        this.$toast({message: '检查类型不能为空',type: 'fail'});
         return
       };
       let taskMessage;
@@ -1116,6 +1125,18 @@ export default {
               box-sizing: border-box;
               >span {
                 &:nth-child(1) {
+                  color: #9E9E9A
+                }
+              }
+            };
+            .check-type-left {
+              padding-left: 0;
+               >span {
+                &:nth-child(1) {
+                  color: red
+                };
+                &:nth-child(2) {
+                  padding-right: 6px !important;
                   color: #9E9E9A
                 }
               }

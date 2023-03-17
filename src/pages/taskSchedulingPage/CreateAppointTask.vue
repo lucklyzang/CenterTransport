@@ -101,8 +101,9 @@
             </div>
           </div>
           <div class="transport-type">
-            <div class="transport-type-left">
-              <span>运送类型</span>
+            <div class="transport-type-left check-type-left">
+              <span>*</span>
+              <span>检查类型</span>
             </div>
             <div class="transport-type-right">
               <span class="transport-type-list" :class="{'transportTypeListStyle':item.selected}" 
@@ -734,6 +735,10 @@ export default {
         this.$toast({message: '请选择起点科室',type: 'fail'});
         return
       };
+      if (this.transportTypeList.every((item) => { return item.selected == false})) {
+        this.$toast({message: '检查类型不能为空',type: 'fail'});
+        return
+      };
       let taskMessage = {
         depId: this.currentStartDepartment ? this.getDepartmentIdByName(this.currentStartDepartment) : '', //出发地ID
         department: this.currentStartDepartment,//出发地名称
@@ -1120,6 +1125,18 @@ export default {
               box-sizing: border-box;
               >span {
                 &:nth-child(1) {
+                  color: #9E9E9A
+                }
+              }
+            };
+            .check-type-left {
+              padding-left: 0;
+               >span {
+                &:nth-child(1) {
+                  color: red
+                };
+                &:nth-child(2) {
+                  padding-right: 6px !important;
                   color: #9E9E9A
                 }
               }

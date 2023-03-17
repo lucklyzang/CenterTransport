@@ -701,7 +701,6 @@
                   this.noDataShow = true;
                 }
               }
-               console.log(this.stateFilterList);
             } else {
               this.dispatchTaskListShow = false;
               this.noDataShow = true
@@ -712,8 +711,7 @@
               closeOnPopstate: true
             }).then(() => {
             });
-            this.dispatchTaskListShow = false;
-            this.noDataShow = true
+            this.dispatchTaskListShow = false
           }
         })
         .catch((err) => {
@@ -723,7 +721,6 @@
           }).then(() => {
           });
           this.dispatchTaskListShow = false;
-          this.noDataShow = true
           this.showLoadingHint = false;
           this.isRefresh = false
         })
@@ -808,8 +805,7 @@
               closeOnPopstate: true
             }).then(() => {
             });
-            this.dispatchTaskListShow = false;
-            this.noDataShow = true
+            this.dispatchTaskListShow = false
           }
         })
         .catch((err) => {
@@ -819,7 +815,6 @@
           }).then(() => {
           });
           this.dispatchTaskListShow = false;
-          this.noDataShow = true
           this.showLoadingHint = false;
           this.isRefresh = false
         })

@@ -370,7 +370,7 @@ export default {
     // 返回上一页
     backTo () {
       if (this.appointTaskMessage.state == 7) {
-        this.changeIsFreshAppointTaskPage(true)
+        this.changeIsFreshAppointTaskPage(false)
       } else {
         this.changeIsFreshAppointTaskPage(true)
       };

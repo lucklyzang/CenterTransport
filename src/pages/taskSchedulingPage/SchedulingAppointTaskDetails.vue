@@ -111,17 +111,17 @@
                         {{ schedulingTaskDetails.workerName }}
                     </div>
                 </div>
-                <div class="message-one message-two">
+                <!-- <div class="message-one message-two">
                     <div class="message-two-left">
                         <span>检查时间</span>
                     </div>
                     <div class="message-two-right">
                         {{ schedulingTaskDetails.responseTime }}
                     </div>
-                </div>
+                </div> -->
                 <div class="message-one message-two">
                     <div class="message-two-left">
-                        <span>开始时间</span>
+                        <span>预计开始时间</span>
                     </div>
                     <div class="message-two-right">
                         {{ schedulingTaskDetails.planStartTime }}
