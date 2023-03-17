@@ -1279,8 +1279,11 @@ export default {
 
     // 根据科室名称获取科室id
     getDepartmentIdByName(text) {
-      console.log('雁阵',text,text == "特需二区-txeq",this.startDepartmentList);
-      return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
+       if (this.startDepartmentList.filter((item) => {return item['text'] == text }).length == 0) {
+          return 0
+        } else {
+          return this.startDepartmentList.filter((item) => {return item['text'] == text })[0]['value']
+        }
     },
 
     // 确认事件(编辑调度任务)
