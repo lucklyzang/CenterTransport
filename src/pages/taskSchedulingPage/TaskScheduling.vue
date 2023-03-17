@@ -230,7 +230,7 @@
                                 <span >{{ item.toolName }}</span>
                               </div>
                               <div class="center-one-line-right">
-                              <span>开始时间:</span>
+                              <span>预计开始时间:</span>
                               <span>{{ item.planStartTime }}</span>
                             </div>
                           </div>

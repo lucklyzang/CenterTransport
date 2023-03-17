@@ -1,5 +1,7 @@
 <template>
-  <div class="content-wrapper">
+  <div class="content-wrapper" ref="wrapper">
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
+    <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -271,6 +273,11 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       detailsBox: true,
+      overlayShow: false,
+      loadingShow: false,
+      moveInfo: {
+        startX: ''
+      },
       signatureBoxShow: false,
       leftDownShow: false,
       detailDescribeContent: '',
@@ -342,8 +349,8 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        if (this.appointTaskMessage.state == 7) {
-          this.changeIsFreshAppointTaskPage(true)
+        if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
+          this.changeIsFreshAppointTaskPage(false)
         } else {
           this.changeIsFreshAppointTaskPage(true)
         };
@@ -352,6 +359,16 @@ export default {
         setStore('currentTitle','预约任务')
       })
     };
+    this.$nextTick(()=> {
+      try {
+        this.registerSlideEvent()
+      } catch (error) {
+        // this.$toast({
+        //   type: 'fail',
+        //   message: error
+        // })
+      }
+    });
     this.changeDepartureState();
     this.getAppointTaskMessage(this.appointTaskMessage.id)
   },
@@ -367,9 +384,41 @@ export default {
       'changeCompleteSweepcodeDepartureInfo'
     ]),
 
+    // 注册滑动事件  
+    registerSlideEvent () {
+      this.$refs.wrapper.addEventListener('touchstart',this.touchstartHandle,false);
+      this.$refs.wrapper.addEventListener('touchmove',this.touchmoveHandle,false)
+    },
+
+    // 滑动开始
+    touchstartHandle() {
+        //判断是否在滑动区域内滑动
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+            this.moveInfo.startX = parseInt(e.targetTouches[0].clientX)
+        }    
+    },
+
+    // 滑动中
+    touchmoveHandle() {
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+        // 滑动距离
+        let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
+        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
+        if (moveX > 0) {
+          if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
+            this.changeIsFreshAppointTaskPage(false)
+          } else {
+            this.changeIsFreshAppointTaskPage(true)
+          }
+        }
+      }        
+    },
+
     // 返回上一页
     backTo () {
-      if (this.appointTaskMessage.state == 7) {
+      if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
         this.changeIsFreshAppointTaskPage(false)
       } else {
         this.changeIsFreshAppointTaskPage(true)
@@ -583,7 +632,11 @@ export default {
 
     // 查询预约任务详情
     getAppointTaskMessage (taskId) {
+      this.overlayShow = true;
+      this.loadingShow = true;
       queryAppointTaskDetailsMessage(taskId).then((res) => {
+       this.overlayShow = false;
+       this.loadingShow = false;
         if (res && res.data.code == 200) {
           this.appointDetailsMessage = res.data.data;
           // for (let item in this.appointDetailsMessage) {
@@ -633,6 +686,8 @@ export default {
         }
       })
       .catch((err) => {
+        this.overlayShow = false;
+        this.loadingShow = false;
          this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
@@ -945,6 +1000,9 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    /deep/ .van-loading {
+      z-index: 200000
+    };
       font-size: 16px;
       background: #f6f6f6;
       .check-details {

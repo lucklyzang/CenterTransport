@@ -1,6 +1,7 @@
 <template>
-  <div class="content-wrapper">
-    <van-overlay :show="overlayShow" />
+  <div class="content-wrapper" ref="wrapper">
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="loadingShow">加载中...</van-loading>
+    <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -234,10 +235,14 @@ export default {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
       liIndex: null,
+      moveInfo: {
+        startX: ''
+      },
       transportList: [],
       trackList: [],
       showChildrenComponent: false,
       overlayShow: false,
+      loadingShow: false,
       enlargeImgShow: false,
       photoBox: false,
       enlargeImgUrl: '',
@@ -313,8 +318,8 @@ export default {
       pushHistory();
       that.gotoURL(() => {
         pushHistory();
-        if (this.dispatchTaskMessage.state == 7) {
-          this.changeIsFreshDispatchTaskPage(true)
+        if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6 ) {
+          this.changeIsFreshDispatchTaskPage(false)
         } else {
           this.changeIsFreshDispatchTaskPage(true)
         };
@@ -329,9 +334,18 @@ export default {
         this.overlayShow = false
       }
     });
+    this.$nextTick(()=> {
+      try {
+        this.registerSlideEvent()
+      } catch (error) {
+        // this.$toast({
+        //   type: 'fail',
+        //   message: error
+        // })
+      }
+    });
     this.echoPhoto();
-    this.getTaskMessage();
-    console.log(this.dispatchTaskMessage);
+    this.getTaskMessage()
   },
 
   beforeRouteLeave(to, from, next) {
@@ -485,8 +499,12 @@ export default {
 
     // 获取任务详情
     getTaskMessage () {
+      this.overlayShow = true;
+      this.loadingShow = true;
       getDispatchTaskMessageById(this.dispatchTaskId,this.dispatchTaskMessage.tempFlag)
       .then((res) => {
+        this.overlayShow = false;
+        this.loadingShow = false;
         if (res && res.data.code == 200) {
           this.showChildrenComponent = true;
           // 改变调度具体某一任务的信息状态
@@ -496,6 +514,8 @@ export default {
         }
       })
       .catch((err) => {
+        this.overlayShow = false;
+        this.loadingShow = false;
         this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
@@ -504,9 +524,41 @@ export default {
       })
     },
 
+    // 注册滑动事件  
+    registerSlideEvent () {
+      this.$refs.wrapper.addEventListener('touchstart',this.touchstartHandle,false);
+      this.$refs.wrapper.addEventListener('touchmove',this.touchmoveHandle,false)
+    },
+
+    // 滑动开始
+    touchstartHandle() {
+        //判断是否在滑动区域内滑动
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+            this.moveInfo.startX = parseInt(e.targetTouches[0].clientX)
+        }    
+    },
+
+    // 滑动中
+    touchmoveHandle() {
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+        // 滑动距离
+        let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
+        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
+        if (moveX > 0) {
+          if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6) {
+            this.changeIsFreshDispatchTaskPage(false)
+          } else {
+            this.changeIsFreshDispatchTaskPage(true)
+          }
+        }
+      }        
+    },
+
     // 返回上一页
     backTo () {
-      if (this.dispatchTaskMessage.state == 7) {
+      if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6) {
         this.changeIsFreshDispatchTaskPage(false)
       } else {
         this.changeIsFreshDispatchTaskPage(true)
@@ -550,7 +602,7 @@ export default {
           showCancelButton: true
         })
         .then(() => {
-          if (this.dispatchTaskMessage.state == 7) {
+          if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6) {
             this.changeIsFreshDispatchTaskPage(false)
           } else {
             this.changeIsFreshDispatchTaskPage(true)
@@ -787,6 +839,9 @@ export default {
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     .content-wrapper();
       font-size: 16px;
       background: #f6f6f6;
