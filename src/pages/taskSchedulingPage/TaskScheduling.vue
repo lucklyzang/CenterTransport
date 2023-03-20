@@ -231,7 +231,7 @@
                               </div>
                               <div class="center-one-line-right">
                               <span>预计开始时间:</span>
-                              <span>{{ item.planStartTime }}</span>
+                              <span>{{ cutOutYear(item.planStartTime) }}</span>
                             </div>
                           </div>
                           <div class="center-one-line">
@@ -691,6 +691,20 @@ export default {
         return ''
       } else {
         return `${this.$moment(currentTime).diff(transferPlanStartTme, 'minutes')}分钟`
+      }
+    },
+
+    // 去掉预计开始时间的年份
+    cutOutYear (planStartTme) {
+      if (!planStartTme) {
+        return ''
+      } else {
+        let currentIndex = planStartTme.indexOf('-');
+        let temporaryTime = planStartTme;
+        if (currentIndex != -1) {
+          temporaryTime = temporaryTime.substring(currentIndex+1);
+          return temporaryTime
+        }
       }
     },
 
