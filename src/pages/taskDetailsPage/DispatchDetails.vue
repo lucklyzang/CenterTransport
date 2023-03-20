@@ -84,12 +84,6 @@
                   <span class="message-tit-real">{{dispatchTaskMessage.actualCount == "" ? "无" : dispatchTaskMessage.actualCount}}</span>
                 </p>
               </div>
-            <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
-               <p>
-                 <span class="message-tit">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄 :&nbsp;</span>
-                 <span class="message-tit-real">{{dispatchTaskMessage.age == "" ? '无' : dispatchTaskMessage.age}}</span>
-               </p>
-             </div>
              <div class="handle-message-line-wrapper">
                <p>
                  <span class="message-tit">转运工具 :&nbsp;</span>
