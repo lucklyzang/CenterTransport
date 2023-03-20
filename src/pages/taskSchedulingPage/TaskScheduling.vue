@@ -2058,6 +2058,7 @@ export default {
                                 height: 40px;
                                 .list-top-left {
                                   flex: 1;
+                                  width: 0;
                                   font-size: 14px;
                                   color: #101010;
                                   display: flex;
@@ -2071,9 +2072,12 @@ export default {
                                   >span {
                                     display: inline-block;
                                     &:nth-child(2) {
+                                      width: 120px;
                                       margin-right: 8px
                                     };
                                     &:nth-child(3) {
+                                      flex: 1;
+                                      .no-wrap();
                                       height: 20px;
                                       padding-left: 8px;
                                       line-height: 20px;
