@@ -1925,6 +1925,7 @@ export default {
     flex-direction: column;
     position: relative;
     height: 0;
+    background: #f7f7f7;
     .content-top-area {
       width: 100%;
       margin: 0 auto;
@@ -2080,6 +2081,7 @@ export default {
                                       .no-wrap();
                                       height: 20px;
                                       padding-left: 8px;
+                                      padding-right: 4px;
                                       line-height: 20px;
                                       border-left: 1px solid #BBBBBB
                                     }

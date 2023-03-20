@@ -156,6 +156,11 @@
                 <van-field v-model="admissionNumberValue" label="住院号" placeholder="请输入" />
               </div>
               <div class="patient-message-bottom-right">
+                <van-field v-model="patientAgeValue" label="年龄" placeholder="请输入" />
+              </div>
+            </div>
+            <div class="patient-message-bottom patient-message-bottom-age">
+              <div class="patient-message-bottom-right">
                 <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
               </div>
             </div>
@@ -218,13 +223,14 @@ export default {
       loadingText: '加载中...',
       taskDescribe: '',
       patientNumberValue: '',
+      admissionNumberValue: '',
       patientNameValue: '',
+      patientAgeValue: '',
+      transportNumberValue: '',
       showTaskStart: false,
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2050, 10, 1),
       currentTaskStartTime: new Date(),
-      admissionNumberValue: '',
-      transportNumberValue: '',
       showStartDepartment: false,
       currentStartDepartment: '请选择',
       startDepartmentList: [],
@@ -344,6 +350,7 @@ export default {
       this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporter'];
       this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'];
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'];
+      this.patientAgeValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientAgeValue'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'];
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'];
       this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['admissionNumberValue'];
@@ -749,7 +756,7 @@ export default {
         name: this.patientNameValue,  //病人姓名
         planStartTime: this.getNowFormatDate(this.currentTaskStartTime), //计划开始时间
         sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
-        age: "",   //年龄
+        age: this.patientAgeValue,   //年龄
         hospitalNo: this.admissionNumberValue,   //住院号
         isBack: 0,
         badNumber: this.patientNumberValue,  //床号
@@ -827,6 +834,7 @@ export default {
       casuallyTemporaryStorageCreateDispathTaskMessage['currentTransporterValue'] = this.currentTransporterValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportTool'] = this.currentTransportTool;
       casuallyTemporaryStorageCreateDispathTaskMessage['patientNumberValue'] = this.patientNumberValue;
+      casuallyTemporaryStorageCreateDispathTaskMessage['patientAgeValue'] = this.patientAgeValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['patientNameValue'] = this.patientNameValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['admissionNumberValue'] = this.admissionNumberValue;
       casuallyTemporaryStorageCreateDispathTaskMessage['transportNumberValue'] = this.transportNumberValue;
@@ -1241,6 +1249,12 @@ export default {
                   }
                 }
               }
+            };
+            .patient-message-bottom-age {
+              .patient-message-bottom-right {
+                width: 50%;
+                flex: none
+              }  
             }
           };
           .task-total {

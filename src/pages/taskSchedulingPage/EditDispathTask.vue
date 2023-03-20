@@ -44,6 +44,12 @@
             <van-field v-model="patienModalMessage.actualData" disabled/>
           </div>
         </div>
+        <div class="bedNumberBox">
+          <div>年龄</div>
+          <div>
+            <van-field v-model="patienModalMessage.patientAgeValue" type="digit" placeholder="请输入年龄" />
+          </div>
+        </div>
         <div class="transportBox">
           <div>运送类型</div>
           <div v-if="xflSelectShow">
@@ -233,6 +239,11 @@
                 <van-field v-model="admissionNumberValue" label="住院号" placeholder="请输入" />
               </div>
               <div class="patient-message-bottom-right">
+                <van-field v-model="patientAgeValue" label="年龄" type="digit" placeholder="请输入" />
+              </div>
+            </div>
+            <div class="patient-message-bottom patient-message-bottom-age">
+              <div class="patient-message-bottom-right">
                 <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
               </div>
             </div>
@@ -262,6 +273,9 @@
                   </p>
                   <p>
                     <van-field v-model="item.actualData"  type="number" label="运送数量:" placeholder="" disabled/>
+                  </p>
+                  <p>
+                    <van-field v-model="item.patientAgeValue"  type="number" label="年龄:" placeholder="" disabled/>
                   </p>
                 </div>
                 <div class="field-three">
@@ -357,6 +371,7 @@ export default {
       taskDescribe: '',
       patientNumberValue: '',
       patientNameValue: '',
+      patientAgeValue: '',
       taskTransportTotal: 12,
       admissionNumberValue: '',
       transportNumberValue: '',
@@ -417,6 +432,7 @@ export default {
         bedNumber: '',
         patientName: '',
         patientNumber: '',
+        patientAgeValue: '',
         actualData: 0,
         genderValue: '0',
         transportList: [],
@@ -538,6 +554,7 @@ export default {
         this.currentStartDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['setOutPlaceName'];
         this.currentEndDepartment = casuallyTemporaryStorageCreateDispathTaskMessage['destinationName'];
         this.currentTransporter = casuallyTemporaryStorageCreateDispathTaskMessage['workerName'];
+        this.patientAgeValue = !casuallyTemporaryStorageCreateDispathTaskMessage['age'] ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['age'];
         this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['bedNumber'];
@@ -563,6 +580,7 @@ export default {
           this.templatelistTwo.push({
             bedNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber == '床号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber,
             patientName: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName == '姓名未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].patientName,
+            patientAgeValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].age == '年龄未输入' ||  !casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].age ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].age,
             patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number == '住院号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
             genderValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 1 ? '男': '女',
             actualData: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].quantity,
@@ -600,6 +618,7 @@ export default {
         bedNumber: '',
         patientName: '',
         patientNumber: '',
+        patientAgeValue: '',
         actualData: 0,
         genderValue: '0',
         transportList: _.cloneDeep(this.commonTransportList), //病人信息模态框中根据运送大类查询出的运送小类列表
@@ -1318,7 +1337,7 @@ export default {
           actualCount: this.transportNumberValue,   //实际数量
           patientName: this.patientNameValue,  //病人姓名
           sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
-          age: "",   //年龄
+          age: this.patientAgeValue,   //年龄
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
@@ -1391,6 +1410,7 @@ export default {
           taskMessageTwo.patientInfoList.push({
             bedNumber: patientItem['bedNumber'],
             patientName: patientItem['patientName'],
+            age: patientItem['patientAgeValue'],
             number: patientItem['patientNumber'],
             sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
             quantity: patientItem['actualData'],
@@ -2052,6 +2072,12 @@ export default {
                   }
                 }
               }
+            };
+            .patient-message-bottom-age {
+              .patient-message-bottom-right {
+                width: 50%;
+                flex: none
+              }  
             }
           };
           .is-back {
@@ -2209,7 +2235,7 @@ export default {
                     }
                   }
                 };
-                .field-two {
+                 .field-two {
                   display: flex;
                   flex-flow: row nowrap;
                   justify-content: flex-start;
@@ -2218,6 +2244,7 @@ export default {
                     height: 36px;
                     line-height: 36px;
                     &:first-child {
+                      width: 38%;
                       color: @color-text-left;
                       text-align: left;
                       margin-right: 6px;
@@ -2227,7 +2254,9 @@ export default {
                         }
                       }
                     };
-                    &:last-child {
+                    &:nth-child(2) {
+                      width: 30%;
+                      margin: 0 2%;
                       /deep/ .van-cell {
                         padding: 2px 0;
                         height: 34px;
@@ -2250,6 +2279,16 @@ export default {
                               color: @color-text-right !important;
                             }
                           }
+                        }
+                      }
+                    };
+                    &:last-child {
+                      width: 30%;
+                      margin-right: 0 !important;
+                      /deep/ .van-cell {
+                        .van-field__label {
+                          width: 40px;
+                          margin-right: 0 !important
                         }
                       }
                     }

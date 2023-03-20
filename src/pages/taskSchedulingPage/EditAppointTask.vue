@@ -156,6 +156,11 @@
                 <van-field v-model="admissionNumberValue" label="住院号" placeholder="请输入" />
               </div>
               <div class="patient-message-bottom-right">
+                <van-field v-model="patientAgeValue" label="年龄" placeholder="请输入" />
+              </div>
+            </div>
+            <div class="patient-message-bottom patient-message-bottom-age">
+              <div class="patient-message-bottom-right">
                 <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
               </div>
             </div>
@@ -217,6 +222,7 @@ export default {
       loadingText: '加载中...',
       taskDescribe: '',
       patientNumberValue: '',
+      patientAgeValue: '',
       patientNameValue: '',
       showTaskStart: false,
       minDate: new Date(2010, 0, 1),
@@ -339,6 +345,7 @@ export default {
       this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['badNumber'];
+      this.patientAgeValue = casuallyTemporaryStorageCreateDispathTaskMessage['age'];
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
       this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['hospitalNo'];
       this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';
@@ -765,7 +772,7 @@ export default {
           name: this.patientNameValue,  //病人姓名
           planStartTime: this.getNowFormatDate(this.currentTaskStartTime), //计划开始时间
           sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
-          age: "",   //年龄
+          age: this.patientAgeValue,   //年龄
           hospitalNo: this.admissionNumberValue,   //住院号
           id: this.schedulingTaskDetails.id, // 任务id
           isBack: 0,
@@ -1241,6 +1248,12 @@ export default {
                   }
                 }
               }
+            };
+            .patient-message-bottom-age {
+              .patient-message-bottom-right {
+                width: 50%;
+                flex: none
+              }  
             }
           };
           .task-total {
