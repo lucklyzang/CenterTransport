@@ -162,11 +162,11 @@
                           <div class="list-center-left">
                             <div v-if="templateType == 'template_one'">
                               <span>{{ item['parentTypeName'] }}</span>
-                              <span>{{ `${item.setOutPlaceName}- ${item.destinationName ? item.destinationName : ''}` }}</span>
+                              <span>{{ `${item.setOutPlaceName}${!item.destinationName ? '' : '-'}${item.destinationName ? item.destinationName : ''}` }}</span>
                             </div>
                             <div v-else>
                               <span>{{ item['parentTypeName'] }}</span>
-                              <span>{{ `${item.setOutPlaceName}- ${disposeDestinations(item.destinations)}` }}</span>
+                              <span>{{ `${item.setOutPlaceName}${item.destinations.length == 0 ? '' : '-'}${disposeDestinations(item.destinations)}` }}</span>
                             </div>
                           </div>
                           <div class="list-center-right">
