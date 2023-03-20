@@ -405,7 +405,7 @@ export default {
         if (e.targetTouches.length == 1) {
         // 滑动距离
         let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
-        //左滑(根据左右滑动来控制右侧菜单的显示与隐藏)
+        //右滑
         if (moveX > 0) {
           if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
             this.changeIsFreshAppointTaskPage(false)

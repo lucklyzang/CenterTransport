@@ -1934,8 +1934,10 @@
            background: #fff;
            color: black
          };
-       };
-       .task-status-list {
+       }
+        .task-status-list {
+          flex: 1;
+          overflow: auto;
          .wait-handle-list {
           padding: 10px !important;
           box-sizing: border-box !important;
@@ -1944,7 +1946,7 @@
           }
          }  
        }
-      }
+    };
     .wait-handle {
       .wait-handle-list {
         box-sizing: border-box;
