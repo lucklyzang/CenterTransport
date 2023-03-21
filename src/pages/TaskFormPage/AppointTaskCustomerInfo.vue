@@ -157,7 +157,11 @@ export default {
 
     // 重写
     rewrite () {
-      this.$refs.mychild.overwrite()
+      try {
+        this.$refs.mychild.overwrite()
+      } catch (err) {
+        
+      }
     },
 
     // 确认客户信息

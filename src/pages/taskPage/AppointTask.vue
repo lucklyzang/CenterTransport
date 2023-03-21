@@ -2053,8 +2053,7 @@
             }
           };
           .wait-handle-message-two {
-            height: 35px;
-            line-height: 35px;
+            line-height: 20px;
             overflow: auto;
             margin-left: -4px;
             p {
@@ -2219,8 +2218,7 @@
             }
           };
           .wait-handle-message-two {
-            height: 35px;
-            line-height: 35px;
+            line-height: 20px;
             overflow: auto;
             margin-left: -4px;
             p {

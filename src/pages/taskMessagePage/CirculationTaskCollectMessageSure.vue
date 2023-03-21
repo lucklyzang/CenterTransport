@@ -214,7 +214,11 @@ export default {
 
     // 重写
     rewrite () {
-      this.$refs.mychild.overwrite()
+      try {
+        this.$refs.mychild.overwrite()
+      } catch (err) {
+        
+      }
     },
 
     // 回显已经采集信息

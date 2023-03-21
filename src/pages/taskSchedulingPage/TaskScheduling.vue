@@ -526,6 +526,7 @@ export default {
 
     // 调度任务列表(单病人)
     getDispathSinglePatientList (flag) {
+      this.dispatchTaskList = [];
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = flag ? '刷新中' : '加载中...';
@@ -579,6 +580,7 @@ export default {
 
     // 调度任务列表(多病人)
     getDispathManyPatientList (flag) {
+      this.dispatchTaskList = [];
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = flag ? '刷新中' : '加载中...';
@@ -632,6 +634,7 @@ export default {
 
     // 预约任务列表
     getAppointList (flag) {
+      this.appointTaskList = [];
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = flag ? '刷新中' : '加载中...';
@@ -2222,8 +2225,14 @@ export default {
                                 .bottom-border-1px(#afafaf);
                                 .list-top-left {
                                   >span {
-                                    font-weight: bold
-                                  }
+                                    display: inline-block;
+                                    font-weight: bold;
+                                    &:nth-child(2) {
+                                      flex: 1;
+                                      .no-wrap();
+                                      padding-right: 4px
+                                    }
+                                  }  
                                 }
                               };
                               .appoint-list-center {

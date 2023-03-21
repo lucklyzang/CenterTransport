@@ -522,7 +522,11 @@ export default {
 
     // 签名重写
     rewrite () {
-      this.$refs.mychild.overwrite()
+      try {
+        this.$refs.mychild.overwrite()
+      } catch (err) {
+        
+      }
     },
 
     // 任务状态转换图片

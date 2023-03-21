@@ -44,7 +44,7 @@
         <ElectronicSignature ref="mychild"></ElectronicSignature>
       </div>
     </div>
-    <div class="rewrite-box" v-show="showSignature == true">
+    <div class="rewrite-box" v-if="showSignature == true">
       <span @click="rewrite">重写</span>
     </div>
     <div class="btn-area">
@@ -340,7 +340,11 @@ export default {
 
     // 重写
     rewrite () {
-      this.$refs.mychild.overwrite()
+      try {
+        this.$refs.mychild.overwrite()
+      } catch (err) {
+        
+      }  
     },
 
     // 存储当前扫码校验通过的科室编号
