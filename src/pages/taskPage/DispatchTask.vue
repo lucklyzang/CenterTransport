@@ -984,6 +984,7 @@
           this.taskQueryShow = false;
           this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
         } else if (index == '1') {
+          this.timeFastindex = '';
           this.stateIndex = null;
           this.taskQueryShow = true;
           this.waitHandleBox = false;
@@ -994,7 +995,6 @@
 
       // 时间查询快捷键点击事件
       timeFasleEvent (item,index) {
-        this.timeFastindex = index;
         this.timeFastindex = index;
         let dateList = formatTime('YYYY-MM-DD').split('-');
         let endDate = `${dateList[0]}-${dateList[1]}-${dateList[2]}`
