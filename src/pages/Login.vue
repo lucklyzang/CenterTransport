@@ -1,5 +1,7 @@
 <template>
   <div id="LoginBox">
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">登录中,请稍候···</van-loading>
+    <van-overlay :show="overlayShow" z-index="100" />
     <div class="bg-icon-wrapper" ref="bgIconWrapper">
       <div class="bg-icon">
         <img :src="logoPng" alt="">
@@ -13,9 +15,6 @@
     </div>
     <div class="btn-box" @click="loginHandle">
       <img :src="loginBtnPng" alt="">
-    </div>
-    <div class="loading-btn">
-      <loading :isShow="showLoadingHint" textContent="登录中,请稍候····" textColor="#2895ea"></loading>
     </div>
   </div>
 </template>
@@ -35,6 +34,7 @@ export default {
       username: '',
       password: '',
       showLoadingHint: false,
+      overlayShow: false,
       sweepMsg: null,
       proId: '',
       logoPng: '',
@@ -106,6 +106,8 @@ export default {
     // 获取科室字典id
     queryDepartmentList () {
       return new Promise((resolve,reject) => {
+        this.overlayShow = true;
+        this.showLoadingHint = true;
         getdepartmentList(this.proId).then((res) => {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
@@ -115,9 +117,13 @@ export default {
                 message: `${res.data.msg}`,
                 closeOnPopstate: true
               }).then(() => {})
-            }
+            };
+            this.overlayShow = false;
+            this.showLoadingHint = false
           })
           .catch((err) => {
+            this.overlayShow = false;
+            this.showLoadingHint = false;
             this.$dialog.alert({
               message: `${err.message}`,
               closeOnPopstate: true
@@ -129,6 +135,8 @@ export default {
     // 获取科室字典编号
     queryDepartmentListNo () {
       return new Promise((resolve,reject) => {
+        this.overlayShow = true;
+        this.showLoadingHint = true;
         getdepartmentListNo(this.proId).then((res) => {
           if (res && res.data.code == 200) {
               resolve(res.data.data);
@@ -138,9 +146,13 @@ export default {
                 message: `${res.data.msg}`,
                 closeOnPopstate: true
               }).then(() => {})
-            }
+            };
+            this.overlayShow = false;
+            this.showLoadingHint = false
           })
           .catch((err) => {
+            this.overlayShow = false;
+            this.showLoadingHint = false;
             this.$dialog.alert({
               message: `${err.message}`,
               closeOnPopstate: true
@@ -152,12 +164,18 @@ export default {
     // 注册channel
     getChannel (data) {
       return new Promise((resolve,reject) => {
+        this.overlayShow = true;
+        this.showLoadingHint = true;
         registerChannel(data)
         .then((res) => {
+          this.overlayShow = false;
+          this.showLoadingHint = false;
           resolve()
         })
         .catch((err) => {
-         this.$dialog.alert({
+          this.overlayShow = false;
+          this.showLoadingHint = false;
+          this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
           }).then(() => {})
@@ -168,6 +186,7 @@ export default {
     // 账号密码登录方法
     login () {
       return new Promise((resolve,rejrect)=> {
+        this.overlayShow = true;
         this.showLoadingHint = true;
         let loginMessage = {
           username: this.username,
@@ -192,9 +211,11 @@ export default {
               });
             }
           };
+          this.overlayShow = false;
           this.showLoadingHint = false
         })
         .catch((err) => {
+          this.overlayShow = false;
           this.showLoadingHint = false;
           this.$dialog.alert({
             message: `${err.message}`,
@@ -282,7 +303,7 @@ export default {
         removeStore('completeDepartmentMessage')
       };
       this.$router.push({path:'/home'});
-      this.changeTitleTxt({tit:'中央运送'})
+      this.changeTitleTxt({tit:'中央运送'});
       window.location.reload()
     }
   }
@@ -295,6 +316,9 @@ export default {
 @import "../common/stylus/media.less";
   #LoginBox {
     .content-wrapper();
+    /deep/ .van-loading {
+      z-index: 1000
+    };
   .bg-icon-wrapper {
       flex:1;
       margin: 0 auto;
