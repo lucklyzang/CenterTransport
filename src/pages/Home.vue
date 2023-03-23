@@ -1483,7 +1483,11 @@
             })
           } else {
             if (res.headers.hasOwnProperty('offline')) {return};
-            this.$toast(`${res.data.msg}`);
+            if (res.data) {
+              if (res.data.hasOwnProperty('msg')) {
+                this.$toast(`${res.data.msg}`)
+              }
+            }
           }
         })
         .catch((err) => {

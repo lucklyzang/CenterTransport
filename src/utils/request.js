@@ -58,21 +58,23 @@ service.interceptors.response.use(
             setStore('questToken', response.headers['token']);
         };
         if (response.headers.hasOwnProperty('offline')) {
-            Dialog.alert({
-                message: '账号已在其它设备登录,你已被强制下线!',
-                closeOnPopstate: false
-            }).then(() => {});
-            if (store.getters.globalTimer) { window.clearInterval(store.getters.globalTimer) };
-            removeAllLocalStorage();
-            // 退出信标服务器连接
-            try {
-                window.android.logOut()
-            } catch (err) {
-                Toast(`${err}`)
-            };
-            setTimeout(() => {
-                router.push({ path: '/' })
-            }, 2000);
+            if (!store.getters.overDueWay) {
+                Dialog.alert({
+                    message: '账号已在其它设备登录,你已被强制下线!',
+                    closeOnPopstate: false
+                }).then(() => {});
+                if (store.getters.globalTimer) { window.clearInterval(store.getters.globalTimer) };
+                removeAllLocalStorage();
+                // 退出信标服务器连接
+                try {
+                    window.android.logOut()
+                } catch (err) {
+                    Toast(`${err}`)
+                };
+                setTimeout(() => {
+                    router.push({ path: '/' })
+                }, 2000);
+            };    
             return response
         };
         if (!response.headers.hasOwnProperty('token')) {
