@@ -1409,7 +1409,7 @@ export default {
             tempFlag: this.templateType === 'template_one' ? 1 : 2, //模板(1:旧模板,2:新模板)
             endType: 1, //终止类型(0-web,1-安卓APP，2-微信小程序)
             endUser: this.userName, // 取消者(当前登录用户名)
-            cancelReason: this.selectDelayReason['text'] //延迟原因
+            cancelReason: this.selectCancelReason['text'] //延迟原因
           })
         .then((res) => {
           this.loadingShow = false;
@@ -1447,7 +1447,7 @@ export default {
             taskId: this.taskId, //任务id
             state: 6,
             proId: this.proId, // 医院id
-            reason: this.selectCancelReason['text'], //延迟原因
+            reason: this.selectCancelReason['text'], //取消原因
             workerId: this.workerId, //操作人id
             endUser: this.userName, //操作人姓名
             endType: 1 //终止类型(0-web,1-安卓APP，2-微信小程序)
