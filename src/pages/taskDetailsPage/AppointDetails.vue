@@ -840,6 +840,11 @@ export default {
           this.emptyCompleteCheckedItem();
           this.emptyCompleteDestinationDepartment();
           this.emptyCompleteDepartureDepartment();
+          if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
+            this.changeIsFreshAppointTaskPage(false)
+          } else {
+            this.changeIsFreshAppointTaskPage(true)
+          };
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
@@ -878,6 +883,11 @@ export default {
           this.changeCurrentElectronicSignature({DtMsg :null});
           this.emptyCompleteDestinationDepartment();
           this.emptyCompleteDepartureDepartment();
+          if (this.appointTaskMessage.state == 7 || this.appointTaskMessage.state == 6) {
+            this.changeIsFreshAppointTaskPage(false)
+          } else {
+            this.changeIsFreshAppointTaskPage(true)
+          };
           this.$router.push({path:'/appointTask'});
           this.changeTitleTxt({tit:'预约任务'});
           setStore('currentTitle','预约任务')
