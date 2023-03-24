@@ -1,5 +1,7 @@
 <template>
   <div class="content-wrapper">
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">确认中...</van-loading>
+    <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -60,6 +62,8 @@ export default {
     return {
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      overlayShow: false,
+      showLoadingHint: false,
       liIndex: null,
       appointDescribe: '',
       patientName: '',
@@ -166,6 +170,8 @@ export default {
 
     // 确认客户信息
     checkCustomerInfo (data) {
+      this.overlayShow = true;
+      this.showLoadingHint = true;
       sureCustomerAppointInfo(data).then((res) => {
         if (res && res.data.code == 200) {
           this.$toast(`${res.data.msg}`);
@@ -177,9 +183,13 @@ export default {
             closeOnPopstate: true
           }).then(() => {
           });
-        }
+        };
+        this.overlayShow = false;
+        this.showLoadingHint = false;
       })
       .catch((err)=>{
+        this.overlayShow = false;
+        this.showLoadingHint = false;
         this.$dialog.alert({
           message: `${err.message}`,
           closeOnPopstate: true
@@ -251,6 +261,9 @@ export default {
 @import "~@/common/stylus/mixin.less";
 @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     .content-wrapper();
       .left-dropDown {
       .rightDropDown

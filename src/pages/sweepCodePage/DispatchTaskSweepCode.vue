@@ -1,5 +1,7 @@
 <template>
-   <div class="content-wrapper">
+   <div class="content-wrapper" ref="wrapper">
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">加载中...</van-loading>
+    <van-overlay :show="overlayShow" z-index="100000" />
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -9,9 +11,6 @@
     <ul class="left-dropDown" v-show="leftDownShow">
       <li v-for="(item, index) in leftDropdownDataList" :key="index" :class="{liStyle:liIndex == index}" @click="leftLiCLick(index)">{{item}}</li>
     </ul>
-    <div class="loading">
-      <loading :isShow="showLoadingHint" :textContent="currentTextContent" textColor="#2895ea"></loading>
-    </div>
     <div class="sweep-code-area">
       <div class="point-area" v-show="appointAreaShow">
         <p class="task-start-point">
@@ -80,6 +79,10 @@ export default {
       sweepCodeDestinationListOne: [],
       leftDropdownDataList: ['退出登录'],
       leftDownShow: false,
+      moveInfo: {
+        startX: ''
+      },
+      overlayShow: false,
       showLoadingHint: false,
       showSignature: false,
       appointAreaShow: false,
@@ -132,6 +135,16 @@ export default {
       this.currentSiteId = this.dispatchTaskMessage.destinationId
     };
     this.echoCurrentDepartmentNumber();
+    this.$nextTick(()=> {
+      try {
+        this.registerSlideEvent()
+      } catch (error) {
+        // this.$toast({
+        //   type: 'fail',
+        //   message: error
+        // })
+      }
+    });
     // 调取摄像头
     if (this.isCallDispatchSweepcodeMethod) {
       this.sweepCodeSure()
@@ -180,6 +193,7 @@ export default {
   methods:{
     ...mapMutations([
       'changeTitleTxt',
+      'changeIsFreshDispatchTaskPage',
       'changeisCompleteSweepCode',
       'changeIsDispatchTaskFirstSweepCode',
       'changeIsCompletePhotoList',
@@ -193,6 +207,39 @@ export default {
     // 扫描二维码方法
     sweepAstoffice () {
       window.android.scanQRcode()
+    },
+
+    // 注册滑动事件  
+    registerSlideEvent () {
+      this.$refs.wrapper.addEventListener('touchstart',this.touchstartHandle,false);
+      this.$refs.wrapper.addEventListener('touchmove',this.touchmoveHandle,false)
+    },
+
+    // 滑动开始
+    touchstartHandle() {
+        //判断是否在滑动区域内滑动
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+            this.moveInfo.startX = parseInt(e.targetTouches[0].clientX)
+        }    
+    },
+
+    // 滑动中
+    touchmoveHandle() {
+        let e = e || window.event;
+        if (e.targetTouches.length == 1) {
+        // 滑动距离
+        let moveX = parseInt((e.targetTouches[0].clientX - this.moveInfo.startX));
+        //右滑
+        if (moveX > 0) {
+          console.log('滑动了');
+          if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6) {
+            this.changeIsFreshDispatchTaskPage(false)
+          } else {
+            this.changeIsFreshDispatchTaskPage(true)
+          }
+        }
+      }        
     },
 
     // 查看上传的大图图片
@@ -378,6 +425,7 @@ export default {
     // 上传图片
     uploadPhoto (data) {
       dispatchTaskUploadMsg(data).then((res) => {
+        this.overlayShow = false;
         this.showLoadingHint = false;
         if (res && res.data.code == 200) {
           // 上传成功后,清除存储的照片
@@ -408,6 +456,7 @@ export default {
           closeOnPopstate: true
         }).then(() => {
         });
+        this.overlayShow = false;
         this.showLoadingHint = false;
       })
     },
@@ -424,7 +473,8 @@ export default {
           });
           return
         };
-        this.currentTextContent = '上传中,请稍候···'
+        this.currentTextContent = '上传中,请稍候···';
+        this.overlayShow = true;
         this.showLoadingHint = true;
         // 压缩图片
         compressImg(this.upImgUrl,this.compressCallback)
@@ -433,7 +483,8 @@ export default {
         if (this.currentElectronicSignature == this.originalSignature || !this.currentElectronicSignature) {
           return
         };
-        this.currentTextContent = '上传中,请稍候···'
+        this.currentTextContent = '上传中,请稍候···';
+        this.overlayShow = true;
         this.showLoadingHint = true;
         this.uploadPhoto(
           {
@@ -555,6 +606,7 @@ export default {
     // 判断扫码科室
     juddgeCurrentDepartment (data) {
       this.currentTextContent = '校验中,请稍候···'
+      this.overlayShow = true;
       this.showLoadingHint = true;
       judgeDispatchTaskDepartment(data).then((res) => {
         if (res && res.data.code == 200) {
@@ -616,10 +668,12 @@ export default {
           }).catch((err) =>{
           })
         };
+        this.overlayShow = false;
         this.showLoadingHint = false
       })
       .catch((err) => {
         this.backTo();
+        this.overlayShow = false;
         this.showLoadingHint = false;
         this.$dialog.alert({
           message: `${err.message}`,
@@ -705,7 +759,11 @@ export default {
             temporaryCurrentDepartmentNumber = temporaryCurrentDepartmentNumber.filter((item) => { return item.taskId != this.taskId});
             this.changeCurrentDepartmentNumber(temporaryCurrentDepartmentNumber);
             setStore('completDepartmentNumber', {"number": temporaryCurrentDepartmentNumber});
-
+            if (this.dispatchTaskMessage.state == 7 || this.dispatchTaskMessage.state == 6) {
+              this.changeIsFreshDispatchTaskPage(false)
+            } else {
+              this.changeIsFreshDispatchTaskPage(true)
+            };
             this.$router.push({path:'/dispatchTask'});
             this.changeTitleTxt({tit:'调度任务'});
             setStore('currentTitle','调度任务')
@@ -804,18 +862,13 @@ export default {
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
     .content-wrapper();
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     position: relative;
     font-size: 14px;
     .left-dropDown {
       .rightDropDown
-    }
-    .loading {
-      position: absolute;
-      bottom: 80px;
-      left: 0;
-      width: 100%;
-      height: 50px;
-      text-align: center;
     };
     .sweep-code-title {
       margin-top: 10px;
