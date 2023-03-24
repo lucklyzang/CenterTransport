@@ -1,10 +1,9 @@
 <template>
   <div class="content-wrapper">
+    <van-overlay :show="overlayShow" z-index="100000" />
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">{{loadingContent}}</van-loading>
     <div class="no-data" v-show="noDataShow">
       <NoData></NoData>
-    </div>
-    <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor=""></loading>
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
@@ -153,6 +152,8 @@
     data () {
       return {
         showLoadingHint: false,
+        loadingContent: '加载中,请稍候···',
+        overlayShow: false,
         statusScreen: false,
         taskQueryShow: false,
         noDataShow: false,
@@ -328,9 +329,15 @@
 
       // 用户签退
       userLoginOut (proId,workerId) {
+        this.showLoadingHint = true;
+        this.loadingContent = '签退中,请稍候···';
+        this.overlayShow = true;
         this.changeOverDueWay(true);
         setStore('storeOverDueWay',true);
         userSignOut(proId,workerId).then((res) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             // 退出信标服务器连接
@@ -357,6 +364,9 @@
           }
         }).
         catch((err) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.changeOverDueWay(false);
           setStore('storeOverDueWay',false);
           this.$dialog.alert({
@@ -595,11 +605,15 @@
       getCirculationTask (data,index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
+        this.loadingContent = '加载中,请稍候···';
+        this.overlayShow = true;
         queryCirculationTask(data).then((res) => {
           if (!res['headers']['token']) {
             if(windowTimer) {window.clearInterval(windowTimer)}
           };
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false;
           this.circulationTaskList = [];
           let temporaryTaskListFirst = [];
@@ -730,6 +744,8 @@
           this.circulationTaskListShow = false;
           this.noDataShow = true;
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false
         });
       },
@@ -777,6 +793,9 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     .content-wrapper();
     position: relative;
     font-size: 14px;
