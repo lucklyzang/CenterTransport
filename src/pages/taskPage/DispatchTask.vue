@@ -1,10 +1,9 @@
 <template>
   <div class="content-wrapper">
+    <van-overlay :show="overlayShow" z-index="100000" />
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">{{loadingContent}}</van-loading>
     <div class="no-data" v-show="noDataShow">
       <NoData></NoData>
-    </div>
-    <div class="loading">
-      <loading :isShow="showLoadingHint" textContent="加载中,请稍候····" textColor=""></loading>
     </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
@@ -390,6 +389,8 @@
         value:0,
         taskId: '',
         showLoadingHint: false,
+        loadingContent: '加载中,请稍候···',
+        overlayShow: false,
         noDataShow: false,
         stateListShow: false,
         dispatchTaskListShow: false,
@@ -617,9 +618,13 @@
       queryStateFilterDispatchTask (proID, workerId, index) {
         this.noDataShow = false;
         this.showLoadingHint = true;
+        this.loadingContent = '加载中,请稍候···';
+        this.overlayShow = true;
         getDispatchTaskMessage (proID, workerId,index)
         .then((res) => {
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false;
           let temporaryTaskListFirst = [];
           this.stateFilterList = [];
@@ -722,6 +727,8 @@
           });
           this.dispatchTaskListShow = false;
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false
         })
       },
@@ -735,8 +742,12 @@
       queryCompleteDispatchTask (data) {
         this.noDataShow = false;
         this.showLoadingHint = true;
+        this.loadingContent = '加载中,请稍候···';
+        this.overlayShow = true;
         getDispatchTaskComplete(data).then((res) => {
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false;
           this.stateCompleteList = [];
           if (res && res.data.code == 200) {
@@ -816,15 +827,23 @@
           });
           this.dispatchTaskListShow = false;
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false
         })
       },
 
       // 用户签退
       userLoginOut (proId,workerId) {
+        this.showLoadingHint = true;
+        this.loadingContent = '签退中,请稍候···';
+        this.overlayShow = true;
         this.changeOverDueWay(true);
         setStore('storeOverDueWay',true);
         userSignOut(proId,workerId).then((res) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             // 退出信标服务器连接
@@ -851,6 +870,9 @@
           }
         }).
         catch((err) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.changeOverDueWay(false);
           setStore('storeOverDueWay',false);
           this.$dialog.alert({
@@ -1060,14 +1082,23 @@
           this.$toast('请选择退回原因');
           return
         };
+        this.showLoadingHint = true;
+        this.loadingContent = '退回中,请稍候···';
+        this.overlayShow = true;
         sendBackDispatchTask(this.proId,this.taskId,this.toolText,this.tempFlagId)
         .then((res) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.msg}`);
             this.queryStateFilterDispatchTask(this.userInfo.extendData.proId, this.workerId, this.stateIndex)
           }
         })
         .catch((err) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
@@ -1137,8 +1168,14 @@
 
       // 获取待处理任务事件
       getTask (item) {
+        this.showLoadingHint = true;
+        this.loadingContent = '获取中,请稍候···';
+        this.overlayShow = true;
         getDispatchTask(item.id,this.workerId,item.tempFlag)
         .then(res => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             this.$dialog.alert({
               message: `${res.data.msg}`,
@@ -1155,6 +1192,9 @@
           }
         })
         .catch(err => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
@@ -1171,6 +1211,9 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
   .content-wrapper {
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     /deep/ .van-dialog {
       .van-dialog__content {
         margin-bottom: 6px;
@@ -1211,15 +1254,6 @@
     position: relative;
     font-size: 14px;
     .no-data {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2000;
-      left: 0;
-      width: 100%;
-      text-align: center;
-    }
-    .loading {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);

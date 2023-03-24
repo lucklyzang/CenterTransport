@@ -1,5 +1,7 @@
 <template>
   <div class="content-wrapper">
+    <van-overlay :show="overlayShow" z-index="100000" />
+    <van-loading size="35px" vertical color="#e6e6e6" v-show="showLoadingHint">{{loadingContent}}</van-loading>
     <div class="no-data" v-show="noDataShow">
       <NoData></NoData>
     </div>
@@ -7,9 +9,6 @@
       @confirm="transferSureEvent" 
       @cancel="transferCancelEvent"
     />
-    <div class="loading">
-      <loading :isShow="showLoadingHint" :textContent="loadingContent" textColor=""></loading>
-    </div>
     <!-- 顶部导航栏 -->
     <HeaderTop :title="navTopTitle">
       <van-icon name="arrow-left" slot="left" @click="backTo"></van-icon>
@@ -492,6 +491,7 @@
     data () {
       return {
         codeAreaShow: false,
+        overlayShow: false,
         showLoadingHint: false,
         loadingContent: '加载中,请稍候···',
         sendbackShow: false,
@@ -718,8 +718,14 @@
       cancelTaskEvent (item) {
         this.taskId = item.id;
         this.reasonShow = true;
+        this.loadingContent = '取消中,请稍候···';
+        this.showLoadingHint = true;
+        this.overlayShow = true;
         queryDispatchTaskCancelReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
+          this.loadingContent = '';
+          this.showLoadingHint = false;
+          this.overlayShow = false;
           this.reasonOperationList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
@@ -741,6 +747,9 @@
           }).then(() => {
           });
         });
+        this.loadingContent = '';
+        this.showLoadingHint = false;
+        this.overlayShow = false;
         this.reasonIndex = ''
       },
 
@@ -748,8 +757,14 @@
       sendbackTaskEvent (item) {
         this.taskId = item.id;
         this.sendbackShow = true;
+        this.loadingContent = '退回中,请稍候···';
+        this.showLoadingHint = true;
+        this.overlayShow = true;
         queryAppointTaskSendbackReason({proId:this.proId,state: 0,type: 2})
         .then((res) => {
+          this.loadingContent = '';
+          this.showLoadingHint = false;
+          this.overlayShow = false;
           this.sendbackOperationList = [];
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
@@ -771,6 +786,9 @@
           }).then(() => {
           });
         });
+        this.loadingContent = '';
+        this.showLoadingHint = false;
+        this.overlayShow = false;
         this.sendbackIndex = ''
       },
 
@@ -797,8 +815,14 @@
           this.$toast('请选择取消原因');
           return
         };
+        this.overlayShow = true;
+        this.showLoadingHint = true;
+        this.loadingContent = '取消中,请稍候···';
         cancelAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.reasonText})
         .then((res) => {
+          this.overlayShow = false;
+          this.showLoadingHint = false;
+          this.loadingContent = '';
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.msg}`);
             this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1, startDate: '',endDate: ''}, this.stateIndex)
@@ -807,6 +831,9 @@
           }
         })
         .catch((err) => {
+          this.overlayShow = false;
+          this.showLoadingHint = false;
+          this.loadingContent = '';
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
@@ -835,8 +862,14 @@
           this.$toast('请选择退回原因');
           return
         };
+        this.overlayShow = true;
+        this.showLoadingHint = true;
+        this.loadingContent = '退回中,请稍候···';
         sendbackAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.sendbackText})
         .then((res) => {
+          this.overlayShow = false;
+          this.showLoadingHint = false;
+          this.loadingContent = '';
           if (res && res.data.code == 200) {
             this.$toast(`${res.data.msg}`);
             this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1, startDate: '',endDate: ''}, this.stateIndex)
@@ -845,6 +878,9 @@
           }
         })
         .catch((err) => {
+          this.overlayShow = false;
+          this.showLoadingHint = false;
+          this.loadingContent = '';
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
@@ -881,9 +917,15 @@
 
       // 用户签退
       userLoginOut (proId,workerId) {
+        this.showLoadingHint = true;
+        this.loadingContent = '签退中,请稍候···';
+        this.overlayShow = true;
         this.changeOverDueWay(true);
         setStore('storeOverDueWay',true);
         userSignOut(proId,workerId).then((res) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             if(this.globalTimer) {window.clearInterval(this.globalTimer)};
             // 退出信标服务器连接
@@ -910,6 +952,9 @@
           }
         }).
         catch((err) => {
+          this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.changeOverDueWay(false);
           setStore('storeOverDueWay',false);
           this.$dialog.alert({
@@ -1074,11 +1119,15 @@
       // 查询预约任务(状态筛选点击专用)
       queryStateFilterDispatchTask (data, index) {
         this.noDataShow = false;
+        this.overlayShow = true;
         this.showLoadingHint = true;
+        this.loadingContent = '加载中,请稍候···';
         queryAppointTaskMessage (data)
         .then((res) => {
+          this.overlayShow = false;
           this.showLoadingHint = false;
           this.isRefresh = false;
+          this.loadingContent = '';
           let temporaryTaskListFirst = [];
           this.stateFilterList = [];
           if (res && res.data.code == 200) {
@@ -1160,7 +1209,9 @@
           }).then(() => {
           });
           this.appointTaskListShow = false;
+          this.loadingContent = '';
           this.showLoadingHint = false;
+          this.overlayShow = false;
           this.isRefresh = false
         })
       },
@@ -1187,11 +1238,15 @@
       // 查询预约任务(已完成)
       queryCompleteDispatchTask (data) {
         this.noDataShow = false;
+        this.overlayShow = true;
         this.showLoadingHint = true;
+        this.loadingContent = '加载中,请稍候···';
         queryAppointTaskMessage(data).then((res) => {
           this.stateCompleteList = [];
           this.showLoadingHint = false;
+          this.overlayShow = false;
           this.isRefresh = false;
+          this.loadingContent = '';
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               this.appointTaskListShow = true;
@@ -1241,6 +1296,8 @@
           });
           this.appointTaskListShow = false;
           this.showLoadingHint = false;
+          this.loadingContent = '';
+          this.overlayShow = false;
           this.isRefresh = false
         })
       },
@@ -1398,10 +1455,12 @@
       sureTransferDispatchTask (data) {
         this.loadingContent = '转移中,请稍候···';
         this.showLoadingHint = true;
+        this.overlayShow = true;
         transferAppointTask(data)
           .then((res) => {
+            this.overlayShow = false;
             this.showLoadingHint = false;
-            this.loadingContent = '加载中,请稍候···';
+            this.loadingContent = '';
             if (res && res.data.code == 200) {
               this.$toast(`${ res.data.msg}`);
               this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1);
@@ -1414,8 +1473,9 @@
             }
           })
           .catch((err) => {
+            this.overlayShow = false;
             this.showLoadingHint = false;
-            this.loadingContent = '加载中,请稍候···';
+            this.loadingContent = '';
             this.$dialog.alert({
               message: `${err.message}`,
               closeOnPopstate: true
@@ -1477,17 +1537,26 @@
 
       // 获取待处理任务事件
       getTask (taskId) {
+        this.loadingContent = '获取中,请稍候···';
+        this.showLoadingHint = true;
+        this.overlayShow = true;
         updateAppointTaskMessage({
           proId: this.proId,//当前项目ID
           taskId: taskId, //当前任务ID
           workerId: this.workerId// 运送员ID即当前登录人
         })
         .then(res => {
+          this.loadingContent = '';
+          this.showLoadingHint = false;
+          this.overlayShow = false;
           if (res && res.data.code == 200) {
             this.queryStateFilterDispatchTask({proId: this.userInfo.extendData.proId, workerId: this.workerId, isMobile: 1, state: -1,startDate: '',endDate: ''},-1)
           }
         })
         .catch(err => {
+          this.loadingContent = '';
+          this.showLoadingHint = false;
+          this.overlayShow = false;
           this.$dialog.alert({
             message: `${err.message}`,
             closeOnPopstate: true
@@ -1504,6 +1573,9 @@
   @import "~@/common/stylus/mixin.less";
   @import "~@/common/stylus/modifyUi.less";
    .content-wrapper {
+    /deep/ .van-loading {
+      z-index: 200000
+    };
     .back-reason-box {
       /deep/ .van-dialog {
         .van-dialog__content {
@@ -1575,15 +1647,6 @@
     font-size: 14px;
     position: relative;
     .no-data {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 2000;
-      left: 0;
-      width: 100%;
-      text-align: center;
-    }
-    .loading {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
