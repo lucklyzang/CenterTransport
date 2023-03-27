@@ -1100,8 +1100,7 @@ export default {
     // 终点科室下拉选择框确认事件(模板二)
     goalSpacesSureEvent (val) {
       if (val.length > 0) {
-        this.currentGoalSpaces =  val;
-        console.log('终点科室',this.currentGoalSpaces);
+        this.currentGoalSpaces =  val
       } else {
         this.currentGoalSpaces = []
       };
@@ -1328,11 +1327,13 @@ export default {
           this.$toast({message: '请选择起点科室',type: 'fail'});
           return
         };
-        // 起始地与目的地不能相同
-        if (this.currentStartDepartment == this.currentEndDepartment) {
-          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
-          return
-        };
+        // 终点科室不能包含起点科室
+        if (this.currentGoalSpaces.length > 0) {
+          if (this.currentGoalSpaces.filter((item) => { return item.text == this.currentStartDepartment}).length > 0) {
+            this.$toast({message: '终点科室不能包含起点科室',type: 'fail'});
+            return
+          }
+        };  
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
