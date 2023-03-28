@@ -818,7 +818,14 @@
         this.overlayShow = true;
         this.showLoadingHint = true;
         this.loadingContent = '取消中,请稍候···';
-        cancelAppointTask({proId:this.proId, taskId:this.taskId,workerId: this.workerId,reason:this.reasonText})
+        cancelAppointTask({
+          proId:this.proId, 
+          taskId:this.taskId,
+          workerId: this.workerId,
+          reason:this.reasonText,
+          endType: 1, //终止类型(0-web,1-安卓APP，2-微信小程序)
+          endUser: this.userInfo.userName // 取消者(当前登录用户名)
+        })
         .then((res) => {
           this.overlayShow = false;
           this.showLoadingHint = false;
