@@ -204,9 +204,9 @@ export default {
           }
         };
         if (emptyArr.length>0) {
-            this.sampleAmount = checkEmptyArray(emptyArr).reduce((prev, curr, idx, arr) => {
+            this.sampleAmount = emptyArr.reduce((prev, curr) => {
             return Number(prev) + Number(curr);
-          })
+          },0)
         };
       },
 
