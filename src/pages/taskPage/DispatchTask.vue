@@ -48,6 +48,10 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -69,7 +73,7 @@
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
-                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+                <span>{{ extractBedNumber(item.patientInfoList) }}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
                 <p>运送类型 : </p>
@@ -107,6 +111,10 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -128,7 +136,7 @@
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
-                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+                <span>{{ extractBedNumber(item.patientInfoList) }}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
                 <p>运送类型: </p>
@@ -187,7 +195,7 @@
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
-                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+                <span>{{ extractBedNumber(item.patientInfoList) }}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
                 <p>运送类型 : </p>
@@ -246,7 +254,7 @@
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
-                <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+                <span>{{ extractBedNumber(item.patientInfoList) }}</span>
               </div>
               <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
                 <p>运送类型 : </p>
@@ -328,7 +336,7 @@
             </div>
             <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
-              <span>{{item.patientInfoList[0].bedNumber == "" ? '无' : item.patientInfoList[0].bedNumber}}</span>
+              <span>{{ extractBedNumber(item.patientInfoList) }}</span>
             </div>
             <div class="wait-handle-message-two" v-if="templateType === 'template_one'">
               <p>运送类型 : </p>
@@ -381,7 +389,7 @@
   import { mapGetters, mapMutations } from 'vuex'
   import store from '@/store'
   import SOtime from '@/common/js/SOtime.js'
-  import { formatTime, setStore, getStore, IsPC, removeAllLocalStorage } from '@/common/js/utils'
+  import { formatTime, setStore, getStore, IsPC, removeAllLocalStorage, checkEmptyArray } from '@/common/js/utils'
   export default {
     name: 'dispatchTask',
     data () {
@@ -1110,21 +1118,26 @@
       // 提取靠前的运送类型
       extractTransportType (transParent) {
         if (transParent.length == 0) { return "无-无"};
+        let temporaryParentTypeName = transParent[0]['typeList'][0]['parentTypeName'];
+        let temporaryTaskTypeName = [];
         for (let i = 0, len = transParent.length; i < len; i++) {
           if  (transParent[i]['typeList'].length == 0) {continue};
           for (let innerI = 0, innerlen = transParent[i]['typeList'].length; innerI < innerlen; innerI++) {
-            if (transParent[i]['typeList'][innerI].length !== 0) {
-              if (transParent[i]['typeList'][innerI]['parentTypeName'] != '') {
-                if (transParent[i]['typeList'][innerI]['taskTypeName'] != '') {
-                  return `${transParent[i]['typeList'][innerI]['parentTypeName']}-${transParent[i]['typeList'][innerI]['taskTypeName']}`
-                } else {
-                  return `${transParent[i]['typeList'][innerI]['parentTypeName']}-无`
-                }
-              }
-            }
+            temporaryTaskTypeName.push(transParent[i]['typeList'][innerI]['taskTypeName'])
           }
         };
-        return "无-无"
+        temporaryParentTypeName = !temporaryParentTypeName ? '无' : temporaryParentTypeName;
+        return `${temporaryParentTypeName} - ${(checkEmptyArray(temporaryTaskTypeName)).join("、")}`
+      },
+
+      // 提取床号
+      extractBedNumber (patientInfoList) {
+        if (patientInfoList.length == 0) { return "无-无"};
+        let temporaryArr = [];
+        for (let item of patientInfoList) {
+          temporaryArr.push(item.bedNumber)
+        };
+        return temporaryArr.join("、")
       },
 
       // 退回原因取消事件
@@ -1412,9 +1425,8 @@
               }
             };
             .wait-handle-message-one {
-              height: 35px;
-              line-height: 35px;
-              overflow: auto;
+              line-height: 24px;
+              min-height: 35px;
               margin-left: -4px;
               span {
                 display: inline-block;
@@ -1426,8 +1438,13 @@
                 };
                 &:last-child {
                   width: 70%;
+                  word-break: break-all;
                   color: black;
                 }
+              };
+              .priorityStyle {
+                color: red !important;
+                font-weight: bold !important
               };
               p {
                 display: inline-block;
@@ -1437,9 +1454,8 @@
               }
             };
             .wait-handle-message-two {
-              height: 35px;
-              line-height: 35px;
-              overflow: auto;
+              min-height: 35px;
+              line-height: 24px;
               margin-left: -4px;
               p {
                 display: inline-block;
@@ -1452,6 +1468,7 @@
                 &:last-child {
                   width: 70%;
                   color: black;
+                  word-break: break-all
                 }
               }
             }
@@ -1553,9 +1570,8 @@
             }
           };
           .wait-handle-message-one {
-            height: 35px;
-            line-height: 35px;
-            overflow: auto;
+            line-height: 24px;
+            min-height: 35px;
             margin-left: -4px;
             span {
               display: inline-block;
@@ -1567,8 +1583,13 @@
               };
               &:last-child {
                 width: 70%;
+                word-break: break-all;
                 color: black;
               }
+            };
+            .priorityStyle {
+              color: red !important;
+              font-weight: bold !important
             };
             p {
               display: inline-block;
@@ -1579,9 +1600,8 @@
             }
           };
           .wait-handle-message-two {
-            height: 35px;
-            line-height: 35px;
-            overflow: auto;
+            min-height: 35px;
+            line-height: 24px;
             margin-left: -4px;
             p {
               display: inline-block;
@@ -1593,6 +1613,7 @@
               };
               &:last-child {
                 width: 70%;
+                word-break: break-all;
                 color: black;
               }
             }
@@ -1759,9 +1780,8 @@
             }
           };
           .wait-handle-message-one {
-            height: 35px;
-            line-height: 35px;
-            overflow: auto;
+            line-height: 24px;
+            min-height: 35px;
             margin-left: -4px;
             span {
               display: inline-block;
@@ -1773,8 +1793,13 @@
               };
               &:last-child {
                 width: 70%;
+                word-break: break-all;
                 color: black;
               }
+            };
+            .priorityStyle {
+              color: red !important;
+              font-weight: bold !important
             };
             p {
               display: inline-block;
@@ -1785,9 +1810,8 @@
             }
           };
           .wait-handle-message-two {
-            height: 35px;
-            line-height: 35px;
-            overflow: auto;
+            min-height: 35px;
+            line-height: 24px;
             margin-left: -4px;
             p {
               display: inline-block;
@@ -1799,6 +1823,7 @@
               };
               &:last-child {
                 width: 70%;
+                word-break: break-all;
                 color: black;
               }
             }

@@ -329,6 +329,7 @@ export default {
           type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
           taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
           photo: this.compressImgUrl, //base64字符串必填
+          photoType: 0,  //0-照片，1-签名
           flag: this.isSign == 0 ? 1 : 0,
           tempFlag: this.dispatchTaskMessage.tempFlag
         }
@@ -494,6 +495,7 @@ export default {
             type: this.dispatchTaskDepartmentType,  //'图片类型 0-出发地，1-目的地', 必填项
             taskType: 0,     //'任务类型 0-调度类，1-循环类，2-预约类' 必填项
             photo: this.currentElectronicSignature, //base64字符串必填
+            photoType: 1,  //0-照片，1-签名
             depId: this.departmentId, //当前科室ID 必输
             depNo: this.currentDepartmentNum, //当前科室编号 必输
             flag: 1,
