@@ -65,6 +65,15 @@
           <p>
             <van-field v-model="actualData"  type="number" label="运送数量" placeholder=""/>
           </p>
+          <div class="contact-isolation-box">
+            <p>接触隔离</p>
+            <p>
+              <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
+                <van-radio icon-size="14px" name="1">是</van-radio>
+                <van-radio icon-size="14px" name="0">否</van-radio>
+              </van-radio-group>
+            </p>
+          </div>
         </div>
         <div class="tool-box" @click="toolEvent">
           <div class="tool-title">
@@ -173,6 +182,17 @@
                     <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
                   </p>
                 </div>
+                <div class="field-four">
+                  <div class="contact-isolation-box">
+                    <p>接触隔离:</p>
+                    <p>
+                      <van-radio-group v-model="item.isContactisolationValue" direction="horizontal" checked-color="#3B9DF9" disabled>
+                        <van-radio icon-size="14px" name="1">是</van-radio>
+                        <van-radio icon-size="14px" name="0">否</van-radio>
+                      </van-radio-group>
+                    </p>
+                  </div>
+                </div>
                 <div class="field-three">
                   <div class="sample-box">
                     <p>运送类型</p>
@@ -261,6 +281,15 @@
             <van-field v-model="patienModalMessage.actualData" disabled/>
           </div>
         </div>
+        <div class="contact-isolation-box">
+          <div>接触隔离</div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
+              <van-radio  name="1" checked-color="#333">是</van-radio>
+              <van-radio  name="0" checked-color="#333">否</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
         <div class="transportBox">
           <div>运送类型</div>
           <div v-if="xflSelectShow">
@@ -297,6 +326,7 @@
 import HeaderTop from '@/components/HeaderTop'
 import VanFieldSelectPicker from '@/components/VanFieldSelectPicker'
 import FooterBottom from '@/components/FooterBottom'
+import { queryTransConfig } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, quereDeviceMessage, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
 import {userSignOut} from '@/api/workerPort.js'
 import NoData from '@/components/NoData'
@@ -322,6 +352,7 @@ export default {
       destinationName: '',
       destinationListOneValue: '',
       destinationListValue: '',
+      isContactisolationValue: null,
       transportTypeParent: [],
       transportTypeChild: [],
       templatelistTwo: [
@@ -334,6 +365,7 @@ export default {
           sampleValue: '',
           sampleList: [],
           sampleId: '',
+          isContactisolationValue: null,
           transportList: [],
           generList: []
         }
@@ -344,6 +376,7 @@ export default {
         patientNumber: '',
         actualData: 0,
         genderValue: '0',
+        isContactisolationValue: null,
         transportList: [],
         sampleList: [],
         sampleValue: '',
@@ -890,6 +923,7 @@ export default {
           patientNumber: '',
           actualData: 0,
           genderValue: '0',
+          isContactisolationValue: null,
           transportList: this.transportTypeChild,
           sampleList: this.transportTypeParent,
           sampleValue: this.transportantTaskMessage.value,
@@ -989,6 +1023,50 @@ export default {
         });
         this.showLoadingHint = false;
         this.overlayShow = false
+      })
+    },
+    // 查询是否配置接触隔离选项0-没配置1-配置
+    getTransConfig () {
+      this.showLoadingHint = true;
+      this.overlayShow = true;
+      queryTransConfig(this.proId,'TRANS_QUARANTINE').then((res) => {
+        if (res && res.data.code == 200) {
+          if (JSON.parse(res.data.data)[0]['value'] == 1) {
+            if (this.templateType === 'template_one') {
+              if (this.isContactisolationValue === null) {
+                this.$toast('请确认病人是否需要接触隔离!')
+              } else {
+                this.dispatchTaskSure()
+              }
+            } else if (this.templateType === 'template_two') {
+              let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
+              if (temporaryFlag) {
+                this.$toast('请确认病人是否需要接触隔离!')
+              } else {
+                this.dispatchTaskSure()
+              }
+            }  
+          } else {
+            this.dispatchTaskSure()
+          }
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        };
+        this.showLoadingHint = false;
+        this.overlayShow = false;
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.showLoadingHint = false;
+        this.overlayShow = false;
       })
     },
 
@@ -1348,7 +1426,39 @@ export default {
               }
             }
           ;
-
+           .contact-isolation-box {
+            height: 60px;
+            display: flex;
+            flex-flow: row nowrap;
+            > div {
+              height: 60px;
+              line-height: 60px;
+              &:first-child {
+                width: 90px;
+                color: @color-text-left;
+                font-size: 16px
+              };
+              &:last-child {
+                flex: 1;
+                border-bottom: 1px solid #ececec;
+                position: relative;
+                /deep/ .van-radio-group {
+                  width: 100%;
+                  position: absolute;
+                  top: 50%;
+                  left: 0;
+                  transform: translateY(-50%);
+                  font-size: 16px;
+                  color: @color-text-left;
+                  .van-radio--horizontal {
+                    &:nth-child(1) {
+                      margin-right: 20px !important
+                    }  
+                  }
+                }
+              }
+            }
+          };
             .transportBox {
               height: 60px;
               line-height: 60px;
@@ -1745,7 +1855,36 @@ export default {
                 color:@color-text-right;
               }
             }
-          }
+          };
+          .contact-isolation-box {
+            width: 60%;
+            line-height: 20px;
+            display: flex;
+            align-items: center;
+            >p {
+              font-size: 14px;
+              display: inline-block;
+              height: 100%;
+              &:first-child {
+                color: #7d7d7d;
+                margin-right: 30px;
+                line-height: 44px;
+                vertical-align: top;
+              };
+              &:last-child {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                /deep/ .van-radio-group {
+                  .van-radio--horizontal {
+                    &:nth-child(1) {
+                      margin-right: 14px !important
+                    }
+                  }
+                }
+              }
+            }
+          }  
         }
         .describle-box {
           width: 100%;
@@ -2126,6 +2265,34 @@ export default {
                   }
                 };
               };
+              .field-four {
+                margin-top: 4px;
+                .contact-isolation-box {
+                  width: 100%;
+                  line-height: 20px;
+                  display: flex;
+                  >p {
+                    font-size: 14px;
+                    display: inline-block;
+                    height: 100%;
+                    &:first-child {
+                      color: @color-text-left;
+                      margin-right: 10px;
+                      vertical-align: top;
+                    };
+                    &:last-child {
+                      flex: 1;
+                      /deep/ .van-radio-group {
+                        .van-radio--horizontal {
+                          &:nth-child(1) {
+                            margin-right: 20px !important
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
             .type-list-box {
               border: 1px solid #bcbcbc;

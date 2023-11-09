@@ -50,6 +50,15 @@
             <van-field v-model="patienModalMessage.patientAgeValue" type="digit" placeholder="请输入年龄" />
           </div>
         </div>
+        <div class="contact-isolation-box">
+          <div>接触隔离</div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
+              <van-radio  name="1" checked-color="#333">是</van-radio>
+              <van-radio  name="0" checked-color="#333">否</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
         <div class="transportBox">
           <div>运送类型</div>
           <div v-if="xflSelectShow">
@@ -246,6 +255,15 @@
               <div class="patient-message-bottom-right">
                 <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
               </div>
+              <div class="contact-isolation-box">
+                <p>接触隔离</p>
+                <p>
+                  <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
+                    <van-radio icon-size="14px" name="1">是</van-radio>
+                    <van-radio icon-size="14px" name="0">否</van-radio>
+                  </van-radio-group>
+                </p>
+              </div>
             </div>
           </div>
           <div class="field-box-wrapper" v-if="templateType === 'template_two'">
@@ -277,6 +295,17 @@
                   <p>
                     <van-field v-model="item.patientAgeValue"  type="number" label="年龄:" placeholder="" disabled/>
                   </p>
+                </div>
+                <div class="field-four">
+                  <div class="contact-isolation-box">
+                    <p>接触隔离:</p>
+                    <p>
+                      <van-radio-group v-model="item.isContactisolationValue" direction="horizontal" checked-color="#3B9DF9" disabled>
+                        <van-radio icon-size="14px" name="1">是</van-radio>
+                        <van-radio icon-size="14px" name="0">否</van-radio>
+                      </van-radio-group>
+                    </p>
+                  </div>
                 </div>
                 <div class="field-three">
                   <div class="sample-box">
@@ -334,7 +363,7 @@
           </div>
         </div>
         <div class="btn-box">
-          <span class="operate-one" @click="sureEvent">确认</span>
+          <span class="operate-one" @click="getTransConfig">确认</span>
           <span class="operate-three" @click="cancelEvent">取消</span>
         </div>
       </div>
@@ -346,7 +375,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import { editDispathTaskSingle,editDispatchTaskManyNew } from '@/api/taskScheduling.js'
+import { editDispathTaskSingle,editDispatchTaskManyNew, queryTransConfig } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTypeClass, queryTransportTools, generateDispatchTask, getTransporter, queryTransportType, generateDispatchTaskMany} from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import BottomSelect from "@/components/BottomSelect";
@@ -377,6 +406,7 @@ export default {
       transportNumberValue: '',
       commonTransportList: [],
       transportPartentSelected: true,
+      isContactisolationValue: null,
       showStartDepartment: false,
       currentStartDepartment: '请选择',
       startDepartmentList: [],
@@ -619,6 +649,7 @@ export default {
         patientName: '',
         patientNumber: '',
         patientAgeValue: '',
+        isContactisolationValue: null,
         actualData: 0,
         genderValue: '0',
         transportList: _.cloneDeep(this.commonTransportList), //病人信息模态框中根据运送大类查询出的运送小类列表
@@ -1305,6 +1336,54 @@ export default {
         }
     },
 
+    // 查询是否配置接触隔离选项0-没配置1-配置
+    getTransConfig () {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '查询中...';
+      queryTransConfig(this.proId,'TRANS_QUARANTINE').then((res) => {
+        if (res && res.data.code == 200) {
+          if (JSON.parse(res.data.data)[0]['value'] == 1) {
+            if (this.templateType === 'template_one') {
+              if (this.isContactisolationValue === null) {
+                this.$toast('请确认病人是否需要接触隔离!')
+              } else {
+                this.sureEvent()
+              }
+            } else if (this.templateType === 'template_two') {
+              let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
+              if (temporaryFlag) {
+                this.$toast('请确认病人是否需要接触隔离!')
+              } else {
+                this.sureEvent()
+              }
+            }  
+          } else {
+            this.sureEvent()
+          }
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        };
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = ''
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = ''
+      })
+    },
+
     // 确认事件(编辑调度任务)
     sureEvent () {
       if (this.templateType === 'template_one') {
@@ -1656,7 +1735,7 @@ export default {
                 flex: 1;
                 border-bottom: 1px solid #ececec;
                 position: relative;
-                .van-radio-group {
+                /deep/ .van-radio-group {
                   width: 100%;
                   position: absolute;
                   top: 50%;
@@ -1664,6 +1743,44 @@ export default {
                   transform: translateY(-50%);
                   font-size: 16px;
                   color: @color-text-left;
+                  .van-radio--horizontal {
+                    &:nth-child(2) {
+                      margin: 0 20px !important
+                    }  
+                  }
+                }
+              }
+            }
+          };
+          .contact-isolation-box {
+            height: 60px;
+            display: flex;
+            flex-flow: row nowrap;
+            > div {
+              height: 60px;
+              line-height: 60px;
+              &:first-child {
+                width: 90px;
+                color: @color-text-left;
+                font-size: 16px
+              };
+              &:last-child {
+                flex: 1;
+                border-bottom: 1px solid #ececec;
+                position: relative;
+                /deep/ .van-radio-group {
+                  width: 100%;
+                  position: absolute;
+                  top: 50%;
+                  left: 0;
+                  transform: translateY(-50%);
+                  font-size: 16px;
+                  color: @color-text-left;
+                  .van-radio--horizontal {
+                    &:nth-child(1) {
+                      margin-right: 20px !important
+                    }  
+                  }
                 }
               }
             }
@@ -2079,6 +2196,37 @@ export default {
               .patient-message-bottom-right {
                 width: 50%;
                 flex: none
+              };
+              .contact-isolation-box {
+                width: 50%;
+                line-height: 20px;
+                display: flex;
+                >p {
+                  font-size: 14px;
+                  display: inline-block;
+                  height: 100%;
+                  &:first-child {
+                    color: #9E9E9A;
+                    margin-right: 14px;
+                    padding-left: 10px;
+                    box-sizing: border-box;
+                    line-height: 44px;
+                    vertical-align: top;
+                  };
+                  &:last-child {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    /deep/ .van-radio-group {
+                      .van-radio--horizontal {
+                        &:nth-child(1) {
+                          margin-right: 14px !important
+                        }
+                      }
+                    }
+                  }
+                }
               }  
             }
           };
@@ -2297,7 +2445,7 @@ export default {
                   }
                 };
                 .field-three {
-                  margin-top: 4px;
+                  margin-top: 10px;
                   .sample-box {
                     width: 100%;
                     line-height: 20px;
@@ -2322,6 +2470,34 @@ export default {
                     }
                   };
                 };
+                 .field-four {
+                  margin-top: 4px;
+                  .contact-isolation-box {
+                    width: 100%;
+                    line-height: 20px;
+                    display: flex;
+                    >p {
+                      font-size: 14px;
+                      display: inline-block;
+                      height: 100%;
+                      &:first-child {
+                        color: @color-text-left;
+                        margin-right: 10px;
+                        vertical-align: top;
+                      };
+                      &:last-child {
+                        flex: 1;
+                        /deep/ .van-radio-group {
+                          .van-radio--horizontal {
+                            &:nth-child(1) {
+                              margin-right: 20px !important
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
               .type-list-box {
                 border: 1px solid #bcbcbc;

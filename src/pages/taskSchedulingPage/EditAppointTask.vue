@@ -163,6 +163,15 @@
               <div class="patient-message-bottom-right">
                 <van-field v-model="transportNumberValue" label="运送数量" type="digit" placeholder="请输入" />
               </div>
+              <div class="contact-isolation-box">
+                <p>接触隔离</p>
+                <p>
+                  <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
+                    <van-radio icon-size="14px" name="1">是</van-radio>
+                    <van-radio icon-size="14px" name="0">否</van-radio>
+                  </van-radio-group>
+                </p>
+              </div>
             </div>
           </div>
           <div class="select-box end-select-box">
@@ -190,7 +199,7 @@
           </div>
         </div>
         <div class="btn-box">
-          <span class="operate-one" @click="sureEvent">确认</span>
+          <span class="operate-one" @click="getTransConfig">确认</span>
           <span class="operate-three" @click="cancelEvent">取消</span>
         </div>
       </div>
@@ -202,7 +211,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { userSignOut } from '@/api/workerPort.js'
 import {mixinsDeviceReturn} from '@/mixins/deviceReturnFunction'
 import Ldselect from '@/components/Ldselect'
-import { editAppoint, getAppointCheckType } from '@/api/taskScheduling.js'
+import { editAppoint, getAppointCheckType, queryTransConfig } from '@/api/taskScheduling.js'
 import {queryAllDestination, queryTransportTools, getTransporter, queryTransportType } from '@/api/medicalPort.js'
 import Vselect from '@/components/Vselect'
 import { setStore,removeAllLocalStorage } from '@/common/js/utils'
@@ -225,6 +234,7 @@ export default {
       patientAgeValue: '',
       patientNameValue: '',
       showTaskStart: false,
+      isContactisolationValue: null,
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2050, 10, 1),
       currentTaskStartTime: new Date(),
@@ -350,8 +360,7 @@ export default {
       this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['hospitalNo'];
       this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';
       this.currentTaskStartTime = new Date(casuallyTemporaryStorageCreateDispathTaskMessage['planStartTime']);
-      this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
-      console.log('哈',this.currentTaskStartTime);
+      this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark']
     },
 
     // 任务开始事件弹框确认事件
@@ -749,6 +758,45 @@ export default {
           });
         })
       },
+
+    // 查询是否配置接触隔离选项0-没配置1-配置
+    getTransConfig () {
+      this.loadingShow = true;
+      this.overlayShow = true;
+      this.loadingText = '查询中...';
+      queryTransConfig(this.proId,'BOOK_QUARANTINE').then((res) => {
+        if (res && res.data.code == 200) {
+          if (JSON.parse(res.data.data)[0]['value'] == 1) {
+            if (this.isContactisolationValue === null) {
+              this.$toast('请确认病人是否需要接触隔离!')
+            } else {
+              this.sureEvent()
+            }
+          } else {
+            this.sureEvent()
+          }
+        } else {
+          this.$dialog.alert({
+            message: `${res.data.msg}`,
+            closeOnPopstate: true
+          }).then(() => {
+          })
+        };
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = ''
+      })
+      .catch((err) => {
+        this.$dialog.alert({
+          message: `${err.message}`,
+          closeOnPopstate: true
+        }).then(() => {
+        });
+        this.loadingShow = false;
+        this.overlayShow = false;
+        this.loadingText = ''
+      })
+    },
 
     // 确认事件(编辑预约任务)
     sureEvent () {
@@ -1253,6 +1301,37 @@ export default {
               .patient-message-bottom-right {
                 width: 50%;
                 flex: none
+              };
+               .contact-isolation-box {
+                width: 50%;
+                line-height: 20px;
+                display: flex;
+                >p {
+                  font-size: 14px;
+                  display: inline-block;
+                  height: 100%;
+                  &:first-child {
+                    color: #9E9E9A;
+                    margin-right: 14px;
+                    padding-left: 10px;
+                    box-sizing: border-box;
+                    line-height: 44px;
+                    vertical-align: top;
+                  };
+                  &:last-child {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    /deep/ .van-radio-group {
+                      .van-radio--horizontal {
+                        &:nth-child(1) {
+                          margin-right: 14px !important
+                        }
+                      }
+                    }
+                  }
+                }
               }  
             }
           };
