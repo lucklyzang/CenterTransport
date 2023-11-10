@@ -82,6 +82,14 @@
                 </div>
                 <div class="message-one message-two">
                     <div class="message-two-left">
+                        <span>接触隔离</span>
+                    </div>
+                    <div class="message-two-right">
+                        否
+                    </div>
+                </div>
+                <div class="message-one message-two">
+                    <div class="message-two-left">
                         <span>住院号</span>
                     </div>
                     <div class="message-two-right">
@@ -89,7 +97,11 @@
                     </div>
                 </div>
                 <div class="message-one message-two message-six">
-                    <div class="message-two-left">
+                    <div class="message-two-left"  
+                    :class="{
+                      'priorityUrgencyStyle' : schedulingTaskDetails.priority != 21,
+                     
+                     }">
                         <span>优先级</span>
                     </div>
                     <div class="message-two-right" 
@@ -596,13 +608,16 @@ export default {
                     color: #289E8E !important
                 };
                 .priorityUrgencyStyle { 
-                    color: #E8CB51 !important
+                    color: red !important
+                    // color: #E8CB51 !important
                 };
                 .priorityImportanceStyle { 
-                    color: #F2A15F !important
+                    color: red !important
+                    // color: #E8CB51 !important
                 };
                 .priorityUrgentImportanceStyle { 
-                    color: #E86F50 !important
+                    color: red !important
+                    // color: #E8CB51 !important
                 }
             }
         };

@@ -82,6 +82,14 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -98,10 +106,6 @@
               <div class="wait-handle-message-one">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-              </div>
-              <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -141,6 +145,14 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -157,10 +169,6 @@
               <div class="wait-handle-message-one">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-              </div>
-              <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -200,6 +208,14 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -216,10 +232,6 @@
               <div class="wait-handle-message-one">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-              </div>
-              <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -259,6 +271,14 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -275,10 +295,6 @@
               <div class="wait-handle-message-one">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-              </div>
-              <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -318,6 +334,14 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -334,10 +358,6 @@
               <div class="wait-handle-message-one">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-              </div>
-              <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -397,6 +417,14 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+            <div class="wait-handle-message-one">
               <span>开始时间 : </span>
               <span>{{item.planStartTime}}</span>
             </div>
@@ -413,10 +441,6 @@
             <div class="wait-handle-message-one">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.bedNumber}}</span>
-            </div>
-            <div class="wait-handle-message-one">
-              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
-              <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
             </div>
             <div class="wait-handle-message-one">
               <span>转运工具 : </span>

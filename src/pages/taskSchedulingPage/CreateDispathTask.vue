@@ -10,6 +10,18 @@
         @cancel="patienModalCancel"
       >
       <div class="slot-content">
+        <div class="contact-isolation-box">
+          <div>
+            <span>*</span>
+            <span>接触隔离:</span>
+          </div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
+              <van-radio  name="1" checked-color="#333">是</van-radio>
+              <van-radio  name="0" checked-color="#333">否</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
         <div class="bedNumberBox">
           <div>床号</div>
           <div>
@@ -48,15 +60,6 @@
           <div>年龄</div>
           <div>
             <van-field v-model="patienModalMessage.patientAgeValue" type="digit" placeholder="请输入年龄" />
-          </div>
-        </div>
-        <div class="contact-isolation-box">
-          <div>接触隔离</div>
-          <div>
-            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
-              <van-radio  name="1" checked-color="#333">是</van-radio>
-              <van-radio  name="0" checked-color="#333">否</van-radio>
-            </van-radio-group>
           </div>
         </div>
         <div class="transportBox">
@@ -258,7 +261,7 @@
               <div class="contact-isolation-box">
                 <p>接触隔离</p>
                 <p>
-                  <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9" disabled>
+                  <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
                     <van-radio icon-size="14px" name="1">是</van-radio>
                     <van-radio icon-size="14px" name="0">否</van-radio>
                   </van-radio-group>
@@ -274,6 +277,14 @@
                 <van-icon name="records" @click="editMessage(index)" color="#3B9DF9" size="20" />
               </div>
               <div class="field-wrapper">
+                <div class="field-four">
+                  <div class="contact-isolation-box">
+                    <p>接触隔离:</p>
+                    <p>
+                     {{ item.isContactisolationValue == 1 ? '是' : item.isContactisolationValue === null ? '' : '否' }}
+                    </p>
+                  </div>
+                </div>
                 <div class="field-one">
                   <p>
                     <van-field v-model="item.bedNumber" label="床号:" disabled/>
@@ -295,17 +306,6 @@
                   <p>
                     <van-field v-model="item.patientAgeValue"  type="number" label="年龄:" placeholder="" disabled/>
                   </p>
-                </div>
-                <div class="field-four">
-                  <div class="contact-isolation-box">
-                    <p>接触隔离:</p>
-                    <p>
-                      <van-radio-group v-model="item.isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
-                        <van-radio icon-size="14px" name="1">是</van-radio>
-                        <van-radio icon-size="14px" name="0">否</van-radio>
-                      </van-radio-group>
-                    </p>
-                  </div>
                 </div>
                 <div class="field-three">
                   <div class="sample-box">
@@ -1770,17 +1770,24 @@ export default {
               }
             }
           };
-          .contact-isolation-box {
-            height: 60px;
+           .contact-isolation-box {
+            height: 50px;
             display: flex;
             flex-flow: row nowrap;
             > div {
               height: 60px;
               line-height: 60px;
               &:first-child {
-                width: 90px;
-                color: @color-text-left;
-                font-size: 16px
+                margin-right: 20px;
+                font-size: 16px;
+                >span {
+                  &:first-child {
+                    color: red;
+                  };
+                   &:last-child {
+                    color: #101010
+                  }
+                }
               };
               &:last-child {
                 flex: 1;

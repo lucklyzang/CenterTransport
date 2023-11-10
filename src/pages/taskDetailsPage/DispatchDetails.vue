@@ -28,7 +28,7 @@
             </div>
              <div class="handle-message-line-wrapper">
                <p>
-                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
+                 <span class="message-tit" :class="{'priorityTwoStyle' : dispatchTaskMessage.priority != 1}">优&nbsp;&nbsp;先&nbsp;级 :&nbsp;</span>
                  <span class="message-tit-real" :class="[dispatchTaskMessage.priority==1 ? 'priorityOneStyle' : 'priorityTwoStyle']">{{priorityTransfer(dispatchTaskMessage.priority)}}</span>
                </p>
              </div>

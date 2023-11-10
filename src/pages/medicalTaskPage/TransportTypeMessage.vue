@@ -163,6 +163,14 @@
                 <van-icon name="records" @click="editMessage(index)"/>
               </div>
               <div class="field-wrapper">
+                <div class="field-four">
+                  <div class="contact-isolation-box">
+                    <p>接触隔离:</p>
+                    <p>
+                     {{ item.isContactisolationValue == 1 ? '是' : item.isContactisolationValue === null ? '' : '否' }}
+                    </p>
+                  </div>
+                </div>
                 <div class="field-one">
                   <p>
                     <van-field v-model="item.bedNumber" label="床号" disabled/>
@@ -181,17 +189,9 @@
                   <p>
                     <van-field v-model="item.actualData"  type="number" label="运送数量" placeholder="" disabled/>
                   </p>
-                </div>
-                <div class="field-four">
-                  <div class="contact-isolation-box">
-                    <p>接触隔离:</p>
-                    <p>
-                      <van-radio-group v-model="item.isContactisolationValue" direction="horizontal" checked-color="#3B9DF9" disabled>
-                        <van-radio icon-size="14px" name="1">是</van-radio>
-                        <van-radio icon-size="14px" name="0">否</van-radio>
-                      </van-radio-group>
-                    </p>
-                  </div>
+                  <p>
+                    <van-field v-model="item.age"  type="digit" label="年龄" placeholder="" disabled/>
+                  </p>
                 </div>
                 <div class="field-three">
                   <div class="sample-box">
@@ -247,6 +247,18 @@
                   @cancel="patienModalCancel"
       >
       <div class="slot-content">
+        <div class="contact-isolation-box">
+          <div>
+            <span>*</span>
+            <span>接触隔离:</span>
+          </div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
+              <van-radio  name="1" checked-color="#333">是</van-radio>
+              <van-radio  name="0" checked-color="#333">否</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
         <div class="bedNumberBox">
           <div>床号</div>
           <div>
@@ -281,13 +293,10 @@
             <van-field v-model="patienModalMessage.actualData" disabled/>
           </div>
         </div>
-        <div class="contact-isolation-box">
-          <div>接触隔离</div>
+        <div class="bedNumberBox">
+          <div>年龄</div>
           <div>
-            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
-              <van-radio  name="1" checked-color="#333">是</van-radio>
-              <van-radio  name="0" checked-color="#333">否</van-radio>
-            </van-radio-group>
+            <van-field v-model="patienModalMessage.age" type="digit" placeholder="请输入年龄" />
           </div>
         </div>
         <div class="transportBox">
@@ -361,6 +370,7 @@ export default {
           patientName: '',
           patientNumber: '',
           genderValue: '未知',
+          age: '',
           actualData: 0,
           sampleValue: '',
           sampleList: [],
@@ -375,6 +385,7 @@ export default {
         patientName: '',
         patientNumber: '',
         actualData: 0,
+        age: '',
         genderValue: '0',
         isContactisolationValue: null,
         transportList: [],
@@ -923,6 +934,7 @@ export default {
           patientNumber: '',
           actualData: 0,
           genderValue: '0',
+          age: '',
           isContactisolationValue: null,
           transportList: this.transportTypeChild,
           sampleList: this.transportTypeParent,
@@ -1153,6 +1165,7 @@ export default {
             taskMessageTwo.patientInfoList.push({
               bedNumber: patientItem['bedNumber'],
               patientName: patientItem['patientName'],
+              age: patientItem['age'],
               number: patientItem['patientNumber'],
               sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
               quantity: patientItem['actualData'],
@@ -1426,17 +1439,24 @@ export default {
               }
             }
           ;
-           .contact-isolation-box {
-            height: 60px;
+          .contact-isolation-box {
+            height: 50px;
             display: flex;
             flex-flow: row nowrap;
             > div {
               height: 60px;
               line-height: 60px;
               &:first-child {
-                width: 90px;
-                color: @color-text-left;
-                font-size: 16px
+                margin-right: 20px;
+                font-size: 16px;
+                >span {
+                  &:first-child {
+                    color: red;
+                  };
+                   &:last-child {
+                    color: #101010
+                  }
+                }
               };
               &:last-child {
                 flex: 1;
@@ -2158,10 +2178,6 @@ export default {
                 flex-flow: row nowrap;
                 justify-content: flex-start;
                 > p {
-                  margin-right: 4px;
-                  &:last-child {
-                    margin-right: 0;
-                  }
                 }
               };
               .field-two {

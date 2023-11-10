@@ -120,9 +120,13 @@
                </p>
              </div>
              <div class="handle-message-line-wrapper">
-               <p>
+              <p>
                  <span class="message-tit">床号 : </span>
                  <span class="message-tit-real">{{appointDetailsMessage.badNumber ? appointDetailsMessage.badNumber : '无'}}</span>
+               </p>
+              <p>
+                 <span class="message-tit">接触隔离 : </span>
+                 <span class="message-tit-real">是</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper">

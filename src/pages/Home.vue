@@ -165,7 +165,7 @@
                         </P>
                         <P v-else-if="templateType == 'template_two'">
                           <span class="message-tit">床号:</span>
-                          <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                          <span class="message-tit-real message-tit-real-style">{{ extractBedNumber(item['patientInfoList']) }}</span>
                         </P>
                         <p v-if="templateType == 'template_one'">
                           <span class="message-tit">病人:</span>
@@ -272,7 +272,7 @@
                                 </P>
                                 <P v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">床号:</span>
-                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  <span class="message-tit-real message-tit-real-style">{{ extractBedNumber(item['patientInfoList']) }}</span>
                                 </P>
                               </div>
                               <div class="handle-message-line-wrapper">
@@ -287,6 +287,12 @@
                                 <p>
                                   <span class="message-tit">运送工具:</span>
                                   <span class="message-tit-real">{{item.toolName}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <p>
+                                  <span class="message-tit">接触隔离:</span>
+                                  <span class="message-tit-real">是</span>
                                 </p>
                               </div>
 <!--                              <div class="handle-message-line-wrapper">-->
@@ -436,7 +442,7 @@
                                 </P>
                                 <P v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">床号:</span>
-                                  <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['bedNumber']}}</span>
+                                  <span class="message-tit-real message-tit-real-style">{{ extractBedNumber(item['patientInfoList']) }}</span>
                                 </P>
                               </div>
                               <div class="handle-message-line-wrapper">
@@ -451,6 +457,12 @@
                                 <p>
                                   <span class="message-tit">运送工具:</span>
                                   <span class="message-tit-real">{{item.toolName}}</span>
+                                </p>
+                              </div>
+                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <p>
+                                  <span class="message-tit">接触隔离:</span>
+                                  <span class="message-tit-real">是</span>
                                 </p>
                               </div>
                                 <!-- <div class="handle-message-line-wrapper">
@@ -568,6 +580,12 @@
                                   <p>
                                     <span class="message-tit">运送工具:</span>
                                     <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">接触隔离:</span>
+                                    <span class="message-tit-real">是</span>
                                   </p>
                                 </div>
                                 <!--                              <div class="handle-message-line-wrapper">-->
@@ -720,6 +738,12 @@
                                   <p>
                                     <span class="message-tit">运送工具:</span>
                                     <span class="message-tit-real">{{item.toolName}}</span>
+                                  </p>
+                                </div>
+                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                  <p>
+                                    <span class="message-tit">接触隔离:</span>
+                                    <span class="message-tit-real">是</span>
                                   </p>
                                 </div>
                                 <!--                              <div class="handle-message-line-wrapper">-->
@@ -1896,6 +1920,16 @@
           return
         };
         this.searchCompleteTask()
+      },
+
+      // 提取床号
+      extractBedNumber (patientInfoList) {
+        if (patientInfoList.length == 0) { return "无"};
+        let temporaryArr = [];
+        for (let item of patientInfoList) {
+          temporaryArr.push(item.bedNumber)
+        };
+        return temporaryArr.join("、")
       },
 
       // 总体意见反馈栏意见类型点击事件

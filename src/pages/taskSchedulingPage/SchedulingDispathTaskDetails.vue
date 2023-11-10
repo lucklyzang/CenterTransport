@@ -84,7 +84,9 @@
                     </div>
                 </div>
                 <div class="message-one message-two message-six">
-                    <div class="message-two-left">
+                    <div class="message-two-left" :class="{
+                        'priorityUrgencyStyle' : schedulingTaskDetails.priority !=1
+                     }">
                         <span>优先级</span>
                     </div>
                     <div class="message-two-right" 
@@ -112,6 +114,14 @@
                     </div>
                     <div class="message-two-right">
                         {{ schedulingTaskDetails.bedNumber }}
+                    </div>
+                </div>
+                <div class="message-one message-two" v-if="templateType == 'template_one'">
+                    <div class="message-two-left">
+                        <span>接触隔离</span>
+                    </div>
+                    <div class="message-two-right">
+                        是
                     </div>
                 </div>
                 <div class="message-one message-two">
@@ -170,6 +180,8 @@
                        <div v-for="(item,index) in schedulingTaskDetails['patientInfoList']" :key="index">
                             <span class="transport-partent">运送类型:</span>
                             <span class="transport-partent">{{`${schedulingTaskDetails['parentTypeName']}${index+1}`}}</span>
+                            <span class="contact-isolation-title">接触隔离:</span>
+                            <span class="contact-isolation-content">是;</span>
                             <span>{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
                             <span>{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
                             <span>{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
@@ -659,13 +671,16 @@ export default {
                     color: #289E8E !important
                 };
                 .priorityUrgencyStyle { 
-                    color: #E8CB51 !important
+                    color: red !important
+                    // color: #E8CB51 !important
                 };
-                .priorityImportanceStyle { 
-                    color: #F2A15F !important
+                .priorityImportanceStyle {
+                    color: red !important 
+                    // color: #F2A15F !important
                 };
                 .priorityUrgentImportanceStyle { 
-                    color: #E86F50 !important
+                    color: red !important
+                    // color: #E86F50 !important
                 }
             };
             .patient-list {

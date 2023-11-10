@@ -51,6 +51,10 @@
                 <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -114,6 +118,10 @@
                 <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -174,6 +182,14 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
+              <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
@@ -232,6 +248,14 @@
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
             <div class="wait-handle-message">
+              <div class="wait-handle-message-one">
+                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
+              </div>
+              <div class="wait-handle-message-one contact-isolation-box">
+                <span>接触隔离 : </span>
+                <span>是</span>
+              </div>
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -314,6 +338,14 @@
             <img :src="stateTransferImg(item.state)" alt="">
           </p>
           <div class="wait-handle-message">
+            <div class="wait-handle-message-one">
+              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+              <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
+            </div>
+            <div class="wait-handle-message-one contact-isolation-box">
+              <span>接触隔离 : </span>
+              <span>是</span>
+            </div>
             <div class="wait-handle-message-one">
               <span>开始时间 : </span>
               <span>{{item.planStartTime}}</span>
@@ -1132,7 +1164,7 @@
 
       // 提取床号
       extractBedNumber (patientInfoList) {
-        if (patientInfoList.length == 0) { return "无-无"};
+        if (patientInfoList.length == 0) { return "无"};
         let temporaryArr = [];
         for (let item of patientInfoList) {
           temporaryArr.push(item.bedNumber)
