@@ -72,22 +72,23 @@
                        {{ schedulingTaskDetails.patientName }}
                     </div>
                 </div>
-                <div class="message-one message-two">
+                <div class="message-one message-two message-bed-number">
                     <div class="message-two-left">
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.badNumber }}
+                        <span :class="{'spanStyle':true}">{{ schedulingTaskDetails.badNumber }}</span>
+                        <img :src="contactIsolationPng">
                     </div>
                 </div>
-                <div class="message-one message-two">
+                <!-- <div class="message-one message-two">
                     <div class="message-two-left">
                         <span>接触隔离</span>
                     </div>
                     <div class="message-two-right">
                         否
                     </div>
-                </div>
+                </div> -->
                 <div class="message-one message-two">
                     <div class="message-two-left">
                         <span>住院号</span>
@@ -99,7 +100,7 @@
                 <div class="message-one message-two message-six">
                     <div class="message-two-left"  
                     :class="{
-                      'priorityUrgencyStyle' : schedulingTaskDetails.priority != 21,
+                      'priorityUrgencyStyle' : schedulingTaskDetails.priority != 1,
                      
                      }">
                         <span>优先级</span>
@@ -207,6 +208,7 @@ export default {
       switchShowPng: require("@/common/images/home/switch-show.png"),
       switchHiddenPng: require("@/common/images/home/switch-hidden.png"),
       anxiousSignPng: require("@/common/images/home/anxious-sign.png"),
+      contactIsolationPng: require("@/common/images/home/contact-isolation.png"),
       taskList: [
         {tit:'调度管理'},
         {tit:'调度任务'},
@@ -599,7 +601,30 @@ export default {
                     text-align: right
                 };
                 .task-remark {
-                    text-align: left !important
+                  text-align: left !important
+                }
+            };
+            .message-bed-number {
+                align-items: center !important;
+                .message-two-right {
+                    display: flex;
+                    align-items: center;
+                    .spanStyle {
+                        color: #E8CB51 !important
+                    };
+                    span {
+                        flex: 1;
+                        padding-right: 4px;
+                        box-sizing: border-box;
+                        word-break: break-all;
+                        vertical-align: middle
+                    };
+                    img {
+                        width: 24px;
+                        height: 24px;
+                        margin-left: 4px;
+                        vertical-align: middle
+                    }
                 }
             };
             .message-six {

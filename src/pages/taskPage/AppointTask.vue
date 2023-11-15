@@ -82,13 +82,13 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -103,9 +103,10 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -145,13 +146,13 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -166,9 +167,10 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -208,13 +210,13 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -229,9 +231,10 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -271,13 +274,13 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -292,9 +295,10 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -334,13 +338,13 @@
             </div>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -355,9 +359,10 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -417,13 +422,13 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'natureImportantStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span class="message-tit-real" :class="{'natureNormalStyle' : item.priority == 1, 'natureImportantStyle': item.priority != 1}">{{priorityTransfer(item.priority)}}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
             <div class="wait-handle-message-one">
               <span>开始时间 : </span>
               <span>{{item.planStartTime}}</span>
@@ -438,9 +443,10 @@
               <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
               <span>{{item.setOutPlaceName}}</span>
             </div>
-            <div class="wait-handle-message-one">
+            <div class="wait-handle-message-one  message-name">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.bedNumber}}</span>
+              <img :src="contactIsolationPng">
             </div>
             <div class="wait-handle-message-one">
               <span>转运工具 : </span>
@@ -581,7 +587,8 @@
         taskFinshedPng: require('@/common/images/home/task-finshed.png'),
         taskGoingPng: require('@/common/images/home/task-going.png'),
         taskCancelPng: require('@/common/images/home/task-cancel.png'),
-        waitSurePng: require('@/common/images/home/wait-sure.png')
+        waitSurePng: require('@/common/images/home/wait-sure.png'),
+        contactIsolationPng: require("@/common/images/home/contact-isolation.png")
       };
     },
 
@@ -1853,7 +1860,7 @@
               }
             };
             .wait-handle-message-one {
-              height: 35px;
+              min-height: 35px;
               line-height: 35px;
               overflow: auto;
               margin-left: -4px;
@@ -1861,7 +1868,8 @@
                 color: #b1d676 !important
               };
               .natureImportantStyle {
-                color: #ff5b5a !important
+                color: red !important;
+                font-weight: bold;
               };
               span {
                 display: inline-block;
@@ -1881,6 +1889,23 @@
                 span {
                   color: black !important
                 }
+              }
+            };
+            .message-name {
+              display: flex;
+              >span {
+                &:nth-child(2) {
+                  padding: 0 5px 0 10px;
+                  box-sizing: border-box;
+                  flex: 1;
+                  color: black;
+                  word-break: break-all
+                }
+              };
+              img {
+                width: 27px;
+                height: 27px;
+                vertical-align: bottom
               }
             };
             .wait-handle-message-two {
@@ -2116,7 +2141,7 @@
             }
           };
           .wait-handle-message-one {
-            height: 35px;
+            min-height: 35px;
             line-height: 35px;
             overflow: auto;
             margin-left: -4px;
@@ -2124,7 +2149,8 @@
               color: #b1d676 !important
             };
             .natureImportantStyle {
-              color: #ff5b5a !important
+              color: red !important;
+              font-weight: bold;
             };
             span {
               display: inline-block;
@@ -2146,6 +2172,23 @@
               }
             }
           };
+          .message-name {
+              display: flex;
+              >span {
+                &:nth-child(2) {
+                  padding: 0 5px 0 10px;
+                  box-sizing: border-box;
+                  flex: 1;
+                  color: black;
+                  word-break: break-all
+                }
+              };
+              img {
+                width: 27px;
+                height: 27px;
+                vertical-align: bottom
+              }
+            };
           .wait-handle-message-two {
             line-height: 20px;
             overflow: auto;
@@ -2281,7 +2324,7 @@
             }
           };
           .wait-handle-message-one {
-            height: 35px;
+            min-height: 35px;
             line-height: 35px;
             overflow: auto;
             margin-left: -4px;
@@ -2289,7 +2332,8 @@
               color: #b1d676 !important
             };
             .natureImportantStyle {
-              color: #ff5b5a !important
+              color: red !important;
+              font-weight: bold;
             };
             span {
               display: inline-block;
@@ -2311,6 +2355,23 @@
               }
             }
           };
+          .message-name {
+              display: flex;
+              >span {
+                &:nth-child(2) {
+                  padding: 0 5px 0 10px;
+                  box-sizing: border-box;
+                  flex: 1;
+                  color: black;
+                  word-break: break-all
+                }
+              };
+              img {
+                width: 27px;
+                height: 27px;
+                vertical-align: bottom
+              }
+            };
           .wait-handle-message-two {
             line-height: 20px;
             overflow: auto;

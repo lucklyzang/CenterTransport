@@ -99,7 +99,7 @@
            <div class="wait-handle-message-top">
              <div class="handle-message-line-wrapper">
                <p>
-                 <span class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                 <span :class="{'natureImportantStyle': appointDetailsMessage.priority != 1}" class="message-tit">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                  <span class="message-tit-real message-tit-real-style" :class="{'natureNormalStyle' : appointDetailsMessage.priority == 1, 'natureImportantStyle': appointDetailsMessage.priority != 1}">{{priorityTransfer(appointDetailsMessage.priority)}}</span>
                </p>
              </div>
@@ -121,24 +121,25 @@
              </div>
              <div class="handle-message-line-wrapper">
               <p>
-                 <span class="message-tit">床号 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.badNumber ? appointDetailsMessage.badNumber : '无'}}</span>
+                 <span class="message-tit" :class="{'spanStyle' : true}">床号 : </span>
+                 <span class="message-tit-real" :class="{'spanStyle' : true}">{{appointDetailsMessage.badNumber ? appointDetailsMessage.badNumber : '无'}}</span>
                </p>
-              <p>
+              <!-- <p>
                  <span class="message-tit">接触隔离 : </span>
                  <span class="message-tit-real">是</span>
-               </p>
+               </p> -->
              </div>
              <div class="handle-message-line-wrapper">
                <p>
-                 <span class="message-tit">住院号 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.hospitalNo  ? appointDetailsMessage.hospitalNo  : '无'}}</span>
+                 <span class="message-tit" :class="{'spanStyle' : true}">住院号 : </span>
+                 <span class="message-tit-real" :class="{'spanStyle' : true}">{{appointDetailsMessage.hospitalNo  ? appointDetailsMessage.hospitalNo  : '无'}}</span>
                </p>
              </div>
-             <div class="handle-message-line-wrapper">
+             <div class="handle-message-line-wrapper message-name">
                <p>
-                 <span class="message-tit">姓名 : </span>
-                 <span class="message-tit-real">{{appointDetailsMessage.patientName ? appointDetailsMessage.patientName : '无'}}</span>
+                 <span class="message-tit" :class="{'spanStyle' : true}">姓名 : </span>
+                 <span class="message-tit-real" :class="{'spanStyle' : true}">{{appointDetailsMessage.patientName ? appointDetailsMessage.patientName : '无'}}</span>
+                 <img :src="contactIsolationPng">
                </p>
              </div>
              <div class="handle-message-line-wrapper">
@@ -305,7 +306,8 @@ export default {
       taskFinshedPng: require('@/common/images/home/task-finshed.png'),
       taskGoingPng: require('@/common/images/home/task-going.png'),
       taskCancelPng: require('@/common/images/home/task-cancel.png'),
-      waitSurePng: require('@/common/images/home/wait-sure.png')
+      waitSurePng: require('@/common/images/home/wait-sure.png'),
+      contactIsolationPng: require("@/common/images/home/contact-isolation.png")
     }
   },
 
@@ -1256,7 +1258,7 @@ export default {
           p {
             display: flex;
             overflow: auto;
-            height: 30px;
+            min-height: 30px;
             line-height: 30px;
             flex-flow: row nowrap;
             color: #a0a0a0;
@@ -1264,7 +1266,12 @@ export default {
               color: #b1d676 !important
             };
             .natureImportantStyle {
-              color: #ff5b5a !important
+              color: red !important;
+              font-weight: bold
+            };
+            .spanStyle {
+              color: #E8CB51 !important;
+              font-weight: bold
             };
             span {
               display: inline-block;
@@ -1287,6 +1294,25 @@ export default {
             width: 100%;
             .message-tit-real-audio {
               margin-left: 4px
+            }
+          }
+        };
+        .message-name {
+          p {
+            display: flex;
+            >span {
+              &:nth-child(2) {
+                padding: 0 5px 0 0;
+                box-sizing: border-box;
+                flex: 1;
+                color: black;
+                word-break: break-all
+              }
+            };
+            img {
+              width: 27px;
+              height: 27px;
+              vertical-align: bottom
             }
           }
         };

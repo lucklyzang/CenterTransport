@@ -30,7 +30,7 @@
             </div>
           </div>
         <div class="destination-box-department">
-          <div class="destination-title">科室选择</div>
+          <div class="destination-title">请选择起点科室</div>
           <div class="destination-content creat-chooseHospital-content-two" v-if="destinListShow">
             <Ldselect :list="destinationList"
                        label-key="value" value-key="id"
@@ -135,7 +135,7 @@
           </div>
         </div>
         <div class="destination-box-department">
-            <div class="destination-title">科室选择</div>
+            <div class="destination-title">请选择起点科室</div>
             <div class="destination-content creat-chooseHospital-content-two" v-if="destinListShow">
               <Ldselect :list="destinationList"
                          label-key="value" value-key="id"

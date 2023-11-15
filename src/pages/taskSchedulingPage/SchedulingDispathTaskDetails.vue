@@ -108,22 +108,23 @@
                         {{ schedulingTaskDetails.workerName }}
                     </div>
                 </div>
-                <div class="message-one message-two" v-if="templateType == 'template_one'">
+                <div class="message-one message-two message-bed-number" v-if="templateType == 'template_one'">
                     <div class="message-two-left">
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        {{ schedulingTaskDetails.bedNumber }}
+                        <span :class="{'spanStyle':true}">{{ schedulingTaskDetails.bedNumber }}</span>
+                        <img :src="contactIsolationPng">
                     </div>
                 </div>
-                <div class="message-one message-two" v-if="templateType == 'template_one'">
+                <!-- <div class="message-one message-two" v-if="templateType == 'template_one'">
                     <div class="message-two-left">
                         <span>接触隔离</span>
                     </div>
                     <div class="message-two-right">
                         是
                     </div>
-                </div>
+                </div> -->
                 <div class="message-one message-two">
                     <div class="message-two-left">
                         <span>响应时间</span>
@@ -180,15 +181,16 @@
                        <div v-for="(item,index) in schedulingTaskDetails['patientInfoList']" :key="index">
                             <span class="transport-partent">运送类型:</span>
                             <span class="transport-partent">{{`${schedulingTaskDetails['parentTypeName']}${index+1}`}}</span>
-                            <span class="contact-isolation-title">接触隔离:</span>
-                            <span class="contact-isolation-content">是;</span>
-                            <span>{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
-                            <span>{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
-                            <span>{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
-                            <span>{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
+                            <!-- <span class="contact-isolation-title">接触隔离:</span>
+                            <span class="contact-isolation-content">是;</span> -->
+                            <span :class="{'spanStyle':true}">{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
+                            <span :class="{'spanStyle':true}">{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
+                            <span :class="{'spanStyle':true}">{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
+                            <span :class="{'spanStyle':true}">{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
                             <span v-show="item.typeList.length > 0" class="patient-subclass" v-for="(innerItem,innerIndex) in item.typeList" :key="innerIndex">
                                 {{ `${innerItem['taskTypeName']}` ? `${innerItem['taskTypeName']}×${innerItem['quantity']};`: ''}}
                             </span>
+                            <img :src="contactIsolationPng">
                         </div>    
                    </div>
                 </div>
@@ -236,6 +238,7 @@ export default {
       switchShowPng: require("@/common/images/home/switch-show.png"),
       switchHiddenPng: require("@/common/images/home/switch-hidden.png"),
       anxiousSignPng: require("@/common/images/home/anxious-sign.png"),
+      contactIsolationPng: require("@/common/images/home/contact-isolation.png"),
       taskList: [
         {tit:'调度管理'},
         {tit:'调度任务'},
@@ -665,6 +668,29 @@ export default {
                     text-align: left !important
                 }
             };
+            .message-bed-number {
+                align-items: center !important;
+                .message-two-right {
+                    display: flex;
+                    align-items: center;
+                    .spanStyle {
+                        color: #E8CB51 !important
+                    };
+                    span {
+                        flex: 1;
+                        padding-right: 4px;
+                        box-sizing: border-box;
+                        word-break: break-all;
+                        vertical-align: middle
+                    };
+                    img {
+                        width: 24px;
+                        height: 24px;
+                        margin-left: 4px;
+                        vertical-align: middle
+                    }
+                }
+            };
             .message-six {
                 align-items: flex-start !important;
                 .priorityNormalStyle { 
@@ -702,6 +728,16 @@ export default {
                     > div {
                         width: 100%;
                         margin-bottom: 4px;
+                        .spanStyle {
+                            color: #E8CB51 !important;
+                            font-weight: bold !important
+                        };
+                        img {
+                            width: 21px;
+                            height: 21px;
+                            vertical-align: bottom;
+                            margin-left: 4px
+                        }
                     };
                     color: #9E9E9A;
                     flex: 1;

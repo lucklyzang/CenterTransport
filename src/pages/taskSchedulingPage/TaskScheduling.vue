@@ -154,6 +154,9 @@
                             <span>{{ extractionDate(item.createTime) }}</span>
                             <span v-show="item.workerName">{{ item.workerName }}</span>
                           </div>
+                          <div class="list-top-center">
+                            <img :src="contactIsolationPng">
+                          </div>
                           <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
                           </div>
@@ -208,6 +211,9 @@
                           <div class="list-top-left">
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ item.setOutPlaceName }}</span>
+                          </div>
+                          <div class="list-top-center">
+                            <img :src="contactIsolationPng">
                           </div>
                           <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
@@ -316,6 +322,7 @@ export default {
       switchShowPng: require("@/common/images/home/switch-show.png"),
       switchHiddenPng: require("@/common/images/home/switch-hidden.png"),
       anxiousSignPng: require("@/common/images/home/anxious-sign.png"),
+      contactIsolationPng: require("@/common/images/home/contact-isolation.png"),
       taskList: [
         {tit:'调度管理'},
         {tit:'调度任务'},
@@ -2090,6 +2097,14 @@ export default {
                                     }
                                   }  
                                 };
+                                .list-top-center {
+                                  margin: 0 10px;
+                                  >img {
+                                    width: 26px;
+                                    height: 26px;
+                                    vertical-align: bottom
+                                  }
+                                };
                                 .list-top-right {
                                   font-size: 16px;
                                   color: #E86F50
@@ -2233,6 +2248,14 @@ export default {
                                       padding-right: 4px
                                     }
                                   }  
+                                };
+                                .list-top-center {
+                                  margin: 0 10px;
+                                  >img {
+                                    width: 26px;
+                                    height: 26px;
+                                    vertical-align: bottom
+                                  }
                                 }
                               };
                               .appoint-list-center {

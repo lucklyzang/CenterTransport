@@ -181,6 +181,9 @@
                         </P>
                       </div>
                     </div>
+                    <div class="contact-isolation-box">
+                      <img :src="contactIsolationPng">
+                    </div>
                     <div class="btn-area-trace">
                       <span @click="reminderTask(item)">
                         催单
@@ -236,6 +239,9 @@
                               <div class="wait-handle-message-top">
                                 <p>
                                   编号: {{item.taskNumber}}
+                                </p>
+                                <p>
+                                  <img :src="contactIsolationPng">
                                 </p>
                                 <p>
                                     {{stateTransfer(item.state)}}
@@ -408,6 +414,9 @@
                                   编号: {{item.taskNumber}}
                                 </p>
                                 <p>
+                                  <img :src="contactIsolationPng">
+                                </p>
+                                <p>
                                   {{stateTransfer(item.state)}}
                                 </p>
                               </div>
@@ -541,6 +550,9 @@
                                 <div class="wait-handle-message-top">
                                   <p>
                                     编号:{{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    <img :src="contactIsolationPng">
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -701,6 +713,9 @@
                                     编号:{{item.taskNumber}}
                                   </p>
                                   <p>
+                                    <img :src="contactIsolationPng">
+                                  </p>
+                                  <p>
                                     {{stateTransfer(item.state)}}
                                   </p>
                                 </div>
@@ -850,6 +865,9 @@
                                     编号: {{item.taskNumber}}
                                   </p>
                                   <p>
+                                    <img :src="contactIsolationPng">
+                                  </p>
+                                  <p>
                                     {{stateTransfer(item.state)}}
                                   </p>
                                 </div>
@@ -943,6 +961,9 @@
                                 <div class="wait-handle-message-top">
                                   <p>
                                     编号: {{item.taskNumber}}
+                                  </p>
+                                  <p>
+                                    <img :src="contactIsolationPng">
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -1149,7 +1170,8 @@
         homeBannerPng: require('@/common/images/home/home-banner.png'),
         btnTaskWrapperPng: require('@/common/images/home/btn-background.png'),
         taskSearchPng: require('@/components/images/task-search.png'),
-        taskGetPng: require('@/components/images/task-get.png')
+        taskGetPng: require('@/components/images/task-get.png'),
+        contactIsolationPng: require("@/common/images/home/contact-isolation.png")
       }
     },
 
@@ -3571,6 +3593,17 @@
                                 align-items: center;
                                 word-break: break-all
                               };
+                              &:nth-child(2) {
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                img {
+                                  width: 27px;
+                                  height: 27px;
+                                  margin: 0 4px;
+                                  vertical-align: middle
+                                }
+                              };
                               &:last-child {
                                 width: 60px;
                                 color: #0ac50a;
@@ -3789,6 +3822,14 @@
                     .historyTask-list-cancel {
                       .wait-handle-message-top {
                         > p {
+                          &:nth-child(2) {
+                            img {
+                              width: 27px;
+                              height: 27px;
+                              margin: 0 4px;
+                              vertical-align: middle
+                            }
+                          };
                           &:last-child {
                             color: indianred !important;
                           }
@@ -3872,6 +3913,14 @@
                             display: flex;
                             align-items: center;
                             word-break: break-all
+                          };
+                          &:nth-child(2) {
+                            img {
+                              width: 27px;
+                              height: 27px;
+                              margin: 0 4px;
+                              vertical-align: middle
+                            }
                           };
                           &:last-child {
                             width: 60px;
@@ -3965,7 +4014,18 @@
 
                         }
                       }
-                    }
+                    };
+                    .contact-isolation-box {
+                      width: 100%;
+                      height: 50px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      >img {
+                        width: 27px;
+                        height: 27px;
+                      }
+                    };
                     .btn-area-trace {
                       text-align: center;
                       height: 25px;

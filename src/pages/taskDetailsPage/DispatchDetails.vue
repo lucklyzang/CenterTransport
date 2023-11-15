@@ -60,16 +60,17 @@
             </div>
            </div>
            <div class="wait-handle-message-middle">
-              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
+              <div class="handle-message-line-wrapper message-name" v-if="templateType === 'template_one'">
                 <P>
-                  <span class="message-tit">病人姓名 :&nbsp;</span>
-                  <span class="message-tit-real">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
+                  <span class="message-tit" :class="{'spanStyle' : true}">病人姓名 :&nbsp;</span>
+                  <span class="message-tit-real" :class="{'spanStyle' : true}">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
+                  <img :src="contactIsolationPng">
                 </P>
               </div>
              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
                <p>
-                 <span class="message-tit">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
-                 <span class="message-tit-real">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
+                 <span class="message-tit" :class="{'spanStyle' : true}">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
+                 <span class="message-tit-real" :class="{'spanStyle' : true}">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
@@ -113,12 +114,13 @@
                       <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
                       <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList" :key="indexInner">
                         <span class="serial">{{indexInner+1}}、</span>
-                        <span>
-                          床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}},
+                        <span :class="{'spanStyle' : true}">
+                          床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}};
                         </span>
                         <span v-for="(targetItem, targetIndex) in itemInner.typeChildList" :key="targetIndex">
-                          {{targetItem.taskTypeName}}×{{targetItem.quantity}}
+                          {{targetItem.taskTypeName}}×{{targetItem.quantity}};
                         </span>
+                        <img :src="contactIsolationPng">
                       </p>
                     </div>
                   </div>
@@ -264,7 +266,8 @@ export default {
       taskFinshedPng: require('@/common/images/home/task-finshed.png'),
       taskGoingPng: require('@/common/images/home/task-going.png'),
       taskCancelPng: require('@/common/images/home/task-cancel.png'),
-      waitSurePng: require('@/common/images/home/wait-sure.png')
+      waitSurePng: require('@/common/images/home/wait-sure.png'),
+      contactIsolationPng: require("@/common/images/home/contact-isolation.png")
     }
   },
 
@@ -925,6 +928,10 @@ export default {
             line-height: 30px;
             flex-flow: row nowrap;
             color: #a0a0a0;
+            .spanStyle {
+              color: #E8CB51 !important;
+              font-weight: bold
+            };
             .priorityOneStyle {
               color: #b1d676 !important
             };
@@ -953,6 +960,25 @@ export default {
             }
           }
         };
+         .message-name {
+          p {
+            display: flex;
+            >span {
+              &:nth-child(2) {
+                padding: 0 5px 0 0;
+                box-sizing: border-box;
+                flex: 1;
+                color: black;
+                word-break: break-all
+              }
+            };
+            img {
+              width: 27px;
+              height: 27px;
+              vertical-align: bottom
+            }
+          }
+        };
         .transport-type-wrapper {
           display: flex;
           flex-flow: row nowrap;
@@ -977,7 +1003,17 @@ export default {
                   color: black
                 };
                 .transport-type-list-content {
-                  line-height: 30px
+                  line-height: 30px;
+                  img {
+                    width: 24px;
+                    height: 24px;
+                    vertical-align: bottom;
+                    margin-left: 2px
+                  };
+                  .spanStyle {
+                    color: #E8CB51 !important;
+                    font-weight: bold
+                  }
                 }
               }
             }

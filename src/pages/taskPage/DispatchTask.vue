@@ -48,13 +48,13 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -63,13 +63,15 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
-              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one  message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -115,13 +117,13 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -130,13 +132,15 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
-              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -182,13 +186,13 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
@@ -197,13 +201,15 @@
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
               </div>
-              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
-              <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+              <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -249,24 +255,26 @@
             </p>
             <div class="wait-handle-message">
               <div class="wait-handle-message-one">
-                <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+                <span :class="{'priorityStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
                 <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
               </div>
-              <div class="wait-handle-message-one contact-isolation-box">
+              <!-- <div class="wait-handle-message-one contact-isolation-box">
                 <span>接触隔离 : </span>
                 <span>是</span>
-              </div>
+              </div> -->
               <div class="wait-handle-message-one">
                 <span>开始时间 : </span>
                 <span>{{item.planStartTime}}</span>
               </div>
-              <div class="wait-handle-message-one">
+              <div class="wait-handle-message-one message-name">
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
+                <img :src="contactIsolationPng">
               </div>
-              <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+              <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
@@ -339,13 +347,13 @@
           </p>
           <div class="wait-handle-message">
             <div class="wait-handle-message-one">
-              <span>优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
+              <span :class="{'priorityStyle' : item.priority != 1}">优&nbsp;&nbsp;先&nbsp;&nbsp;级 : </span>
               <span :class="{'priorityStyle' : item.priority != 1}">{{ priorityTransfer(item.priority) }}</span>
             </div>
-            <div class="wait-handle-message-one contact-isolation-box">
+            <!-- <div class="wait-handle-message-one contact-isolation-box">
               <span>接触隔离 : </span>
               <span>是</span>
-            </div>
+            </div> -->
             <div class="wait-handle-message-one">
               <span>开始时间 : </span>
               <span>{{item.planStartTime}}</span>
@@ -354,13 +362,15 @@
               <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
               <span>{{item.setOutPlaceName}}</span>
             </div>
-            <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
+            <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
               <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
+              <img :src="contactIsolationPng">
             </div>
-            <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
+            <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
               <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+              <img :src="contactIsolationPng">
             </div>
             <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -480,7 +490,8 @@
         taskFinshedPng: require('@/common/images/home/task-finshed.png'),
         taskGoingPng: require('@/common/images/home/task-going.png'),
         taskCancelPng: require('@/common/images/home/task-cancel.png'),
-        waitSurePng: require('@/common/images/home/wait-sure.png')
+        waitSurePng: require('@/common/images/home/wait-sure.png'),
+        contactIsolationPng: require("@/common/images/home/contact-isolation.png")
       };
     },
 
@@ -1485,6 +1496,23 @@
                 }
               }
             };
+            .message-name {
+              display: flex;
+              >span {
+                &:nth-child(2) {
+                  padding: 0 5px 0 10px;
+                  box-sizing: border-box;
+                  flex: 1;
+                  color: black;
+                  word-break: break-all
+                }
+              };
+              img {
+                width: 27px;
+                height: 27px;
+                vertical-align: bottom
+              }
+            };
             .wait-handle-message-two {
               min-height: 35px;
               line-height: 24px;
@@ -1629,6 +1657,23 @@
                 color: black !important
               }
 
+            }
+          };
+          .message-name {
+            display: flex;
+            >span {
+              &:nth-child(2) {
+                padding: 0 5px 0 10px;
+                box-sizing: border-box;
+                flex: 1;
+                color: black;
+                word-break: break-all
+              }
+            };
+            img {
+              width: 27px;
+              height: 27px;
+              vertical-align: bottom
             }
           };
           .wait-handle-message-two {
@@ -1839,6 +1884,23 @@
                 color: black !important
               }
 
+            }
+          };
+          .message-name {
+            display: flex;
+            >span {
+              &:nth-child(2) {
+                padding: 0 5px 0 10px;
+                box-sizing: border-box;
+                flex: 1;
+                color: black;
+                word-break: break-all
+              }
+            };
+            img {
+              width: 27px;
+              height: 27px;
+              vertical-align: bottom
             }
           };
           .wait-handle-message-two {
