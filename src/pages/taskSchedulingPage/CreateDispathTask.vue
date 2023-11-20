@@ -1316,18 +1316,18 @@ export default {
               if (this.isContactisolationValue === null) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.sureEvent()
+                this.sureEvent(true)
               }
             } else if (this.templateType === 'template_two') {
               let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
               if (temporaryFlag) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.sureEvent()
+                this.sureEvent(true)
               }
             }  
           } else {
-            this.sureEvent()
+            this.sureEvent(false)
           }
         } else {
           this.$dialog.alert({
@@ -1353,7 +1353,7 @@ export default {
     },
 
     // 确认事件(创建调度任务)
-    sureEvent () {
+    sureEvent (flag) {
       if (this.templateType === 'template_one') {
         if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
           this.$toast({message: '请选择运送大类',type: 'fail'});

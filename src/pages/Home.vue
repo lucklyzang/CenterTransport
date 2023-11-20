@@ -3591,7 +3591,7 @@
                                 height: 40px;
                                 display: flex;
                                 align-items: center;
-                                word-break: break-all
+                                word-break: break-all;
                               };
                               &:nth-child(2) {
                                 height: 40px;

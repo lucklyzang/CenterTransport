@@ -113,11 +113,11 @@
                     <div class="transport-type-list">
                       <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
                       <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList" :key="indexInner">
-                        <span class="serial">{{indexInner+1}}、</span>
-                        <span :class="{'spanStyle' : true}">
+                        <span class="serial"  style="vertical-align: middle;">{{indexInner+1}}、</span>
+                        <span :class="{'spanStyle' : true}"  style="vertical-align: middle;">
                           床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}};
                         </span>
-                        <span v-for="(targetItem, targetIndex) in itemInner.typeChildList" :key="targetIndex">
+                        <span v-for="(targetItem, targetIndex) in itemInner.typeChildList" :key="targetIndex" style="vertical-align: middle;">
                           {{targetItem.taskTypeName}}×{{targetItem.quantity}};
                         </span>
                         <img :src="contactIsolationPng">
@@ -1007,7 +1007,7 @@ export default {
                   img {
                     width: 24px;
                     height: 24px;
-                    vertical-align: bottom;
+                    vertical-align: middle;
                     margin-left: 2px
                   };
                   .spanStyle {

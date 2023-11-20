@@ -153,9 +153,9 @@
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ extractionDate(item.createTime) }}</span>
                             <span v-show="item.workerName">{{ item.workerName }}</span>
-                          </div>
-                          <div class="list-top-center">
-                            <img :src="contactIsolationPng">
+                            <div class="list-top-left-center">
+                              <img :src="contactIsolationPng">
+                            </div>
                           </div>
                           <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
@@ -211,9 +211,9 @@
                           <div class="list-top-left">
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ item.setOutPlaceName }}</span>
-                          </div>
-                          <div class="list-top-center">
-                            <img :src="contactIsolationPng">
+                             <div class="list-top-left-center">
+                                <img :src="contactIsolationPng">
+                              </div>
                           </div>
                           <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}
@@ -526,7 +526,6 @@ export default {
         this.loadingShow = false;
         this.overlayShow = false;
         this.$toast('刷新失败,请检查网络');
-        console.log(this.isLoadingRepairsTask,this.loadingText,this.loadingShow,this.overlayShow,this.loadFreshTimer);
         if (this.loadFreshTimer) {clearTimeout(this.loadFreshTimer)}
       }, 3100)
     },
@@ -963,13 +962,11 @@ export default {
 
     // 筛选弹框运送员下拉框选值变化事件
     transporterOptionChange (item) {
-      console.log('运送员',item);
       this.transporterValue = item.value
     },
 
     // 筛选弹框关闭前事件
     beforeCloseDialogEvent (action, done) {
-      console.log(action);
       if (action == 'cancel') {
         this.$refs['departmentOption'].clearSelectValue();
         this.$refs['transporterOption'].clearSelectValue();
@@ -1645,7 +1642,6 @@ export default {
               this.isDiabledPullRefresh = true
             };
             if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-              console.log('调度滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
             }
           },true)  
         };
@@ -1661,7 +1657,6 @@ export default {
               this.isDiabledPullRefresh = true
             };
             if (Math.ceil(e.srcElement.scrollTop) + e.srcElement.offsetHeight >= e.srcElement.scrollHeight) {
-              console.log('预约滚动了',e.srcElement.scrollTop, e.srcElement.offsetHeight, e.srcElement.scrollHeight)
             }
           },true)    
         }    
@@ -2083,27 +2078,26 @@ export default {
                                   >span {
                                     display: inline-block;
                                     &:nth-child(2) {
-                                      width: 120px;
-                                      margin-right: 8px
                                     };
                                     &:nth-child(3) {
-                                      flex: 1;
+                                      max-width: 92px;
                                       .no-wrap();
                                       height: 20px;
                                       padding-left: 8px;
-                                      padding-right: 4px;
                                       line-height: 20px;
-                                      border-left: 1px solid #BBBBBB
+                                      border-left: 1px solid #BBBBBB;
+                                      box-sizing: border-box;
+                                      margin-left: 8px
                                     }
-                                  }  
-                                };
-                                .list-top-center {
-                                  margin: 0 10px;
-                                  >img {
-                                    width: 26px;
-                                    height: 26px;
-                                    vertical-align: bottom
-                                  }
+                                  };
+                                  .list-top-left-center {
+                                    margin: 0 10px;
+                                    >img {
+                                      width: 26px;
+                                      height: 26px;
+                                      vertical-align: bottom
+                                    }
+                                  } 
                                 };
                                 .list-top-right {
                                   font-size: 16px;
@@ -2243,19 +2237,19 @@ export default {
                                     display: inline-block;
                                     font-weight: bold;
                                     &:nth-child(2) {
-                                      flex: 1;
-                                      .no-wrap();
-                                      padding-right: 4px
+                                      max-width: 260px;
+                                      box-sizing: border-box;
+                                      .no-wrap()
+                                    }
+                                  };
+                                  .list-top-left-center {
+                                    margin: 0 10px;
+                                    >img {
+                                      width: 26px;
+                                      height: 26px;
+                                      vertical-align: bottom
                                     }
                                   }  
-                                };
-                                .list-top-center {
-                                  margin: 0 10px;
-                                  >img {
-                                    width: 26px;
-                                    height: 26px;
-                                    vertical-align: bottom
-                                  }
                                 }
                               };
                               .appoint-list-center {

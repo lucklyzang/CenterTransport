@@ -758,10 +758,10 @@ export default {
             if (this.isContactisolationValue === null) {
               this.$toast('请确认病人是否需要接触隔离!')
             } else {
-              this.sureEvent()
+              this.sureEvent(true)
             }
           } else {
-            this.sureEvent()
+            this.sureEvent(false)
           }
         } else {
           this.$dialog.alert({
@@ -787,7 +787,7 @@ export default {
     },
 
     // 确认事件(创建预约任务)
-    sureEvent () {
+    sureEvent (flag) {
       if (this.currentStartDepartment == '请选择') {
         this.$toast({message: '请选择起点科室',type: 'fail'});
         return

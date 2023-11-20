@@ -1048,18 +1048,18 @@ export default {
               if (this.isContactisolationValue === null) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.dispatchTaskSure()
+                this.dispatchTaskSure(true)
               }
             } else if (this.templateType === 'template_two') {
               let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
               if (temporaryFlag) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.dispatchTaskSure()
+                this.dispatchTaskSure(true)
               }
             }  
           } else {
-            this.dispatchTaskSure()
+            this.dispatchTaskSure(false)
           }
         } else {
           this.$dialog.alert({
@@ -1083,7 +1083,7 @@ export default {
     },
 
       // 运送类型信息确认事件
-      dispatchTaskSure () {
+      dispatchTaskSure (flag) {
         if (this.templateType === 'template_one') {
           // if (!this.destinationListOneValue) {
           //   this.$dialog.alert({
@@ -1730,7 +1730,7 @@ export default {
           };
           .destination-title {
             height: 59px;
-            width: 20%;
+            width: 30%;
             line-height: 59px;
             color: @color-text-left;
             box-sizing: border-box;
@@ -1739,7 +1739,7 @@ export default {
           .destination-content {
             height: 60px;
             position: relative;
-            width: 78%;
+            width: 68%;
             overflow-x: hidden;
             .main {
               color: @color-text-right;
