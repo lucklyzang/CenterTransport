@@ -1112,6 +1112,7 @@ export default {
             sex: 0,    //病人性别  0-未指定,1-男, 2-女
             age: "",   //年龄
             number: this.patientNumber,   //住院号
+            quarantine: flag ? this.isContactisolationValue : -1,// 接触隔离
             bedNumber: this.bedNumber,  //床号
             taskRemark: this.taskDescribe,   //备注
             createId: this.workerId,   //创建者ID  当前登录者
@@ -1168,6 +1169,7 @@ export default {
               age: patientItem['age'],
               number: patientItem['patientNumber'],
               sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
+              quarantine: flag ? patientItem['isContactisolationValue'] : -1, // 接触隔离
               quantity: patientItem['actualData'],
               typeList: []
             })

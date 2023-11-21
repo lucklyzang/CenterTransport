@@ -66,12 +66,12 @@
               <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one  message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item['patientInfoList'].some((el) => { el.quarantine == 1})">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -135,12 +135,12 @@
               <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item['patientInfoList'].some((el) => { el.quarantine == 1})">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -204,12 +204,12 @@
               <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item['patientInfoList'].some((el) => { el.quarantine == 1})">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -269,16 +269,16 @@
               <div class="wait-handle-message-one message-name">
                 <span>起&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点 : </span>
                 <span>{{item.setOutPlaceName}}</span>
-                <img :src="contactIsolationPng">
               </div>
               <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one" v-else-if="templateType === 'template_two'">
                 <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
                 <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
+                <img :src="contactIsolationPng" v-if="item['patientInfoList'].some((el) => { el.quarantine == 1})">
               </div>
               <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
@@ -365,12 +365,12 @@
             <div class="wait-handle-message-one message-name" v-if="templateType === 'template_one'">
               <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientName == "" ? '无' : item.patientName}}</span>
-              <img :src="contactIsolationPng">
+              <img :src="contactIsolationPng" v-if="item.quarantine == 1">
             </div>
             <div class="wait-handle-message-one message-name" v-else-if="templateType === 'template_two'">
               <span>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 : </span>
               <span>{{item.patientInfoList[0].patientName == "" ? '无' : item.patientInfoList[0].patientName}}</span>
-              <img :src="contactIsolationPng">
+              <img :src="contactIsolationPng" v-if="item['patientInfoList'].some((el) => { el.quarantine == 1})">
             </div>
             <div class="wait-handle-message-one" v-if="templateType === 'template_one'">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>

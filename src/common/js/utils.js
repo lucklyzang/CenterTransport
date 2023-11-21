@@ -523,6 +523,7 @@ export const  mergeMethods =  (testData) => {
       patientName: testData[i]['patientName'],
       bedNumber: testData[i]['bedNumber'],
       sex: testData[i]['sex'],
+      quarantine: testData[i]['quarantine'],
       typeChildList: []
     });
     for (var innerI = 0, innerLen = testData[i]['typeList'].length; innerI < innerLen; innerI++ ) {
@@ -544,6 +545,7 @@ export const  mergeMethods =  (testData) => {
             patientName: testData[i]['patientName'],
             bedNumber: testData[i]['bedNumber'],
             sex: testData[i]['sex'],
+            quarantine: testData[i]['quarantine'],
             typeChildList: []
           });
           temporaryinnerObj['typeList'][0]['typeChildList'].push({
@@ -560,6 +562,7 @@ export const  mergeMethods =  (testData) => {
             patientName: testData[i]['patientName'],
             bedNumber: testData[i]['bedNumber'],
             sex: testData[i]['sex'],
+            quarantine: testData[i]['quarantine'],
             typeChildList: []
           })
         };

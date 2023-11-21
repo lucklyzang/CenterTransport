@@ -153,7 +153,10 @@
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ extractionDate(item.createTime) }}</span>
                             <span v-show="item.workerName">{{ item.workerName }}</span>
-                            <div class="list-top-left-center">
+                            <div class="list-top-left-center" v-if="templateType == 'template_one' && item.quarantine == 1">
+                              <img :src="contactIsolationPng">
+                            </div>
+                            <div class="list-top-left-center" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
                               <img :src="contactIsolationPng">
                             </div>
                           </div>
@@ -211,9 +214,9 @@
                           <div class="list-top-left">
                             <img :src="anxiousSignPng" alt="急" v-show="item.priority == 2 || item.priority == 3 || item.priority == 4">
                             <span>{{ item.setOutPlaceName }}</span>
-                             <div class="list-top-left-center">
-                                <img :src="contactIsolationPng">
-                              </div>
+                            <div class="list-top-left-center" v-if="item.quarantine == 1">
+                              <img :src="contactIsolationPng">
+                            </div>
                           </div>
                           <div class="list-top-right" :class="{'noLookupStyle':item.state == 1,'noStartStyle':item.state == 2,'underwayStyle':item.state == 3,'noEndStyle':item.state == 4}">
                             {{ taskStatusTransition(item.state) }}

@@ -62,15 +62,15 @@
            <div class="wait-handle-message-middle">
               <div class="handle-message-line-wrapper message-name" v-if="templateType === 'template_one'">
                 <P>
-                  <span class="message-tit" :class="{'spanStyle' : true}">病人姓名 :&nbsp;</span>
-                  <span class="message-tit-real" :class="{'spanStyle' : true}">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
-                  <img :src="contactIsolationPng">
+                  <span class="message-tit" :class="{'spanStyle' : dispatchTaskMessage.quarantine == 1}">病人姓名 :&nbsp;</span>
+                  <span class="message-tit-real" :class="{'spanStyle' : dispatchTaskMessage.quarantine == 1}">{{dispatchTaskMessage.patientName == "" ? '无' : dispatchTaskMessage.patientName}}</span>
+                  <img :src="contactIsolationPng" v-if="dispatchTaskMessage.quarantine == 1">
                 </P>
               </div>
              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
                <p>
-                 <span class="message-tit" :class="{'spanStyle' : true}">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
-                 <span class="message-tit-real" :class="{'spanStyle' : true}">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
+                 <span class="message-tit" :class="{'spanStyle' : dispatchTaskMessage.quarantine == 1}">床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 :&nbsp;</span>
+                 <span class="message-tit-real" :class="{'spanStyle' : dispatchTaskMessage.quarantine == 1}">{{dispatchTaskMessage.bedNumber == "" ? '无' : dispatchTaskMessage.bedNumber}}</span>
                </p>
              </div>
              <div class="handle-message-line-wrapper" v-if="templateType === 'template_one'">
@@ -114,13 +114,13 @@
                       <p class="transport-type-list-title">{{item.parentTypeName == '' ? '无': item.parentTypeName}}</p>
                       <p class="transport-type-list-content" v-for="(itemInner,indexInner) in item.typeList" :key="indexInner">
                         <span class="serial"  style="vertical-align: middle;">{{indexInner+1}}、</span>
-                        <span :class="{'spanStyle' : true}"  style="vertical-align: middle;">
+                        <span :class="{'spanStyle' : itemInner.quarantine == 1}"  style="vertical-align: middle;">
                           床号 : {{itemInner.bedNumber}},{{itemInner.patientName}},{{genderTransfer(itemInner.sex)}};
                         </span>
                         <span v-for="(targetItem, targetIndex) in itemInner.typeChildList" :key="targetIndex" style="vertical-align: middle;">
                           {{targetItem.taskTypeName}}×{{targetItem.quantity}};
                         </span>
-                        <img :src="contactIsolationPng">
+                        <img :src="contactIsolationPng" v-if="itemInner.quarantine == 1">
                       </p>
                     </div>
                   </div>

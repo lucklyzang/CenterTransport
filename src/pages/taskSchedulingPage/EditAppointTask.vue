@@ -277,17 +277,6 @@ export default {
       transportParentControlListShow: false,
       transportTypeParent: [],
       transportTypeChild: [],
-      patienModalMessage: {
-        bedNumber: '',
-        patientName: '',
-        patientNumber: '',
-        actualData: 0,
-        genderValue: '0',
-        transportList: [],
-        sampleList: [],
-        sampleValue: '',
-        sampleId: ''
-      },
       xflSelectShow: false,
       isPressEdit: false,
       updateIndex: 0,
@@ -356,6 +345,7 @@ export default {
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['badNumber'];
       this.patientAgeValue = casuallyTemporaryStorageCreateDispathTaskMessage['age'];
+      this.isContactisolationValue = null;
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
       this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['hospitalNo'];
       this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';
@@ -761,6 +751,14 @@ export default {
 
     // 查询是否配置接触隔离选项0-没配置1-配置
     getTransConfig () {
+      if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
+        this.$toast({message: '请选择起点科室',type: 'fail'});
+        return
+      };
+      if (this.transportTypeList.every((item) => { return item.selected == false})) {
+        this.$toast({message: '检查类型不能为空',type: 'fail'});
+        return
+      };
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '查询中...';
@@ -770,10 +768,10 @@ export default {
             if (this.isContactisolationValue === null) {
               this.$toast('请确认病人是否需要接触隔离!')
             } else {
-              this.sureEvent()
+              this.sureEvent(true)
             }
           } else {
-            this.sureEvent()
+            this.sureEvent(false)
           }
         } else {
           this.$dialog.alert({
@@ -799,15 +797,7 @@ export default {
     },
 
     // 确认事件(编辑预约任务)
-    sureEvent () {
-      if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
-        this.$toast({message: '请选择起点科室',type: 'fail'});
-        return
-      };
-      if (this.transportTypeList.every((item) => { return item.selected == false})) {
-        this.$toast({message: '检查类型不能为空',type: 'fail'});
-        return
-      };
+    sureEvent (flag) {
       let taskMessage;
       try {
         taskMessage = {
@@ -824,6 +814,7 @@ export default {
           hospitalNo: this.admissionNumberValue,   //住院号
           id: this.schedulingTaskDetails.id, // 任务id
           isBack: 0,
+          quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
           badNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
           startUser: this.userName,   //创建者名称  当前登陆者

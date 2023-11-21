@@ -182,7 +182,8 @@
                       </div>
                     </div>
                     <div class="contact-isolation-box">
-                      <img :src="contactIsolationPng">
+                      <image :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1"></image>
+								      <image :src="contactIsolationPng" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})"></image>
                     </div>
                     <div class="btn-area-trace">
                       <span @click="reminderTask(item)">
@@ -241,7 +242,8 @@
                                   编号: {{item.taskNumber}}
                                 </p>
                                 <p>
-                                  <img :src="contactIsolationPng">
+                                  <img :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1">
+                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
                                 </p>
                                 <p>
                                     {{stateTransfer(item.state)}}
@@ -295,12 +297,12 @@
                                   <span class="message-tit-real">{{item.toolName}}</span>
                                 </p>
                               </div>
-                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                              <!-- <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                 <p>
                                   <span class="message-tit">接触隔离:</span>
                                   <span class="message-tit-real">是</span>
                                 </p>
-                              </div>
+                              </div> -->
 <!--                              <div class="handle-message-line-wrapper">-->
 <!--                                <p>-->
 <!--                                  <span class="message-tit">出发地拍照:</span>-->
@@ -414,7 +416,8 @@
                                   编号: {{item.taskNumber}}
                                 </p>
                                 <p>
-                                  <img :src="contactIsolationPng">
+                                  <img :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1">
+                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
                                 </p>
                                 <p>
                                   {{stateTransfer(item.state)}}
@@ -468,12 +471,12 @@
                                   <span class="message-tit-real">{{item.toolName}}</span>
                                 </p>
                               </div>
-                              <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                              <!-- <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                 <p>
                                   <span class="message-tit">接触隔离:</span>
                                   <span class="message-tit-real">是</span>
                                 </p>
-                              </div>
+                              </div> -->
                                 <!-- <div class="handle-message-line-wrapper">
                                   <p v-if="templateType == 'template_one'">
                                     <span class="message-tit">病人:</span>
@@ -552,7 +555,7 @@
                                     编号:{{item.taskNumber}}
                                   </p>
                                   <p>
-                                    <img :src="contactIsolationPng">
+                                    <img :src="contactIsolationPng" v-if="item.quarantine == 1">
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -594,12 +597,12 @@
                                     <span class="message-tit-real">{{item.toolName}}</span>
                                   </p>
                                 </div>
-                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <!-- <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
                                     <span class="message-tit">接触隔离:</span>
                                     <span class="message-tit-real">是</span>
                                   </p>
-                                </div>
+                                </div> -->
                                 <!--                              <div class="handle-message-line-wrapper">-->
                                 <!--                                <p>-->
                                 <!--                                  <span class="message-tit">出发地拍照:</span>-->
@@ -713,7 +716,7 @@
                                     编号:{{item.taskNumber}}
                                   </p>
                                   <p>
-                                    <img :src="contactIsolationPng">
+                                    <img :src="contactIsolationPng" v-if="item.quarantine == 1">
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}
@@ -755,12 +758,12 @@
                                     <span class="message-tit-real">{{item.toolName}}</span>
                                   </p>
                                 </div>
-                                <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
+                                <!-- <div class="handle-message-line-wrapper handle-message-line-wrapper-one-line">
                                   <p>
                                     <span class="message-tit">接触隔离:</span>
                                     <span class="message-tit-real">是</span>
                                   </p>
-                                </div>
+                                </div> -->
                                 <!--                              <div class="handle-message-line-wrapper">-->
                                 <!--                                <p>-->
                                 <!--                                  <span class="message-tit">出发地拍照:</span>-->
@@ -865,9 +868,6 @@
                                     编号: {{item.taskNumber}}
                                   </p>
                                   <p>
-                                    <img :src="contactIsolationPng">
-                                  </p>
-                                  <p>
                                     {{stateTransfer(item.state)}}
                                   </p>
                                 </div>
@@ -961,9 +961,6 @@
                                 <div class="wait-handle-message-top">
                                   <p>
                                     编号: {{item.taskNumber}}
-                                  </p>
-                                  <p>
-                                    <img :src="contactIsolationPng">
                                   </p>
                                   <p>
                                     {{stateTransfer(item.state)}}

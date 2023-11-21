@@ -1306,6 +1306,37 @@ export default {
 
     // 查询是否配置接触隔离选项0-没配置1-配置
     getTransConfig () {
+      if (this.templateType === 'template_one') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
+          this.$toast({message: '请选择运送大类',type: 'fail'});
+          return
+        };
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
+          this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
+          return
+        }
+      } else if (this.templateType === 'template_two') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
+          this.$toast({message: '请选择运送大类',type: 'fail'});
+          return
+        };
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
+          this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        }
+        // 终点科室不能包含起点科室
+        if (this.currentGoalSpaces.length > 0) {
+          if (this.currentGoalSpaces.filter((item) => { return item.text == this.currentStartDepartment}).length > 0) {
+            this.$toast({message: '终点科室不能包含起点科室',type: 'fail'});
+            return
+          }
+        }
+      };  
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '查询中...';
@@ -1355,19 +1386,6 @@ export default {
     // 确认事件(创建调度任务)
     sureEvent (flag) {
       if (this.templateType === 'template_one') {
-        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
-          this.$toast({message: '请选择运送大类',type: 'fail'});
-          return
-        };
-        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
-          this.$toast({message: '请选择起点科室',type: 'fail'});
-          return
-        };
-        // 起始地与目的地不能相同
-        if (this.currentStartDepartment == this.currentEndDepartment) {
-          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
-          return
-        };
         let taskMessage = {
           setOutPlaceId: this.currentStartDepartment == '请选择' ? '' : this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment == '请选择' ? '' : this.currentStartDepartment,//出发地名称
@@ -1387,6 +1405,7 @@ export default {
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
+          quarantine: flag ? this.isContactisolationValue : -1,// 接触隔离
           assignId: this.workerId,   //分配者ID  当前登录者
           assignName: this.userName,   //分配者名称  当前登陆者
           createId: this.workerId,   //创建者ID  当前登录者
@@ -1401,21 +1420,6 @@ export default {
         // 创建调度任务
         this.postGenerateDispatchTask(taskMessage);
       } else if (this.templateType === 'template_two') {
-        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
-          this.$toast({message: '请选择运送大类',type: 'fail'});
-          return
-        };
-        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
-          this.$toast({message: '请选择起点科室',type: 'fail'});
-          return
-        };
-        // 终点科室不能包含起点科室
-        if (this.currentGoalSpaces.length > 0) {
-          if (this.currentGoalSpaces.filter((item) => { return item.text == this.currentStartDepartment}).length > 0) {
-            this.$toast({message: '终点科室不能包含起点科室',type: 'fail'});
-            return
-          }
-        };  
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
@@ -1461,6 +1465,7 @@ export default {
             patientName: patientItem['patientName'],
             age: patientItem['patientAgeValue'],
             number: patientItem['patientNumber'],
+            quarantine: flag ? patientItem['isContactisolationValue'] : -1, // 接触隔离
             sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
             quantity: patientItem['actualData'],
             typeList: []
@@ -1770,7 +1775,7 @@ export default {
               }
             }
           };
-           .contact-isolation-box {
+          .contact-isolation-box {
             height: 50px;
             display: flex;
             flex-flow: row nowrap;

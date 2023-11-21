@@ -278,17 +278,6 @@ export default {
       transportParentControlListShow: false,
       transportTypeParent: [],
       transportTypeChild: [],
-      patienModalMessage: {
-        bedNumber: '',
-        patientName: '',
-        patientNumber: '',
-        actualData: 0,
-        genderValue: '0',
-        transportList: [],
-        sampleList: [],
-        sampleValue: '',
-        sampleId: ''
-      },
       xflSelectShow: false,
       isPressEdit: false,
       updateIndex: 0,
@@ -749,6 +738,14 @@ export default {
 
     // 查询是否配置接触隔离选项0-没配置1-配置
     getTransConfig () {
+      if (this.currentStartDepartment == '请选择') {
+        this.$toast({message: '请选择起点科室',type: 'fail'});
+        return
+      };
+      if (this.transportTypeList.every((item) => { return item.selected == false})) {
+        this.$toast({message: '检查类型不能为空',type: 'fail'});
+        return
+      };
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '查询中...';
@@ -788,14 +785,6 @@ export default {
 
     // 确认事件(创建预约任务)
     sureEvent (flag) {
-      if (this.currentStartDepartment == '请选择') {
-        this.$toast({message: '请选择起点科室',type: 'fail'});
-        return
-      };
-      if (this.transportTypeList.every((item) => { return item.selected == false})) {
-        this.$toast({message: '检查类型不能为空',type: 'fail'});
-        return
-      };
       let taskMessage = {
         depId: this.currentStartDepartment ? this.getDepartmentIdByName(this.currentStartDepartment) : '', //出发地ID
         department: this.currentStartDepartment,//出发地名称
@@ -809,6 +798,7 @@ export default {
         age: this.patientAgeValue,   //年龄
         hospitalNo: this.admissionNumberValue,   //住院号
         isBack: 0,
+        quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
         badNumber: this.patientNumberValue,  //床号
         taskRemark: this.taskDescribe,   //备注
         // startUser: this.workerId,   //创建者ID  当前登录者

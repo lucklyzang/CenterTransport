@@ -77,8 +77,8 @@
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        <span :class="{'spanStyle':true}">{{ schedulingTaskDetails.badNumber }}</span>
-                        <img :src="contactIsolationPng">
+                        <span :class="{'spanStyle': schedulingTaskDetails['quarantine'] == 1}">{{ schedulingTaskDetails.badNumber }}</span>
+                        <img :src="contactIsolationPng" v-if="schedulingTaskDetails['quarantine'] == 1">
                     </div>
                 </div>
                 <!-- <div class="message-one message-two">

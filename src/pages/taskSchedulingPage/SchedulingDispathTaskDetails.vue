@@ -113,8 +113,8 @@
                         <span>床号</span>
                     </div>
                     <div class="message-two-right">
-                        <span :class="{'spanStyle':true}">{{ schedulingTaskDetails.bedNumber }}</span>
-                        <img :src="contactIsolationPng">
+                        <span :class="{'spanStyle': schedulingTaskDetails['quarantine'] == 1}">{{ schedulingTaskDetails.bedNumber }}</span>
+                        <img :src="contactIsolationPng" v-if="schedulingTaskDetails['quarantine'] == 1">
                     </div>
                 </div>
                 <!-- <div class="message-one message-two" v-if="templateType == 'template_one'">
@@ -183,14 +183,14 @@
                             <span class="transport-partent">{{`${schedulingTaskDetails['parentTypeName']}${index+1}`}}</span>
                             <!-- <span class="contact-isolation-title">接触隔离:</span>
                             <span class="contact-isolation-content">是;</span> -->
-                            <span :class="{'spanStyle':true}">{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
-                            <span :class="{'spanStyle':true}">{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
-                            <span :class="{'spanStyle':true}">{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
-                            <span :class="{'spanStyle':true}">{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
+                            <span :class="{'spanStyle': item['quarantine'] == 1}">{{`床号: ${item['bedNumber'] ? item['bedNumber'] : '床号未输入'},`}}</span>
+                            <span :class="{'spanStyle': item['quarantine'] == 1}">{{`姓名: ${item['patientName'] ? item['patientName'] : '姓名未输入'},`}}</span>
+                            <span :class="{'spanStyle': item['quarantine'] == 1}">{{`性别: ${!item['sex'] ? '性别未指定' : item['sex'] == 1 ? '男' : '女'},`}}</span>
+                            <span :class="{'spanStyle': item['quarantine'] == 1}">{{`住院号: ${item['number'] ? item['number'] : '住院号未输入'},`}}</span>
                             <span v-show="item.typeList.length > 0" class="patient-subclass" v-for="(innerItem,innerIndex) in item.typeList" :key="innerIndex">
                                 {{ `${innerItem['taskTypeName']}` ? `${innerItem['taskTypeName']}×${innerItem['quantity']};`: ''}}
                             </span>
-                            <img :src="contactIsolationPng">
+                            <img :src="contactIsolationPng" v-if="item['quarantine'] == 1">
                         </div>    
                    </div>
                 </div>

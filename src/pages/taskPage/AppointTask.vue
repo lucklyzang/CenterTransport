@@ -106,7 +106,7 @@
               <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -170,7 +170,7 @@
               <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -234,7 +234,7 @@
               <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -298,7 +298,7 @@
               <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -362,7 +362,7 @@
               <div class="wait-handle-message-one  message-name">
                 <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
                 <span>{{item.bedNumber}}</span>
-                <img :src="contactIsolationPng">
+                <img :src="contactIsolationPng" v-if="item.quarantine == 1">
               </div>
               <div class="wait-handle-message-one">
                 <span>转运工具 : </span>
@@ -446,7 +446,7 @@
             <div class="wait-handle-message-one  message-name">
               <span>床&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号 : </span>
               <span>{{item.bedNumber}}</span>
-              <img :src="contactIsolationPng">
+              <img :src="contactIsolationPng" v-if="item.quarantine == 1">
             </div>
             <div class="wait-handle-message-one">
               <span>转运工具 : </span>

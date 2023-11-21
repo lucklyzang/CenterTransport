@@ -10,6 +10,18 @@
         @cancel="patienModalCancel"
       >
       <div class="slot-content">
+        <div class="contact-isolation-box">
+          <div>
+            <span>*</span>
+            <span>接触隔离:</span>
+          </div>
+          <div>
+            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
+              <van-radio  name="1" checked-color="#333">是</van-radio>
+              <van-radio  name="0" checked-color="#333">否</van-radio>
+            </van-radio-group>
+          </div>
+        </div>
         <div class="bedNumberBox">
           <div>床号</div>
           <div>
@@ -48,15 +60,6 @@
           <div>年龄</div>
           <div>
             <van-field v-model="patienModalMessage.patientAgeValue" type="digit" placeholder="请输入年龄" />
-          </div>
-        </div>
-        <div class="contact-isolation-box">
-          <div>接触隔离</div>
-          <div>
-            <van-radio-group v-model="patienModalMessage.isContactisolationValue" direction="horizontal">
-              <van-radio  name="1" checked-color="#333">是</van-radio>
-              <van-radio  name="0" checked-color="#333">否</van-radio>
-            </van-radio-group>
           </div>
         </div>
         <div class="transportBox">
@@ -274,6 +277,14 @@
                 <van-icon name="records" @click="editMessage(index)" color="#3B9DF9" size="20" />
               </div>
               <div class="field-wrapper">
+                <div class="field-four">
+                  <div class="contact-isolation-box">
+                    <p>接触隔离:</p>
+                    <p>
+                     {{ item.isContactisolationValue == 1 ? '是' : item.isContactisolationValue === null ? '' : '否' }}
+                    </p>
+                  </div>
+                </div>
                 <div class="field-one">
                   <p>
                     <van-field v-model="item.bedNumber" label="床号:" disabled/>
@@ -295,17 +306,6 @@
                   <p>
                     <van-field v-model="item.patientAgeValue"  type="number" label="年龄:" placeholder="" disabled/>
                   </p>
-                </div>
-                <div class="field-four">
-                  <div class="contact-isolation-box">
-                    <p>接触隔离:</p>
-                    <p>
-                      <van-radio-group v-model="item.isContactisolationValue" direction="horizontal" checked-color="#3B9DF9" disabled>
-                        <van-radio icon-size="14px" name="1">是</van-radio>
-                        <van-radio icon-size="14px" name="0">否</van-radio>
-                      </van-radio-group>
-                    </p>
-                  </div>
                 </div>
                 <div class="field-three">
                   <div class="sample-box">
@@ -463,6 +463,7 @@ export default {
         patientName: '',
         patientNumber: '',
         patientAgeValue: '',
+        isContactisolationValue: null,
         actualData: 0,
         genderValue: '0',
         transportList: [],
@@ -588,6 +589,7 @@ export default {
         this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['bedNumber'];
+        this.isContactisolationValue = null;
         this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
         this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['number'];
         this.transportNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
@@ -614,6 +616,7 @@ export default {
             patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number == '住院号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
             genderValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 1 ? '男': '女',
             actualData: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].quantity,
+            isContactisolationValue: null,
             sampleList: [], //病人信息模态框中运送大类列表 
             sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
             sampleId: casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'], //病人信息模态框中选中的运送大类id
@@ -1338,6 +1341,37 @@ export default {
 
     // 查询是否配置接触隔离选项0-没配置1-配置
     getTransConfig () {
+      if (this.templateType === 'template_one') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
+          this.$toast({message: '请选择运送大类',type: 'fail'});
+          return
+        };
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
+          this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        };
+        // 起始地与目的地不能相同
+        if (this.currentStartDepartment == this.currentEndDepartment) {
+          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
+          return
+        }
+      } else if (this.templateType === 'template_two') {
+        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
+          this.$toast({message: '请选择运送大类',type: 'fail'});
+          return
+        };
+        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
+          this.$toast({message: '请选择起点科室',type: 'fail'});
+          return
+        };
+        // 终点科室不能包含起点科室
+        if (this.currentGoalSpaces.length > 0) {
+          if (this.currentGoalSpaces.filter((item) => { return item.text == this.currentStartDepartment}).length > 0) {
+            this.$toast({message: '终点科室不能包含起点科室',type: 'fail'});
+            return
+          }
+        }
+      };  
       this.loadingShow = true;
       this.overlayShow = true;
       this.loadingText = '查询中...';
@@ -1348,18 +1382,18 @@ export default {
               if (this.isContactisolationValue === null) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.sureEvent()
+                this.sureEvent(true)
               }
             } else if (this.templateType === 'template_two') {
               let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
               if (temporaryFlag) {
                 this.$toast('请确认病人是否需要接触隔离!')
               } else {
-                this.sureEvent()
+                this.sureEvent(true)
               }
             }  
           } else {
-            this.sureEvent()
+            this.sureEvent(false)
           }
         } else {
           this.$dialog.alert({
@@ -1385,21 +1419,8 @@ export default {
     },
 
     // 确认事件(编辑调度任务)
-    sureEvent () {
+    sureEvent (flag) {
       if (this.templateType === 'template_one') {
-        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
-          this.$toast({message: '请选择运送大类',type: 'fail'});
-          return
-        };
-        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
-          this.$toast({message: '请选择起点科室',type: 'fail'});
-          return
-        };
-        // 起始地与目的地不能相同
-        if (this.currentStartDepartment == this.currentEndDepartment) {
-          this.$toast({message: '起点科室与终点科室不能相同',type: 'fail'});
-          return
-        };
         let taskMessage = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment,//出发地名称
@@ -1417,6 +1438,7 @@ export default {
           patientName: this.patientNameValue,  //病人姓名
           sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
           age: this.patientAgeValue,   //年龄
+          quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
@@ -1435,21 +1457,6 @@ export default {
         // 编辑调度任务
         this.editDispatchTask(taskMessage);
       } else if (this.templateType === 'template_two') {
-        if (this.currentTransportRice == '请选择' || !this.currentTransportRice) {
-          this.$toast({message: '请选择运送大类',type: 'fail'});
-          return
-        };
-        if (this.currentStartDepartment == '请选择' || !this.currentStartDepartment) {
-          this.$toast({message: '请选择起点科室',type: 'fail'});
-          return
-        };
-        // 终点科室不能包含起点科室
-        if (this.currentGoalSpaces.length > 0) {
-          if (this.currentGoalSpaces.filter((item) => { return item.text == this.currentStartDepartment}).length > 0) {
-            this.$toast({message: '终点科室不能包含起点科室',type: 'fail'});
-            return
-          }
-        };
         let taskMessageTwo = {
           setOutPlaceId: this.getDepartmentIdByName(this.currentStartDepartment), //出发地ID
           setOutPlaceName: this.currentStartDepartment, //出发地名称
@@ -1492,6 +1499,7 @@ export default {
             bedNumber: patientItem['bedNumber'],
             patientName: patientItem['patientName'],
             age: patientItem['patientAgeValue'],
+            quarantine: flag ? patientItem['isContactisolationValue'] : -1,// 接触隔离
             number: patientItem['patientNumber'],
             sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
             quantity: patientItem['actualData'],
@@ -1753,16 +1761,23 @@ export default {
             }
           };
           .contact-isolation-box {
-            height: 60px;
+            height: 50px;
             display: flex;
             flex-flow: row nowrap;
             > div {
               height: 60px;
               line-height: 60px;
               &:first-child {
-                width: 90px;
-                color: @color-text-left;
-                font-size: 16px
+                margin-right: 20px;
+                font-size: 16px;
+                >span {
+                  &:first-child {
+                    color: red;
+                  };
+                   &:last-child {
+                    color: #101010
+                  }
+                }
               };
               &:last-child {
                 flex: 1;
@@ -2470,7 +2485,7 @@ export default {
                     }
                   };
                 };
-                 .field-four {
+                .field-four {
                   margin-top: 4px;
                   .contact-isolation-box {
                     width: 100%;
