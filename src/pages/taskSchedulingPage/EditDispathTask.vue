@@ -589,7 +589,7 @@ export default {
         this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['bedNumber'];
-        this.isContactisolationValue = null;
+        this.isContactisolationValue = casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'].toString();
         this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
         this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['number'];
         this.transportNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
@@ -616,7 +616,7 @@ export default {
             patientNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number == '住院号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].number,
             genderValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].sex == 1 ? '男': '女',
             actualData: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].quantity,
-            isContactisolationValue: null,
+            isContactisolationValue: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i]['quarantine'].toString(),
             sampleList: [], //病人信息模态框中运送大类列表 
             sampleValue: this.currentTransportRice, //病人信息模态框中选中的运送大类名称
             sampleId: casuallyTemporaryStorageCreateDispathTaskMessage['parentTypeId'], //病人信息模态框中选中的运送大类id

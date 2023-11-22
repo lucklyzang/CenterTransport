@@ -1191,6 +1191,7 @@
                   sex: item.sex,
                   age: item.age,
                   patientId: item.id,
+                  quarantine: item.quarantine,
                   number: item.number,
                   priority: item.priority,
                   taskRemark: item.taskRemark
@@ -1308,6 +1309,7 @@
                   sex: item.sex,
                   age: item.age,
                   patientId: item.id,
+                  quarantine: item.quarantine,
                   number: item.number,
                   priority: item.priority,
                   taskRemark: item.taskRemark

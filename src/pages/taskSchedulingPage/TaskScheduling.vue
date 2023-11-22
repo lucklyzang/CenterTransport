@@ -156,7 +156,7 @@
                             <div class="list-top-left-center" v-if="templateType == 'template_one' && item.quarantine == 1">
                               <img :src="contactIsolationPng">
                             </div>
-                            <div class="list-top-left-center" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
+                            <div class="list-top-left-center" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})">
                               <img :src="contactIsolationPng">
                             </div>
                           </div>

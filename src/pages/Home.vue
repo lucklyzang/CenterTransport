@@ -183,7 +183,7 @@
                     </div>
                     <div class="contact-isolation-box">
                       <image :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1"></image>
-								      <image :src="contactIsolationPng" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})"></image>
+								      <image :src="contactIsolationPng" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})"></image>
                     </div>
                     <div class="btn-area-trace">
                       <span @click="reminderTask(item)">
@@ -243,7 +243,7 @@
                                 </p>
                                 <p>
                                   <img :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1">
-                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
+                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})">
                                 </p>
                                 <p>
                                     {{stateTransfer(item.state)}}
@@ -417,7 +417,7 @@
                                 </p>
                                 <p>
                                   <img :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1">
-                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { el.quarantine == 1})">
+                                  <img :src="contactIsolationPng" v-else-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})">
                                 </p>
                                 <p>
                                   {{stateTransfer(item.state)}}
@@ -2602,6 +2602,7 @@
                     taskTypeName: item.taskTypeName,
                     toolName: item.toolName,
                     feedbackFlag: item.feedbackFlag,
+                    quarantine: item.quarantine,
                     priority: item.priority,
                     patientNumber: item.number,
                     id: item.id,
@@ -2633,6 +2634,7 @@
                     toolName: item.toolName,
                     priority: item.priority,
                     id: item.id,
+                    quarantine: item.quarantine,
                     patientName: item.patientName,
                     bedNumber: item.bedNumber,
                     workerName: item.workerName,
@@ -2646,6 +2648,8 @@
               this.noDataShow = true;
               this.taskCount = 0
             }
+          } else {
+            this.$toast(`${res.data.msg}`)
           }
         })
         .catch((err) => {
@@ -2691,6 +2695,7 @@
                   isShowFeedBack: false,
                   isShowFeedBackIconStyle: false,
                   isShowGiveLikeIconStyle: false,
+                  quarantine: item.quarantine,
                   workerName: item.workerName,
                   workerId: item.workerId,
                   finishTime: item.finishTime,
@@ -2707,6 +2712,8 @@
               this.noDataShow = true;
               this.taskCount = 0
             }
+          } else {
+            this.$toast(`${res.data.msg}`)
           }
         })
         .catch((err) => {
@@ -2760,6 +2767,8 @@
               this.noDataShow = true;
               this.taskCount = 0
             }
+          } else {
+            this.$toast(`${res.data.msg}`)
           }
         })
           .catch((err) => {

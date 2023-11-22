@@ -68,9 +68,9 @@
           <div class="contact-isolation-box">
             <p>接触隔离</p>
             <p>
-              <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#3B9DF9">
-                <van-radio icon-size="14px" name="1">是</van-radio>
-                <van-radio icon-size="14px" name="0">否</van-radio>
+              <van-radio-group v-model="isContactisolationValue" direction="horizontal" checked-color="#afe897">
+                <van-radio icon-size="20px" name="1">是</van-radio>
+                <van-radio icon-size="20px" name="0">否</van-radio>
               </van-radio-group>
             </p>
           </div>
@@ -220,7 +220,7 @@
       </div>
     </div>
     <div class="btn-area">
-        <span  @click="dispatchTaskSure">
+        <span  @click="getTransConfig">
           确 认
         </span>
       <span @click="dispatchTaskCancel">
@@ -1037,6 +1037,7 @@ export default {
         this.overlayShow = false
       })
     },
+
     // 查询是否配置接触隔离选项0-没配置1-配置
     getTransConfig () {
       this.showLoadingHint = true;
@@ -1900,7 +1901,15 @@ export default {
                 /deep/ .van-radio-group {
                   .van-radio--horizontal {
                     &:nth-child(1) {
-                      margin-right: 14px !important
+                      margin-right: 14px !important;
+                      .van-radio__label {
+                        color: #fdc050
+                      }
+                    };
+                    &:nth-child(2) {
+                      .van-radio__label {
+                        color: #0ac30a
+                      }
                     }
                   }
                 }
