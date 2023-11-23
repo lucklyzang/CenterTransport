@@ -589,7 +589,7 @@ export default {
         this.currentTransporterValue = casuallyTemporaryStorageCreateDispathTaskMessage['workerId'];
         this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
         this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['bedNumber'];
-        this.isContactisolationValue = casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'].toString();
+        this.isContactisolationValue = casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'] === null ? casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'] : casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'].toString();
         this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
         this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['number'];
         this.transportNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];

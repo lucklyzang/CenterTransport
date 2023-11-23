@@ -345,7 +345,7 @@ export default {
       this.currentTransportTool = casuallyTemporaryStorageCreateDispathTaskMessage['toolName'];
       this.patientNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['badNumber'];
       this.patientAgeValue = casuallyTemporaryStorageCreateDispathTaskMessage['age'];
-      this.isContactisolationValue = casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'].toString();
+      this.isContactisolationValue = casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'] === null ? casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'] : casuallyTemporaryStorageCreateDispathTaskMessage['quarantine'].toString();
       this.patientNameValue = casuallyTemporaryStorageCreateDispathTaskMessage['patientName'];
       this.admissionNumberValue = casuallyTemporaryStorageCreateDispathTaskMessage['hospitalNo'];
       this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';

@@ -119,6 +119,13 @@
                  </span>
                </p>
              </div>
+             <div class="handle-message-line-wrapper message-name">
+               <p>
+                 <span class="message-tit" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">姓名 : </span>
+                 <span class="message-tit-real" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">{{appointDetailsMessage.patientName ? appointDetailsMessage.patientName : '无'}}</span>
+                 <img :src="contactIsolationPng" v-if="appointDetailsMessage.quarantine == 1">
+               </p>
+             </div>
              <div class="handle-message-line-wrapper">
               <p>
                  <span class="message-tit" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">床号 : </span>
@@ -133,13 +140,6 @@
                <p>
                  <span class="message-tit" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">住院号 : </span>
                  <span class="message-tit-real" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">{{appointDetailsMessage.hospitalNo  ? appointDetailsMessage.hospitalNo  : '无'}}</span>
-               </p>
-             </div>
-             <div class="handle-message-line-wrapper message-name">
-               <p>
-                 <span class="message-tit" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">姓名 : </span>
-                 <span class="message-tit-real" :class="{'spanStyle' : appointDetailsMessage.quarantine == 1}">{{appointDetailsMessage.patientName ? appointDetailsMessage.patientName : '无'}}</span>
-                 <img :src="contactIsolationPng" v-if="appointDetailsMessage.quarantine == 1">
                </p>
              </div>
              <div class="handle-message-line-wrapper">
