@@ -1379,7 +1379,7 @@ export default {
           if (JSON.parse(res.data.data)[0]['value'] == 1) {
             if (this.templateType === 'template_one') {
               if (this.currentTransportRice == '检查') {
-                if (this.isContactisolationValue === null) {
+                if (this.isContactisolationValue === null || this.isContactisolationValue == -1) {
                   this.$toast('请确认病人是否需要接触隔离!')
                 } else {
                   this.sureEvent(true)
@@ -1389,7 +1389,7 @@ export default {
               }  
             } else if (this.templateType === 'template_two') {
               if (this.currentTransportRice == '检查') {
-                let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
+                let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null || item.isContactisolationValue == -1});
                 if (temporaryFlag) {
                   this.$toast('请确认病人是否需要接触隔离!')
                 } else {
