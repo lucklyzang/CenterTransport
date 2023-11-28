@@ -249,7 +249,6 @@
       <div class="slot-content">
         <div class="contact-isolation-box">
           <div>
-            <span>*</span>
             <span>接触隔离:</span>
           </div>
           <div>
@@ -473,7 +472,7 @@ export default {
   },
 
   mounted () {
-    console.log(this.transportantTaskMessage);
+    console.log(this.transportantTaskMessage.value);
     // 控制设备物理返回按键测试
     if (!IsPC()) {
       let that = this;
@@ -1046,18 +1045,26 @@ export default {
         if (res && res.data.code == 200) {
           if (JSON.parse(res.data.data)[0]['value'] == 1) {
             if (this.templateType === 'template_one') {
-              if (this.isContactisolationValue === null) {
-                this.$toast('请确认病人是否需要接触隔离!')
+              if (this.transportantTaskMessage.value == '检查') {
+                if (this.isContactisolationValue === null) {
+                  this.$toast('请确认病人是否需要接触隔离!')
+                } else {
+                  this.dispatchTaskSure(true)
+                }
               } else {
-                this.dispatchTaskSure(true)
-              }
+                this.dispatchTaskSure(false)
+              } 
             } else if (this.templateType === 'template_two') {
-              let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
-              if (temporaryFlag) {
-                this.$toast('请确认病人是否需要接触隔离!')
+              if (this.transportantTaskMessage.value == '检查') {
+                let temporaryFlag = this.templatelistTwo.some((item) => { return item.isContactisolationValue === null });
+                if (temporaryFlag) {
+                  this.$toast('请确认病人是否需要接触隔离!')
+                } else {
+                  this.dispatchTaskSure(true)
+                }
               } else {
-                this.dispatchTaskSure(true)
-              }
+                this.dispatchTaskSure(false)
+              } 
             }  
           } else {
             this.dispatchTaskSure(false)
@@ -1454,23 +1461,17 @@ export default {
                 font-size: 16px;
                 >span {
                   &:first-child {
-                    color: red;
-                  };
-                   &:last-child {
-                    color: #101010
+                    color: #101010;
                   }
                 }
               };
               &:last-child {
                 flex: 1;
                 border-bottom: 1px solid #ececec;
-                position: relative;
+                align-items: center;
+                display: flex;
                 /deep/ .van-radio-group {
                   width: 100%;
-                  position: absolute;
-                  top: 50%;
-                  left: 0;
-                  transform: translateY(-50%);
                   font-size: 16px;
                   color: @color-text-left;
                   .van-radio--horizontal {

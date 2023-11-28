@@ -765,7 +765,7 @@ export default {
       queryTransConfig(this.proId,'BOOK_QUARANTINE').then((res) => {
         if (res && res.data.code == 200) {
           if (JSON.parse(res.data.data)[0]['value'] == 1) {
-            if (this.isContactisolationValue === null) {
+            if (this.isContactisolationValue === null || this.isContactisolationValue == -1) {
               this.$toast('请确认病人是否需要接触隔离!')
             } else {
               this.sureEvent(true)
