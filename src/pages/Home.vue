@@ -182,8 +182,8 @@
                       </div>
                     </div>
                     <div class="contact-isolation-box">
-                      <image :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1"></image>
-								      <image :src="contactIsolationPng" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})"></image>
+                      <img :src="contactIsolationPng" v-if="templateType == 'template_one' && item.quarantine == 1" />
+								      <img :src="contactIsolationPng" v-if="templateType == 'template_two' && item['patientInfoList'].some((el) => { return el.quarantine == 1})" />
                     </div>
                     <div class="btn-area-trace">
                       <span @click="reminderTask(item)">
