@@ -1412,7 +1412,7 @@ export default {
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
-          quarantine: flag ? this.isContactisolationValue : -1,// 接触隔离
+          quarantine: this.isContactisolationValue === null ? -1 : this.isContactisolationValue,// 接触隔离
           assignId: this.workerId,   //分配者ID  当前登录者
           assignName: this.userName,   //分配者名称  当前登陆者
           createId: this.workerId,   //创建者ID  当前登录者
@@ -1472,7 +1472,7 @@ export default {
             patientName: patientItem['patientName'],
             age: patientItem['patientAgeValue'],
             number: patientItem['patientNumber'],
-            quarantine: flag ? patientItem['isContactisolationValue'] : -1, // 接触隔离
+            quarantine: patientItem['isContactisolationValue'] === null ? -1 : patientItem['isContactisolationValue'], // 接触隔离
             sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
             quantity: patientItem['actualData'],
             typeList: []

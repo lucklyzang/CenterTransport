@@ -814,7 +814,7 @@ export default {
           hospitalNo: this.admissionNumberValue,   //住院号
           id: this.schedulingTaskDetails.id, // 任务id
           isBack: 0,
-          quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
+          quarantine: this.isContactisolationValue === null ? -1 : this.isContactisolationValue, // 接触隔离
           badNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
           startUser: this.userName,   //创建者名称  当前登陆者

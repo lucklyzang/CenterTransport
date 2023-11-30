@@ -1445,7 +1445,7 @@ export default {
           patientName: this.patientNameValue,  //病人姓名
           sex: this.currentGender == '未选择' || this.currentGender == '未知' ? 0 : this.currentGender == '男' ? 1 : 2,    //病人性别  0-未指定,1-男, 2-女
           age: this.patientAgeValue,   //年龄
-          quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
+          quarantine: this.isContactisolationValue === null ? -1 : this.isContactisolationValue, // 接触隔离
           number: this.admissionNumberValue,   //住院号
           bedNumber: this.patientNumberValue,  //床号
           taskRemark: this.taskDescribe,   //备注
@@ -1506,7 +1506,7 @@ export default {
             bedNumber: patientItem['bedNumber'],
             patientName: patientItem['patientName'],
             age: patientItem['patientAgeValue'],
-            quarantine: flag ? patientItem['isContactisolationValue'] : -1,// 接触隔离
+            quarantine: patientItem['isContactisolationValue'] === null ? -1 : patientItem['isContactisolationValue'],// 接触隔离
             number: patientItem['patientNumber'],
             sex: patientItem['genderValue'] == '未知' ? 0 : patientItem['genderValue'] == '男' ?  1 : 2,
             quantity: patientItem['actualData'],

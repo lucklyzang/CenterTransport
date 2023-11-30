@@ -798,7 +798,7 @@ export default {
         age: this.patientAgeValue,   //年龄
         hospitalNo: this.admissionNumberValue,   //住院号
         isBack: 0,
-        quarantine: flag ? this.isContactisolationValue : -1, // 接触隔离
+        quarantine: this.isContactisolationValue === null ? -1 : this.isContactisolationValue, // 接触隔离
         badNumber: this.patientNumberValue,  //床号
         taskRemark: this.taskDescribe,   //备注
         // startUser: this.workerId,   //创建者ID  当前登录者
