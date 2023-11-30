@@ -1458,7 +1458,7 @@ export default {
           proId: this.proId,   //项目ID
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: 1 //创建类型   0-web端,1-手机端
+          createType: this.schedulingTaskDetails['createType'] //创建类型   0-web端,1-手机端
 
         };
         // 编辑调度任务
@@ -1487,7 +1487,7 @@ export default {
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 0 //创建类型   0-web端,1-手机端
+          createType: this.schedulingTaskDetails['createType'] //创建类型   0-web端,1-手机端
         };
         // 处理多个终点科室信息
         if (this.currentGoalSpaces.length > 0) {

@@ -826,7 +826,7 @@ export default {
           assignerName: this.userName, // 分配人
           modifyId: this.workerId, //修改人ID
           modifyName: this.userName, // 修改人
-          createType: 1,   //创建类型 0-接入，1-调度员
+          createType: this.schedulingTaskDetails['createType'],   //创建类型 0-接入，1-调度员
           isApp: 1 // 发起客户端类型 1-安卓APP，2-微信小程序 
         };
         // 处理选中的检查类型
