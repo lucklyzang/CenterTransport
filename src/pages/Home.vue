@@ -121,23 +121,13 @@
                         </p>
                         <P class="destiname-line" v-if="templateType === 'template_one'">
                           <span class="message-tit">目的地:</span>
-                          <span v-show="item.state !== 0 && item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
-                            class="message-tit-real message-tit-real-style">
-                            {{item.distName.length > 0 ? itemInner : '无'}}
-                          </span>
-                          <span v-show="item.state == 0 || item.state == 1"
-                            class="message-tit-real message-tit-real-style">
-                            {{!item.destinationName ? '无' : item.destinationName}}
+                          <span class="message-tit-real message-tit-real-style">
+                            {{ !item.destinationName  ? '无' : item.destinationName }}
                           </span>
                         </P>
                         <P class="destiname-line" v-else-if="templateType == 'template_two'">
                           <span class="message-tit">目的地:</span>
-                          <span v-show="item.state !== 0 && item.state !== 1" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`"
-                                class="message-tit-real message-tit-real-style">
-                            {{item.distName.length > 0 ? itemInner : '无'}}
-                          </span>
-                          <span v-show="item.state == 0 || item.state == 1"
-                                v-for="(itemInner,indexInner) in item.destinationName"
+                          <span v-for="(itemInner,indexInner) in item.destinationName"
                                 :key="`${itemInner}-${indexInner}`"
                                 class="message-tit-real message-tit-real-style">
                             {{item.destinationName.length > 0 ? itemInner.destinationName : '无'}}
@@ -149,7 +139,7 @@
                         </p>
                         <p v-else-if="templateType == 'template_two'">
                           <span class="message-tit">运送类型:</span>
-                          <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                          <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0].typeList[0].parentTypeName : '无'}}</span>
                         </p>
                         <P>
                           <span class="message-tit">状态:</span>
@@ -173,7 +163,7 @@
                         </p>
                         <P v-else-if="templateType == 'template_two'">
                           <span class="message-tit">病人:</span>
-                          <span class="message-tit-real message-tit-real-style">{{item['patientInfoList'][0]['patientName']}}</span>
+                          <span class="message-tit-real message-tit-real-style">{{ extractPatientName(item['patientInfoList']) }}</span>
                         </P>
                         <P>
                           <span class="message-tit">转运工具:</span>
@@ -256,7 +246,7 @@
                                 </p>
                                 <p v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">运送类型:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0].typeList[0].parentTypeName : '无'}}</span>
                                 </p>
                               </div>
                               <div class="handle-message-line-wrapper">
@@ -264,10 +254,20 @@
                                   <span class="message-tit">出发地:</span>
                                   <span class="message-tit-real">{{item.setOutPlaceName}}</span>
                                 </P>
-                                <p>
+                               <P class="destiname-line" v-if="templateType === 'template_one'">
                                   <span class="message-tit">目的地:</span>
-                                  <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
-                                </p>
+                                  <span class="message-tit-real message-tit-real-style">
+                                    {{ !item.destinationName  ? '无' : item.destinationName }}
+                                  </span>
+                                </P>
+                                <P class="destiname-line" v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">目的地:</span>
+                                  <span v-for="(itemInner,indexInner) in item.destinationName"
+                                        :key="`${itemInner}-${indexInner}`"
+                                        class="message-tit-real message-tit-real-style">
+                                    {{item.destinationName.length > 0 ? itemInner.destinationName : '无'}}
+                                  </span>
+                                </P>
                               </div>
                               <div class="handle-message-line-wrapper">
                                 <p>
@@ -290,7 +290,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['number']:'无'}}</span>
+                                  <span class="message-tit-real">{{ extractAdmissionNumber(item.patientInfoList) }}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -430,7 +430,7 @@
                                 </p>
                                 <p v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">运送类型:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0]['typeList'][0]['taskTypeName'] : '无'}}</span>
+                                  <span class="message-tit-real">{{item.patientInfoList[0]['typeList'].length > 0 ? item.patientInfoList[0].typeList[0].parentTypeName : '无'}}</span>
                                 </p>
                               </div>
                               <div class="handle-message-line-wrapper">
@@ -438,10 +438,20 @@
                                   <span class="message-tit">出发地:</span>
                                   <span class="message-tit-real">{{item.setOutPlaceName}}</span>
                                 </P>
-                                <p>
+                               <P class="destiname-line" v-if="templateType === 'template_one'">
                                   <span class="message-tit">目的地:</span>
-                                  <span style="margin-right: 4px;" class="message-tit-real" v-for="(itemInner,indexInner) in item.distName" :key="`${itemInner}-${indexInner}`">{{item.distName.length > 0 ? itemInner : '无'}}</span>
-                                </p>
+                                  <span class="message-tit-real message-tit-real-style">
+                                    {{ !item.destinationName  ? '无' : item.destinationName }}
+                                  </span>
+                                </P>
+                                <P class="destiname-line" v-else-if="templateType == 'template_two'">
+                                  <span class="message-tit">目的地:</span>
+                                  <span v-for="(itemInner,indexInner) in item.destinationName"
+                                        :key="`${itemInner}-${indexInner}`"
+                                        class="message-tit-real message-tit-real-style">
+                                    {{ item.destinationName.length > 0 ? itemInner.destinationName : '无' }}
+                                  </span>
+                                </P>
                               </div>
                               <div class="handle-message-line-wrapper">
                                 <p>
@@ -464,7 +474,7 @@
                                 </p>
                                 <p class="adimission-number" v-else-if="templateType == 'template_two'">
                                   <span class="message-tit">住院号:</span>
-                                  <span class="message-tit-real">{{item.patientInfoList.length > 0 ? item.patientInfoList[0]['number']:'无'}}</span>
+                                  <span class="message-tit-real">{{ extractAdmissionNumber(item.patientInfoList) }}</span>
                                 </p>
                                 <p>
                                   <span class="message-tit">运送工具:</span>
@@ -1495,6 +1505,27 @@
             break;
         }
       },
+
+      // 提取住院号
+			extractAdmissionNumber (patientInfoList) {
+				if (patientInfoList.length == 0) { return "无"};
+				let temporaryArr = [];
+				for (let item of patientInfoList) {
+					temporaryArr.push(item.number)
+				};
+				return temporaryArr.join("、")
+			},
+
+       // 提取病人姓名
+			extractPatientName (patientInfoList) {
+				if (patientInfoList.length == 0) { return "无"};
+				let temporaryArr = [];
+				for (let item of patientInfoList) {
+					temporaryArr.push(item.patientName)
+				};
+				return temporaryArr.join("、")
+			},
+
 
       // 查询是否有新任务
       queryNewWork (proId,workerId) {
