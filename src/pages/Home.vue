@@ -2273,10 +2273,12 @@
 				let AppointDistList = [];
 				if (checkItems.length > 0) {
 					for (let item of checkItems) {
-						AppointDistList.push(item.depName)
-					}
-				};
-				return checkEmptyArray(AppointDistList)
+						AppointDistList.push(!item.depName ? '无' : item.depName)
+					};
+          return checkEmptyArray(AppointDistList)
+				} else {
+          return []
+        }
 			},
 
 
