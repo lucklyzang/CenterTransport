@@ -1422,7 +1422,7 @@ export default {
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: 2 //创建类型   0-web端,1-手机端
+          createType: 3 //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
         };
         // 创建调度任务
         this.postGenerateDispatchTask(taskMessage);
@@ -1452,7 +1452,7 @@ export default {
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 2 //创建类型   0-web端,1-手机端
+          createType: 3 //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
         };
         // 处理多个终点科室信息
         if (this.currentGoalSpaces.length > 0) {
