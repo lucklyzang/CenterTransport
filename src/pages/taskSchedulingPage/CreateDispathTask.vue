@@ -813,6 +813,15 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
+          } else {
+            this.loadingText = '';
+            this.loadingShow = false;
+            this.overlayShow = false;
+            this.$dialog.alert({
+              message: `${res.data.msg}`,
+              closeOnPopstate: true
+            }).then(() => {
+            })
           }
         })
         .catch((err) => {
@@ -828,6 +837,15 @@ export default {
           if (res && res.data.code == 200) {
             if (res.data.data.length > 0) {
               resolve(res.data.data)
+            } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
             }
           }
         })
@@ -982,7 +1000,16 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
         .catch((err) => {
           reject(err.message)
@@ -997,7 +1024,16 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
         .catch((err) => {
           reject(err.message)
