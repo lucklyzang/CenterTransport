@@ -825,7 +825,7 @@ export default {
           }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },
@@ -850,7 +850,7 @@ export default {
           }
         })
           .catch((err) => {
-            reject(err.message)
+            reject({message:err.message})
           })
       })
     },
@@ -988,7 +988,7 @@ export default {
             }
           })
           .catch((err) => {
-            reject(err.message)
+            reject({message:err.message})
           })
         })
       },
@@ -1012,7 +1012,7 @@ export default {
             }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },
@@ -1036,7 +1036,7 @@ export default {
             }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },

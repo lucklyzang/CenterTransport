@@ -862,10 +862,19 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },
@@ -878,10 +887,19 @@ export default {
             if (res.data.data.length > 0) {
               resolve(res.data.data)
             }
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
           .catch((err) => {
-            reject(err.message)
+            reject({message:err.message})
           })
       })
     },
@@ -1034,10 +1052,19 @@ export default {
           queryAllDestination(this.proId).then((res) => {
             if (res && res.data.code == 200) {
               resolve(res.data.data)
+            } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
             }
           })
           .catch((err) => {
-            reject(err.message)
+            reject({message:err.message})
           })
         })
       },
@@ -1049,10 +1076,19 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },
@@ -1064,10 +1100,19 @@ export default {
         .then((res) => {
           if (res && res.data.code == 200) {
             resolve(res.data.data)
-          }
+          } else {
+              this.loadingText = '';
+              this.loadingShow = false;
+              this.overlayShow = false;
+              this.$dialog.alert({
+                message: `${res.data.msg}`,
+                closeOnPopstate: true
+              }).then(() => {
+              })
+            }
         })
         .catch((err) => {
-          reject(err.message)
+          reject({message:err.message})
         })
       })
     },
