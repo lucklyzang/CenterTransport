@@ -682,8 +682,8 @@ export default {
 			  this.patienModalMessage = _.cloneDeep(this.templatelistTwo[index]);
 			  // 过滤掉运送类型小类值为空的情况
 			  this.patienModalMessage['transportList'] = this.patienModalMessage['transportList'].filter((item) => { return !item['text'] != true });
+        this.transferGenderTwo();
 			});
-      this.transferGenderTwo();
       //病人信息展示框运送大类、运送小类为空时,给编辑病人信息模态框的运送大类和小类赋值)
       if (!this.templatelistTwo[index]['sampleValue']) {
         this.patienModalMessage['sampleList']  = this.transportTypeParent; //病人信息模态框中运送大类列表 
