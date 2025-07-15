@@ -687,6 +687,7 @@ export default {
   .content-wrapper {
     .content-wrapper();
     background: #f6f6f6;
+    height: 100vh !important;
     font-size: 14px;
       .left-dropDown {
       .rightDropDown
@@ -763,8 +764,8 @@ export default {
       padding: 20px;
       box-sizing: border-box;
       background: #fff;
-      overflow: auto;
       flex: 1;
+      overflow: auto;
       display: flex;
       flex-flow: column;
       .circulation-area {

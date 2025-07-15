@@ -28,7 +28,7 @@
         </van-popup>
     </div>
     <div class="content-middle-content">
-      <van-tabs v-model="activeName" @click="onClickTab" line-width="20px">
+      <van-tabs v-model="activeName" @click="onClickTab" line-width="20px" :ellipsis="false">
         <van-tab name="0">
           <div slot="title">
             <span class="title">已完成</span>
@@ -227,7 +227,7 @@
         </van-tab>
 <!--        <span class="message-tit">循环频率:</span>-->
 <!--        <span class="message-tit-real">{{item.circleRate}}</span>-->
-        <van-tab  name="4">
+        <van-tab  name="4" title-style="flex-basis: 35% !important">
           <div slot="title">
             <span class="title">循环配置</span>
             <span class="right-sign sign-finish" v-show="currentIndex == 4">{{`(${taskCount})`}}</span>
@@ -515,9 +515,10 @@ export default {
 
       // 查询循环情况
       queryCirculationTaskCondition (data,index) {
-        this.initData();
         this.showLoadingHint = true;
+        this.taskCount = 0;
         getCirculationCondition(data).then((res) => {
+          this.initData();
           this.showLoadingHint = false;
           if (res && res.data.code == 200) {
             if (index == 0) {
@@ -788,13 +789,16 @@ export default {
           margin-right: 4px;
         }
         .right-sign {
-          .circulation-status-sign
+          .circulation-status-sign('','',0,'')
         };
         .van-tabs__nav {
           .van-tab {
             font-size: 18px;
             color: #b0b0b0 !important;
-            flex-basis: 33% !important;
+            flex-basis: 30% !important;
+            &:last-child {
+              flex-basis: 35% !important;
+            }
           };
           .van-tab--active {
             color: black !important;
