@@ -239,7 +239,7 @@
             <p class="list-status">
               <img :src="stateTransferImg(item.state)" alt="">
             </p>
-            <div class="wait-handle-message">
+            <div class="wait-handle-message wait-handle-message-config">
               <div class="wait-handle-message-one">
                 <span class="message-tit">开始时间 :</span>
                 <span class="message-tit-real">{{item.circleStartTime}}</span>
@@ -832,6 +832,9 @@ export default {
           line-height: 50px;
           font-size: 13px;
           color: #c7c7c7
+        };
+        .wait-handle-message-config {
+          padding-top: 30px !important;
         };
         .wait-handle-message {
           font-size: 16px;

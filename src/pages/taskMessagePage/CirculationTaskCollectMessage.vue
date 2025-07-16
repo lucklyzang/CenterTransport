@@ -45,7 +45,7 @@
          </div>
        </div>
      </div>
-     <div class="wait-handle-message-middle">
+     <div class="wait-handle-message-middle" ref="waitHandleMessageMiddle">
        <div class="circulation-area-title">
          <span>标本名称</span>
          <span>数量</span>
@@ -59,7 +59,7 @@
          </p>
        </div>
      </div>
-    <div class="btn-area">
+    <div class="btn-area" v-show="hideShow">
       <p class="circultion-task-btn-top">
         <span @click="collectMessageSure">确 认</span>
         <span @click="collectMessageCancel">取 消</span>
@@ -114,6 +114,7 @@ export default {
       taskDeletePng: require('@/components/images/task-delete.png'),
       taskSurePng: require('@/components/images/task-sure.png'),
       taskCancelPng: require('@/components/images/task-cancel.png'),
+      hideShow: true
     }
   },
 
@@ -128,6 +129,7 @@ export default {
   },
 
   mounted () {
+    this.keyboardEventDispose();
     this.parallelFunction();
     // 回显收集过的科室信息
     this.echoCollectedMessage();
@@ -185,6 +187,34 @@ export default {
       'changeIsDeleteEcho',
       'changeIsClickSure'
     ]),
+
+    beforeDestroy() {
+      window.removeEventListener('resize');
+    },
+
+    // 键盘事件处理
+    keyboardEventDispose () {
+      const originalHeight = document.documentElement.clientHeight || document.body.clientHeight;
+      const waitHandleMessageMiddleHeight = this.$refs['waitHandleMessageMiddle'].offsetHeight;
+      window.onresize = () => {
+        return (() => {
+          //键盘弹起与隐藏都会引起窗口的高度发生变化
+          const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+            if (resizeHeight - 0 < originalHeight - 0) {
+              document.querySelector("body").setAttribute("style","height:" + originalHeight + "px !important;");
+              document.querySelector(".content-wrapper").setAttribute("style","height:" + originalHeight + "px !important;");
+              document.querySelector(".wait-handle-message-middle").setAttribute("style","height:" + waitHandleMessageMiddleHeight + "px !important;flex:none !important");
+              this.hideShow = false;
+            } else {
+              document.querySelector("body").setAttribute("style", "height:100vh !important");
+              document.querySelector(".content-wrapper").setAttribute("style", "height:100vh !important");
+              document.querySelector(".wait-handle-message-middle").style.removeProperty('height');
+              document.querySelector(".wait-handle-message-middle").setAttribute("style","flex:1 !important");
+              this.hideShow = true;
+            }
+        })()
+      }
+    },
 
      // 右边下拉框菜单点击
       leftLiCLick (index) {
@@ -687,7 +717,8 @@ export default {
   .content-wrapper {
     .content-wrapper();
     background: #f6f6f6;
-    height: 100vh !important;
+    min-height: 0;
+    height: 100vh;
     font-size: 14px;
       .left-dropDown {
       .rightDropDown
