@@ -1,18 +1,19 @@
 <template>
   <div class="num-box">
     <div class="subtract-box"
-          @click.stop="minusNumEvent">
-<!--      <van-icon name="minus" />-->
-      <span></span>
+      @click.stop="minusNumEvent">
+     <van-icon name="minus" />
     </div>
-    <input
-      @click.stop="inpuntEvent"
-      type="number"
-      :disabled="disabled"
-      :value="val"
-      @blur="inputBlur"
-      @input="stepperValChange"
-    />
+    <div class="input-box">
+       <input
+        @click.stop="inpuntEvent"
+        type="number"
+        :disabled="disabled"
+        :value="val"
+        @blur="inputBlur"
+        @input="stepperValChange"
+      />
+    </div>
     <div class="plus-box"
           @click.stop="plusNumEvent">
       <van-icon name="plus" />
@@ -136,18 +137,18 @@ export default {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    span {
-      display: inline-block;
-      width: 10px;
-      height: 1px;
-      background: #fff
+    .van-icon-minus {
+      font-size: 13px
     }
   };
-  input {
-    width: 100px;
-    height: 100%;
-    background: #a7a7a7;
-  };
+ 	.input-box {
+			flex: 1;
+			height: 100%;
+			input {
+				background: #a7a7a7;
+				width: 100%;
+			}
+	};
   .plus-box  {
     width: 38px;
     height: 38px;
