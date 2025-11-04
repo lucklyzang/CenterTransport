@@ -25,7 +25,7 @@ export default {
     isCompleteDispatchIssuePhotoList: []
   },
   getters:{
-    navTopTitle: state => state.navTitle,
+    navTitle: state => state.navTitle,
     dispatchTaskMessage: state => state.dispatchTaskMessage,
     dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
     dispatchTaskCancelIdList: state => state.dispatchTaskCancelIdList,

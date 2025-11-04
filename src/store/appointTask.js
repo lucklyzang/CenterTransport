@@ -8,7 +8,8 @@ export default {
     originalSignature: null,
     completeSweepcodeDestinationInfo: [],
     completeSweepcodeDepartureInfo: [],
-    completeCheckedItemInfo: []
+    completeCheckedItemInfo: [],
+    isAppointTaskFirstSweepCode: false
   },
   getters:{
     appointTaskMessage: state => state.appointTaskMessage,
