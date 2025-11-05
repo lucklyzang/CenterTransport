@@ -2,7 +2,7 @@ import { setStore, getStore, removeStore } from '@/common/js/utils'
 
 export default {
   state:{
-    navTitle: '中央运送',
+    navTopTitle: '中央运送',
     dispatchTaskMessage: null,
     dispatchTaskTransferIdList: [],
     dispatchTaskCancelIdList: [],
@@ -25,7 +25,7 @@ export default {
     isCompleteDispatchIssuePhotoList: []
   },
   getters:{
-    navTitle: state => state.navTitle,
+    navTopTitle: state => state.navTopTitle,
     dispatchTaskMessage: state => state.dispatchTaskMessage,
     dispatchTaskTransferIdList: state => state.dispatchTaskTransferIdList,
     dispatchTaskCancelIdList: state => state.dispatchTaskCancelIdList,
@@ -50,7 +50,7 @@ export default {
   mutations:{
     // 改变页面标题
     changeTitleTxt (state,payLoad) {
-      state.navTitle = payLoad.tit
+      state.navTopTitle = payLoad.tit
     },
 
     // 改变调度任务信息状态
