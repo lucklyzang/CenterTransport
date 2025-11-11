@@ -286,10 +286,12 @@ export default {
     // 处理预约任务检查项
     disposeCheckType (item) {
       let temporaryArray = [];
-      for (let item of item) {
-        temporaryArray.push(item.checkTypeName)
-      };
-      return temporaryArray.join('、')
+      if (Object.prototype.toString.call(item) === '[object Array]') {
+        for (let innerItem of item) {
+          temporaryArray.push(innerItem.checkTypeName)
+        };
+        return temporaryArray.join('、')
+      }
     },
 
     // 优先级转换
