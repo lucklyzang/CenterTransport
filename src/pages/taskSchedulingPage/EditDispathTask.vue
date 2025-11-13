@@ -691,12 +691,18 @@ export default {
         this.patienModalMessage['sampleId'] = this.currentTransportRiceValue; //病人信息模态框中选中的运送大类id
         this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
       };
+      this.patienModalMessage['sampleValue'] = this.currentTransportRice; //病人信息模态框中选中的运送大类名称
+      this.patienModalMessage['sampleId'] = this.currentTransportRiceValue; //病人信息模态框中选中的运送大类id
       //运送大类列表为空时,给编辑病人信息模态框的运送大类赋值
       if (this.templatelistTwo[index]['sampleList'].length == 0) {
-        this.patienModalMessage['sampleList']  = this.transportTypeParent //病人信息模态框中运送大类列表 
+        this.$nextTick(() => {
+          this.patienModalMessage['sampleList']  = this.transportTypeParent //病人信息模态框中运送大类列表 
+        })
       };
       if (this.templatelistTwo[index].actualData == 0) {
-        this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
+        this.$nextTick(() => {
+          this.patienModalMessage['transportList'] = _.cloneDeep(this.commonTransportList) //病人信息模态框中根据运送大类查询出的运送小类列表
+        })
       }
     },
 
