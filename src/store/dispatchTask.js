@@ -9,7 +9,7 @@ export default {
     dispatchTaskState: '',
     dispatchTaskId: '',
     dispatchTaskDepartmentType: '',
-    isCoerceTakePhoto: false,
+    isCoerceTakePhoto: '',
     isCompleteSweepCode: [],
     isCompleteSweepCodeDestinationList: [],
     isDispatchTaskFirstSweepCode: true,
