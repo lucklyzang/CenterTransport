@@ -81,7 +81,7 @@ export default {
     },
     //改变是否强制拍照的状态
     changeIsCoerceTakePhoto (state,payLoad) {
-      state.isCoerceTakePhoto = payLoad
+      state.isCoerceTakePhoto = Number(payLoad)
     },
     //改变是否完成扫码的状态(出发地和单一目的地的id)
     changeisCompleteSweepCode (state,payLoad) {
