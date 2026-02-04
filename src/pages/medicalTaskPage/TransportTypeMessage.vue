@@ -95,6 +95,18 @@
             </van-radio-group>
           </div>
         </div>
+        <div class="concat-box">
+            <div class="concat-box-left">
+              <span>联系人(电话)</span>
+            </div>
+            <div class="concat-box-right">
+              <van-field
+                v-model="contact"
+                type="text"
+                placeholder="请输入联系方式"
+              />
+            </div>
+        </div>
         <div class="describle-box">
           <van-field v-model="taskDescribe"   type="textarea"
           autosize label="任务描述" placeholder="请输入任务描述"/>
@@ -212,6 +224,18 @@
               <van-icon name="plus" />
             </span>
             添加病人信息
+        </div>
+        <div class="concat-box">
+            <div class="concat-box-left">
+              <span>联系人(电话)</span>
+            </div>
+            <div class="concat-box-right">
+              <van-field
+                v-model="contact"
+                type="text"
+                placeholder="请输入联系方式"
+              />
+            </div>
         </div>
         <div class="describle-box">
           <van-field v-model="taskDescribe"   type="textarea" rows="1"
@@ -418,7 +442,8 @@ export default {
       taskDescribe: '',
       actualData: '',
       taskSurePng: require('@/components/images/task-sure.png'),
-      taskCancelPng: require('@/components/images/task-cancel.png')
+      taskCancelPng: require('@/components/images/task-cancel.png'),
+      contact: ''
     }
   },
 
@@ -1129,7 +1154,8 @@ export default {
             proName: this.proName,   //项目名称
             isBack: this.judgeResult,  //是否返回出发地  0-不返回，1-返回
             createType: 1,   //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-            startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序  
+            startTerminal: 1, // 发起客户端类型 1-安卓APP，2-微信小程序
+            contact: this.contact // 联系方式  
           };
           // 创建调度任务
           this.postGenerateDispatchTask(taskMessage);
@@ -1158,7 +1184,8 @@ export default {
             proName: this.proName, //项目名称
             isBack: this.judgeResult, //是否返回出发地  0-不返回，1-返回
             createType: 1, //创建类型   0-调度员,1-医务人员(平板创建),2-医务人员(小程序)
-            startTerminal: 1 // 发起客户端类型 1-安卓APP，2-微信小程序
+            startTerminal: 1, // 发起客户端类型 1-安卓APP，2-微信小程序
+            contact: this.contact // 联系方式
           };
           // 获取目的地列表数据
           // if (this.destinationListValue.length > 0) {
@@ -1917,18 +1944,45 @@ export default {
               }
             }
           }  
-        }
+        };
+        .concat-box {
+          width: 100%;
+          padding: 8px 10px;
+          box-sizing: border-box;
+          background: #fff;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 14px;
+          margin-top: 6px;
+          .concat-box-left {
+            width: 105px;
+            >span {
+              font-size: 14px;
+              color: @color-text-left;
+              box-sizing: border-box
+            }
+          };
+          .concat-box-right {
+            flex: 1;
+            /deep/ .van-cell {
+              padding: 4px 6px !important;
+              background: #F9F9F9
+            }
+          }
+        };
         .describle-box {
           width: 100%;
           border-bottom: 12px solid #f6f6f6;
           /deep/ .van-cell {
             padding: 10px 10px;
             .van-field__label {
-              width: 80px;
+              width: 105px;
               text-align: left;
               font-size: 14px;
               color: @color-text-left;
-              margin-top: 6px
+              margin-top: 6px;
+              margin-right: 0 !important;
             }
             .van-field__value {
               .van-field__body {
@@ -2439,6 +2493,32 @@ export default {
             }
           }
         };
+        .concat-box {
+          width: 100%;
+          padding: 8px 10px;
+          box-sizing: border-box;
+          background: #fff;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 14px;
+          margin-top: 6px;
+          .concat-box-left {
+            width: 105px;
+            >span {
+              font-size: 14px;
+              color: @color-text-left;
+              box-sizing: border-box
+            }
+          };
+          .concat-box-right {
+            flex: 1;
+            /deep/ .van-cell {
+              padding: 4px 6px !important;
+              background: #F9F9F9
+            }
+          }
+        };
         .describle-box {
           width: 100%;
           border-top: 12px solid #f6f6f6;
@@ -2446,11 +2526,12 @@ export default {
           /deep/ .van-cell {
             padding: 10px 10px;
             .van-field__label {
-              width: 80px;
+              width: 105px;
               text-align: left;
               font-size: 14px;
               color: @color-text-left;
-              margin-top: 6px
+              margin-top: 6px;
+              margin-right: 0 !important;
             }
             .van-field__value {
               .van-field__body {

@@ -346,6 +346,18 @@
               </van-radio-group>
             </div>
           </div>
+          <div class="concat-box">
+            <div class="concat-box-left">
+              <span>联系人(电话)</span>
+            </div>
+            <div class="concat-box-right">
+              <van-field
+                v-model="contact"
+                type="text"
+                placeholder="请输入联系方式"
+              />
+            </div>
+          </div>
           <div class="task-describe transport-type">
             <div class="transport-type-left">
               <span>任务描述</span>
@@ -498,7 +510,8 @@ export default {
         {tit:'调度任务'},
         {tit:'预约任务'},
         {tit:'循环任务'}
-      ]
+      ],
+      contact: ''
     }
   },
 
@@ -593,6 +606,7 @@ export default {
         this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['currentGender'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'];
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'];
+        this.contact = casuallyTemporaryStorageCreateDispathTaskMessage['contact'];
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'];
         this.currentTransportRice = casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'];
@@ -607,7 +621,8 @@ export default {
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'];
         this.templatelistTwo = casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'];
         this.patienModalMessage = casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'];
-        this.commonTransportList = casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList']
+        this.commonTransportList = casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList'];
+        this.contact = casuallyTemporaryStorageCreateDispathTaskMessage['contact'];
       }
     },
 
@@ -1458,7 +1473,8 @@ export default {
           workerName: this.currentTransporter == '请选择' ? '' : this.currentTransporter, // 运送员姓名
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: 3 //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
+          createType: 3, //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
+          contact: this.contact
         };
         // 创建调度任务
         this.postGenerateDispatchTask(taskMessage);
@@ -1488,7 +1504,8 @@ export default {
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: 3 //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
+          createType: 3, //创建类型   0-web端,1-手机端(医护),3-手机端(任务调度)
+          contact: this.contact
         };
         // 处理多个终点科室信息
         if (this.currentGoalSpaces.length > 0) {
@@ -1645,6 +1662,7 @@ export default {
         casuallyTemporaryStorageCreateDispathTaskMessage['currentGender'] = this.currentGender;
         casuallyTemporaryStorageCreateDispathTaskMessage['isBackRadioValue'] = this.isBackRadioValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'] = this.taskDescribe;
+        casuallyTemporaryStorageCreateDispathTaskMessage['contact'] = this.contact;
       } else if (this.templateType === 'template_two') {
         casuallyTemporaryStorageCreateDispathTaskMessage['priorityRadioValue'] = this.priorityRadioValue;
         casuallyTemporaryStorageCreateDispathTaskMessage['currentTransportRice'] = this.currentTransportRice;
@@ -1659,7 +1677,8 @@ export default {
         casuallyTemporaryStorageCreateDispathTaskMessage['taskDescribe'] = this.taskDescribe;
         casuallyTemporaryStorageCreateDispathTaskMessage['templatelistTwo'] = this.templatelistTwo;
         casuallyTemporaryStorageCreateDispathTaskMessage['patienModalMessage'] = this.patienModalMessage;
-        casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList'] = this.commonTransportList
+        casuallyTemporaryStorageCreateDispathTaskMessage['commonTransportList'] = this.commonTransportList;
+        casuallyTemporaryStorageCreateDispathTaskMessage['contact'] = this.contact;
       };
       casuallyTemporaryStorageCreateDispathTaskMessage['isTemporaryStorage'] = true;
       this.changeTemporaryStorageCreateDispathTaskMessage(casuallyTemporaryStorageCreateDispathTaskMessage);
@@ -2143,6 +2162,30 @@ export default {
               }
             };
           };
+          .concat-box {
+            width: 100%;
+            padding: 8px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-top: 6px;
+            .concat-box-left {
+              width: 105px;
+              >span {
+                color: #9E9E9A;
+              }
+            };
+            .concat-box-right {
+              flex: 1;
+              /deep/ .van-cell {
+                padding: 4px 6px !important;
+                background: #F9F9F9
+              }
+            }
+          };
           .transport-type {
             width: 100%;
             padding: 10px 6px;
@@ -2153,8 +2196,7 @@ export default {
             font-size: 14px;
             margin-top: 6px;
             .transport-type-left {
-              padding: 0 10px;
-              box-sizing: border-box;
+              width: 105px;
               >span {
                 &:nth-child(1) {
                   color: #9E9E9A

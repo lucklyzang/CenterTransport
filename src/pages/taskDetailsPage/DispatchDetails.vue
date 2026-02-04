@@ -127,6 +127,12 @@
                </div>
               </div>
            </div>
+           <div class="handle-message-line-wrapper handle-message-line-wrapper-contact">
+              <p>
+                <span class="message-tit">联系人(电话) :&nbsp;</span>
+                <span class="message-tit-real">{{ dispatchTaskMessage.contact ? dispatchTaskMessage.contact : '无' }}</span>
+              </p>
+           </div>
            <div class="wait-handle-message-bottom">
               <div class="handle-message-line-wrapper">
                <p class="describe-line-wrapper">
@@ -919,6 +925,14 @@ export default {
         };
         .wait-handle-message-bottom {
           margin-top: 10px
+        };
+        .handle-message-line-wrapper-contact {
+          p {
+            overflow: hidden !important;
+            span:first-child {
+              width: 33% !important;
+            }
+           }
         };
         .handle-message-line-wrapper {
           p {

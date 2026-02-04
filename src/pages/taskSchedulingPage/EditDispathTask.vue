@@ -346,6 +346,18 @@
               </van-radio-group>
             </div>
           </div>
+          <div class="concat-box">
+            <div class="concat-box-left">
+              <span>联系人(电话)</span>
+            </div>
+            <div class="concat-box-right">
+              <van-field
+                v-model="contact"
+                type="text"
+                placeholder="请输入联系方式"
+              />
+            </div>
+          </div>
           <div class="task-describe transport-type">
             <div class="transport-type-left">
               <span>任务描述</span>
@@ -482,7 +494,8 @@ export default {
         {tit:'调度任务'},
         {tit:'预约任务'},
         {tit:'循环任务'}
-      ]
+      ],
+      contact: ''
     }
   },
 
@@ -595,6 +608,7 @@ export default {
         this.currentGender = casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 0 ? '未知' : casuallyTemporaryStorageCreateDispathTaskMessage['sex'] == 1 ? '男' : '女';
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
+        this.contact = casuallyTemporaryStorageCreateDispathTaskMessage['contact'];
         this.querytransportChildByTransportParent(0, casuallyTemporaryStorageCreateDispathTaskMessage.parentTypeId, this.templateType,true);
       } else if (this.templateType === 'template_two') {
         this.priorityRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['priority'].toString();
@@ -607,6 +621,7 @@ export default {
         this.taskTransportTotal = casuallyTemporaryStorageCreateDispathTaskMessage['actualCount'];
         this.isBackRadioValue = casuallyTemporaryStorageCreateDispathTaskMessage['isBack'].toString();
         this.taskDescribe = casuallyTemporaryStorageCreateDispathTaskMessage['taskRemark'];
+        this.contact = casuallyTemporaryStorageCreateDispathTaskMessage['contact'];
         for (let i = 0,len = casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'].length; i < len; i++) {
           this.templatelistTwo.push({
             bedNumber: casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber == '床号未输入' ? '' : casuallyTemporaryStorageCreateDispathTaskMessage['patientInfoList'][i].bedNumber,
@@ -1511,7 +1526,8 @@ export default {
           proId: this.proId,   //项目ID
           proName: this.proName,   //项目名称
           isBack: this.isBackRadioValue,  //是否返回出发地  0-不返回，1-返回
-          createType: this.schedulingTaskDetails['createType'] //创建类型
+          createType: this.schedulingTaskDetails['createType'], //创建类型
+          contact: this.contact
 
         };
         // 编辑调度任务
@@ -1540,7 +1556,8 @@ export default {
           proId: this.proId, //项目ID
           proName: this.proName, //项目名称
           isBack: this.isBackRadioValue, //是否返回出发地  0-不返回，1-返回
-          createType: this.schedulingTaskDetails['createType'] //创建类型
+          createType: this.schedulingTaskDetails['createType'], //创建类型
+          contact: this.contact
         };
         // 处理多个终点科室信息
         if (this.currentGoalSpaces.length > 0) {
@@ -2145,6 +2162,30 @@ export default {
               }
             };
           };
+          .concat-box {
+            width: 100%;
+            padding: 8px 6px;
+            box-sizing: border-box;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-top: 6px;
+            .concat-box-left {
+              width: 105px;
+              >span {
+                color: #9E9E9A;
+              }
+            };
+            .concat-box-right {
+              flex: 1;
+              /deep/ .van-cell {
+                padding: 4px 6px !important;
+                background: #F9F9F9
+              }
+            }
+          };
           .transport-type {
             width: 100%;
             padding: 10px 6px;
@@ -2155,8 +2196,7 @@ export default {
             font-size: 14px;
             margin-top: 6px;
             .transport-type-left {
-              padding: 0 10px;
-              box-sizing: border-box;
+              width: 105px;
               >span {
                 &:nth-child(1) {
                   color: #9E9E9A
