@@ -229,9 +229,9 @@ export default {
     // 向客户端发送信标服务器地址
     postUrl (workerId) {
       return new Promise((resolve,reject) => {
-        let xinbiaoTimer = setTimeout(window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`),100);
-        if (window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`) == 'success') {
-          resolve(window.android.setPostUrl(`http://blink.blinktech.cn/trans/workerPositionLog/save/${workerId}`));
+        let xinbiaoTimer = setTimeout(window.android.setPostUrl(`http://ver.blinktech.cn/trans/workerPositionLog/save/${workerId}`),100);
+        if (window.android.setPostUrl(`http://ver.blinktech.cn/trans/workerPositionLog/save/${workerId}`) == 'success') {
+          resolve(window.android.setPostUrl(`http://ver.blinktech.cn/trans/workerPositionLog/save/${workerId}`));
           clearTimeout(xinbiaoTimer)
         }
       })

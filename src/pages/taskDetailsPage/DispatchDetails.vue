@@ -95,7 +95,7 @@
                 <p class="describe-line-wrapper">
                   <span class="message-tit">语音备注 :&nbsp;</span>
                   <span class="message-tit-real-audio" v-if="showChildrenComponent">
-                    <MyAudio v-if="!dispatchTaskMessage.recordTime != true" :src="`http://show.blinktech.cn/trans/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
+                    <MyAudio v-if="!dispatchTaskMessage.recordTime != true" :src="`http://ver.blinktech.cn/trans/${dispatchTaskMessage.taskNumber}.mp3`"></MyAudio>
                   </span>
                   <span class="message-tit-real" v-show="!dispatchTaskMessage.recordTime">
                     无语音信息
