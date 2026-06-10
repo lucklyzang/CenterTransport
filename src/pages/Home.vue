@@ -1329,12 +1329,14 @@
     },
 
     beforeRouteEnter (to, from, next) {
-      if (store.state.login.userInfo.extendData.user_type_id == 1) {
-        let catch_components = store.state.catchComponent.catch_components;
-        let i = catch_components.indexOf('home');
-        i === -1 && catch_components.push('home')
-      };
-      next()
+       next(vm => {
+        if (store.state.login.userInfo.extendData.user_type_id == 1) {
+          let catch_components = store.state.catchComponent.catch_components;
+          let i = catch_components.indexOf('TransHome');
+          i === -1 && catch_components.push('TransHome');
+          vm.changeCatchComponent(catch_components)
+        }
+      })
     },
 
     beforeRouteLeave (to, from, next) {

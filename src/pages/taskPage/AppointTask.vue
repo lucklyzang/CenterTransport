@@ -708,7 +708,9 @@
       let catch_components = store.state.catchComponent.catch_components;
       let i = catch_components.indexOf('appointTask');
       i === -1 && catch_components.push('appointTask');
-      next();
+      next((el) => {
+        el.changeCatchComponent(catch_components)
+      })
     },
 
     beforeRouteLeave(to, from, next) {
