@@ -21,7 +21,7 @@
     "js-base64": "^3.6.0",
     "lib-flexible": "^0.3.2",
     "lodash": "^4.17.21",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "px2rem-loader": "^0.1.9",
     "qrcodejs2": "0.0.2",
     "qs": "^6.6.0",
